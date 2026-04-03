@@ -1,65 +1,108 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+
+// This tells TypeScript what a review looks like
+type Review = {
+  id: number;
+  rating: number;
+  content: string;
+  authorName: string;
+};
 
 export default function Home() {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [authorName, setAuthorName] = useState('');
+  const [rating, setRating] = useState(5);
+  const [content, setContent] = useState('');
+
+  // Fetch all reviews from our backend API when the page loads
+  useEffect(() => {
+    fetch('/api/reviews')
+      .then((res) => res.json())
+      .then((data) => setReviews(data));
+  }, []);
+
+  // Send a new review to the backend API when the form is submitted
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const res = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ authorName, rating: Number(rating), content }),
+    });
+
+    if (res.ok) {
+      const savedReview = await res.json();
+      setReviews([savedReview, ...reviews]); // Add new review to the UI instantly
+      setAuthorName(''); // Clear the form
+      setContent('');
+      setRating(5);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="max-w-2xl mx-auto p-10 font-sans">
+      <h1 className="text-4xl font-bold mb-8 text-center">GetReviews</h1>
+      
+      {/* Review Submission Form */}
+      <form onSubmit={handleSubmit} className="bg-gray-100 p-6 rounded-lg shadow-md mb-10 text-black">
+        <h2 className="text-xl font-semibold mb-4">Leave a Review</h2>
+        
+        <input 
+          type="text" 
+          placeholder="Your Name" 
+          value={authorName} 
+          onChange={(e) => setAuthorName(e.target.value)} 
+          className="w-full mb-3 p-2 border rounded"
+          required 
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        
+        <select 
+          value={rating} 
+          onChange={(e) => setRating(Number(e.target.value))}
+          className="w-full mb-3 p-2 border rounded"
+        >
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+        
+        <textarea 
+          placeholder="What did you think?" 
+          value={content} 
+          onChange={(e) => setContent(e.target.value)} 
+          className="w-full mb-3 p-2 border rounded h-24"
+          required 
+        />
+        
+        <button type="submit" className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+          Submit Review
+        </button>
+      </form>
+
+      {/* Review List */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold mb-4">Recent Reviews</h2>
+        {reviews.length === 0 ? (
+          <p className="text-gray-500">No reviews yet. Be the first!</p>
+        ) : (
+          reviews.map((review) => (
+            <div key={review.id} className="p-4 border rounded-lg shadow-sm bg-white text-black">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-bold text-lg">{review.authorName}</h3>
+                <span className="bg-yellow-100 text-yellow-800 text-sm font-semibold px-2.5 py-0.5 rounded">
+                  {review.rating} Stars
+                </span>
+              </div>
+              <p className="text-gray-700">{review.content}</p>
+            </div>
+          ))
+        )}
+      </div>
+    </main>
   );
 }
