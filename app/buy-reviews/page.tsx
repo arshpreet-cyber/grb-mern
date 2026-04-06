@@ -3,6 +3,7 @@
 import { useCart } from "@/context/CartContext";
 import HomeNavbar from "@/components/HomeNavbar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const products = [
@@ -187,7 +188,8 @@ function ProductCard({ product }: { product: typeof products[0] }) {
 }
 
 export default function BuyReviewsPage() {
-  const { count, openCart } = useCart();
+  const { count } = useCart();
+  const router = useRouter();
   const [filter, setFilter] = useState("all");
 
   const filtered = filter === "all" ? products : products.filter((p) =>
@@ -211,7 +213,7 @@ export default function BuyReviewsPage() {
             Real reviews from real accounts. Choose your platform, pick one-time or subscribe, and watch your reputation grow.
           </p>
           {count > 0 && (
-            <button onClick={openCart}
+            <button onClick={() => router.push("/cart")}
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-violet-700 shadow-lg hover:bg-violet-50 transition">
               🛒 View Cart ({count} items)
             </button>

@@ -1,11 +1,12 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
+import Link from "next/link";
 
 export default function CartButton() {
-  const { openCart, count } = useCart();
+  const { count } = useCart();
   return (
-    <button onClick={openCart}
+    <Link href="/cart"
       className="relative flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-violet-300 hover:text-violet-700 transition shadow-sm">
       <span className="text-base">🛒</span>
       <span className="hidden sm:inline">Cart</span>
@@ -14,6 +15,6 @@ export default function CartButton() {
           {count}
         </span>
       )}
-    </button>
+    </Link>
   );
 }

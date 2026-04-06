@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import CartButton from "@/components/CartButton";
 
 export default function HomeNavbar() {
   const { data: session, status } = useSession();
@@ -24,7 +23,6 @@ export default function HomeNavbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <CartButton />
           {status === "loading" ? (
             <div className="h-8 w-24 animate-pulse rounded-lg bg-slate-100" />
           ) : session ? (
