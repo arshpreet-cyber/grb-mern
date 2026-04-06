@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HomeNavbar from "@/components/HomeNavbar";
 
 const services = [
   {
@@ -150,32 +151,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-white text-slate-900 font-sans">
 
       {/* ── Navbar ── */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100 shadow-sm">
-        <div className="mx-auto max-w-7xl px-5 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-bold text-sm shadow">
-              G
-            </div>
-            <span className="text-lg font-bold text-slate-900">GetReviews<span className="text-violet-600">.buzz</span></span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
-            <Link href="#services" className="hover:text-violet-600 transition">Services</Link>
-            <Link href="#pricing" className="hover:text-violet-600 transition">Pricing</Link>
-            <Link href="#how-it-works" className="hover:text-violet-600 transition">How It Works</Link>
-            <Link href="#faq" className="hover:text-violet-600 transition">FAQ</Link>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-slate-900 transition px-4 py-2">
-              Login
-            </Link>
-            <Link href="/register" className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:opacity-90 transition">
-              Get Started →
-            </Link>
-          </div>
-        </div>
-      </header>
+      <HomeNavbar />
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 text-white">

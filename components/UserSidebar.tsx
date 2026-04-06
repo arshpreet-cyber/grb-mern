@@ -34,8 +34,10 @@ const menuSections: MenuSection[] = [
 
 export default function UserSidebar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGER";
+  const { data: session, status } = useSession();
+  const isAdmin = status === "authenticated" && 
+    (session?.user?.role === "ADMIN" || session?.user?.role === "MANAGER" || 
+     (session?.user as any)?.role === "ADMIN" || (session?.user as any)?.role === "MANAGER");
   const initials = session?.user?.name?.charAt(0)?.toUpperCase() ?? "U";
 
   return (

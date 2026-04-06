@@ -41,11 +41,9 @@ function LoginForm() {
         <label className="block text-xs font-semibold uppercase tracking-widest text-slate-300 mb-2">Email Address</label>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">✉</span>
-          <input
-            type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border border-white/10 bg-white/10 py-3.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition"
-          />
+            className="w-full rounded-xl border border-white/10 bg-white/10 py-3.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition" />
         </div>
       </div>
 
@@ -56,11 +54,9 @@ function LoginForm() {
         </div>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
-          <input
-            type={showPassword ? "text" : "password"} required value={password}
+          <input type={showPassword ? "text" : "password"} required value={password}
             onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
-            className="w-full rounded-xl border border-white/10 bg-white/10 py-3.5 pl-10 pr-14 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition"
-          />
+            className="w-full rounded-xl border border-white/10 bg-white/10 py-3.5 pl-10 pr-14 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition" />
           <button type="button" onClick={() => setShowPassword(!showPassword)}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition text-xs">
             {showPassword ? "Hide" : "Show"}
@@ -92,40 +88,9 @@ function LoginForm() {
   );
 }
 
-function ContactForm() {
-  const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const set = (f: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((p) => ({ ...p, [f]: e.target.value }));
-
-  return sent ? (
-    <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-6 py-8 text-center">
-      <div className="text-3xl mb-3">✅</div>
-      <p className="text-sm font-semibold text-emerald-400">Message sent!</p>
-      <p className="text-xs text-slate-500 mt-1">We'll get back to you within 24 hours.</p>
-    </div>
-  ) : (
-    <form onSubmit={(e) => { e.preventDefault(); setSent(true); }} className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <input required value={form.name} onChange={set("name")} placeholder="Your name"
-          className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition" />
-        <input required type="email" value={form.email} onChange={set("email")} placeholder="Email address"
-          className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition" />
-      </div>
-      <textarea required value={form.message} onChange={set("message")} placeholder="How can we help you?" rows={3}
-        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition resize-none" />
-      <button type="submit"
-        className="w-full rounded-xl border border-violet-500/30 bg-violet-500/10 py-3 text-sm font-semibold text-violet-300 hover:bg-violet-500/20 transition">
-        Send Message →
-      </button>
-    </form>
-  );
-}
-
 export default function LoginPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Background */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950" />
         <div className="absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-violet-600/30 blur-3xl" />
@@ -147,9 +112,8 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-12">
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white font-bold text-lg shadow-xl">G</div>
@@ -158,7 +122,6 @@ export default function LoginPage() {
             <p className="mt-3 text-sm text-slate-400">Sign in to your account</p>
           </div>
 
-          {/* Login Card */}
           <div className="rounded-3xl border border-white/10 bg-white/10 backdrop-blur-xl shadow-2xl p-8">
             <Suspense fallback={<div className="h-10 animate-pulse rounded-xl bg-white/5" />}>
               <LoginForm />
@@ -174,21 +137,10 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Trust badges */}
           <div className="mt-6 flex items-center justify-center gap-5 text-xs text-slate-500">
             <span>🔒 SSL Secured</span>
             <span>✅ Trusted by 12k+</span>
             <span>⭐ 98% Satisfaction</span>
-          </div>
-
-          {/* Contact Form */}
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8">
-            <div className="text-center mb-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-1">Need Help?</p>
-              <h3 className="text-lg font-bold text-white">Contact Support</h3>
-              <p className="text-xs text-slate-500 mt-1">We typically reply within a few hours.</p>
-            </div>
-            <ContactForm />
           </div>
         </div>
       </div>
