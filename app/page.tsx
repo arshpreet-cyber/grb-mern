@@ -1,110 +1,485 @@
-'use client';
+import Link from "next/link";
 
-import { useEffect, useState } from 'react';
+const services = [
+  {
+    icon: "🌟",
+    platform: "Google Reviews",
+    desc: "Boost your Google Business rating with real, verified 5-star reviews.",
+    price: "$2.99",
+    per: "per review",
+    badge: "Most Popular",
+    badgeColor: "bg-violet-600",
+  },
+  {
+    icon: "👍",
+    platform: "Facebook Reviews",
+    desc: "Increase trust on your Facebook page with authentic positive reviews.",
+    price: "$2.49",
+    per: "per review",
+    badge: "Best Value",
+    badgeColor: "bg-emerald-600",
+  },
+  {
+    icon: "🛒",
+    platform: "Trustpilot Reviews",
+    desc: "Strengthen your Trustpilot score and convert more visitors into buyers.",
+    price: "$3.49",
+    per: "per review",
+    badge: null,
+    badgeColor: "",
+  },
+  {
+    icon: "📱",
+    platform: "App Store Reviews",
+    desc: "Improve your app ranking with genuine iOS & Android store reviews.",
+    price: "$3.99",
+    per: "per review",
+    badge: null,
+    badgeColor: "",
+  },
+  {
+    icon: "🏪",
+    platform: "Yelp Reviews",
+    desc: "Dominate local search with high-quality Yelp reviews for your business.",
+    price: "$2.99",
+    per: "per review",
+    badge: null,
+    badgeColor: "",
+  },
+  {
+    icon: "🛍️",
+    platform: "Amazon Reviews",
+    desc: "Increase product credibility and sales with verified Amazon reviews.",
+    price: "$4.49",
+    per: "per review",
+    badge: "Premium",
+    badgeColor: "bg-amber-500",
+  },
+];
 
-// This tells TypeScript what a review looks like
-type Review = {
-  id: number;
-  rating: number;
-  content: string;
-  authorName: string;
-};
+const packages = [
+  {
+    name: "Starter",
+    price: "$19",
+    reviews: "10 Reviews",
+    features: ["Google or Facebook", "Delivered in 3–5 days", "Real accounts", "24/7 support"],
+    cta: "Get Started",
+    highlight: false,
+  },
+  {
+    name: "Growth",
+    price: "$49",
+    reviews: "30 Reviews",
+    features: ["Any platform", "Delivered in 5–7 days", "Real accounts", "Priority support", "Drip delivery"],
+    cta: "Most Popular",
+    highlight: true,
+  },
+  {
+    name: "Pro",
+    price: "$99",
+    reviews: "75 Reviews",
+    features: ["Multi-platform", "Delivered in 7–10 days", "Real accounts", "Dedicated manager", "Drip delivery", "Refill guarantee"],
+    cta: "Go Pro",
+    highlight: false,
+  },
+];
 
-export default function Home() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [authorName, setAuthorName] = useState('');
-  const [rating, setRating] = useState(5);
-  const [content, setContent] = useState('');
+const steps = [
+  { step: "01", title: "Choose Your Package", desc: "Select the platform and number of reviews that fit your business goals." },
+  { step: "02", title: "Provide Your Details", desc: "Share your business URL or profile link — no passwords needed, ever." },
+  { step: "03", title: "Secure Checkout", desc: "Pay safely with credit card, PayPal, or crypto. 100% encrypted." },
+  { step: "04", title: "Watch Reviews Roll In", desc: "Reviews are delivered gradually to look natural and stay permanent." },
+];
 
-  // Fetch all reviews from our backend API when the page loads
-  useEffect(() => {
-    fetch('/api/reviews')
-      .then((res) => res.json())
-      .then((data) => setReviews(data));
-  }, []);
+const testimonials = [
+  {
+    name: "James R.",
+    role: "Restaurant Owner",
+    avatar: "JR",
+    text: "My Google rating went from 3.8 to 4.7 in just two weeks. Bookings are up 40%. Absolutely worth every penny.",
+    stars: 5,
+  },
+  {
+    name: "Sarah M.",
+    role: "E-commerce Seller",
+    avatar: "SM",
+    text: "The Amazon reviews were delivered exactly as promised. My product went from page 4 to page 1. Incredible results.",
+    stars: 5,
+  },
+  {
+    name: "David K.",
+    role: "App Developer",
+    avatar: "DK",
+    text: "App Store reviews boosted my app's visibility massively. Downloads tripled within a month. Highly recommend!",
+    stars: 5,
+  },
+];
 
-  // Send a new review to the backend API when the form is submitted
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const res = await fetch('/api/reviews', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ authorName, rating: Number(rating), content }),
-    });
+const faqs = [
+  {
+    q: "Are the reviews from real people?",
+    a: "Yes. All reviews come from real, aged accounts with genuine activity. We never use bots or fake profiles.",
+  },
+  {
+    q: "Will the reviews be removed?",
+    a: "Our reviews are designed to be permanent. We offer a free refill guarantee if any are removed within 30 days.",
+  },
+  {
+    q: "How long does delivery take?",
+    a: "Delivery starts within 24–48 hours. We drip-feed reviews gradually to ensure they look completely natural.",
+  },
+  {
+    q: "Is this safe for my business?",
+    a: "Absolutely. We use safe, manual delivery methods that comply with platform guidelines to protect your account.",
+  },
+  {
+    q: "What payment methods do you accept?",
+    a: "We accept all major credit cards, PayPal, and cryptocurrency for maximum privacy and convenience.",
+  },
+];
 
-    if (res.ok) {
-      const savedReview = await res.json();
-      setReviews([savedReview, ...reviews]); // Add new review to the UI instantly
-      setAuthorName(''); // Clear the form
-      setContent('');
-      setRating(5);
-    }
-  };
+const stats = [
+  { value: "50,000+", label: "Reviews Delivered" },
+  { value: "12,000+", label: "Happy Clients" },
+  { value: "98%", label: "Satisfaction Rate" },
+  { value: "24/7", label: "Customer Support" },
+];
 
+export default function HomePage() {
   return (
-    <main className="max-w-2xl mx-auto p-10 font-sans">
-      <h1 className="text-4xl font-bold mb-8 text-center">GetReviews</h1>
-      
-      {/* Review Submission Form */}
-      <form onSubmit={handleSubmit} className="bg-gray-100 p-6 rounded-lg shadow-md mb-10 text-black">
-        <h2 className="text-xl font-semibold mb-4">Leave a Review</h2>
-        
-        <input 
-          type="text" 
-          placeholder="Your Name" 
-          value={authorName} 
-          onChange={(e) => setAuthorName(e.target.value)} 
-          className="w-full mb-3 p-2 border rounded"
-          required 
-        />
-        
-        <select 
-          value={rating} 
-          onChange={(e) => setRating(Number(e.target.value))}
-          className="w-full mb-3 p-2 border rounded"
-        >
-          <option value="5">5 Stars</option>
-          <option value="4">4 Stars</option>
-          <option value="3">3 Stars</option>
-          <option value="2">2 Stars</option>
-          <option value="1">1 Star</option>
-        </select>
-        
-        <textarea 
-          placeholder="What did you think?" 
-          value={content} 
-          onChange={(e) => setContent(e.target.value)} 
-          className="w-full mb-3 p-2 border rounded h-24"
-          required 
-        />
-        
-        <button type="submit" className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
-          Submit Review
-        </button>
-      </form>
+    <div className="min-h-screen bg-white text-slate-900 font-sans">
 
-      {/* Review List */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold mb-4">Recent Reviews</h2>
-        {reviews.length === 0 ? (
-          <p className="text-gray-500">No reviews yet. Be the first!</p>
-        ) : (
-          reviews.map((review) => (
-            <div key={review.id} className="p-4 border rounded-lg shadow-sm bg-white text-black">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-bold text-lg">{review.authorName}</h3>
-                <span className="bg-yellow-100 text-yellow-800 text-sm font-semibold px-2.5 py-0.5 rounded">
-                  {review.rating} Stars
-                </span>
-              </div>
-              <p className="text-gray-700">{review.content}</p>
+      {/* ── Navbar ── */}
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100 shadow-sm">
+        <div className="mx-auto max-w-7xl px-5 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-bold text-sm shadow">
+              G
             </div>
-          ))
-        )}
-      </div>
-    </main>
+            <span className="text-lg font-bold text-slate-900">GetReviews<span className="text-violet-600">.buzz</span></span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+            <Link href="#services" className="hover:text-violet-600 transition">Services</Link>
+            <Link href="#pricing" className="hover:text-violet-600 transition">Pricing</Link>
+            <Link href="#how-it-works" className="hover:text-violet-600 transition">How It Works</Link>
+            <Link href="#faq" className="hover:text-violet-600 transition">FAQ</Link>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-slate-900 transition px-4 py-2">
+              Login
+            </Link>
+            <Link href="/register" className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:opacity-90 transition">
+              Get Started →
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 text-white">
+        {/* Background blobs */}
+        <div className="pointer-events-none absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-violet-600/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-indigo-600/20 blur-3xl" />
+
+        <div className="relative mx-auto max-w-7xl px-5 py-28 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-violet-300 mb-8">
+            ⭐ Trusted by 12,000+ businesses worldwide
+          </div>
+
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+            Buy Real Reviews,<br />
+            <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+              Grow Your Business
+            </span>
+          </h1>
+
+          <p className="mx-auto mt-7 max-w-2xl text-lg text-slate-300 leading-relaxed">
+            Boost your online reputation with authentic 5-star reviews on Google, Facebook, Trustpilot, Amazon & more. Fast delivery. Real accounts. Permanent results.
+          </p>
+
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="#pricing" className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-indigo-600 px-8 py-4 text-base font-bold text-white shadow-xl hover:opacity-90 transition">
+              View Packages →
+            </Link>
+            <Link href="#how-it-works" className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-8 py-4 text-base font-semibold text-white hover:bg-white/10 transition">
+              How It Works
+            </Link>
+          </div>
+
+          {/* Trust badges */}
+          <div className="mt-14 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400">
+            {["✅ 100% Real Accounts", "🔒 Secure Payments", "♻️ Refill Guarantee", "⚡ Fast Delivery"].map((b) => (
+              <span key={b} className="flex items-center gap-1.5">{b}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stats Bar ── */}
+      <section className="bg-gradient-to-r from-violet-600 to-indigo-700 text-white">
+        <div className="mx-auto max-w-7xl px-5 py-10 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+          {stats.map((s) => (
+            <div key={s.label}>
+              <p className="text-3xl font-extrabold">{s.value}</p>
+              <p className="mt-1 text-sm text-violet-200">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Services ── */}
+      <section id="services" className="py-24 bg-slate-50">
+        <div className="mx-auto max-w-7xl px-5">
+          <div className="text-center mb-14">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Our Services</p>
+            <h2 className="text-4xl font-extrabold text-slate-900">Reviews for Every Platform</h2>
+            <p className="mt-4 text-slate-500 max-w-xl mx-auto">
+              We cover all major review platforms so you can build trust wherever your customers are looking.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((s) => (
+              <div key={s.platform} className="relative rounded-2xl bg-white border border-slate-100 p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+                {s.badge && (
+                  <span className={`absolute top-4 right-4 rounded-full ${s.badgeColor} px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white`}>
+                    {s.badge}
+                  </span>
+                )}
+                <div className="text-3xl mb-4">{s.icon}</div>
+                <h3 className="text-lg font-bold text-slate-900">{s.platform}</h3>
+                <p className="mt-2 text-sm text-slate-500 leading-relaxed">{s.desc}</p>
+                <div className="mt-5 flex items-end justify-between">
+                  <div>
+                    <span className="text-2xl font-extrabold text-violet-600">{s.price}</span>
+                    <span className="ml-1 text-xs text-slate-400">{s.per}</span>
+                  </div>
+                  <Link href="/register" className="rounded-xl bg-violet-50 px-4 py-2 text-xs font-bold text-violet-700 hover:bg-violet-100 transition">
+                    Order Now →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Pricing Packages ── */}
+      <section id="pricing" className="py-24 bg-white">
+        <div className="mx-auto max-w-7xl px-5">
+          <div className="text-center mb-14">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Pricing</p>
+            <h2 className="text-4xl font-extrabold text-slate-900">Simple, Transparent Pricing</h2>
+            <p className="mt-4 text-slate-500 max-w-xl mx-auto">
+              No hidden fees. No subscriptions. Pay once and watch your reputation grow.
+            </p>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-3 max-w-5xl mx-auto">
+            {packages.map((pkg) => (
+              <div
+                key={pkg.name}
+                className={`relative rounded-3xl p-8 flex flex-col ${
+                  pkg.highlight
+                    ? "bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-2xl scale-105"
+                    : "bg-white border border-slate-200 text-slate-900 shadow-sm"
+                }`}
+              >
+                {pkg.highlight && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-amber-400 px-5 py-1.5 text-xs font-bold text-slate-900 shadow">
+                    ⭐ Most Popular
+                  </div>
+                )}
+                <p className={`text-sm font-bold uppercase tracking-widest ${pkg.highlight ? "text-violet-200" : "text-violet-600"}`}>
+                  {pkg.name}
+                </p>
+                <div className="mt-4 flex items-end gap-1">
+                  <span className="text-5xl font-extrabold">{pkg.price}</span>
+                  <span className={`mb-2 text-sm ${pkg.highlight ? "text-violet-200" : "text-slate-400"}`}>/ package</span>
+                </div>
+                <p className={`mt-1 text-sm font-semibold ${pkg.highlight ? "text-violet-200" : "text-slate-500"}`}>{pkg.reviews}</p>
+
+                <ul className="mt-8 space-y-3 flex-1">
+                  {pkg.features.map((f) => (
+                    <li key={f} className={`flex items-center gap-2.5 text-sm ${pkg.highlight ? "text-violet-100" : "text-slate-600"}`}>
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs ${pkg.highlight ? "bg-white/20 text-white" : "bg-violet-100 text-violet-600"}`}>
+                        ✓
+                      </span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href="/register"
+                  className={`mt-8 block rounded-2xl py-3.5 text-center text-sm font-bold transition ${
+                    pkg.highlight
+                      ? "bg-white text-violet-700 hover:bg-violet-50"
+                      : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90"
+                  }`}
+                >
+                  {pkg.cta} →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How It Works ── */}
+      <section id="how-it-works" className="py-24 bg-slate-950 text-white">
+        <div className="mx-auto max-w-7xl px-5">
+          <div className="text-center mb-14">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Process</p>
+            <h2 className="text-4xl font-extrabold">How It Works</h2>
+            <p className="mt-4 text-slate-400 max-w-xl mx-auto">
+              Getting more reviews is simple. Just 4 easy steps and you're done.
+            </p>
+          </div>
+
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((s, i) => (
+              <div key={s.step} className="relative">
+                {i < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-violet-600/50 to-transparent z-0" />
+                )}
+                <div className="relative z-10 rounded-2xl bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-extrabold text-lg mb-5 shadow-lg">
+                    {s.step}
+                  </div>
+                  <h3 className="text-base font-bold text-white">{s.title}</h3>
+                  <p className="mt-2 text-sm text-slate-400 leading-relaxed">{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Testimonials ── */}
+      <section className="py-24 bg-slate-50">
+        <div className="mx-auto max-w-7xl px-5">
+          <div className="text-center mb-14">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Testimonials</p>
+            <h2 className="text-4xl font-extrabold text-slate-900">What Our Clients Say</h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {testimonials.map((t) => (
+              <div key={t.name} className="rounded-2xl bg-white border border-slate-100 p-7 shadow-sm">
+                <div className="flex gap-0.5 mb-5">
+                  {Array.from({ length: t.stars }).map((_, i) => (
+                    <span key={i} className="text-amber-400 text-lg">★</span>
+                  ))}
+                </div>
+                <p className="text-slate-700 text-sm leading-relaxed">"{t.text}"</p>
+                <div className="mt-6 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-xs font-bold">
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">{t.name}</p>
+                    <p className="text-xs text-slate-500">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA Banner ── */}
+      <section className="py-20 bg-gradient-to-r from-violet-600 to-indigo-700 text-white text-center">
+        <div className="mx-auto max-w-3xl px-5">
+          <h2 className="text-4xl font-extrabold">Ready to Boost Your Reputation?</h2>
+          <p className="mt-4 text-violet-200 text-lg">
+            Join 12,000+ businesses that trust GetReviews.buzz to grow their online presence.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/register" className="rounded-2xl bg-white px-8 py-4 text-base font-bold text-violet-700 shadow-xl hover:bg-violet-50 transition">
+              Start Today — It's Easy →
+            </Link>
+            <Link href="#pricing" className="rounded-2xl border border-white/30 px-8 py-4 text-base font-semibold text-white hover:bg-white/10 transition">
+              View Pricing
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section id="faq" className="py-24 bg-white">
+        <div className="mx-auto max-w-3xl px-5">
+          <div className="text-center mb-14">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">FAQ</p>
+            <h2 className="text-4xl font-extrabold text-slate-900">Frequently Asked Questions</h2>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq) => (
+              <div key={faq.q} className="rounded-2xl border border-slate-100 bg-slate-50 p-6">
+                <p className="font-bold text-slate-900 flex items-start gap-3">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 text-xs">?</span>
+                  {faq.q}
+                </p>
+                <p className="mt-3 text-sm text-slate-600 leading-relaxed pl-8">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="bg-slate-950 text-slate-400 py-14">
+        <div className="mx-auto max-w-7xl px-5">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+            <div>
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-bold text-xs">G</div>
+                <span className="text-base font-bold text-white">GetReviews<span className="text-violet-400">.buzz</span></span>
+              </div>
+              <p className="text-sm leading-relaxed">The #1 platform for buying real, authentic reviews to grow your business reputation online.</p>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Services</p>
+              <ul className="space-y-2 text-sm">
+                {["Google Reviews", "Facebook Reviews", "Trustpilot Reviews", "Amazon Reviews", "App Store Reviews"].map((s) => (
+                  <li key={s}><Link href="/register" className="hover:text-white transition">{s}</Link></li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Company</p>
+              <ul className="space-y-2 text-sm">
+                {["About Us", "How It Works", "Pricing", "Blog", "Contact"].map((s) => (
+                  <li key={s}><Link href="#" className="hover:text-white transition">{s}</Link></li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Legal</p>
+              <ul className="space-y-2 text-sm">
+                {["Privacy Policy", "Terms of Service", "Refund Policy", "Cookie Policy"].map((s) => (
+                  <li key={s}><Link href="#" className="hover:text-white transition">{s}</Link></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <p>© {new Date().getFullYear()} GetReviews.buzz — All rights reserved.</p>
+            <div className="flex items-center gap-4">
+              {["🔒 SSL Secured", "💳 Safe Payments", "⭐ Trusted Service"].map((b) => (
+                <span key={b}>{b}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
-
-// Forcing a fresh build for Vercel
