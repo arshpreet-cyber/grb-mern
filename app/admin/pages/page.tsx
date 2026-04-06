@@ -181,7 +181,7 @@ function AllPagesTab({
                         className="rounded-lg bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 transition">
                         ✏ Edit
                       </button>
-                      <a href={`https://getreviews.buzz/${page.slug}`} target="_blank" rel="noreferrer"
+                      <a href={`https://grb-mern-gilt.vercel.app/${page.slug}`} target="_blank" rel="noreferrer"
                         className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
                         👁 View
                       </a>
