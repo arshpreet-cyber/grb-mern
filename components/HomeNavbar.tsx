@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import CartButton from "@/components/CartButton";
 
 export default function HomeNavbar() {
   const { data: session, status } = useSession();
@@ -16,12 +17,14 @@ export default function HomeNavbar() {
 
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
           <Link href="#services" className="hover:text-violet-600 transition">Services</Link>
+          <Link href="/buy-reviews" className="hover:text-violet-600 transition">Buy Reviews</Link>
           <Link href="#pricing" className="hover:text-violet-600 transition">Pricing</Link>
           <Link href="#how-it-works" className="hover:text-violet-600 transition">How It Works</Link>
           <Link href="#faq" className="hover:text-violet-600 transition">FAQ</Link>
         </nav>
 
         <div className="flex items-center gap-3">
+          <CartButton />
           {status === "loading" ? (
             <div className="h-8 w-24 animate-pulse rounded-lg bg-slate-100" />
           ) : session ? (
