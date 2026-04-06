@@ -232,7 +232,7 @@ export async function GET(req: NextRequest) {
       {
         error: "Failed to seed database",
         message: errorMessage,
-        stack: errorStack.split("\n").slice(0, 10).join("\n"),
+        stack: (errorStack ?? "").split("\n").slice(0, 10).join("\n"),
       },
       { status: 500 }
     );
