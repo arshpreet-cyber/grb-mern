@@ -1,0 +1,94 @@
+import { notFound } from "next/navigation";
+import prisma from "@/lib/prisma";
+import type { Metadata } from "next";
+import Link from "next/link";
+
+type Section = { id: string; type: string; heading: string; content: string };
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await params;
+  const page = await prisma.page.findUnique({ where: { slug } });
+  if (!page) return { title: "Not Found" };
+  return {
+    title: page.metaTitle || page.title,
+    description: page.metaDescription || undefined,
+    keywords: page.keywords || undefined,
+    robots: page.robotsText || "index, follow",
+    alternates: page.canonicalLink ? { canonical: page.canonicalLink } : undefined,
+    openGraph: page.opengraphImage ? { images: [page.opengraphImage] } : undefined,
+  };
+}
+
+export default async function SlugPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const page = await prisma.page.findUnique({ where: { slug } });
+
+  if (!page || page.status !== "Published") notFound();
+
+  const sections = Array.isArray(page.sections) ? (page.sections as Section[]) : [];
+
+  return (
+    <>
+      {/* Header Script */}
+      {page.headerScript && (
+        <div dangerouslySetInnerHTML={{ __html: page.headerScript }} />
+      )}
+
+      <div className="min-h-screen bg-white text-slate-900">
+        {/* Navbar */}
+        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100 shadow-sm">
+          <div className="mx-auto max-w-7xl px-5 py-4 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-bold text-sm shadow">G</div>
+              <span className="text-lg font-bold text-slate-900">GetReviews<span className="text-violet-600">.buzz</span></span>
+            </Link>
+            <Link href="/" className="text-sm text-slate-500 hover:text-violet-600 transition">← Back to Home</Link>
+          </div>
+        </header>
+
+        {/* Title Image */}
+        {page.titleImage && (
+          <div className="w-full h-64 md:h-96 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={page.titleImage} alt={page.title} className="w-full h-full object-cover" />
+          </div>
+        )}
+
+        {/* Page Title */}
+        <div className="mx-auto max-w-4xl px-5 py-12">
+          <h1 className="text-4xl font-extrabold text-slate-900">{page.title}</h1>
+        </div>
+
+        {/* Sections */}
+        {sections.length > 0 && (
+          <div className="mx-auto max-w-4xl px-5 pb-16 space-y-10">
+            {sections.map((section) => (
+              <div key={section.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-8">
+                {section.heading && (
+                  <h2 className="text-2xl font-bold text-slate-800 mb-4">{section.heading}</h2>
+                )}
+                {section.content && (
+                  <div
+                    className="prose prose-slate max-w-none text-slate-600 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: section.content }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Footer */}
+        <footer className="border-t border-slate-100 py-8 text-center text-sm text-slate-400">
+          © {new Date().getFullYear()} GetReviews.buzz
+        </footer>
+      </div>
+
+      {/* Body / Footer Scripts */}
+      {page.bodyScript && <div dangerouslySetInnerHTML={{ __html: page.bodyScript }} />}
+      {page.footerScript && <div dangerouslySetInnerHTML={{ __html: page.footerScript }} />}
+    </>
+  );
+}
