@@ -25,7 +25,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const page = await prisma.page.findUnique({ where: { slug } });
 
-  if (!page || page.status !== "Published") notFound();
+  if (!page) notFound();
 
   const sections = Array.isArray(page.sections) ? (page.sections as Section[]) : [];
 
