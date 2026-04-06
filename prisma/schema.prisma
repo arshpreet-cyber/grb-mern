@@ -78,3 +78,25 @@ model Revenue {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Page {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  status          String   @default("Draft") // Draft, Published
+  titleImage      String?
+  opengraphImage  String?
+  canonicalLink   String?
+  robotsText      String   @default("index, follow")
+  keywords        String?
+  metaTitle       String?
+  metaDescription String?
+  inSitemap       Boolean  @default(true)
+  schemaCode      String?
+  headerScript    String?
+  bodyScript      String?
+  footerScript    String?
+  sections        Json     @default("[]")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
