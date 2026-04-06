@@ -1,15 +1,18 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
+import { PrismaClient } from '@prisma/client'
 
-const connectionString = `${process.env.DATABASE_URL}`;
-const pool = new pg.Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+// Prisma 7 requires passing the connection URL directly to the client
+const prismaClientSingleton = () => {
+  return new PrismaClient({
+    url: process.env.DATABASE_URL,
+  })
+}
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+declare global {
+  var prisma: undefined | ReturnType<typeof prismaClientSingleton>
+}
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({ adapter });
+const prisma = globalThis.prisma ?? prismaClientSingleton()
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export default prisma
+
+if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
