@@ -371,7 +371,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-3xl px-5">
           <h2 className="text-4xl font-extrabold">Ready to Boost Your Reputation?</h2>
           <p className="mt-4 text-violet-200 text-lg">
-            Join 12,000+ businesses that trust GetReviews.buzz to grow their online presence.
+            Join 12,000+ businesses that trust us to grow their online presence.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/register" className="rounded-2xl bg-white px-8 py-4 text-base font-bold text-violet-700 shadow-xl hover:bg-violet-50 transition">
@@ -447,7 +447,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-            <p>© {new Date().getFullYear()} GetReviews.buzz — All rights reserved.</p>
+            <p>© {new Date().getFullYear()} grb-mern-gilt.vercel.app — All rights reserved.</p>
             <div className="flex items-center gap-4">
               {["🔒 SSL Secured", "💳 Safe Payments", "⭐ Trusted Service"].map((b) => (
                 <span key={b}>{b}</span>
