@@ -29,23 +29,28 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          });
 
-        if (!user || !user.password) return null;
+          if (!user || !user.password) return null;
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isPasswordValid) return null;
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+          if (!isPasswordValid) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
+        }
       },
     }),
   ],
@@ -61,7 +66,6 @@ const handler = NextAuth({
   },
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
-  // Ensures NextAuth works on any domain (Vercel, localhost, etc.)
   secret: process.env.NEXTAUTH_SECRET,
 });
 
