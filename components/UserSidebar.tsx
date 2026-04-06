@@ -32,12 +32,15 @@ const menuSections: MenuSection[] = [
   },
 ];
 
+const ADMIN_ROLES = ["ADMIN", "admin", "MANAGER", "manager", "SEO", "DEVELOPER", "TESTER"];
+
 export default function UserSidebar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const isAdmin = status === "authenticated" && 
-    (session?.user?.role === "ADMIN" || session?.user?.role === "MANAGER" || 
-     (session?.user as any)?.role === "ADMIN" || (session?.user as any)?.role === "MANAGER");
+
+  // Get role from session — handle both typed and untyped
+  const role: string = (session?.user as any)?.role ?? "";
+  const isAdmin = status === "authenticated" && ADMIN_ROLES.includes(role);
   const initials = session?.user?.name?.charAt(0)?.toUpperCase() ?? "U";
 
   return (
@@ -55,16 +58,15 @@ export default function UserSidebar() {
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-5 space-y-5">
-        {/* Admin Dashboard link — only for admins */}
+
+        {/* Admin Dashboard — shown when role is not USER */}
         {isAdmin && (
-          <div>
-            <Link href="/admin/dashboard"
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm bg-violet-600/20 border border-violet-500/30 text-violet-300 hover:bg-violet-600/30 transition font-medium">
-              <span className="text-base">⚡</span>
-              <span>Admin Dashboard</span>
-              <span className="ml-auto text-[9px] bg-violet-500 text-white px-1.5 py-0.5 rounded-full font-bold">ADMIN</span>
-            </Link>
-          </div>
+          <Link href="/admin/dashboard"
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm bg-violet-600/20 border border-violet-500/30 text-violet-300 hover:bg-violet-600/30 transition font-medium">
+            <span className="text-base">⚡</span>
+            <span className="flex-1">Admin Dashboard</span>
+            <span className="text-[9px] bg-violet-500 text-white px-1.5 py-0.5 rounded-full font-bold uppercase">{role}</span>
+          </Link>
         )}
 
         {menuSections.map((section, si) => (
@@ -107,6 +109,9 @@ export default function UserSidebar() {
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold text-white">{session?.user?.name ?? "User"}</p>
             <p className="truncate text-[10px] text-slate-500">{session?.user?.email ?? ""}</p>
+            {role && (
+              <p className="truncate text-[10px] text-violet-400 font-semibold uppercase">{role}</p>
+            )}
           </div>
         </div>
         <button onClick={() => signOut({ callbackUrl: "/login" })}
