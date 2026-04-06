@@ -26,60 +26,43 @@ const handler = NextAuth({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Missing email or password");
-        }
+        if (!credentials?.email || !credentials?.password) return null;
 
-        // 1. Find the user in the database
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
+          where: { email: credentials.email },
         });
 
-        if (!user || !user.password) {
-          throw new Error("Invalid email or password");
-        }
+        if (!user || !user.password) return null;
 
-        // 2. Check if the password matches
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isPasswordValid) return null;
 
-        if (!isPasswordValid) {
-          throw new Error("Invalid email or password");
-        }
-
-        // 3. Return the user object if successful
         return {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role, // We pass the role so the frontend knows who they are!
+          role: user.role,
         };
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
-    // This injects the user's role into their secure session token
     async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-      }
+      if (user) token.role = user.role;
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string;
-      }
+      if (session.user) session.user.role = token.role as string;
       return session;
-    }
+    },
   },
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/login", // This tells NextAuth to use our custom login page
-  },
+  session: { strategy: "jwt" },
+  pages: { signIn: "/login" },
+  // Ensures NextAuth works on any domain (Vercel, localhost, etc.)
+  secret: process.env.NEXTAUTH_SECRET,
 });
 
 export { handler as GET, handler as POST };
