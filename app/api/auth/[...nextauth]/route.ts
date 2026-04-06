@@ -6,10 +6,12 @@ import bcrypt from "bcryptjs";
 declare module "next-auth" {
   interface User {
     role: string;
+    id: string;
   }
   interface Session {
     user: {
       role: string;
+      id: string;
     } & DefaultSession["user"];
   }
 }
@@ -17,6 +19,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     role: string;
+    id: string;
   }
 }
 
@@ -57,13 +60,12 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        token.role = String(user.role);
         token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      // Explicitly attach role and id to session.user so client can read it
       if (session.user) {
         (session.user as any).role = token.role;
         (session.user as any).id = token.id;
@@ -74,6 +76,10 @@ const handler = NextAuth({
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   secret: process.env.NEXTAUTH_SECRET,
+  // Explicitly set URL so NextAuth knows the correct domain on Vercel
+  ...(process.env.NEXTAUTH_URL ? {} : {
+    url: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000",
+  }),
 });
 
 export { handler as GET, handler as POST };
