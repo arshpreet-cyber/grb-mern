@@ -45,7 +45,7 @@ const handler = NextAuth({
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role,
+            role: String(user.role),
           };
         } catch (error) {
           console.error("Auth error:", error);
