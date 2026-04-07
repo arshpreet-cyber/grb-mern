@@ -1,4 +1,3 @@
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";

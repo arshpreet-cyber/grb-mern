@@ -2,7 +2,6 @@
 
 import { useCart } from "@/context/CartContext";
 import HomeNavbar from "@/components/HomeNavbar";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -130,7 +129,7 @@ function ProductCard({ product }: { product: typeof products[0] }) {
       )}
 
       {/* Card Header */}
-      <div className={`bg-gradient-to-br ${product.color} p-6 text-white`}>
+      <div className={`bg-linear-to-br ${product.color} p-6 text-white`}>
         <div className="text-4xl mb-3">{product.icon}</div>
         <h3 className="text-lg font-extrabold">{product.platform}</h3>
         <p className="mt-1 text-sm text-white/80 leading-relaxed">{product.desc}</p>
@@ -160,7 +159,7 @@ function ProductCard({ product }: { product: typeof products[0] }) {
           </div>
           <button
             onClick={() => handleAdd("one-time")}
-            className={`w-full rounded-xl py-2.5 text-sm font-bold transition ${added === "one-time" ? "bg-emerald-500 text-white" : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90"}`}>
+            className={`w-full rounded-xl py-2.5 text-sm font-bold transition ${added === "one-time" ? "bg-emerald-500 text-white" : "bg-linear-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90"}`}>
             {added === "one-time" ? "✓ Added to Cart!" : "🛒 Add to Cart"}
           </button>
         </div>
@@ -201,7 +200,7 @@ export default function BuyReviewsPage() {
       <HomeNavbar />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 text-white py-16 px-5 text-center">
+      <section className="bg-linear-to-br from-slate-950 via-violet-950 to-indigo-950 px-5 py-16 text-center text-white">
         <div className="mx-auto max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-violet-300 mb-6">
             ⭐ 50,000+ Reviews Delivered
@@ -222,7 +221,7 @@ export default function BuyReviewsPage() {
       </section>
 
       {/* Filter Tabs */}
-      <div className="sticky top-[65px] z-30 bg-white border-b border-slate-100 shadow-sm">
+      <div className="sticky top-16.25 z-30 border-b border-slate-100 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-5 py-3 flex items-center gap-2 overflow-x-auto">
           {["all", "google", "facebook", "amazon", "trustpilot", "yelp", "app"].map((f) => (
             <button key={f} onClick={() => setFilter(f)}
@@ -242,7 +241,7 @@ export default function BuyReviewsPage() {
         </div>
 
         {/* Trust Section */}
-        <div className="mt-16 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-700 p-8 text-white text-center">
+        <div className="mt-16 rounded-2xl bg-linear-to-r from-violet-600 to-indigo-700 p-8 text-center text-white">
           <h2 className="text-2xl font-extrabold mb-2">Why Choose Us?</h2>
           <p className="text-violet-200 mb-8">Trusted by 12,000+ businesses worldwide</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

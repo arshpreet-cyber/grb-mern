@@ -23,16 +23,19 @@ declare module "next-auth/jwt" {
   }
 }
 
+type AuthCredentials = {
+  email?: string;
+  password?: string;
+};
+
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
+      credentials: {},
+      async authorize(rawCredentials) {
         try {
+          const credentials = rawCredentials as AuthCredentials | undefined;
           if (!credentials?.email || !credentials?.password) return null;
 
           const user = await prisma.user.findUnique({
@@ -67,8 +70,8 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
+        session.user.role = String(token.role ?? "");
+        session.user.id = String(token.id ?? "");
       }
       return session;
     },
@@ -76,10 +79,6 @@ const handler = NextAuth({
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   secret: process.env.NEXTAUTH_SECRET,
-  // Explicitly set URL so NextAuth knows the correct domain on Vercel
-  ...(process.env.NEXTAUTH_URL ? {} : {
-    url: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000",
-  }),
 });
 
 export { handler as GET, handler as POST };

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
@@ -39,7 +40,7 @@ export default function UserSidebar() {
   const { data: session, status } = useSession();
 
   // Get role from session — handle both typed and untyped
-  const role: string = (session?.user as any)?.role ?? "";
+  const role = session?.user?.role ?? "";
   const isAdmin = status === "authenticated" && ADMIN_ROLES.includes(role);
   const initials = session?.user?.name?.charAt(0)?.toUpperCase() ?? "U";
 
@@ -47,13 +48,13 @@ export default function UserSidebar() {
     <aside className="min-h-screen w-64 bg-[#0f1117] text-slate-300 flex flex-col shrink-0">
       {/* Logo */}
       <div className="px-5 py-6 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-sm font-bold shadow-lg">G</div>
-          <div>
-            <p className="text-sm font-semibold text-white tracking-tight">GetReviews</p>
-            <p className="text-[10px] uppercase tracking-widest text-slate-500">User Panel</p>
-          </div>
-        </div>
+        <Link href="/">
+          <img
+            src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+            alt="GetReviews.Buzz"
+            style={{ width: "150px", height: "auto" }}
+          />
+        </Link>
       </div>
 
       {/* Nav */}
@@ -86,7 +87,7 @@ export default function UserSidebar() {
                       <span className="text-base w-5 text-center">{item.icon}</span>
                       <span className="flex-1">{item.label}</span>
                       {item.badge && (
-                        <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-violet-600 px-1.5 text-[10px] font-bold text-white">
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-violet-600 px-1.5 text-[10px] font-bold text-white">
                           {item.badge}
                         </span>
                       )}
@@ -103,7 +104,7 @@ export default function UserSidebar() {
       {/* User Footer */}
       <div className="px-3 py-4 border-t border-white/5">
         <div className="flex items-center gap-3 rounded-lg bg-white/5 px-3 py-3 mb-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-xs font-bold">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
             {initials}
           </div>
           <div className="min-w-0 flex-1">

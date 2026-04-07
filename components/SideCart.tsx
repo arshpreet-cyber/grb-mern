@@ -2,56 +2,64 @@
 
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function SideCart() {
-  const { items, removeItem, updateQty, clearCart, total, count } = useCart();
+  const { items, removeItem, updateQty, clearCart, total, count, isOpen, closeCart, toggleCart } = useCart();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
 
   return (
     <>
-      {/* Backdrop */}
-      {open && (
-        <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
+      {isOpen && (
+        <div className="fixed inset-0 z-[1200] bg-black/30 backdrop-blur-sm" onClick={closeCart} />
       )}
 
-      {/* Floating Cart Icon — always visible on right center */}
       <button
-        onClick={() => setOpen(!open)}
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center justify-center gap-1 bg-gradient-to-b from-violet-600 to-indigo-700 text-white px-2 py-4 rounded-l-2xl shadow-xl hover:from-violet-700 hover:to-indigo-800 transition-all"
-        style={{ writingMode: "horizontal-tb" }}
+        onClick={toggleCart}
+        aria-label={`Open cart with ${count} ${count === 1 ? "item" : "items"}`}
+        className="fixed right-4 top-1/2 z-[1210] flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-[22px] bg-[#111111] text-white shadow-[0_16px_40px_rgba(0,0,0,0.28)] transition-transform hover:scale-105"
       >
-        <span className="text-xl">🛒</span>
-        <span className="text-[11px] font-extrabold leading-none">{count}</span>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 4h2l2.1 9.2a1 1 0 0 0 1 .8h7.7a1 1 0 0 0 1-.8L19 7H7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="10" cy="19" r="1.6" fill="currentColor" />
+          <circle cx="17" cy="19" r="1.6" fill="currentColor" />
+        </svg>
+        <span className="absolute right-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-white bg-[#ff5a7a] px-1 text-[11px] font-extrabold leading-none text-white">
+          {count}
+        </span>
       </button>
 
-      {/* Full Cart Panel */}
-      <div className={`fixed top-0 right-0 z-50 h-full w-80 bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "translate-x-full"}`}>
-
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-violet-600 to-indigo-700 shrink-0">
+      <div className={`fixed top-0 right-0 z-[1210] flex h-full w-80 flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+        <div className="flex shrink-0 items-center justify-between bg-linear-to-r from-violet-600 to-indigo-700 px-5 py-4">
           <div className="flex items-center gap-2">
-            <span className="text-xl">🛒</span>
+            <span className="text-xl">Cart</span>
             <h2 className="text-sm font-bold text-white">Your Cart</h2>
             {count > 0 && (
-              <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-white text-violet-700 text-[10px] font-extrabold px-1">
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[10px] font-extrabold text-violet-700">
                 {count}
               </span>
             )}
           </div>
-          <button onClick={() => setOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition text-sm">✕</button>
+          <button
+            onClick={closeCart}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-sm text-white transition hover:bg-white/30"
+          >
+            x
+          </button>
         </div>
 
-        {/* Items */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-16">
-              <div className="text-5xl mb-3">🛒</div>
+            <div className="flex h-full flex-col items-center justify-center py-16 text-center">
+              <div className="mb-3 text-5xl">Cart</div>
               <p className="text-sm font-semibold text-slate-700">Cart is empty</p>
-              <p className="text-xs text-slate-400 mt-1">Add review packages to get started</p>
-              <button onClick={() => { setOpen(false); router.push("/buy-reviews"); }}
-                className="mt-4 rounded-xl bg-violet-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-violet-700 transition">
+              <p className="mt-1 text-xs text-slate-400">Add review packages to get started</p>
+              <button
+                onClick={() => {
+                  closeCart();
+                  router.push("/buy-reviews");
+                }}
+                className="mt-4 rounded-xl bg-violet-600 px-5 py-2.5 text-xs font-bold text-white transition hover:bg-violet-700"
+              >
                 Browse Packages
               </button>
             </div>
@@ -62,19 +70,24 @@ export default function SideCart() {
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">{item.icon}</span>
                     <div>
-                      <p className="text-xs font-bold text-slate-800 leading-tight">{item.platform}</p>
-                      <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${item.type === "subscribe" ? "bg-emerald-100 text-emerald-700" : "bg-violet-100 text-violet-700"}`}>
-                        {item.type === "subscribe" ? "♻️ Subscribe" : "🛒 One-Time"}
+                      <p className="text-xs font-bold leading-tight text-slate-800">{item.platform}</p>
+                      <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${item.type === "subscribe" ? "bg-emerald-100 text-emerald-700" : "bg-violet-100 text-violet-700"}`}>
+                        {item.type === "subscribe" ? "Subscribe" : "One-Time"}
                       </span>
                     </div>
                   </div>
-                  <button onClick={() => removeItem(item.id)} className="text-slate-300 hover:text-red-400 transition text-xs shrink-0">✕</button>
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="shrink-0 text-xs text-slate-300 transition hover:text-red-400"
+                  >
+                    x
+                  </button>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
-                  <div className="flex items-center rounded-lg border border-slate-200 bg-white overflow-hidden">
-                    <button onClick={() => updateQty(item.id, item.qty - 1)} className="px-2.5 py-1.5 text-slate-500 hover:bg-slate-100 transition font-bold text-xs">−</button>
-                    <span className="px-2 text-xs font-bold text-slate-800 min-w-[2rem] text-center">{item.qty}</span>
-                    <button onClick={() => updateQty(item.id, item.qty + 1)} className="px-2.5 py-1.5 text-slate-500 hover:bg-slate-100 transition font-bold text-xs">+</button>
+                  <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white">
+                    <button onClick={() => updateQty(item.id, item.qty - 1)} className="px-2.5 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-100">-</button>
+                    <span className="min-w-[2rem] px-2 text-center text-xs font-bold text-slate-800">{item.qty}</span>
+                    <button onClick={() => updateQty(item.id, item.qty + 1)} className="px-2.5 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-100">+</button>
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] text-slate-400">${item.pricePerUnit.toFixed(2)} each</p>
@@ -86,20 +99,26 @@ export default function SideCart() {
           )}
         </div>
 
-        {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t border-slate-100 px-4 py-4 space-y-2 bg-white shrink-0">
-            <div className="flex items-center justify-between mb-1">
+          <div className="shrink-0 space-y-2 border-t border-slate-100 bg-white px-4 py-4">
+            <div className="mb-1 flex items-center justify-between">
               <span className="text-xs text-slate-500">Subtotal ({count} {count === 1 ? "item" : "items"})</span>
               <span className="text-base font-extrabold text-slate-900">${total.toFixed(2)}</span>
             </div>
-            <button onClick={() => { setOpen(false); router.push("/cart"); }}
-              className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-2.5 text-xs font-bold text-white shadow hover:opacity-90 transition">
-              View Cart →
+            <button
+              onClick={() => {
+                closeCart();
+                router.push("/cart");
+              }}
+              className="w-full rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 py-2.5 text-xs font-bold text-white shadow transition hover:opacity-90"
+            >
+              View Cart
             </button>
-            <button onClick={clearCart}
-              className="w-full rounded-xl border border-slate-200 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-red-500 transition">
-              🗑 Clear Cart
+            <button
+              onClick={clearCart}
+              className="w-full rounded-xl border border-slate-200 py-2 text-xs font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-red-500"
+            >
+              Clear Cart
             </button>
           </div>
         )}

@@ -58,7 +58,7 @@ export default function AdminPagesPage() {
           <p className="text-sm text-slate-500">Manage your website pages</p>
         </div>
         <button onClick={() => { setTab("new"); setEditId(null); }}
-          className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow hover:opacity-90 transition">
+          className="rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow transition hover:opacity-90">
           + New Page
         </button>
       </div>
@@ -141,7 +141,7 @@ function AllPagesTab({
         <div className="py-20 text-center">
           <div className="text-4xl mb-3">📄</div>
           <p className="text-slate-500 font-medium">No pages found</p>
-          <p className="text-sm text-slate-400 mt-1">Create your first page using the "Add New Page" tab</p>
+          <p className="text-sm text-slate-400 mt-1">Create your first page using the &quot;Add New Page&quot; tab</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -209,7 +209,7 @@ function AllPagesTab({
 }
 
 function EditPageTab({ pageId, onSuccess, onCancel }: { pageId: string; onSuccess: () => void; onCancel: () => void }) {
-  const [initial, setInitial] = useState<any>(null);
+  const [initial, setInitial] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

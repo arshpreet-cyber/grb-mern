@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
@@ -97,13 +98,13 @@ export default function AdminSidebar() {
     <aside className="min-h-screen w-64 bg-[#0f1117] text-slate-300 flex flex-col shrink-0">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-sm font-bold shadow-lg">G</div>
-          <div>
-            <p className="text-sm font-semibold text-white tracking-tight">GetReviews</p>
-            <p className="text-[10px] uppercase tracking-widest text-slate-500">Admin Panel</p>
-          </div>
-        </div>
+        <Link href="/">
+          <img
+            src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+            alt="GetReviews.Buzz"
+            style={{ width: "150px", height: "auto" }}
+          />
+        </Link>
       </div>
 
       {/* Nav */}
@@ -125,7 +126,7 @@ export default function AdminSidebar() {
                       <span className="text-sm w-5 text-center">{item.icon}</span>
                       <span className="flex-1 truncate">{item.label}</span>
                       {item.badge && (
-                        <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-violet-600 px-1.5 text-[10px] font-bold text-white">
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-violet-600 px-1.5 text-[10px] font-bold text-white">
                           {item.badge}
                         </span>
                       )}
@@ -142,7 +143,7 @@ export default function AdminSidebar() {
       {/* Logout + User */}
       <div className="px-3 py-4 border-t border-white/5 space-y-1">
         <div className="flex items-center gap-3 rounded-lg bg-white/5 px-3 py-3 mb-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-xs font-bold">{initials}</div>
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">{initials}</div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold text-white">{session?.user?.name ?? "Admin"}</p>
             <p className="truncate text-[10px] text-slate-500">{session?.user?.email ?? ""}</p>

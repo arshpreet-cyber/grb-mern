@@ -20,7 +20,7 @@ export default function AdminNavbar() {
         <div className="flex items-center gap-2">
           <button className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition text-sm">
             🔔
-            <span className="absolute -right-1 -top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white px-1">
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
               9+
             </span>
           </button>
@@ -30,7 +30,7 @@ export default function AdminNavbar() {
           </button>
 
           <div className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 ml-1">
-            <div className="h-7 w-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
               S
             </div>
             <div className="text-xs leading-4">

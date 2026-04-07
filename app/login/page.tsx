@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Suspense, useState } from "react";
@@ -76,7 +77,7 @@ function LoginForm() {
       </label>
 
       <button type="submit" disabled={isLoading}
-        className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed">
+        className="w-full rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
         {isLoading ? (
           <span className="flex items-center justify-center gap-2">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -92,15 +93,15 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950" />
-        <div className="absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-violet-600/30 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-indigo-600/30 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-violet-800/20 blur-3xl" />
+        <div className="absolute inset-0 bg-linear-to-br from-slate-950 via-violet-950 to-indigo-950" />
+        <div className="absolute -top-32 -left-32 h-125 w-125 rounded-full bg-violet-600/30 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 h-125 w-125 rounded-full bg-indigo-600/30 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-800/20 blur-3xl" />
         <div className="absolute inset-0 backdrop-blur-sm" />
         <div className="absolute top-16 left-10 hidden lg:block opacity-20 blur-sm">
           <div className="rounded-2xl bg-white/10 border border-white/10 p-5 w-52">
             <div className="flex gap-1 mb-2">{[1,2,3,4,5].map(i=><span key={i} className="text-amber-400 text-sm">★</span>)}</div>
-            <p className="text-white text-xs">"Amazing service! My Google rating jumped overnight."</p>
+            <p className="text-xs text-white">&quot;Amazing service! My Google rating jumped overnight.&quot;</p>
             <p className="text-violet-300 text-[10px] mt-2">— James R.</p>
           </div>
         </div>
@@ -115,9 +116,12 @@ export default function LoginPage() {
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white font-bold text-lg shadow-xl">G</div>
-              <span className="text-2xl font-extrabold text-white">GetReviews<span className="text-violet-400">.buzz</span></span>
+            <Link href="/" className="inline-flex items-center justify-center">
+              <img
+                src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+                alt="GetReviews.Buzz"
+                style={{ width: "200px", height: "auto" }}
+              />
             </Link>
             <p className="mt-3 text-sm text-slate-400">Sign in to your account</p>
           </div>
@@ -132,7 +136,7 @@ export default function LoginPage() {
               <div className="flex-1 h-px bg-white/10" />
             </div>
             <p className="text-center text-sm text-slate-400">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/register" className="font-semibold text-violet-400 hover:text-violet-300 transition">Create one free →</Link>
             </p>
           </div>

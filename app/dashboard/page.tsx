@@ -9,6 +9,16 @@ type Order = {
   method: string; status: string; paymentStatus: string;
 };
 
+type ApiOrder = {
+  id: string;
+  orderNumber: string;
+  amount: number;
+  date: string;
+  paymentMethod: string;
+  status: string;
+  paymentStatus: string;
+};
+
 const dummyOrders: Order[] = [
   { id: "#177150846", paymentId: "12345678", amount: "$100.00", date: "19-2-2026", method: "Credit Card", status: "Pending", paymentStatus: "Pending" },
   { id: "#177150847", paymentId: "87654321", amount: "$250.00", date: "18-2-2026", method: "PayPal", status: "Complete", paymentStatus: "Complete" },
@@ -26,7 +36,7 @@ export default function UserDashboard() {
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setOrders(data.map((o: any) => ({
+          setOrders(data.map((o: ApiOrder) => ({
             id: o.orderNumber, paymentId: o.id.substring(0, 8),
             amount: `$${o.amount.toFixed(2)}`, date: new Date(o.date).toLocaleDateString(),
             method: o.paymentMethod, status: o.status, paymentStatus: o.paymentStatus,
@@ -49,7 +59,7 @@ export default function UserDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-700 p-8 text-white shadow-lg">
+      <div className="rounded-2xl bg-linear-to-r from-violet-600 to-indigo-700 p-8 text-white shadow-lg">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-violet-200">Welcome back</p>
@@ -68,7 +78,7 @@ export default function UserDashboard() {
       {/* Stat Cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className={`rounded-2xl bg-gradient-to-br ${s.color} p-5 text-white shadow-md`}>
+          <div key={s.label} className={`rounded-2xl bg-linear-to-br ${s.color} p-5 text-white shadow-md`}>
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-semibold uppercase tracking-widest opacity-80">{s.label}</p>
               <span className="text-2xl">{s.icon}</span>
@@ -129,7 +139,7 @@ export default function UserDashboard() {
                       </select>
                     </td>
                     <td className="px-5 py-4">
-                      <button className="rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white hover:opacity-90 transition">
+                      <button className="rounded-lg bg-linear-to-r from-violet-600 to-indigo-600 px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition hover:opacity-90">
                         Pay Now
                       </button>
                     </td>
