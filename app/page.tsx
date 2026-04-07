@@ -1,5 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import HomeNavbar from "@/components/HomeNavbar";
+import HeroBanner from "@/components/HeroBanner";
 
 const services = [
   {
@@ -154,48 +156,11 @@ export default function HomePage() {
       <HomeNavbar />
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 text-white">
-        {/* Background blobs */}
-        <div className="pointer-events-none absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-violet-600/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-indigo-600/20 blur-3xl" />
-
-        <div className="relative mx-auto max-w-7xl px-5 py-28 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-violet-300 mb-8">
-            ⭐ Trusted by 12,000+ businesses worldwide
-          </div>
-
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
-            Buy Real Reviews,<br />
-            <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
-              Grow Your Business
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-7 max-w-2xl text-lg text-slate-300 leading-relaxed">
-            Boost your online reputation with authentic 5-star reviews on Google, Facebook, Trustpilot, Amazon & more. Fast delivery. Real accounts. Permanent results.
-          </p>
-
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="#pricing" className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-indigo-600 px-8 py-4 text-base font-bold text-white shadow-xl hover:opacity-90 transition">
-              View Packages →
-            </Link>
-            <Link href="#how-it-works" className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-8 py-4 text-base font-semibold text-white hover:bg-white/10 transition">
-              How It Works
-            </Link>
-          </div>
-
-          {/* Trust badges */}
-          <div className="mt-14 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400">
-            {["✅ 100% Real Accounts", "🔒 Secure Payments", "♻️ Refill Guarantee", "⚡ Fast Delivery"].map((b) => (
-              <span key={b} className="flex items-center gap-1.5">{b}</span>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HeroBanner />
 
       {/* ── Stats Bar ── */}
-      <section className="bg-gradient-to-r from-violet-600 to-indigo-700 text-white">
-        <div className="mx-auto max-w-7xl px-5 py-10 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+      <section className="bg-linear-to-r from-violet-600 to-indigo-700 text-white">
+        <div className="mx-auto grid max-w-350 grid-cols-2 gap-8 px-5 py-10 text-center lg:grid-cols-4">
           {stats.map((s) => (
             <div key={s.label}>
               <p className="text-3xl font-extrabold">{s.value}</p>
@@ -207,7 +172,7 @@ export default function HomePage() {
 
       {/* ── Services ── */}
       <section id="services" className="py-24 bg-slate-50">
-        <div className="mx-auto max-w-7xl px-5">
+        <div className="mx-auto max-w-350 px-5">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Our Services</p>
             <h2 className="text-4xl font-extrabold text-slate-900">Reviews for Every Platform</h2>
@@ -244,7 +209,7 @@ export default function HomePage() {
 
       {/* ── Pricing Packages ── */}
       <section id="pricing" className="py-24 bg-white">
-        <div className="mx-auto max-w-7xl px-5">
+        <div className="mx-auto max-w-350 px-5">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Pricing</p>
             <h2 className="text-4xl font-extrabold text-slate-900">Simple, Transparent Pricing</h2>
@@ -259,7 +224,7 @@ export default function HomePage() {
                 key={pkg.name}
                 className={`relative rounded-3xl p-8 flex flex-col ${
                   pkg.highlight
-                    ? "bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-2xl scale-105"
+                    ? "bg-linear-to-br from-violet-600 to-indigo-700 text-white shadow-2xl scale-105"
                     : "bg-white border border-slate-200 text-slate-900 shadow-sm"
                 }`}
               >
@@ -293,7 +258,7 @@ export default function HomePage() {
                   className={`mt-8 block rounded-2xl py-3.5 text-center text-sm font-bold transition ${
                     pkg.highlight
                       ? "bg-white text-violet-700 hover:bg-violet-50"
-                      : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90"
+                      : "bg-linear-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90"
                   }`}
                 >
                   {pkg.cta} →
@@ -306,12 +271,12 @@ export default function HomePage() {
 
       {/* ── How It Works ── */}
       <section id="how-it-works" className="py-24 bg-slate-950 text-white">
-        <div className="mx-auto max-w-7xl px-5">
+        <div className="mx-auto max-w-350 px-5">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Process</p>
             <h2 className="text-4xl font-extrabold">How It Works</h2>
             <p className="mt-4 text-slate-400 max-w-xl mx-auto">
-              Getting more reviews is simple. Just 4 easy steps and you're done.
+              Getting more reviews is simple. Just 4 easy steps and you&apos;re done.
             </p>
           </div>
 
@@ -319,10 +284,10 @@ export default function HomePage() {
             {steps.map((s, i) => (
               <div key={s.step} className="relative">
                 {i < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-violet-600/50 to-transparent z-0" />
+                  <div className="absolute top-8 left-full z-0 hidden h-px w-full bg-linear-to-r from-violet-600/50 to-transparent lg:block" />
                 )}
                 <div className="relative z-10 rounded-2xl bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-extrabold text-lg mb-5 shadow-lg">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-indigo-700 text-lg font-extrabold text-white shadow-lg">
                     {s.step}
                   </div>
                   <h3 className="text-base font-bold text-white">{s.title}</h3>
@@ -336,7 +301,7 @@ export default function HomePage() {
 
       {/* ── Testimonials ── */}
       <section className="py-24 bg-slate-50">
-        <div className="mx-auto max-w-7xl px-5">
+        <div className="mx-auto max-w-350 px-5">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Testimonials</p>
             <h2 className="text-4xl font-extrabold text-slate-900">What Our Clients Say</h2>
@@ -350,9 +315,9 @@ export default function HomePage() {
                     <span key={i} className="text-amber-400 text-lg">★</span>
                   ))}
                 </div>
-                <p className="text-slate-700 text-sm leading-relaxed">"{t.text}"</p>
+                <p className="text-sm leading-relaxed text-slate-700">&quot;{t.text}&quot;</p>
                 <div className="mt-6 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-xs font-bold">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
                     {t.avatar}
                   </div>
                   <div>
@@ -367,15 +332,15 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="py-20 bg-gradient-to-r from-violet-600 to-indigo-700 text-white text-center">
-        <div className="mx-auto max-w-3xl px-5">
+      <section className="bg-linear-to-r from-violet-600 to-indigo-700 py-20 text-center text-white">
+        <div className="mx-auto max-w-350 px-5">
           <h2 className="text-4xl font-extrabold">Ready to Boost Your Reputation?</h2>
           <p className="mt-4 text-violet-200 text-lg">
             Join 12,000+ businesses that trust us to grow their online presence.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/register" className="rounded-2xl bg-white px-8 py-4 text-base font-bold text-violet-700 shadow-xl hover:bg-violet-50 transition">
-              Start Today — It's Easy →
+              Start Today — It&apos;s Easy →
             </Link>
             <Link href="#pricing" className="rounded-2xl border border-white/30 px-8 py-4 text-base font-semibold text-white hover:bg-white/10 transition">
               View Pricing
@@ -386,7 +351,7 @@ export default function HomePage() {
 
       {/* ── FAQ ── */}
       <section id="faq" className="py-24 bg-white">
-        <div className="mx-auto max-w-3xl px-5">
+        <div className="mx-auto max-w-350 px-5">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">FAQ</p>
             <h2 className="text-4xl font-extrabold text-slate-900">Frequently Asked Questions</h2>
@@ -408,12 +373,17 @@ export default function HomePage() {
 
       {/* ── Footer ── */}
       <footer className="bg-slate-950 text-slate-400 py-14">
-        <div className="mx-auto max-w-7xl px-5">
+        <div className="mx-auto max-w-350 px-5">
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 mb-12">
             <div>
-              <div className="flex items-center gap-2.5 mb-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-bold text-xs">G</div>
-                <span className="text-base font-bold text-white">GetReviews<span className="text-violet-400">.buzz</span></span>
+              <div className="mb-4">
+                <img
+                  src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+                  alt="GetReviews.Buzz"
+                  width={160}
+                  height={40}
+                  style={{ width: "160px", height: "auto" }}
+                />
               </div>
               <p className="text-sm leading-relaxed">The #1 platform for buying real, authentic reviews to grow your business reputation online.</p>
             </div>
@@ -459,3 +429,4 @@ export default function HomePage() {
     </div>
   );
 }
+

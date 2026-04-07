@@ -46,8 +46,8 @@ export default function AdminDashboard() {
     totalOrders: 16382, pendingOrders: 34, completeOrders: 11941,
     totalUsers: 6070, activeUsers: 229,
   });
-  const [recentOrders, setRecentOrders] = useState<any[]>([]);
-  const [recentTickets, setRecentTickets] = useState<any[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Record<string, unknown>[]>([]);
+  const [recentTickets, setRecentTickets] = useState<Record<string, unknown>[]>([]);
   const [revenue, setRevenue] = useState({ today: 350, monthly: 3895, yearly: 55357, allTime: 1597473 });
   const [loading, setLoading] = useState(true);
 
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-800">Admin Dashboard</h1>
-          <p className="text-sm text-slate-500">Welcome back! Here's what's happening today.</p>
+          <p className="text-sm text-slate-500">Welcome back! Here&apos;s what&apos;s happening today.</p>
         </div>
         <div className="text-xs text-slate-400 bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm">
           {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
@@ -87,10 +87,10 @@ export default function AdminDashboard() {
 
       {/* Top KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total Revenue" value={`$${(revenue.allTime / 1000).toFixed(0)}k`} sub="All time earnings" gradient="bg-gradient-to-br from-violet-600 to-indigo-700" />
-        <StatCard label="Monthly Revenue" value={`$${revenue.monthly.toLocaleString()}`} sub="This month" gradient="bg-gradient-to-br from-sky-500 to-cyan-600" />
-        <StatCard label="Total Users" value={stats.totalUsers.toLocaleString()} sub={`${stats.activeUsers} active now`} gradient="bg-gradient-to-br from-emerald-500 to-teal-600" />
-        <StatCard label="Total Orders" value={stats.totalOrders.toLocaleString()} sub={`${stats.pendingOrders} pending`} gradient="bg-gradient-to-br from-amber-500 to-orange-600" />
+        <StatCard label="Total Revenue" value={`$${(revenue.allTime / 1000).toFixed(0)}k`} sub="All time earnings" gradient="bg-linear-to-br from-violet-600 to-indigo-700" />
+        <StatCard label="Monthly Revenue" value={`$${revenue.monthly.toLocaleString()}`} sub="This month" gradient="bg-linear-to-br from-sky-500 to-cyan-600" />
+        <StatCard label="Total Users" value={stats.totalUsers.toLocaleString()} sub={`${stats.activeUsers} active now`} gradient="bg-linear-to-br from-emerald-500 to-teal-600" />
+        <StatCard label="Total Orders" value={stats.totalOrders.toLocaleString()} sub={`${stats.pendingOrders} pending`} gradient="bg-linear-to-br from-amber-500 to-orange-600" />
       </div>
 
       {/* Ticket Stats */}
@@ -229,15 +229,18 @@ export default function AdminDashboard() {
           </div>
           <div className="space-y-3">
             {recentTickets.length > 0 ? (
-              recentTickets.map((ticket: any) => (
-                <div key={ticket.id} className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+              recentTickets.map((ticket) => {
+                const t = ticket as { id: string; ticketId: string; title: string; createdAt: string };
+                return (
+                <div key={t.id} className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">{ticket.ticketId}</p>
-                    <p className="text-xs text-slate-500">{ticket.title}</p>
+                    <p className="text-sm font-semibold text-slate-800">{t.ticketId}</p>
+                    <p className="text-xs text-slate-500">{t.title}</p>
                   </div>
-                  <span className="text-[10px] text-slate-400">{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                  <span className="text-[10px] text-slate-400">{new Date(t.createdAt).toLocaleDateString()}</span>
                 </div>
-              ))
+                );
+              })
             ) : (
               <div className="rounded-xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-400">No tickets yet</div>
             )}
@@ -255,15 +258,18 @@ export default function AdminDashboard() {
           </div>
           <div className="space-y-3">
             {recentOrders.length > 0 ? (
-              recentOrders.map((order: any) => (
-                <div key={order.id} className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+              recentOrders.map((order) => {
+                const o = order as { id: string; orderNumber: string; amount: number; createdAt: string };
+                return (
+                <div key={o.id} className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">{order.orderNumber}</p>
-                    <p className="text-xs text-slate-500">${order.amount.toFixed(2)}</p>
+                    <p className="text-sm font-semibold text-slate-800">{o.orderNumber}</p>
+                    <p className="text-xs text-slate-500">${o.amount.toFixed(2)}</p>
                   </div>
-                  <span className="text-[10px] text-slate-400">{new Date(order.createdAt).toLocaleDateString()}</span>
+                  <span className="text-[10px] text-slate-400">{new Date(o.createdAt).toLocaleDateString()}</span>
                 </div>
-              ))
+                );
+              })
             ) : (
               <div className="rounded-xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-400">No orders yet</div>
             )}

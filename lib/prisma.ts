@@ -2,7 +2,18 @@ import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 
-const connectionString = process.env.DATABASE_URL!
+const databaseUrl = process.env.DATABASE_URL
+
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL environment variable is not set')
+}
+
+// Validate the driver protocol before passing the value to the PG pool.
+if (!/^postgres(?:ql)?:\/\//i.test(databaseUrl)) {
+  throw new Error('DATABASE_URL must be a valid PostgreSQL connection string')
+}
+
+const connectionString = databaseUrl
 
 const prismaClientSingleton = () => {
   const pool = new Pool({ connectionString })

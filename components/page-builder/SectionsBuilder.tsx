@@ -50,7 +50,7 @@ export default function SectionsBuilder({
     <div className="space-y-3">
       {sections.length === 0 && (
         <div className="rounded-xl border-2 border-dashed border-slate-200 py-8 text-center text-sm text-slate-400">
-          No sections yet. Click "Add Section" to get started.
+          No sections yet. Click &quot;Add Section&quot; to get started.
         </div>
       )}
 

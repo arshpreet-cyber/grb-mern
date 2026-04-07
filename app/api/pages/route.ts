@@ -11,7 +11,7 @@ export async function GET() {
       },
     });
     return NextResponse.json(pages);
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch pages" }, { status: 500 });
   }
 }
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       data: { title, slug, ...rest },
     });
     return NextResponse.json(page, { status: 201 });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Failed to create page" }, { status: 500 });
   }
 }

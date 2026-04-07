@@ -41,7 +41,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
         <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100 shadow-sm">
           <div className="mx-auto max-w-7xl px-5 py-4 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-bold text-sm shadow">G</div>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-violet-600 to-indigo-700 text-sm font-bold text-white shadow">G</div>
               <span className="text-lg font-bold text-slate-900">GetReviews<span className="text-violet-600">.buzz</span></span>
             </Link>
             <Link href="/" className="text-sm text-slate-500 hover:text-violet-600 transition">← Back to Home</Link>

@@ -152,7 +152,7 @@ export default function PageForm({
 
       {/* Page Sections */}
       <SectionCard title="Page Sections">
-        <SectionsBuilder sections={data.sections} onChange={set("sections") as any} />
+        <SectionsBuilder sections={data.sections} onChange={set("sections") as (s: Section[]) => void} />
       </SectionCard>
 
       {/* SEO */}
@@ -185,7 +185,7 @@ export default function PageForm({
         </div>
 
         <FormField label="Include in Sitemap?">
-          <Toggle checked={data.inSitemap} onChange={set("inSitemap") as any} label={data.inSitemap ? "Yes" : "No"} />
+          <Toggle checked={data.inSitemap} onChange={set("inSitemap") as (v: boolean) => void} label={data.inSitemap ? "Yes" : "No"} />
         </FormField>
 
         <FormField label="Schema Code" hint="JSON-LD structured data">
@@ -209,7 +209,7 @@ export default function PageForm({
       {/* Submit */}
       <div className="flex items-center gap-3 pt-2">
         <button type="submit" disabled={saving}
-          className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-8 py-3 text-sm font-bold text-white shadow hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed">
+          className="rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 px-8 py-3 text-sm font-bold text-white shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
           {saving ? (
             <span className="flex items-center gap-2">
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />

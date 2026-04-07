@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -86,10 +87,10 @@ export default function RegisterPage() {
 
       {/* ── Blurred Homepage Background ── */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950" />
-        <div className="absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-violet-600/30 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-indigo-600/30 blur-3xl" />
-        <div className="absolute top-1/2 left-1/4 h-[400px] w-[400px] rounded-full bg-cyan-600/10 blur-3xl" />
+        <div className="absolute inset-0 bg-linear-to-br from-slate-950 via-violet-950 to-indigo-950" />
+        <div className="absolute -top-32 -left-32 h-125 w-125 rounded-full bg-violet-600/30 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 h-125 w-125 rounded-full bg-indigo-600/30 blur-3xl" />
+        <div className="absolute top-1/2 left-1/4 h-100 w-100 rounded-full bg-cyan-600/10 blur-3xl" />
 
         {/* Floating decorative elements */}
         <div className="absolute top-12 right-12 hidden lg:block opacity-20 blur-sm">
@@ -101,7 +102,7 @@ export default function RegisterPage() {
         <div className="absolute bottom-20 left-10 hidden lg:block opacity-20 blur-sm">
           <div className="rounded-2xl bg-white/10 border border-white/10 p-5 w-52">
             <div className="flex gap-1 mb-2">{[1,2,3,4,5].map(i=><span key={i} className="text-amber-400 text-sm">★</span>)}</div>
-            <p className="text-white text-xs">"Best investment for my business!"</p>
+            <p className="text-xs text-white">&quot;Best investment for my business!&quot;</p>
             <p className="text-violet-300 text-[10px] mt-2">— Sarah M.</p>
           </div>
         </div>
@@ -113,15 +114,13 @@ export default function RegisterPage() {
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
 
-          {/* Logo */}
           <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2.5 justify-center">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white font-bold text-lg shadow-xl">
-                G
-              </div>
-              <span className="text-2xl font-extrabold text-white">
-                GetReviews<span className="text-violet-400">.buzz</span>
-              </span>
+            <Link href="/" className="inline-flex items-center justify-center">
+              <img
+                src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+                alt="GetReviews.Buzz"
+                style={{ width: "200px", height: "auto" }}
+              />
             </Link>
             <p className="mt-3 text-sm text-slate-400">Create your free account today</p>
           </div>
@@ -284,7 +283,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">

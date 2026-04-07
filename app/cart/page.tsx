@@ -29,7 +29,7 @@ export default function CartPage() {
             <h2 className="text-xl font-bold text-slate-800">Your cart is empty</h2>
             <p className="text-slate-500 mt-2 mb-6">Browse our review packages and add items to your cart.</p>
             <Link href="/buy-reviews"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow hover:opacity-90 transition">
+              className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow transition hover:opacity-90">
               Browse Packages →
             </Link>
           </div>
@@ -48,7 +48,7 @@ export default function CartPage() {
               {items.map((item) => (
                 <div key={item.id} className="rounded-2xl bg-white border border-slate-100 shadow-sm p-5">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 text-3xl">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 to-indigo-100 text-3xl">
                       {item.icon}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -113,7 +113,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <button className="mt-5 w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow hover:opacity-90 transition">
+                <button className="mt-5 w-full rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow transition hover:opacity-90">
                   Proceed to Checkout →
                 </button>
 

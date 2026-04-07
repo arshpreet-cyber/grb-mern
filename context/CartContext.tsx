@@ -17,6 +17,10 @@ type CartCtx = {
   removeItem: (id: string) => void;
   updateQty: (id: string, qty: number) => void;
   clearCart: () => void;
+  isOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
+  toggleCart: () => void;
   total: number;
   count: number;
 };
@@ -24,14 +28,16 @@ type CartCtx = {
 const CartContext = createContext<CartCtx | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-
-  useEffect(() => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [items, setItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
       const saved = localStorage.getItem("grb_cart");
-      if (saved) setItems(JSON.parse(saved));
-    } catch {}
-  }, []);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
     localStorage.setItem("grb_cart", JSON.stringify(items));
@@ -53,12 +59,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const clearCart = () => setItems([]);
+  const openCart = () => setIsOpen(true);
+  const closeCart = () => setIsOpen(false);
+  const toggleCart = () => setIsOpen((prev) => !prev);
 
   const total = items.reduce((sum, i) => sum + i.pricePerUnit * i.qty, 0);
   const count = items.reduce((sum, i) => sum + i.qty, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQty, clearCart, total, count }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQty, clearCart, isOpen, openCart, closeCart, toggleCart, total, count }}>
       {children}
     </CartContext.Provider>
   );

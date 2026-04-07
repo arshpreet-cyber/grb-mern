@@ -70,7 +70,7 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
   );
 }
 
-export function SectionCard({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+export function SectionCard({ title, children }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   return (
     <div className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">

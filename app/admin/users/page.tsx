@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function UsersPage() {
-  const [statCards, setStatCards] = useState([
+  const statCards = [
     { label: "View Total Order", value: 35 },
     { label: "View Active Subscriptions", value: 25 },
     { label: "View Pending Orders", value: 15 },
     { label: "View Open Ticket", value: 5 },
-  ]);
+  ];
 
   type Order = {
     id: string;
@@ -32,7 +32,7 @@ export default function UsersPage() {
         const data = await response.json();
         
         // Format orders for display
-        const formattedOrders = data.map((order: any) => ({
+        const formattedOrders = data.map((order: { orderNumber: string; id: string; amount: number; date: string; paymentMethod: string; status: string; paymentStatus: string }) => ({
           id: order.orderNumber,
           paymentId: order.id.substring(0, 8),
           amount: `$${order.amount.toFixed(2)}`,
@@ -98,7 +98,7 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[36px] border border-slate-200 bg-gradient-to-r from-emerald-100 via-white to-violet-100 p-8 shadow-sm">
+      <div className="rounded-[36px] border border-slate-200 bg-linear-to-r from-emerald-100 via-white to-violet-100 p-8 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Hello! Sourabh.D</p>
