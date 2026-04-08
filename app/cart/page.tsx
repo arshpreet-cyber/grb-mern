@@ -68,7 +68,7 @@ export default function CartPage() {
                         <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
                           <button onClick={() => updateQty(item.id, item.qty - 1)}
                             className="px-3 py-2 text-slate-500 hover:bg-slate-100 transition font-bold">−</button>
-                          <span className="px-3 py-2 text-sm font-bold text-slate-800 min-w-[3rem] text-center">{item.qty}</span>
+                          <span className="px-3 py-2 text-sm font-bold text-slate-800 min-w-3rem text-center">{item.qty}</span>
                           <button onClick={() => updateQty(item.id, item.qty + 1)}
                             className="px-3 py-2 text-slate-500 hover:bg-slate-100 transition font-bold">+</button>
                         </div>

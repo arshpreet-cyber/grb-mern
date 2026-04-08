@@ -2,21 +2,24 @@
 
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import { useMounted } from "@/components/useMounted";
 
 export default function SideCart() {
   const { items, removeItem, updateQty, clearCart, total, count, isOpen, closeCart, toggleCart } = useCart();
   const router = useRouter();
+  const isMounted = useMounted();
+  const visibleCount = isMounted ? count : 0;
 
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-[1200] bg-black/30 backdrop-blur-sm" onClick={closeCart} />
+        <div className="fixed inset-0 z-1200 bg-black/30 backdrop-blur-sm" onClick={closeCart} />
       )}
 
       <button
         onClick={toggleCart}
-        aria-label={`Open cart with ${count} ${count === 1 ? "item" : "items"}`}
-        className="fixed right-4 top-1/2 z-[1210] flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-[22px] bg-[#111111] text-white shadow-[0_16px_40px_rgba(0,0,0,0.28)] transition-transform hover:scale-105"
+        aria-label={`Open cart with ${visibleCount} ${visibleCount === 1 ? "item" : "items"}`}
+        className="fixed right-4 top-1/2 z-1210 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-[22px] bg-[#111111] text-white shadow-[0_16px_40px_rgba(0,0,0,0.28)] transition-transform hover:scale-105"
       >
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M3 4h2l2.1 9.2a1 1 0 0 0 1 .8h7.7a1 1 0 0 0 1-.8L19 7H7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -24,18 +27,18 @@ export default function SideCart() {
           <circle cx="17" cy="19" r="1.6" fill="currentColor" />
         </svg>
         <span className="absolute right-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-white bg-[#ff5a7a] px-1 text-[11px] font-extrabold leading-none text-white">
-          {count}
+          {visibleCount}
         </span>
       </button>
 
-      <div className={`fixed top-0 right-0 z-[1210] flex h-full w-80 flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`fixed top-0 right-0 z-1210 flex h-full w-80 flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex shrink-0 items-center justify-between bg-linear-to-r from-violet-600 to-indigo-700 px-5 py-4">
           <div className="flex items-center gap-2">
             <span className="text-xl">Cart</span>
             <h2 className="text-sm font-bold text-white">Your Cart</h2>
-            {count > 0 && (
+            {visibleCount > 0 && (
               <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[10px] font-extrabold text-violet-700">
-                {count}
+                {visibleCount}
               </span>
             )}
           </div>
@@ -86,7 +89,7 @@ export default function SideCart() {
                 <div className="mt-2 flex items-center justify-between">
                   <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white">
                     <button onClick={() => updateQty(item.id, item.qty - 1)} className="px-2.5 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-100">-</button>
-                    <span className="min-w-[2rem] px-2 text-center text-xs font-bold text-slate-800">{item.qty}</span>
+                    <span className="min-w-2rem px-2 text-center text-xs font-bold text-slate-800">{item.qty}</span>
                     <button onClick={() => updateQty(item.id, item.qty + 1)} className="px-2.5 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-100">+</button>
                   </div>
                   <div className="text-right">
@@ -102,7 +105,7 @@ export default function SideCart() {
         {items.length > 0 && (
           <div className="shrink-0 space-y-2 border-t border-slate-100 bg-white px-4 py-4">
             <div className="mb-1 flex items-center justify-between">
-              <span className="text-xs text-slate-500">Subtotal ({count} {count === 1 ? "item" : "items"})</span>
+              <span className="text-xs text-slate-500">Subtotal ({visibleCount} {visibleCount === 1 ? "item" : "items"})</span>
               <span className="text-base font-extrabold text-slate-900">${total.toFixed(2)}</span>
             </div>
             <button

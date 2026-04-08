@@ -112,7 +112,7 @@ export default function HomeNavbar() {
               {/* Buy Reviews with mega dropdown */}
               <div className="group static">
                 <Link
-                  href="/services/buy-reviews-online/"
+                  href="/buy-reviews"
                   className={`${navLinkClass(buyReviewsActive)} ${activeUnderline(buyReviewsActive)} flex items-center gap-1`}
                 >
                   Buy Reviews
@@ -156,7 +156,7 @@ export default function HomeNavbar() {
                     {/* Bottom CTA — matches .integration_sec */}
                     <div className="mt-5 pt-4 border-t border-[#ffcc00]">
                       <Link
-                        href="/services/buy-reviews-online/"
+                        href="/buy-reviews"
                         className="inline-flex items-center gap-2 rounded-lg text-sm font-semibold text-black transition-colors hover:text-[#ffcc00]"
                       >
                         Discover 100+ other Platforms
