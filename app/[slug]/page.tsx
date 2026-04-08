@@ -5,11 +5,20 @@ import Link from "next/link";
 
 type Section = { id: string; type: string; heading: string; content: string };
 
+async function getPageBySlug(slug: string) {
+  try {
+    return await prisma.page.findUnique({ where: { slug } });
+  } catch (error) {
+    console.error(`Failed to load page for slug "${slug}"`, error);
+    return null;
+  }
+}
+
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await params;
-  const page = await prisma.page.findUnique({ where: { slug } });
+  const page = await getPageBySlug(slug);
   if (!page) return { title: "Not Found" };
   return {
     title: page.metaTitle || page.title,
@@ -23,7 +32,7 @@ export async function generateMetadata(
 
 export default async function SlugPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const page = await prisma.page.findUnique({ where: { slug } });
+  const page = await getPageBySlug(slug);
 
   if (!page) notFound();
 
