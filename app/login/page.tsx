@@ -21,7 +21,11 @@ function LoginForm() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    const res = await signIn("credentials", { email, password, redirect: false });
+    const res = await signIn("credentials", {
+      email: email.trim().toLowerCase(),
+      password,
+      redirect: false,
+    });
     if (res?.error) {
       setError("Invalid email or password. Please try again.");
       setIsLoading(false);
