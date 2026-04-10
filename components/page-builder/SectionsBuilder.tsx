@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Section } from "@/scripts/types";
 import { sectionMap } from "@/scripts/sectionMap";
 
-const SECTION_TYPES = ["SectionWithRightImage", "Image + Text"];
+const SECTION_TYPES = ["SectionWithRightImage", "SectionWithLeftImage"];
 
 function genId() {
   return Math.random().toString(36).slice(2, 9);
@@ -17,17 +17,17 @@ export default function SectionsBuilder() {
   const [adding, setAdding] = useState(false);
 
   // ADD SECTION
-  const add = () => {
-    setSections([
-      ...sections,
-      {
-        id: genId(),
-        type: newType,
-        data: {},
-      },
-    ]);
-    setAdding(false);
-  };
+ const add = () => {
+  setSections((prev) => [
+    ...prev,
+    {
+      id: genId(),
+      type: newType,
+      data: {},
+    },
+  ]);
+  setAdding(false);
+};
 
   // UPDATE SECTION DATA
   const update = (id: string, field: string, value: any) => {
