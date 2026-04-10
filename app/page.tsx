@@ -2,6 +2,7 @@
 import Link from "next/link";
 import HomeNavbar from "@/components/HomeNavbar";
 import HeroBanner from "@/components/HeroBanner";
+import SectionWithRightImage from "@/components/Section-with-right-image";
 
 const services = [
   {
@@ -157,6 +158,8 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <HeroBanner />
+
+      <SectionWithRightImage/>
 
       {/* ── Stats Bar ── */}
       <section className="bg-linear-to-r from-violet-600 to-indigo-700 text-white">
