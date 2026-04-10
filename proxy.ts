@@ -13,8 +13,9 @@ export async function proxy(req: NextRequest) {
   try {
     // Try secure cookie first (Vercel/production), then fallback to non-secure (localhost)
     const secret = process.env.NEXTAUTH_SECRET;
+    const isProduction = process.env.NEXTAUTH_URL?.startsWith("https");
     const token =
-      (await getToken({ req, secret, secureCookie: true })) ??
+      (await getToken({ req, secret, secureCookie: isProduction })) ??
       (await getToken({ req, secret, secureCookie: false }));
 
     if (token && isAuthPage) {
