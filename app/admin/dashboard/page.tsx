@@ -194,10 +194,11 @@ export default function AdminDashboard() {
     yearly: 0,
     allTime: 0,
   });
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    fetch("/api/dashboard/analytics")
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    fetch("/api/dashboard/analytics", { signal: controller.signal })
       .then((r) => {
         if (!r.ok) throw new Error("Failed to fetch");
         return r.json();
@@ -208,22 +209,15 @@ export default function AdminDashboard() {
         if (data.recentTickets) setRecentTickets(data.recentTickets);
         if (data.revenue) setRevenue(data.revenue);
       })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+      .catch(() => {
+        // API unavailable — dashboard renders with default values
+      });
 
-  if (loading) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-violet-100 border-t-violet-600" />
-          <p className="text-sm text-slate-400 animate-pulse">
-            Loading dashboard...
-          </p>
-        </div>
-      </div>
-    );
-  }
+    return () => {
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
