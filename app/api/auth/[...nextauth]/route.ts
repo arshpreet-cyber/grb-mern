@@ -32,7 +32,10 @@ const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
-      credentials: {},
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(rawCredentials) {
         try {
           const credentials = rawCredentials as AuthCredentials | undefined;
