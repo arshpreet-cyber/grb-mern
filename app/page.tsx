@@ -3,7 +3,7 @@ import Link from "next/link";
 import HomeNavbar from "@/components/HomeNavbar";
 import HeroBanner from "@/components/HeroBanner";
 import SectionWithRightImage from "@/components/Section-with-right-image";
-
+import SectionWithLeftImage from "@/components/Section-with-left-image";
 const services = [
   {
     icon: "🌟",
@@ -160,6 +160,8 @@ export default function HomePage() {
       <HeroBanner />
 
       <SectionWithRightImage/>
+
+      <SectionWithLeftImage/>
 
       {/* ── Stats Bar ── */}
       <section className="bg-linear-to-r from-violet-600 to-indigo-700 text-white">
