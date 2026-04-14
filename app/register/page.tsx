@@ -51,7 +51,7 @@ function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
-          username: form.username,
+          email: form.username,
           password: form.password,
           phone: form.phone ? `${countryCode}${form.phone}` : null,
         }),
