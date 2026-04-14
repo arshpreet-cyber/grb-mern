@@ -1,18 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { SECTION_TEMPLATES } from "./SectionTemplates";
+import HtmlEditor from "./HtmlEditor";
 
 export type Section = {
   id: string;
   type: string;
+  label: string;
   heading: string;
   content: string;
 };
-
-const SECTION_TYPES = [
-  "Hero", "Text Block", "Image + Text", "Features Grid",
-  "Testimonials", "FAQ", "CTA Banner", "Custom HTML",
-];
 
 function genId() {
   return Math.random().toString(36).slice(2, 9);
@@ -24,12 +22,20 @@ export default function SectionsBuilder({
   sections: Section[];
   onChange: (s: Section[]) => void;
 }) {
-  const [adding, setAdding] = useState(false);
-  const [newType, setNewType] = useState(SECTION_TYPES[0]);
+  const [showPicker, setShowPicker] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const add = () => {
-    onChange([...sections, { id: genId(), type: newType, heading: "", content: "" }]);
-    setAdding(false);
+  const addSection = (templateType: string) => {
+    const tpl = SECTION_TEMPLATES.find((t) => t.type === templateType);
+    if (!tpl) return;
+    onChange([...sections, {
+      id: genId(),
+      type: tpl.type,
+      label: tpl.label,
+      heading: "",
+      content: tpl.defaultContent,
+    }]);
+    setShowPicker(false);
   };
 
   const update = (id: string, field: keyof Section, value: string) => {
@@ -46,75 +52,114 @@ export default function SectionsBuilder({
     onChange(arr);
   };
 
+  const editingSection = sections.find((s) => s.id === editingId);
+
   return (
     <div className="space-y-3">
+      {/* Empty state */}
       {sections.length === 0 && (
-        <div className="rounded-xl border-2 border-dashed border-slate-200 py-8 text-center text-sm text-slate-400">
-          No sections yet. Click &quot;Add Section&quot; to get started.
+        <div className="rounded-xl border-2 border-dashed border-slate-200 py-10 text-center">
+          <div className="text-4xl mb-3">🧩</div>
+          <p className="text-sm font-semibold text-slate-600">No sections yet</p>
+          <p className="text-xs text-slate-400 mt-1">Click "Add Section" to choose a component</p>
         </div>
       )}
 
-      {sections.map((section, i) => (
-        <div key={section.id} className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100">
-            <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 text-violet-600 text-xs font-bold">{i + 1}</span>
-              <span className="text-sm font-semibold text-slate-700">{section.type}</span>
+      {/* Section Cards */}
+      {sections.map((section, i) => {
+        const tpl = SECTION_TEMPLATES.find((t) => t.type === section.type);
+        return (
+          <div key={section.id} className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+            {/* Card Header */}
+            <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 text-violet-600 text-xs font-bold">{i + 1}</span>
+                <span className="text-lg">{tpl?.icon}</span>
+                <div>
+                  <p className="text-sm font-semibold text-slate-700">{section.label}</p>
+                  <p className="text-[10px] text-slate-400">{tpl?.description}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <button onClick={() => move(i, -1)} disabled={i === 0}
+                  className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-30 transition text-xs">↑</button>
+                <button onClick={() => move(i, 1)} disabled={i === sections.length - 1}
+                  className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-30 transition text-xs">↓</button>
+                <button onClick={() => setEditingId(section.id)}
+                  className="h-7 px-2.5 rounded-lg flex items-center gap-1 text-violet-600 hover:bg-violet-50 transition text-xs font-semibold">
+                  ✏ Edit HTML
+                </button>
+                <button onClick={() => remove(section.id)}
+                  className="h-7 w-7 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition text-xs">✕</button>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <button onClick={() => move(i, -1)} disabled={i === 0}
-                className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 disabled:opacity-30 transition text-xs">↑</button>
-              <button onClick={() => move(i, 1)} disabled={i === sections.length - 1}
-                className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 disabled:opacity-30 transition text-xs">↓</button>
-              <button onClick={() => remove(section.id)}
-                className="h-7 w-7 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition text-xs">✕</button>
-            </div>
-          </div>
-          <div className="p-4 space-y-3">
-            <input
-              value={section.heading}
-              onChange={(e) => update(section.id, "heading", e.target.value)}
-              placeholder="Section heading (optional)"
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition"
-            />
-            <textarea
-              value={section.content}
-              onChange={(e) => update(section.id, "content", e.target.value)}
-              placeholder="Section content / HTML / description..."
-              rows={3}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition resize-none"
-            />
-          </div>
-        </div>
-      ))}
 
-      {adding ? (
-        <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 space-y-3">
-          <p className="text-xs font-semibold text-violet-700 uppercase tracking-wider">Choose Section Type</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {SECTION_TYPES.map((t) => (
-              <button key={t} onClick={() => setNewType(t)}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold border transition ${newType === t ? "bg-violet-600 text-white border-violet-600" : "bg-white text-slate-600 border-slate-200 hover:border-violet-300"}`}>
-                {t}
-              </button>
-            ))}
+            {/* Section heading input */}
+            <div className="px-4 py-3">
+              <input
+                value={section.heading}
+                onChange={(e) => update(section.id, "heading", e.target.value)}
+                placeholder="Section label / heading (optional)"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition"
+              />
+            </div>
+
+            {/* Mini HTML preview */}
+            <div className="px-4 pb-3">
+              <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 cursor-pointer hover:border-violet-300 transition"
+                onClick={() => setEditingId(section.id)}>
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">HTML Preview — click to edit</p>
+                <pre className="text-[11px] text-slate-500 font-mono overflow-hidden whitespace-pre-wrap line-clamp-3">
+                  {section.content.slice(0, 200)}{section.content.length > 200 ? "..." : ""}
+                </pre>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <button onClick={add}
-              className="rounded-lg bg-violet-600 px-4 py-2 text-xs font-bold text-white hover:bg-violet-700 transition">
-              Add {newType}
-            </button>
-            <button onClick={() => setAdding(false)}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
-              Cancel
-            </button>
+        );
+      })}
+
+      {/* Add Section Button */}
+      <button onClick={() => setShowPicker(true)}
+        className="w-full rounded-xl border-2 border-dashed border-violet-200 py-3 text-sm font-semibold text-violet-600 hover:border-violet-400 hover:bg-violet-50 transition flex items-center justify-center gap-2">
+        <span className="text-lg">+</span> Add Section
+      </button>
+
+      {/* Template Picker Modal */}
+      {showPicker && (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div>
+                <h3 className="text-base font-bold text-slate-800">Choose a Section</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Click any component to add it to your page</p>
+              </div>
+              <button onClick={() => setShowPicker(false)}
+                className="h-8 w-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition text-sm">✕</button>
+            </div>
+            <div className="p-6 grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto">
+              {SECTION_TEMPLATES.map((tpl) => (
+                <button key={tpl.type} onClick={() => addSection(tpl.type)}
+                  className="flex flex-col items-start gap-2 rounded-xl border-2 border-slate-100 bg-slate-50 p-4 text-left hover:border-violet-400 hover:bg-violet-50 transition group">
+                  <span className="text-3xl">{tpl.icon}</span>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800 group-hover:text-violet-700">{tpl.label}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{tpl.description}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      ) : (
-        <button onClick={() => setAdding(true)}
-          className="w-full rounded-xl border-2 border-dashed border-violet-200 py-3 text-sm font-semibold text-violet-600 hover:border-violet-400 hover:bg-violet-50 transition flex items-center justify-center gap-2">
-          <span className="text-lg">+</span> Add Section
-        </button>
+      )}
+
+      {/* HTML Editor Modal */}
+      {editingId && editingSection && (
+        <HtmlEditor
+          title={editingSection.label}
+          value={editingSection.content}
+          onChange={(v) => update(editingId, "content", v)}
+          onClose={() => setEditingId(null)}
+        />
       )}
     </div>
   );
