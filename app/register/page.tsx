@@ -102,7 +102,7 @@ function RegisterForm() {
               onClick={() => { setDropdownOpen(!dropdownOpen); setSearch(""); }}
               className="flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-3 text-sm text-gray-800 hover:border-yellow-400 transition whitespace-nowrap"
             >
-              <span className="text-xl leading-none">{selectedCountry.flag}</span>
+              <img src={`https://flagcdn.com/w20/${selectedCountry.iso}.png`} alt={selectedCountry.name} width={20} height={15} className="rounded-sm" />
               <span className="font-medium text-gray-700">{selectedCountry.code}</span>
               <svg className={`w-3 h-3 text-gray-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} viewBox="0 0 10 6" fill="none">
                 <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -136,7 +136,7 @@ function RegisterForm() {
                             countryCode === c.code ? "bg-yellow-50" : ""
                           }`}
                         >
-                          <span className="text-xl leading-none w-7 text-center">{c.flag}</span>
+                          <img src={`https://flagcdn.com/w20/${c.iso}.png`} alt={c.name} width={20} height={15} className="rounded-sm shrink-0" />
                           <span className="flex-1 text-gray-800 text-xs">{c.name}</span>
                           <span className="text-gray-400 text-xs font-medium">{c.code}</span>
                         </button>
