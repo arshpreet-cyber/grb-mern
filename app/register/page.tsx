@@ -18,7 +18,7 @@ function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const selectedCountry = countryCodes.find((c) => c.code === countryCode && c.name === (countryCodes.find(x => x.code === countryCode)?.name)) || countryCodes[0];
+  const selectedCountry = countryCodes.find((c) => c.code === countryCode) || countryCodes[0];
   const filtered = countryCodes.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.code.includes(search)

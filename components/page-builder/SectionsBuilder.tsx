@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { SECTION_TEMPLATES } from "./SectionTemplates";
 import HtmlEditor from "./HtmlEditor";
+import VisualEditor from "./VisualEditor";
 
 export type Section = {
   id: string;
@@ -24,6 +25,7 @@ export default function SectionsBuilder({
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState<"visual" | "html">("visual");
 
   const addSection = (templateType: string) => {
     const tpl = SECTION_TEMPLATES.find((t) => t.type === templateType);
@@ -85,9 +87,13 @@ export default function SectionsBuilder({
                   className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-30 transition text-xs">↑</button>
                 <button onClick={() => move(i, 1)} disabled={i === sections.length - 1}
                   className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-30 transition text-xs">↓</button>
-                <button onClick={() => setEditingId(section.id)}
+                <button onClick={() => { setEditMode("visual"); setEditingId(section.id); }}
                   className="h-7 px-2.5 rounded-lg flex items-center gap-1 text-violet-600 hover:bg-violet-50 transition text-xs font-semibold">
-                  ✏ Edit HTML
+                  ✏ Edit
+                </button>
+                <button onClick={() => { setEditMode("html"); setEditingId(section.id); }}
+                  className="h-7 px-2.5 rounded-lg flex items-center gap-1 text-slate-500 hover:bg-slate-100 transition text-xs font-semibold">
+                  &lt;/&gt; HTML
                 </button>
                 <button onClick={() => remove(section.id)}
                   className="h-7 w-7 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition text-xs">✕</button>
@@ -107,7 +113,7 @@ export default function SectionsBuilder({
             {/* Mini HTML preview */}
             <div className="px-4 pb-3">
               <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 cursor-pointer hover:border-violet-300 transition"
-                onClick={() => setEditingId(section.id)}>
+                onClick={() => { setEditMode("visual"); setEditingId(section.id); }}>
                 <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">HTML Preview — click to edit</p>
                 <pre className="text-[11px] text-slate-500 font-mono overflow-hidden whitespace-pre-wrap line-clamp-3">
                   {section.content.slice(0, 200)}{section.content.length > 200 ? "..." : ""}
@@ -153,9 +159,20 @@ export default function SectionsBuilder({
       )}
 
       {/* HTML Editor Modal */}
-      {editingId && editingSection && (
+      {editingId && editingSection && editMode === "html" && (
         <HtmlEditor
           title={editingSection.label}
+          value={editingSection.content}
+          onChange={(v) => update(editingId, "content", v)}
+          onClose={() => setEditingId(null)}
+        />
+      )}
+
+      {/* Visual Editor Modal */}
+      {editingId && editingSection && editMode === "visual" && (
+        <VisualEditor
+          title={editingSection.label}
+          sectionType={editingSection.type}
           value={editingSection.content}
           onChange={(v) => update(editingId, "content", v)}
           onClose={() => setEditingId(null)}
