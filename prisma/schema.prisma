@@ -100,3 +100,28 @@ model Page {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+// 1-blog, 2-banner, 3-category, 4-testimonial, 5-employees/users, 6-pages, 7-portfolio, 8-services, 9-logo
+enum AttachmentType {
+  BLOG
+  BANNER
+  CATEGORY
+  TESTIMONIAL
+  USER
+  PAGE
+  PORTFOLIO
+  SERVICE
+  LOGO
+}
+
+model Attachment {
+  id        Int             @id @default(autoincrement())
+  mediaUrl  String?
+  alt       String?
+  isTitle   String?         // If image set as title for blog or page
+  mediaType String?
+  type      AttachmentType
+  createdAt DateTime?       @default(now())
+  updatedAt DateTime?       @updatedAt
+  deletedAt DateTime?       // Soft delete
+}
