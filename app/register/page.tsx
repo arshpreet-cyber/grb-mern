@@ -51,7 +51,7 @@ function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
-          email: form.username,
+          username: form.username,
           password: form.password,
           phone: form.phone ? `${countryCode}${form.phone}` : null,
         }),
@@ -87,11 +87,11 @@ function RegisterForm() {
           className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm text-gray-800 placeholder-gray-500 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition"
         />
         <input
-          type="email"
+          type="text"
           required
           value={form.username}
           onChange={setField("username")}
-          placeholder="Email Address"
+          placeholder="Email"
           className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm text-gray-800 placeholder-gray-500 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition"
         />
 
