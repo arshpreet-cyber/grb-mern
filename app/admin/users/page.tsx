@@ -1,176 +1,129 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export default function UsersPage() {
-  const statCards = [
-    { label: "View Total Order", value: 35 },
-    { label: "View Active Subscriptions", value: 25 },
-    { label: "View Pending Orders", value: 15 },
-    { label: "View Open Ticket", value: 5 },
-  ];
+type User = {
+  id: string;
+  name: string | null;
+  email: string;
+  phone: string | null;
+  role: string;
+  status: string;
+  createdAt: string;
+};
 
-  type Order = {
-    id: string;
-    paymentId: string;
-    amount: string;
-    date: string;
-    method: string;
-    status: string;
-    paymentStatus: string;
-    details: string;
+const ROLE_COLORS: Record<string, string> = {
+  ADMIN: "bg-violet-100 text-violet-700",
+  MANAGER: "bg-blue-100 text-blue-700",
+  SEO: "bg-cyan-100 text-cyan-700",
+  DEVELOPER: "bg-orange-100 text-orange-700",
+  TESTER: "bg-yellow-100 text-yellow-700",
+  USER: "bg-gray-100 text-gray-600",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  active: "bg-green-100 text-green-700",
+  passive: "bg-gray-100 text-gray-500",
+};
+
+export default function AdminUsersPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const fetchUsers = async (q = "") => {
+    setLoading(true);
+    const res = await fetch(`/api/admin/users?search=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    setUsers(Array.isArray(data) ? data : []);
+    setLoading(false);
   };
 
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  useEffect(() => { fetchUsers(); }, []);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await fetch("/api/orders");
-        const data = await response.json();
-        
-        // Format orders for display
-        const formattedOrders = data.map((order: { orderNumber: string; id: string; amount: number; date: string; paymentMethod: string; status: string; paymentStatus: string }) => ({
-          id: order.orderNumber,
-          paymentId: order.id.substring(0, 8),
-          amount: `$${order.amount.toFixed(2)}`,
-          date: new Date(order.date).toLocaleDateString(),
-          method: order.paymentMethod,
-          status: order.status,
-          paymentStatus: order.paymentStatus,
-          details: "Input Details",
-        }));
-        
-        setOrders(formattedOrders.length > 0 ? formattedOrders : generateDummyOrders());
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        setOrders(generateDummyOrders());
-      } finally {
-        setLoading(false);
-      }
-    };
+    const t = setTimeout(() => fetchUsers(search), 400);
+    return () => clearTimeout(t);
+  }, [search]);
 
-    fetchOrders();
-  }, []);
-
-  const generateDummyOrders = () => [
-    {
-      id: "#177150846",
-      paymentId: "123456",
-      amount: "$100",
-      date: "19-2-2026",
-      method: "Credit Card",
-      status: "Pending",
-      paymentStatus: "Pending",
-      details: "Input Details",
-    },
-    {
-      id: "#177150846",
-      paymentId: "123456",
-      amount: "$100",
-      date: "19-2-2026",
-      method: "Credit Card",
-      status: "Complete",
-      paymentStatus: "Complete",
-      details: "Input Details",
-    },
-    {
-      id: "#177150846",
-      paymentId: "123456",
-      amount: "$100",
-      date: "19-2-2026",
-      method: "Credit Card",
-      status: "Pending",
-      paymentStatus: "Pending",
-      details: "Input Details",
-    },
-  ];
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-72">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
-      </div>
-    );
-  }
+  const handleSave = async () => {
+    if (!editUser) return;
+    setSaving(true);
+    await fetch("/api/admin/users", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: editUser.id, role: editUser.role, status: editUser.status, phone: editUser.phone }),
+    });
+    setSaving(false);
+    setEditUser(null);
+    fetchUsers(search);
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-[36px] border border-slate-200 bg-linear-to-r from-emerald-100 via-white to-violet-100 p-8 shadow-sm">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Hello! Sourabh.D</p>
-            <h1 className="mt-3 text-3xl font-semibold text-slate-900">Hello! Sourabh.D</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-              Lorem ipsum is simply dummy text of the printing and typesetting industry.
-            </p>
-          </div>
-
-          <button className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
-            Create New Ticket
-          </button>
-        </div>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-bold text-gray-800">Users</h1>
+        <span className="text-sm text-gray-400">{users.length} total</span>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-4">
-        {statCards.map((card) => (
-          <div key={card.label} className="rounded-[30px] bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">{card.label}</p>
-            <p className="mt-5 text-3xl font-semibold text-slate-900">{card.value.toString().padStart(2, "0")}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="overflow-hidden rounded-[30px] bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Recent Order Details</p>
-          </div>
-          <Link href="#" className="text-sm font-medium text-slate-500 hover:text-slate-700">
-            View All Orders
-          </Link>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="p-4 border-b border-gray-100">
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full max-w-sm border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+          />
         </div>
+
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-            <thead className="bg-slate-50 text-slate-500 uppercase tracking-[0.15em] text-xs">
-              <tr>
-                {['# Order No', 'Payment ID', 'Amount', 'Date', 'Payment Method', 'Status', 'Payment Status', 'Order Details', 'Payment option', 'Action'].map((heading) => (
-                  <th key={heading} className="px-5 py-4 font-semibold">{heading}</th>
-                ))}
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+                <th className="px-4 py-3 text-left">#</th>
+                <th className="px-4 py-3 text-left">Name</th>
+                <th className="px-4 py-3 text-left">Email</th>
+                <th className="px-4 py-3 text-left">Phone</th>
+                <th className="px-4 py-3 text-left">Role</th>
+                <th className="px-4 py-3 text-left">Status</th>
+                <th className="px-4 py-3 text-left">Joined</th>
+                <th className="px-4 py-3 text-left">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 bg-white">
-              {orders.map((order, index) => (
-                <tr key={`${order.id}-${index}`} className="hover:bg-slate-50">
-                  <td className="px-5 py-4 text-slate-700">{order.id}</td>
-                  <td className="px-5 py-4 text-slate-700">{order.paymentId}</td>
-                  <td className="px-5 py-4 text-slate-700">{order.amount}</td>
-                  <td className="px-5 py-4 text-slate-700">{order.date}</td>
-                  <td className="px-5 py-4 text-slate-700">{order.method}</td>
-                  <td className="px-5 py-4">
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${order.status === 'Pending' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                      {order.status}
+            <tbody className="divide-y divide-gray-50">
+              {loading ? (
+                <tr><td colSpan={8} className="text-center py-10 text-gray-400">Loading...</td></tr>
+              ) : users.length === 0 ? (
+                <tr><td colSpan={8} className="text-center py-10 text-gray-400">No users found.</td></tr>
+              ) : users.map((u, i) => (
+                <tr key={u.id} className="hover:bg-gray-50 transition">
+                  <td className="px-4 py-3 text-gray-400">{i + 1}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center text-violet-700 text-xs font-bold shrink-0">
+                        {u.name?.charAt(0)?.toUpperCase() ?? "?"}
+                      </div>
+                      <span className="font-medium text-gray-800">{u.name ?? "—"}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-600">{u.email}</td>
+                  <td className="px-4 py-3 text-gray-500">{u.phone ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${ROLE_COLORS[u.role] ?? "bg-gray-100 text-gray-500"}`}>
+                      {u.role}
                     </span>
                   </td>
-                  <td className="px-5 py-4">
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${order.paymentStatus === 'Pending' ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                      {order.paymentStatus}
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLORS[u.status] ?? "bg-gray-100 text-gray-500"}`}>
+                      {u.status}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-blue-600 font-medium">{order.details}</td>
-                  <td className="px-5 py-4">
-                    <select className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none">
-                      <option>Choose Methods</option>
-                      <option>Credit Card</option>
-                      <option>PayPal</option>
-                    </select>
-                  </td>
-                  <td className="px-5 py-4">
-                    <button className="rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white hover:bg-blue-700 transition">
-                      Pay Now
-                    </button>
+                  <td className="px-4 py-3 text-gray-400">{new Date(u.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-3">
+                    <button onClick={() => setEditUser(u)} className="text-violet-600 hover:underline text-xs font-medium">Edit</button>
                   </td>
                 </tr>
               ))}
@@ -178,6 +131,44 @@ export default function UsersPage() {
           </table>
         </div>
       </div>
+
+      {editUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6">
+            <h2 className="text-lg font-bold text-gray-800 mb-1">Edit User</h2>
+            <p className="text-xs text-gray-400 mb-4">{editUser.email}</p>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-gray-600">Phone</label>
+                <input value={editUser.phone ?? ""} onChange={e => setEditUser(u => u ? { ...u, phone: e.target.value } : u)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-violet-300" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Role</label>
+                <select value={editUser.role} onChange={e => setEditUser(u => u ? { ...u, role: e.target.value } : u)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-violet-300">
+                  {["ADMIN", "MANAGER", "SEO", "DEVELOPER", "TESTER", "USER"].map(r => <option key={r}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-600">Status</label>
+                <select value={editUser.status} onChange={e => setEditUser(u => u ? { ...u, status: e.target.value } : u)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 focus:outline-none focus:ring-2 focus:ring-violet-300">
+                  <option value="active">Active</option>
+                  <option value="passive">Passive</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <button onClick={() => setEditUser(null)} className="px-4 py-2 text-sm rounded-lg border border-gray-200 hover:bg-gray-50">Cancel</button>
+              <button onClick={handleSave} disabled={saving}
+                className="px-4 py-2 text-sm rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-medium disabled:opacity-60">
+                {saving ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
