@@ -209,7 +209,7 @@ function AllPagesTab({
 }
 
 function EditPageTab({ pageId, onSuccess, onCancel }: { pageId: string; onSuccess: () => void; onCancel: () => void }) {
-  const [initial, setInitial] = useState<Record<string, unknown> | null>(null);
+  const [initial, setInitial] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

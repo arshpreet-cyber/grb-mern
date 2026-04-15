@@ -1,47 +1,50 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import HomePage from "@/app/page";
+import { countryCodes } from "@/lib/countryCodes";
 
-const countryCodes = [
-  { code: "+1", flag: "🇺🇸", name: "US" },
-  { code: "+44", flag: "🇬🇧", name: "UK" },
-  { code: "+91", flag: "🇮🇳", name: "IN" },
-  { code: "+61", flag: "🇦🇺", name: "AU" },
-  { code: "+49", flag: "🇩🇪", name: "DE" },
-  { code: "+33", flag: "🇫🇷", name: "FR" },
-  { code: "+971", flag: "🇦🇪", name: "AE" },
-  { code: "+92", flag: "🇵🇰", name: "PK" },
-  { code: "+86", flag: "🇨🇳", name: "CN" },
-  { code: "+81", flag: "🇯🇵", name: "JP" },
-];
-
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ name: "", username: "", phone: "", password: "" });
   const [countryCode, setCountryCode] = useState("+1");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const selectedCountry = countryCodes.find((c) => c.code === countryCode) || countryCodes[0];
+  const filtered = countryCodes.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase()) ||
+    c.code.includes(search)
+  );
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+        setSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const setField = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    if (form.password !== form.confirm) {
-      setError("Passwords do not match.");
-      return;
-    }
     if (form.password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
     }
-
     setIsLoading(true);
     try {
       const res = await fetch("/api/register", {
@@ -49,12 +52,11 @@ export default function RegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
-          email: form.email,
+          email: form.username,
           password: form.password,
           phone: form.phone ? `${countryCode}${form.phone}` : null,
         }),
       });
-
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Registration failed.");
@@ -68,256 +70,183 @@ export default function RegisterPage() {
     }
   };
 
-  const strength = (() => {
-    const p = form.password;
-    if (!p) return 0;
-    let s = 0;
-    if (p.length >= 8) s++;
-    if (/[A-Z]/.test(p)) s++;
-    if (/[0-9]/.test(p)) s++;
-    if (/[^A-Za-z0-9]/.test(p)) s++;
-    return s;
-  })();
-
-  const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
-  const strengthColor = ["", "bg-red-500", "bg-amber-500", "bg-yellow-400", "bg-emerald-500"][strength];
-
   return (
-    <div className="relative min-h-screen overflow-hidden">
-
-      {/* ── Blurred Homepage Background ── */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-linear-to-br from-slate-950 via-violet-950 to-indigo-950" />
-        <div className="absolute -top-32 -left-32 h-125 w-125 rounded-full bg-violet-600/30 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 h-125 w-125 rounded-full bg-indigo-600/30 blur-3xl" />
-        <div className="absolute top-1/2 left-1/4 h-100 w-100 rounded-full bg-cyan-600/10 blur-3xl" />
-
-        {/* Floating decorative elements */}
-        <div className="absolute top-12 right-12 hidden lg:block opacity-20 blur-sm">
-          <div className="rounded-2xl bg-white/10 border border-white/10 p-5 w-52">
-            <div className="text-2xl font-bold text-white mb-1">12,000+</div>
-            <p className="text-violet-300 text-xs">Happy Clients</p>
-          </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="flex items-center gap-2.5 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+          <span>⚠</span> {error}
         </div>
-        <div className="absolute bottom-20 left-10 hidden lg:block opacity-20 blur-sm">
-          <div className="rounded-2xl bg-white/10 border border-white/10 p-5 w-52">
-            <div className="flex gap-1 mb-2">{[1,2,3,4,5].map(i=><span key={i} className="text-amber-400 text-sm">★</span>)}</div>
-            <p className="text-xs text-white">&quot;Best investment for my business!&quot;</p>
-            <p className="text-violet-300 text-[10px] mt-2">— Sarah M.</p>
-          </div>
-        </div>
+      )}
 
-        <div className="absolute inset-0 backdrop-blur-sm" />
-      </div>
+      <div className="space-y-3">
+        {/* Full Name */}
+        <input
+          type="text" required value={form.name} onChange={setField("name")}
+          placeholder="Full Name"
+          className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm text-gray-800 placeholder-gray-500 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition"
+        />
 
-      {/* ── Register Card ── */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
+        {/* Email */}
+        <input
+          type="email" required value={form.username} onChange={setField("username")}
+          placeholder="Email Address"
+          className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm text-gray-800 placeholder-gray-500 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition"
+        />
 
-          <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center justify-center">
-              <img
-                src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
-                alt="GetReviews.Buzz"
-                style={{ width: "200px", height: "auto" }}
-              />
-            </Link>
-            <p className="mt-3 text-sm text-slate-400">Create your free account today</p>
-          </div>
+        {/* Phone with Custom Country Dropdown */}
+        <div className="flex gap-2">
+          <div className="relative" ref={dropdownRef}>
+            {/* Trigger Button */}
+            <button
+              type="button"
+              onClick={() => { setDropdownOpen(!dropdownOpen); setSearch(""); }}
+              className="flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-3 text-sm text-gray-800 hover:border-yellow-400 transition whitespace-nowrap"
+            >
+              <img src={`https://flagcdn.com/w20/${selectedCountry.iso}.png`} alt={selectedCountry.name} width={20} height={15} className="rounded-sm" />
+              <span className="font-medium text-gray-700">{selectedCountry.code}</span>
+              <svg className={`w-3 h-3 text-gray-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} viewBox="0 0 10 6" fill="none">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
 
-          {/* Glass Card */}
-          <div className="rounded-3xl border border-white/10 bg-white/10 backdrop-blur-xl shadow-2xl p-8">
-
-            {error && (
-              <div className="mb-5 flex items-center gap-2.5 rounded-xl bg-red-500/20 border border-red-500/30 px-4 py-3 text-sm text-red-300">
-                <span className="text-base">⚠</span>
-                {error}
+            {/* Dropdown Panel */}
+            {dropdownOpen && (
+              <div className="absolute top-full left-0 z-[9999] mt-1 w-72 rounded-xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
+                {/* Search */}
+                <div className="p-2.5 border-b border-gray-100 bg-gray-50">
+                  <input
+                    autoFocus
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="🔍 Search country or code..."
+                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs outline-none focus:border-yellow-400 transition"
+                  />
+                </div>
+                {/* List */}
+                <ul className="max-h-52 overflow-y-auto">
+                  {filtered.length === 0 ? (
+                    <li className="px-4 py-6 text-center text-xs text-gray-400">No countries found</li>
+                  ) : (
+                    filtered.map((c, i) => (
+                      <li key={`${c.code}-${i}`}>
+                        <button
+                          type="button"
+                          onClick={() => { setCountryCode(c.code); setDropdownOpen(false); setSearch(""); }}
+                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-yellow-50 transition text-left ${
+                            countryCode === c.code ? "bg-yellow-50" : ""
+                          }`}
+                        >
+                          <img src={`https://flagcdn.com/w20/${c.iso}.png`} alt={c.name} width={20} height={15} className="rounded-sm shrink-0" />
+                          <span className="flex-1 text-gray-800 text-xs">{c.name}</span>
+                          <span className="text-gray-400 text-xs font-medium">{c.code}</span>
+                        </button>
+                      </li>
+                    ))
+                  )}
+                </ul>
               </div>
             )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-
-              {/* Full Name */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-widest text-slate-300 mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">👤</span>
-                  <input
-                    type="text"
-                    required
-                    value={form.name}
-                    onChange={set("name")}
-                    placeholder="John Doe"
-                    className="w-full rounded-xl border border-white/10 bg-white/10 py-3.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition"
-                  />
-                </div>
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-widest text-slate-300 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">✉</span>
-                  <input
-                    type="email"
-                    required
-                    value={form.email}
-                    onChange={set("email")}
-                    placeholder="you@example.com"
-                    className="w-full rounded-xl border border-white/10 bg-white/10 py-3.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition"
-                  />
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-widest text-slate-300 mb-2">
-                  Mobile Number <span className="text-slate-500 normal-case tracking-normal font-normal">(optional)</span>
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    value={countryCode}
-                    onChange={(e) => setCountryCode(e.target.value)}
-                    className="rounded-xl border border-white/10 bg-white/10 py-3.5 px-3 text-sm text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition appearance-none cursor-pointer"
-                  >
-                    {countryCodes.map((c) => (
-                      <option key={c.code} value={c.code} className="bg-slate-900 text-white">
-                        {c.flag} {c.code}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="relative flex-1">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">📱</span>
-                    <input
-                      type="tel"
-                      value={form.phone}
-                      onChange={set("phone")}
-                      placeholder="123 456 7890"
-                      className="w-full rounded-xl border border-white/10 bg-white/10 py-3.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-widest text-slate-300 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={form.password}
-                    onChange={set("password")}
-                    placeholder="Min. 8 characters"
-                    className="w-full rounded-xl border border-white/10 bg-white/10 py-3.5 pl-10 pr-14 text-sm text-white placeholder-slate-500 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 transition"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition text-xs"
-                  >
-                    {showPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-                {/* Strength bar */}
-                {form.password && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="flex flex-1 gap-1">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div
-                          key={i}
-                          className={`h-1 flex-1 rounded-full transition-all ${i <= strength ? strengthColor : "bg-white/10"}`}
-                        />
-                      ))}
-                    </div>
-                    <span className={`text-[10px] font-semibold ${["", "text-red-400", "text-amber-400", "text-yellow-400", "text-emerald-400"][strength]}`}>
-                      {strengthLabel}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Confirm Password */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-widest text-slate-300 mb-2">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={form.confirm}
-                    onChange={set("confirm")}
-                    placeholder="Re-enter password"
-                    className={`w-full rounded-xl border py-3.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 outline-none focus:ring-2 transition bg-white/10 ${
-                      form.confirm && form.confirm !== form.password
-                        ? "border-red-500/50 focus:border-red-400 focus:ring-red-400/20"
-                        : "border-white/10 focus:border-violet-400 focus:ring-violet-400/20"
-                    }`}
-                  />
-                  {form.confirm && (
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm">
-                      {form.confirm === form.password ? "✅" : "❌"}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Terms */}
-              <p className="text-xs text-slate-500 leading-relaxed">
-                By creating an account, you agree to our{" "}
-                <Link href="#" className="text-violet-400 hover:text-violet-300">Terms of Service</Link>{" "}
-                and{" "}
-                <Link href="#" className="text-violet-400 hover:text-violet-300">Privacy Policy</Link>.
-              </p>
-
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow-lg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    Creating account...
-                  </span>
-                ) : (
-                  "Create Free Account →"
-                )}
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="my-6 flex items-center gap-3">
-              <div className="flex-1 h-px bg-white/10" />
-              <span className="text-xs text-slate-500">already have an account?</span>
-              <div className="flex-1 h-px bg-white/10" />
-            </div>
-
-            <p className="text-center text-sm text-slate-400">
-              <Link href="/login" className="font-semibold text-violet-400 hover:text-violet-300 transition">
-                Sign in instead →
-              </Link>
-            </p>
           </div>
 
-          {/* Trust badges */}
-          <div className="mt-6 flex items-center justify-center gap-5 text-xs text-slate-500">
-            <span>🔒 SSL Secured</span>
-            <span>✅ Free to Join</span>
-            <span>⭐ No Credit Card</span>
-          </div>
+          {/* Phone Input */}
+          <input
+            type="tel" value={form.phone} onChange={setField("phone")}
+            placeholder="Phone Number"
+            className="flex-1 rounded-md border border-gray-200 bg-[#F4F7FF] px-4 py-3 text-sm text-gray-800 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition"
+          />
+        </div>
+
+        {/* Password */}
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"} required value={form.password}
+            onChange={setField("password")} placeholder="Password (min. 8 characters)"
+            className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 pl-4 pr-12 text-sm text-gray-800 placeholder-gray-500 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition"
+          />
+          <button type="button" onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-black hover:text-gray-700 transition">
+            {showPassword ? (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
-    </div>
+
+      {/* Submit */}
+      <button type="submit" disabled={isLoading}
+        className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition mt-2 disabled:cursor-not-allowed disabled:opacity-50">
+        {isLoading ? "Signing up..." : "Sign Up"}
+      </button>
+
+      <div className="flex items-center gap-4 my-5">
+        <div className="flex-1 h-px bg-gray-200" />
+        <span className="text-xs text-gray-400">Or</span>
+        <div className="flex-1 h-px bg-gray-200" />
+      </div>
+
+      {/* Google */}
+      <button type="button"
+        className="w-full flex items-center justify-center gap-3 rounded-md border border-gray-200 bg-white py-2.5 text-[15px] font-medium text-gray-700 hover:bg-gray-50 transition">
+        <svg viewBox="0 0 24 24" className="w-5 h-5">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+        </svg>
+        Sign up with Google
+      </button>
+
+      <p className="text-center text-[13px] text-gray-500 mt-4 pt-2">
+        Already have an account?{" "}
+        <Link href="/login" className="font-bold text-black underline">Log In.</Link>
+      </p>
+    </form>
+  );
+}
+
+export default function RegisterPage() {
+  const router = useRouter();
+  return (
+    <>
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <HomePage />
+      </div>
+      <div
+        className="fixed inset-0 z-50 font-sans flex flex-col bg-black/60 backdrop-blur-[2px] cursor-pointer overflow-y-auto"
+        onClick={() => router.push("/")}
+      >
+        <div className="relative z-10 flex flex-1 items-center justify-center px-4 py-12 min-h-full">
+          <div
+            className="w-full max-w-[440px] rounded-xl bg-white shadow-2xl px-8 py-10 cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-center mb-6">
+              <Link href="/" className="inline-block">
+                <img src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+                  alt="GetReviews.Buzz" className="h-16 w-auto object-contain" />
+              </Link>
+            </div>
+            <h1 className="text-[17px] font-bold text-black mb-5">Create Account</h1>
+            <Suspense fallback={<div className="h-10 animate-pulse rounded-md bg-gray-100" />}>
+              <RegisterForm />
+            </Suspense>
+          </div>
+        </div>
+        <div className="relative z-10 text-center pb-8 px-4 cursor-default -mt-[40px]" onClick={(e) => e.stopPropagation()}>
+          <p className="text-xs text-white">
+            By signing up, you agree to the{" "}
+            <Link href="/terms" className="underline hover:text-gray-300">Terms of Service.</Link>
+            <br />©2026 - Get Reviews Buzz. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </>
   );
 }
