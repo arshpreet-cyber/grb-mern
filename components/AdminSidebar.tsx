@@ -2,10 +2,20 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
 
-type MenuItem = { label: string; href: string; icon: string; badge?: string };
+type MenuChild = { label: string; href: string };
+
+type MenuItem = {
+  label: string;
+  href?: string;
+  icon: string;
+  badge?: string;
+  children?: MenuChild[];
+};
+
 type MenuSection = { title: string | null; items: MenuItem[] };
 
 const menuSections: MenuSection[] = [
@@ -47,7 +57,7 @@ const menuSections: MenuSection[] = [
     items: [
       { label: "Products", href: "/admin/products", icon: "🛍️" },
       { label: "Products Pricing Rules", href: "/admin/products/pricing", icon: "💲" },
-      { label: "Coupons", href: "/admin/products/coupons", icon: "🏷️" },
+      { label: "Coupons", href: "/admin/coupons", icon: "🏷️" },
       { label: "Custom Forms", href: "/admin/products/forms", icon: "🧾" },
     ],
   },
@@ -62,8 +72,6 @@ const menuSections: MenuSection[] = [
     title: "Order Management",
     items: [
       { label: "Orders Management", href: "/admin/orders", icon: "📋" },
-      { label: "Order Assignments", href: "/admin/orders/assignments", icon: "📌" },
-      { label: "Orders", href: "/admin/orders/list", icon: "🗂️" },
     ],
   },
   {
@@ -73,7 +81,14 @@ const menuSections: MenuSection[] = [
       { label: "Users", href: "/admin/users", icon: "👤" },
       { label: "Reports", href: "/admin/reports", icon: "📊" },
       { label: "Reminder", href: "/admin/reminder", icon: "🔔" },
-      { label: "Media", href: "/admin/media", icon: "🖼️" },
+      {
+        label: "Media",
+        icon: "🖼️",
+        children: [
+          { label: "Upload New Media", href: "/admin/media?tab=new" },
+          { label: "All Media", href: "/admin/media?tab=all" },
+        ],
+      },
       { label: "Blogs", href: "/admin/blogs", icon: "✍️" },
       { label: "FAQs", href: "/admin/faqs", icon: "❓" },
       { label: "Tickets", href: "/admin/tickets", icon: "🎧", badge: "207" },
@@ -91,12 +106,30 @@ const menuSections: MenuSection[] = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const initials = session?.user?.name?.charAt(0)?.toUpperCase() ?? "A";
+  const currentUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setOpenMenus((previous) => {
+      const next = { ...previous };
+
+      menuSections.forEach((section) => {
+        section.items.forEach((item) => {
+          if (item.children?.some((child) => child.href === currentUrl)) {
+            next[item.label] = true;
+          }
+        });
+      });
+
+      return next;
+    });
+  }, [currentUrl]);
 
   return (
     <aside className="min-h-screen w-64 bg-[#0f1117] text-slate-300 flex flex-col shrink-0">
-      {/* Logo */}
       <div className="px-5 py-5 border-b border-white/5">
         <Link href="/">
           <img
@@ -107,22 +140,77 @@ export default function AdminSidebar() {
         </Link>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
-        {menuSections.map((section, si) => (
-          <div key={si}>
+        {menuSections.map((section, sectionIndex) => (
+          <div key={sectionIndex}>
             {section.title && (
-              <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-600">{section.title}</p>
+              <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-600">
+                {section.title}
+              </p>
             )}
             <ul className="space-y-0.5">
               {section.items.map((item) => {
-                const isActive = pathname === item.href;
+                const isChildActive = item.children?.some((child) => child.href === currentUrl) ?? false;
+                const isActive = item.href ? pathname === item.href : isChildActive;
+                const isOpen = openMenus[item.label] ?? isChildActive;
+
+                if (item.children?.length) {
+                  return (
+                    <li key={item.label} className="space-y-1">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenMenus((previous) => ({
+                            ...previous,
+                            [item.label]: !isOpen,
+                          }))
+                        }
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                          isActive
+                            ? "bg-white/10 text-white font-medium"
+                            : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                        }`}
+                      >
+                        <span className="text-sm w-5 text-center">{item.icon}</span>
+                        <span className="flex-1 truncate text-left">{item.label}</span>
+                        <span className={`text-xs transition ${isOpen ? "rotate-180" : ""}`}>⌄</span>
+                      </button>
+
+                      {isOpen && (
+                        <div className="ml-6 space-y-1 border-l border-white/5 pl-3">
+                          {item.children.map((child) => {
+                            const isCurrentChild = child.href === currentUrl;
+
+                            return (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                className={`block rounded-lg px-3 py-2 text-sm transition ${
+                                  isCurrentChild
+                                    ? "bg-violet-500/15 text-violet-200"
+                                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                                }`}
+                              >
+                                {child.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </li>
+                  );
+                }
+
                 return (
                   <li key={item.label}>
-                    <Link href={item.href}
+                    <Link
+                      href={item.href!}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
-                        isActive ? "bg-white/10 text-white font-medium" : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
-                      }`}>
+                        isActive
+                          ? "bg-white/10 text-white font-medium"
+                          : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                      }`}
+                    >
                       <span className="text-sm w-5 text-center">{item.icon}</span>
                       <span className="flex-1 truncate">{item.label}</span>
                       {item.badge && (
@@ -140,17 +228,20 @@ export default function AdminSidebar() {
         ))}
       </nav>
 
-      {/* Logout + User */}
       <div className="px-3 py-4 border-t border-white/5 space-y-1">
         <div className="flex items-center gap-3 rounded-lg bg-white/5 px-3 py-3 mb-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">{initials}</div>
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
+            {initials}
+          </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold text-white">{session?.user?.name ?? "Admin"}</p>
             <p className="truncate text-[10px] text-slate-500">{session?.user?.email ?? ""}</p>
           </div>
         </div>
-        <button onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-400 hover:bg-white/5 hover:text-red-400 transition">
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-400 hover:bg-white/5 hover:text-red-400 transition"
+        >
           <span className="text-sm w-5 text-center">🚪</span>
           <span>Logout</span>
         </button>
