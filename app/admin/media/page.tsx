@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { attachmentTypeOptions, MediaAttachmentType } from "@/lib/media";
 
@@ -41,7 +41,7 @@ async function copyToClipboard(text: string | null, onSuccess: () => void, onErr
   }
 }
 
-export default function AdminMediaPage() {
+function AdminMediaPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("tab") === "new" ? "new" : "all";
@@ -501,5 +501,13 @@ export default function AdminMediaPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminMediaPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-slate-400">Loading...</div>}>
+      <AdminMediaPageInner />
+    </Suspense>
   );
 }
