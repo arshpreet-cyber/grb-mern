@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { SECTION_TEMPLATES } from "./SectionTemplates";
-import HtmlEditor from "./HtmlEditor";
 import VisualEditor from "./VisualEditor";
 
 export type Section = {
@@ -25,7 +24,6 @@ export default function SectionsBuilder({
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editMode, setEditMode] = useState<"visual" | "html">("visual");
 
   const addSection = (templateType: string) => {
     const tpl = SECTION_TEMPLATES.find((t) => t.type === templateType);
@@ -83,20 +81,16 @@ export default function SectionsBuilder({
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button onClick={() => move(i, -1)} disabled={i === 0}
+                <button onClick={() => move(i, -1)} disabled={i === 0} type="button"
                   className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-30 transition text-xs">↑</button>
-                <button onClick={() => move(i, 1)} disabled={i === sections.length - 1}
+                <button onClick={() => move(i, 1)} disabled={i === sections.length - 1} type="button"
                   className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-30 transition text-xs">↓</button>
-                <button onClick={() => { setEditMode("visual"); setEditingId(section.id); }}
-                  className="h-7 px-2.5 rounded-lg flex items-center gap-1 text-violet-600 hover:bg-violet-50 transition text-xs font-semibold">
-                  ✏ Edit
+                <button onClick={() => setEditingId(section.id)} type="button"
+                  className="h-7 px-3 rounded-lg flex items-center gap-1.5 text-violet-600 hover:bg-violet-50 transition text-xs font-semibold">
+                  ✏ Edit Section
                 </button>
-                <button onClick={() => { setEditMode("html"); setEditingId(section.id); }}
-                  className="h-7 px-2.5 rounded-lg flex items-center gap-1 text-slate-500 hover:bg-slate-100 transition text-xs font-semibold">
-                  &lt;/&gt; HTML
-                </button>
-                <button onClick={() => remove(section.id)}
-                  className="h-7 w-7 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition text-xs">✕</button>
+                <button onClick={() => remove(section.id)} type="button"
+                  className="h-7 w-7 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-50 transition text-xs ml-1">✕</button>
               </div>
             </div>
 
@@ -113,8 +107,8 @@ export default function SectionsBuilder({
             {/* Mini HTML preview */}
             <div className="px-4 pb-3">
               <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 cursor-pointer hover:border-violet-300 transition"
-                onClick={() => { setEditMode("visual"); setEditingId(section.id); }}>
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">HTML Preview — click to edit</p>
+                onClick={() => setEditingId(section.id)}>
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Preview — click to edit</p>
                 <pre className="text-[11px] text-slate-500 font-mono overflow-hidden whitespace-pre-wrap line-clamp-3">
                   {section.content.slice(0, 200)}{section.content.length > 200 ? "..." : ""}
                 </pre>
@@ -126,6 +120,7 @@ export default function SectionsBuilder({
 
       {/* Add Section Button */}
       <button onClick={() => setShowPicker(true)}
+        type="button"
         className="w-full rounded-xl border-2 border-dashed border-violet-200 py-3 text-sm font-semibold text-violet-600 hover:border-violet-400 hover:bg-violet-50 transition flex items-center justify-center gap-2">
         <span className="text-lg">+</span> Add Section
       </button>
@@ -139,12 +134,12 @@ export default function SectionsBuilder({
                 <h3 className="text-base font-bold text-slate-800">Choose a Section</h3>
                 <p className="text-xs text-slate-400 mt-0.5">Click any component to add it to your page</p>
               </div>
-              <button onClick={() => setShowPicker(false)}
+              <button onClick={() => setShowPicker(false)} type="button"
                 className="h-8 w-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition text-sm">✕</button>
             </div>
             <div className="p-6 grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto">
               {SECTION_TEMPLATES.map((tpl) => (
-                <button key={tpl.type} onClick={() => addSection(tpl.type)}
+                <button key={tpl.type} onClick={() => addSection(tpl.type)} type="button"
                   className="flex flex-col items-start gap-2 rounded-xl border-2 border-slate-100 bg-slate-50 p-4 text-left hover:border-violet-400 hover:bg-violet-50 transition group">
                   <span className="text-3xl">{tpl.icon}</span>
                   <div>
@@ -158,18 +153,8 @@ export default function SectionsBuilder({
         </div>
       )}
 
-      {/* HTML Editor Modal */}
-      {editingId && editingSection && editMode === "html" && (
-        <HtmlEditor
-          title={editingSection.label}
-          value={editingSection.content}
-          onChange={(v) => update(editingId, "content", v)}
-          onClose={() => setEditingId(null)}
-        />
-      )}
-
-      {/* Visual Editor Modal */}
-      {editingId && editingSection && editMode === "visual" && (
+      {/* Unified Editor Modal */}
+      {editingId && editingSection && (
         <VisualEditor
           title={editingSection.label}
           sectionType={editingSection.type}

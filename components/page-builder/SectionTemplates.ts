@@ -18,35 +18,52 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   <a href="#" style="background:#FFCE2E;color:#000;padding:14px 32px;border-radius:8px;font-weight:700;text-decoration:none;font-size:16px;">Get Started →</a>
 </section>`,
   },
-  {
+{
     type: "image-right",
     icon: "🖼️➡️",
     label: "Section — Image Right",
-    description: "Text on left, image on right",
-    defaultContent: `<section style="display:flex;align-items:center;gap:48px;padding:60px 40px;max-width:1200px;margin:0 auto;">
-  <div style="flex:1;">
-    <h2 style="font-size:36px;font-weight:700;color:#1e1b4b;margin-bottom:16px;">Section Heading</h2>
-    <p style="font-size:16px;color:#555;line-height:1.7;margin-bottom:24px;">Add your description here. Explain the benefits, features or story behind this section.</p>
-    <a href="#" style="background:#1e1b4b;color:#fff;padding:12px 28px;border-radius:8px;font-weight:600;text-decoration:none;">Learn More →</a>
-  </div>
-  <div style="flex:1;">
-    <img src="https://placehold.co/600x400" alt="Section Image" style="width:100%;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,0.1);" />
+    description: "Text on left, image on right with yellow offset background",
+    defaultContent: `<section class="bg-[#f5f6f7] py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      
+      <div>
+        <h2 class="text-3xl lg:text-5xl font-bold text-black leading-tight mb-6">Propel Your Business To New Heights With Google Business Optimization</h2>
+        <p class="text-gray-600 leading-relaxed mb-8">Create a robust Google presence for your business with Get Reviews Buzz. We offer a range of Google Business Optimization services to help you stand out in the crowded online marketplace. Our targeted optimization strategies can help you attract local customers and increase your reach.</p>
+        <a href="#" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-md transition">GET A QUOTE</a>
+      </div>
+
+      <div class="relative">
+        <div class="absolute top-3 left-3 w-full h-full bg-yellow-200 rounded-xl"></div>
+        <div class="relative z-10 bg-white rounded-xl shadow-md p-4">
+            <img src="https://placehold.co/800x600" alt="business" class="rounded-lg w-full" />
+        </div>
+      </div>
+      
+    </div>
   </div>
 </section>`,
   },
-  {
+{
     type: "image-left",
     icon: "⬅️🖼️",
     label: "Section — Image Left",
-    description: "Image on left, text on right",
-    defaultContent: `<section style="display:flex;align-items:center;gap:48px;padding:60px 40px;max-width:1200px;margin:0 auto;">
-  <div style="flex:1;">
-    <img src="https://placehold.co/600x400" alt="Section Image" style="width:100%;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,0.1);" />
-  </div>
-  <div style="flex:1;">
-    <h2 style="font-size:36px;font-weight:700;color:#1e1b4b;margin-bottom:16px;">Section Heading</h2>
-    <p style="font-size:16px;color:#555;line-height:1.7;margin-bottom:24px;">Add your description here. Explain the benefits, features or story behind this section.</p>
-    <a href="#" style="background:#1e1b4b;color:#fff;padding:12px 28px;border-radius:8px;font-weight:600;text-decoration:none;">Learn More →</a>
+    description: "Image on left, text on right with features list",
+    defaultContent: `<section class="bg-[#f5f6f7] py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="relative">
+        <div class="absolute top-3 right-3 w-full h-full bg-yellow-200 rounded-xl"></div>
+        <div class="relative bg-white rounded-xl p-4">
+          <img src="https://placehold.co/800x600" alt="seo" class="rounded-lg w-full" />
+        </div>
+      </div>
+      <div>
+        <h2 class="text-3xl lg:text-5xl font-bold text-black leading-tight mb-6">SEO Services To Rank Your Website Across The Top Search Engines</h2>       
+        <p class="text-gray-600 leading-relaxed mb-6">Looking to secure the top spot in search engine results? We have got you covered! With our SEO expertise and knowledge, we can help make it happen.</p>
+        <a href="#" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-md transition">GET A QUOTE</a>
+      </div>
+    </div>
   </div>
 </section>`,
   },
@@ -54,25 +71,42 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     type: "product-banner",
     icon: "🛍️",
     label: "Product Banner",
-    description: "Product showcase with price and buy button",
-    defaultContent: `<section style="background:#f8f9ff;padding:60px 40px;">
-  <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:48px;">
-    <div style="flex:1;">
-      <span style="background:#FFCE2E;color:#000;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">FEATURED PRODUCT</span>
-      <h2 style="font-size:36px;font-weight:800;color:#1e1b4b;margin:12px 0;">Product Name</h2>
-      <p style="font-size:16px;color:#555;line-height:1.7;margin-bottom:16px;">Describe your product here. Highlight key features and benefits.</p>
-      <ul style="list-style:none;padding:0;margin-bottom:24px;">
-        <li style="padding:6px 0;color:#333;">✅ Feature one</li>
-        <li style="padding:6px 0;color:#333;">✅ Feature two</li>
-        <li style="padding:6px 0;color:#333;">✅ Feature three</li>
-      </ul>
-      <div style="display:flex;align-items:center;gap:16px;">
-        <span style="font-size:32px;font-weight:800;color:#1e1b4b;">$29.99</span>
-        <a href="#" style="background:#FFCE2E;color:#000;padding:12px 28px;border-radius:8px;font-weight:700;text-decoration:none;">Buy Now →</a>
-      </div>
+    description: "Product showcase with price and buy buttons",
+    defaultContent: `<section class="w-full bg-[#fdfbf7] py-16 px-6 font-sans">
+  <div class="max-w-5xl mx-auto flex flex-col md:flex-row gap-10 md:gap-14 items-start">
+    
+    <div class="w-full md:w-[35%] shrink-0">
+      <img 
+        src=" " 
+        alt="Glassdoor Reviews Graphic" 
+        class="w-full aspect-square object-cover shadow-sm border border-gray-100" 
+      />
     </div>
-    <div style="flex:1;">
-      <img src="https://placehold.co/500x500" alt="Product" style="width:100%;border-radius:16px;" />
+
+    <div class="w-full md:w-[65%] flex flex-col pt-2">
+      
+      <h2 class="text-3xl md:text-[42px] font-extrabold text-black tracking-tight mb-4 leading-none">
+        Glassdoor Reviews
+      </h2>
+
+      <p class="text-[14px] md:text-[15px] text-gray-800 leading-relaxed mb-6">
+        A team of good employees can make any company a huge success. For finding suitable employees, Glassdoor is a perfect platform. You can list your company and post the vacancies. Positive Glassdoor reviews about your company will attract employees who are not just skilled but also productive.
+      </p>
+
+      <div class="flex items-baseline gap-1.5 mb-6">
+        <span class="text-[28px] md:text-[32px] font-extrabold text-black tracking-tight">Price: $20.00/</span>
+        <span class="text-[13px] text-gray-800 font-medium">Per Review</span>
+      </div>
+
+      <div class="flex flex-wrap gap-4">
+        <button type="button" class="bg-[#333333] hover:bg-black text-white font-bold text-[14px] md:text-[15px] px-8 py-3.5 rounded-md shadow-sm transition-all">
+          One-Time Purchase
+        </button>
+        <button type="button" class="bg-[#FFCE2E] hover:bg-[#ebd523] text-black font-bold text-[14px] md:text-[15px] px-10 py-3.5 rounded-md shadow-sm transition-all">
+          Subscribe
+        </button>
+      </div>
+
     </div>
   </div>
 </section>`,
@@ -104,15 +138,28 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   </div>
 </section>`,
   },
-  {
-    type: "cta-banner",
-    icon: "📣",
+{
+    type: "cta_banner",
+    icon: "📢",
     label: "CTA Banner",
-    description: "Call-to-action with background color",
-    defaultContent: `<section style="background:#FFCE2E;padding:60px 40px;text-align:center;">
-  <h2 style="font-size:36px;font-weight:800;color:#000;margin-bottom:12px;">Ready to Get Started?</h2>
-  <p style="font-size:18px;color:#333;margin-bottom:32px;">Join thousands of businesses that trust us.</p>
-  <a href="#" style="background:#000;color:#fff;padding:14px 36px;border-radius:8px;font-weight:700;text-decoration:none;font-size:16px;">Start Today →</a>
+    description: "A bold, full-width call-to-action strip with a button",
+    defaultContent: `<section class="w-full bg-gradient-to-r from-[#FFD12A] to-[#FFE066] font-sans py-12 px-6">
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+    
+    <div class="text-center md:text-left">
+      <p class="text-lg md:text-[22px] font-normal text-black mb-1">
+        Want To Know How We Can Help You Get
+      </p>
+      <h2 class="text-2xl md:text-[36px] font-extrabold text-black tracking-tight mt-1">
+        Business Leads And Positive Reviews?
+      </h2>
+    </div>
+
+    <a href="#" class="shrink-0 bg-gradient-to-r from-black to-[#333333] text-white text-[13px] font-bold tracking-wider px-8 py-4 rounded shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all uppercase">
+      Get A Quote
+    </a>
+
+  </div>
 </section>`,
   },
   {
@@ -146,26 +193,69 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   </div>
 </section>`,
   },
-  {
+{
     type: "faq",
     icon: "❓",
     label: "FAQ",
-    description: "Frequently asked questions accordion",
-    defaultContent: `<section style="padding:60px 40px;max-width:800px;margin:0 auto;">
-  <h2 style="font-size:36px;font-weight:700;color:#1e1b4b;text-align:center;margin-bottom:48px;">Frequently Asked Questions</h2>
-  <div style="space-y:16px;">
-    <details style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:12px;">
-      <summary style="font-weight:600;color:#1e1b4b;cursor:pointer;font-size:16px;">Question one goes here?</summary>
-      <p style="color:#666;margin-top:12px;line-height:1.7;">Answer to question one. Provide a clear and helpful response.</p>
-    </details>
-    <details style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:12px;">
-      <summary style="font-weight:600;color:#1e1b4b;cursor:pointer;font-size:16px;">Question two goes here?</summary>
-      <p style="color:#666;margin-top:12px;line-height:1.7;">Answer to question two. Provide a clear and helpful response.</p>
-    </details>
-    <details style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:12px;">
-      <summary style="font-weight:600;color:#1e1b4b;cursor:pointer;font-size:16px;">Question three goes here?</summary>
-      <p style="color:#666;margin-top:12px;line-height:1.7;">Answer to question three. Provide a clear and helpful response.</p>
-    </details>
+    description: "Frequently asked questions in a 2-column grid",
+    defaultContent: `<section class="w-full bg-[#f5f6f7] py-20 px-6 font-sans">
+  <div class="max-w-6xl mx-auto">
+    
+    <h2 class="text-3xl md:text-5xl font-extrabold text-center mb-12 text-black">
+      Frequently Asked <span class="text-[#FFCE2E]">Questions</span>
+    </h2>
+    
+    <div class="grid md:grid-cols-2 gap-6">
+      
+      <details class="group bg-white rounded shadow-sm border border-gray-100">
+        <summary class="flex justify-between items-center font-bold text-[#111] cursor-pointer p-6 list-none [&::-webkit-details-marker]:hidden">
+          Why Are Reviews Important For Businesses?
+          <span class="flex-shrink-0 ml-4 bg-[#444] text-white rounded-full w-6 h-6 flex items-center justify-center transition-transform duration-200 group-open:rotate-180">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </span>
+        </summary>
+        <div class="px-6 pb-6 text-gray-600 leading-relaxed">
+          Reviews build trust, improve local SEO rankings, and heavily influence purchasing decisions by providing social proof from real customers.
+        </div>
+      </details>
+
+      <details class="group bg-white rounded shadow-sm border border-gray-100">
+        <summary class="flex justify-between items-center font-bold text-[#111] cursor-pointer p-6 list-none [&::-webkit-details-marker]:hidden">
+          How Can I Get Honest Product Reviews?
+          <span class="flex-shrink-0 ml-4 bg-[#444] text-white rounded-full w-6 h-6 flex items-center justify-center transition-transform duration-200 group-open:rotate-180">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </span>
+        </summary>
+        <div class="px-6 pb-6 text-gray-600 leading-relaxed">
+          You can get honest product reviews by simply asking your customers post-purchase, offering incentives, and making the review process as easy as possible.
+        </div>
+      </details>
+
+      <details class="group bg-white rounded shadow-sm border border-gray-100">
+        <summary class="flex justify-between items-center font-bold text-[#111] cursor-pointer p-6 list-none [&::-webkit-details-marker]:hidden">
+          What Is The Best Site To Collect Consumer Reviews?
+          <span class="flex-shrink-0 ml-4 bg-[#444] text-white rounded-full w-6 h-6 flex items-center justify-center transition-transform duration-200 group-open:rotate-180">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </span>
+        </summary>
+        <div class="px-6 pb-6 text-gray-600 leading-relaxed">
+          Google is generally the most important for local businesses, but Trustpilot, Yelp, and industry-specific sites (like Zillow or TripAdvisor) are also highly valuable depending on your niche.
+        </div>
+      </details>
+
+      <details class="group bg-white rounded shadow-sm border border-gray-100">
+        <summary class="flex justify-between items-center font-bold text-[#111] cursor-pointer p-6 list-none [&::-webkit-details-marker]:hidden">
+          How To Get More Online Reviews?
+          <span class="flex-shrink-0 ml-4 bg-[#444] text-white rounded-full w-6 h-6 flex items-center justify-center transition-transform duration-200 group-open:rotate-180">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </span>
+        </summary>
+        <div class="px-6 pb-6 text-gray-600 leading-relaxed">
+          Automate your review requests via email or SMS, provide excellent customer service, and engage with the reviews you already have to encourage others to leave theirs.
+        </div>
+      </details>
+
+    </div>
   </div>
 </section>`,
   },
