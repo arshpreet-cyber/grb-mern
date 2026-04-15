@@ -57,7 +57,7 @@ const menuSections: MenuSection[] = [
     items: [
       { label: "Products", href: "/admin/products", icon: "🛍️" },
       { label: "Products Pricing Rules", href: "/admin/products/pricing", icon: "💲" },
-      { label: "Coupons", href: "/admin/products/coupons", icon: "🏷️" },
+      { label: "Coupons", href: "/admin/coupons", icon: "🏷️" },
       { label: "Custom Forms", href: "/admin/products/forms", icon: "🧾" },
     ],
   },
@@ -72,8 +72,6 @@ const menuSections: MenuSection[] = [
     title: "Order Management",
     items: [
       { label: "Orders Management", href: "/admin/orders", icon: "📋" },
-      { label: "Order Assignments", href: "/admin/orders/assignments", icon: "📌" },
-      { label: "Orders", href: "/admin/orders/list", icon: "🗂️" },
     ],
   },
   {

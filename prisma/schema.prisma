@@ -42,17 +42,49 @@ model User {
 }
 
 model Order {
-  id              String   @id @default(cuid())
-  orderNumber     String   @unique
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount          Float
-  paymentMethod   String
-  status          String   @default("Pending") // Pending, Complete, Cancelled
-  paymentStatus   String   @default("Pending") // Pending, Complete, Failed
-  date            DateTime @default(now())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                  String    @id @default(cuid())
+  isOrderApi          Int       @default(1) @map("isOrderApi")  // 1-Website, 2-Api
+  orderNumber         String?   @unique
+  userId              String?
+  user                User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  paymentId           String?
+  subscriptionId      String?
+  rzpaySubscriptionId String?
+  itemName            String?
+  itemId              String?
+  isRecurring         Int?
+  firstName           String?
+  lastName            String?
+  currency            String?
+  symbol              String?
+  amount              Float?
+  couponId            String?
+  coupon              String?
+  couponDiscount      Int?
+  email               String?
+  billingCountry      String?
+  billingCity         String?
+  billingStreet       String?
+  billingZip          String?
+  shippingCountry     String?
+  shippingCity        String?
+  shippingStreet      String?
+  shippingZip         String?
+  status              String    @default("1") // 1-pending,2-completed,3-hold,4-cancelled,5-processing,6-refund,7-failed
+  paymentStatus       String?   @default("1") // 1-unpaid,2-paid,3-cancelled,4-unconfirmed
+  paymentMethod       String?   @default("1") // 1-bitcoin,2-razorpay,3-stripe,4-paypal,5-bankTransfer,6-binance
+  workStatus          Int?      // 1-pending,2-processing,3-completed,4-cancelled
+  detailsFilled       Boolean   @default(false)
+  detailsFilledAt     DateTime?
+  duedate             DateTime?
+  paymentDate         DateTime?
+  purchaseType        String?
+  isRenewal           Boolean   @default(false)
+  date                DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  completedOn         DateTime?
+  deletedAt           DateTime?
 }
 
 model Ticket {
@@ -101,6 +133,82 @@ model Page {
   updatedAt       DateTime @updatedAt
 }
 
+// 1-yes, 2-no
+enum YesNo {
+  YES
+  NO
+}
+
+// 1-one time, 2-recurring
+enum PaymentType {
+  ONE_TIME
+  RECURRING
+}
+
+// 1-service, 2-goods
+enum ProductType {
+  SERVICE
+  GOODS
+}
+
+// 1-reviews, 2-SEO, 3-SMM, 4-Accounts, 5-GBP
+enum CatType {
+  REVIEWS
+  SEO
+  SMM
+  ACCOUNTS
+  GBP
+}
+
+// 1-publish, 2-draft, 3-unused
+enum ProductStatus {
+  PUBLISH
+  DRAFT
+  UNUSED
+}
+
+model Product {
+  id                Int            @id @default(autoincrement())
+  userId            String?
+  formId            Int?
+  isAged            YesNo          @default(NO)
+  isZohoItem        YesNo?
+  isFreeProduct     Int?
+  zohoItemId        String?
+  bannerTitle       String?
+  title             String?
+  content           String?        @db.Text
+  categoryId        String?
+  subcategoryId     String?
+  accountTag        String?        @db.VarChar(30)
+  stock             String?
+  replacementPolicy String?
+  minimumQuantity   Int            @default(1)
+  seeDetailLink     String?
+  isMultiplePrice   Int?
+  price             String?
+  dropdownPrice     String?        @db.Text
+  isMonthly         Int?
+  colorCode         String?
+  slug              String?
+  keywords          String?
+  metaDescription   String?        @db.Text
+  metaTitle         String?        @db.Text
+  canonicalLink     String?        @db.Text
+  media             String?
+  allowMultiple     YesNo?
+  paymentType       PaymentType?
+  productType       ProductType?
+  catType           CatType?
+  formAttached      String?        @db.VarChar(30)
+  priority          Int?           @default(1000)
+  status            ProductStatus?
+  platformRange     Int?
+  createdAt         DateTime?      @default(now())
+  updatedAt         DateTime?      @updatedAt
+  deletedAt         DateTime?
+}
+
 // 1-blog, 2-banner, 3-category, 4-testimonial, 5-employees/users, 6-pages, 7-portfolio, 8-services, 9-logo
 enum AttachmentType {
   BLOG
@@ -112,6 +220,24 @@ enum AttachmentType {
   PORTFOLIO
   SERVICE
   LOGO
+}
+
+model Coupon {
+  id           Int       @id @default(autoincrement())
+  code         String?
+  discount     String?
+  discountType String?   @map("discount_type") // 1-percentage, 2-price
+  discountOn   String?   @map("discount_on")   // 1-all, 2-qty
+  quantity     String?
+  expiry       String?
+  discountFor  Int       @default(1) @map("discount_for")
+  meta         String?
+  status       String?   // 1-active, 2-expired
+  createdAt    DateTime? @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  @@map("coupons")
 }
 
 model Attachment {
