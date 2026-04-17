@@ -160,10 +160,6 @@ export default function AdminMediaPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-800">Media Library</h1>
-          <p className="text-sm text-slate-500">
-            Upload SVG, PNG, JPG, WEBP, GIF, AVIF, BMP, ICO, and TIFF files and
-            manage both static and full domain links.
-          </p>
         </div>
       </div>
 
