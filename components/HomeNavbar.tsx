@@ -290,7 +290,7 @@ export default function HomeNavbar() {
                     <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#212121] hover:bg-[#fff6a8] transition-colors">
                       Dashboard
                     </Link>
-                    <Link href="/my-account" className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#212121] hover:bg-[#fff6a8] transition-colors">
+                    <Link href="/dashboard/account" className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#212121] hover:bg-[#fff6a8] transition-colors">
                       Account Details
                     </Link>
                     <button
