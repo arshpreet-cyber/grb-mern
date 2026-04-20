@@ -1,85 +1,124 @@
 "use client";
 
-import { useState } from "react";
-import AdminSidebar from "@/components/AdminSidebar"; // <-- Swapped to AdminSidebar
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { ChevronsRight } from "lucide-react"; 
+import UserSidebar from "@/components/UserSidebar";
+import { 
+  ChevronsRight, 
+  Search, 
+  Sun, 
+  Moon, 
+  MessageSquareText, 
+  Bell, 
+  User, 
+  LogOut 
+} from "lucide-react";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
-  
-  // Track if sidebar is open
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-[#f5f6fa]">
-      
-      {/* Conditionally render the Admin Sidebar */}
       {isSidebarOpen && (
-        <AdminSidebar onToggle={() => setIsSidebarOpen(false)} />
+        <UserSidebar onToggle={() => setIsSidebarOpen(false)} />
       )}
       
       <div className="flex flex-1 flex-col min-w-0">
-        {/* Top Navbar */}
-        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-gray-200 px-6 py-3">
+        <header className="sticky top-4 z-10 mx-6 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-slate-50 rounded-[15px] px-5 py-4 transition-all">
           <div className="flex items-center justify-between gap-4">
             
-            {/* Search bar & re-open button */}
+            {/* Left: Sidebar Toggle + Search */}
             <div className="flex items-center gap-3 w-full max-w-sm">
-              
-              {/* Show the "Open" button ONLY when the sidebar is hidden */}
               {!isSidebarOpen && (
                 <button
                   onClick={() => setIsSidebarOpen(true)}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                  className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 border border-slate-100 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition shrink-0"
                   aria-label="Open Sidebar"
                 >
                   <ChevronsRight size={20} />
                 </button>
               )}
-
               <div className="relative w-full">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">⌕</span>
-                <input 
-                  type="search" 
-                  placeholder="Search admin..."
-                  className="w-full rounded-md border border-gray-200 bg-gray-50 py-2 pl-8 pr-4 text-sm text-gray-700 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 transition" 
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input
+                  type="search"
+                  placeholder="Search here.."
+                  className="w-full rounded-full bg-slate-50 border border-slate-100 py-2.5 pl-12 pr-4 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                 />
               </div>
             </div>
 
-            {/* Profile & Notifications */}
-            <div className="flex items-center gap-2">
-              <button className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 transition text-sm">
-                🔔
-                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
-                  3
-                </span>
-              </button>
-              
-              <div className="flex items-center gap-2.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 ml-1">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-xs font-bold text-white">
-                  {session?.user?.name?.charAt(0)?.toUpperCase() ?? "A"}
-                </div>
-                <div className="text-xs leading-4 hidden sm:block">
-                  <p className="font-semibold text-gray-800">{session?.user?.name ?? "Admin"}</p>
-                  <p className="text-gray-400 uppercase text-[10px] font-semibold mt-0.5">
-                    {session?.user?.role ?? "ADMIN"}
-                  </p>
-                </div>
-                <button 
-                  onClick={() => signOut({ callbackUrl: "/login" })}
-                  className="ml-2 text-gray-400 hover:text-red-500 transition text-xs" 
-                  title="Logout"
-                >
-                  ⏻
-                </button>
+            {/* Right: Actions */}
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex gap-1 items-center bg-slate-50 rounded-full p-1 border border-slate-100 shadow-inner">
+                <button className="flex items-center justify-center h-8 w-8 bg-black text-white rounded-full shadow-sm"><Sun size={16} /></button>
+                <button className="flex items-center justify-center h-8 w-8 text-slate-400 hover:text-slate-700 transition"><Moon size={16} /></button>
               </div>
+
+              <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 text-slate-600 hover:bg-slate-50 transition">
+                <MessageSquareText size={18} />
+                <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+              </button>
+
+              <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 text-slate-600 hover:bg-slate-50 transition">
+                <Bell size={18} />
+                <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+              </button>
+
+              {/* Profile Dropdown: Only rendered after mounting */}
+              {isMounted && (
+                <div className="relative ml-1" ref={dropdownRef}>
+                  <div 
+                    className="flex items-center gap-3 cursor-pointer select-none pl-1"
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  >
+                    {/* User Avatar */}
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white shadow-inner">
+                      {session?.user?.name?.charAt(0)?.toUpperCase() ?? "U"}
+                    </div>
+                    
+                    {/* Added: User Name */}
+                    <span className="hidden sm:block text-[15px] font-medium text-slate-800 pr-1">
+                      {session?.user?.name ?? "User"}
+                    </span>
+                  </div>
+
+                  <div className={`absolute right-0 top-full pt-2 w-48 transition-all duration-200 z-[9999] ${isProfileOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}>
+                    <div className="flex flex-col rounded-xl border border-slate-100 bg-white p-1.5 shadow-xl">
+                      <Link href="/dashboard/account" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 rounded-lg px-3.5 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition">
+                        <User size={16} className="text-slate-400" /> Account Details
+                      </Link>
+                      <div className="h-px w-full bg-slate-100 my-1"></div>
+                      <button onClick={() => signOut({ callbackUrl: "/login" })} className="flex w-full items-center gap-2 rounded-lg px-3.5 py-2.5 text-sm text-red-600 hover:bg-red-50 transition font-medium">
+                        <LogOut size={16} className="text-red-500" /> Logout
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            
           </div>
         </header>
-        
+
         <main className="flex-1 p-6 overflow-auto">{children}</main>
       </div>
     </div>
