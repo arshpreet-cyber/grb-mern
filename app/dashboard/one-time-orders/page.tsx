@@ -1,92 +1,288 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { ShoppingBag, BadgeCheck, History, BadgeX } from "lucide-react";
+import { useState, useEffect } from "react";
+import { 
+  ShoppingBag, BadgeCheck, History, BadgeX, 
+  ChevronDown, Filter, MoreVertical, ChevronLeft, ChevronRight,
+  CheckCircle2, FileText, Eye
+} from "lucide-react";
+
+// --- Types ---
+interface Order {
+  id: string;
+  orderNumber: string;
+  paymentId?: string;
+  amount: number;
+  createdAt: string;
+  paymentMethod?: string;
+  status: "Pending" | "Complete" | "Processing" | "Cancelled";
+  paymentStatus: "Pending" | "Complete";
+  user?: { name: string; email: string };
+}
+
+// --- Constants ---
+const TABS = [
+  { label: "All Orders", value: "all" },
+  { label: "Completed", value: "completed" },
+  { label: "Pending", value: "pending" },
+  { label: "Cancelled", value: "deleted" }, 
+];
+
+const STATIC_ORDERS: Order[] = [
+  { id: "1", orderNumber: "100452", paymentId: "PAY-88214A", amount: 150.00, createdAt: new Date().toISOString(), paymentMethod: "Credit Card", status: "Complete", paymentStatus: "Complete" },
+  { id: "2", orderNumber: "100453", paymentId: "PAY-11992B", amount: 89.99, createdAt: new Date(Date.now() - 86400000).toISOString(), paymentMethod: "PayPal", status: "Pending", paymentStatus: "Pending" },
+  { id: "3", orderNumber: "100454", paymentId: "PAY-44556C", amount: 210.50, createdAt: new Date(Date.now() - 172800000).toISOString(), paymentMethod: "Stripe", status: "Cancelled", paymentStatus: "Pending" },
+  { id: "4", orderNumber: "100455", paymentId: "PAY-77332D", amount: 45.00, createdAt: new Date(Date.now() - 259200000).toISOString(), paymentMethod: "Credit Card", status: "Processing", paymentStatus: "Complete" },
+];
 
 export default function DemoDashboard() {
-  const { data: session } = useSession();
+  const [orders, setOrders] = useState<Order[]>(STATIC_ORDERS);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10; 
 
-  // Data array for the stat cards to keep the JSX clean
+  // --- Logic ---
+  useEffect(() => {
+    setLoading(true);
+    setCurrentPage(1); // Reset page on filter/search
+    
+    const delay = setTimeout(() => {
+      let filtered = STATIC_ORDERS;
+
+      if (activeTab === "completed") {
+        filtered = filtered.filter(o => o.status === "Complete");
+      } else if (activeTab === "pending") {
+        filtered = filtered.filter(o => o.status === "Pending" || o.status === "Processing");
+      } else if (activeTab === "deleted") {
+        filtered = filtered.filter(o => o.status === "Cancelled");
+      }
+
+      if (searchQuery.trim() !== "") {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(o => 
+          o.orderNumber.toLowerCase().includes(query) || 
+          (o.paymentId && o.paymentId.toLowerCase().includes(query))
+        );
+      }
+
+      setOrders(filtered);
+      setLoading(false);
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [activeTab, searchQuery]);
+
+  // Calculations for Pagination
+  const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedOrders = orders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const showingFrom = orders.length === 0 ? 0 : startIndex + 1;
+  const showingTo = Math.min(startIndex + ITEMS_PER_PAGE, orders.length);
+
   const stats = [
-    {
-      title: "TOTAL ORDERS",
-      value: "50",
-      icon: ShoppingBag,
-      bgColor: "bg-[#FAEDE2]",   // Light peach
-      iconColor: "text-[#D98A2C]", // Orange stroke
-    },
-    {
-      title: "COMPLETED ORDERS",
-      value: "38",
-      icon: BadgeCheck,
-      bgColor: "bg-[#EBF7E5]",   // Light green
-      iconColor: "text-[#5AC328]", // Green stroke
-    },
-    {
-      title: "PENDING ORDERS",
-      value: "8",
-      icon: History,
-      bgColor: "bg-[#FDF9E7]",   // Light yellow/cream
-      iconColor: "text-[#DBA32A]", // Gold/Yellow stroke
-    },
-    {
-      title: "CANCELLED ORDERS",
-      value: "4",
-      icon: BadgeX,
-      bgColor: "bg-[#FBEBEB]",   // Light red
-      iconColor: "text-[#D32F2F]", // Red stroke
-    },
+    { title: "TOTAL ORDERS", value: "50", icon: ShoppingBag, bgColor: "bg-[#FAEDE2]", iconColor: "text-[#D98A2C]" },
+    { title: "COMPLETED ORDERS", value: "38", icon: BadgeCheck, bgColor: "bg-[#EBF7E5]", iconColor: "text-[#5AC328]" },
+    { title: "PENDING ORDERS", value: "8", icon: History, bgColor: "bg-[#FDF9E7]", iconColor: "text-[#DBA32A]" },
+    { title: "CANCELLED ORDERS", value: "4", icon: BadgeX, bgColor: "bg-[#FBEBEB]", iconColor: "text-[#D32F2F]" },
   ];
 
   return (
-    <div className="flex min-h-screen bg-slate-50 p-6 md:p-10 font-sans">
-      
-      <div className="w-full max-w-7xl mx-auto flex flex-col gap-6">
-        
-        {/* Header Section */}
-        <div>
-          <h1 className="text-[40px] font-[500] text-gray-900 mb-2 tracking-tight">
-            All Orders
-          </h1>
-          <p className="text-gray-600 text-sm font-[400]">
-            Lorem Ipsum is simply dummy text of the printing
-          </p>
-        </div>
+    <div className="w-full mx-auto flex flex-col gap-6 ">
+      <div>
+        <h1 className="text-[36px] font-[500] text-gray-900 mb-1 mt-[30px] tracking-tight">All Orders</h1>
+        <p className="text-[15px] text-gray-600 font-normal">Lorem Ipsum is simply dummy text of the printing</p>
+      </div>
 
-        {/* Outer White Container (as seen in the image) */}
-        <div className="bg-white rounded-[24px] p-4 md:p-6 shadow-sm border border-gray-100">
-          
-          {/* 4-Column Grid for Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div
-                  key={index}
-                  className={`${stat.bgColor} rounded-xl p-6 flex items-center justify-between transition-transform hover:-translate-y-1`}
-                >
-                  {/* Left Side: Number and Label */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-3xl font-[500] text-gray-900">
-                      {stat.value}
-                    </span>
-                    <span className="text-[10px] font-[600] tracking-widest text-gray-500 uppercase">
-                      {stat.title}
-                    </span>
-                  </div>
-
-                  {/* Right Side: Icon */}
-                  <div className={`${stat.iconColor}`}>
-                    <Icon size={38} strokeWidth={1.5} />
-                  </div>
+      {/* Stat Cards */}
+      <div className="bg-[#FFFFFF] rounded-[20px] p-2 md:p-6 border border-gray-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div key={index} className={`${stat.bgColor} rounded-xl p-6 flex items-center justify-between transition-transform hover:-translate-y-1`}>
+                <div className="flex flex-col gap-1">
+                  <span className="text-3xl font-[500] text-gray-900">{stat.value}</span>
+                  <span className="text-[10px] font-[600] tracking-widest text-gray-500 uppercase">{stat.title}</span>
                 </div>
-              );
-            })}
-          </div>
+                <div className={`${stat.iconColor}`}><Icon size={50} strokeWidth={1.5} /></div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
+      {/* Main Container */}
+      <div className="bg-white rounded-[20px] border border-gray-100 mt-1 overflow-hidden">
+        <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            {TABS.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setActiveTab(tab.value)}
+                className={`px-4 py-1.5 text-[14px] font-medium transition-all rounded-[10px] ${
+                  activeTab === tab.value ? "bg-black text-white" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50 whitespace-nowrap">
+              Short By <ChevronDown size={16} className="text-gray-400" />
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50"><Filter size={16} /> Filter</button>
+          </div>
         </div>
 
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[1000px]">
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50/50">
+                {[
+                  "# Order No", "Payment ID", "Amount", "Date", 
+                  "Payment Method", "Status", "Payment Status", 
+                  "Order Details", "Payment option", "Action"
+                ].map((h) => (
+                  <th key={h} className="px-5 py-4 text-[10px] font-[500] uppercase tracking-widest text-slate-400 whitespace-nowrap">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {loading ? (
+                <tr><td colSpan={10} className="text-center py-12 text-gray-500">Loading orders...</td></tr>
+              ) : paginatedOrders.length > 0 ? (
+                paginatedOrders.map((order) => (
+                  <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-5 py-5 text-[13px] text-gray-800">#{order.orderNumber}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600">{order.paymentId || "123456"}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-800">${order.amount}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
+                    <td className="px-5 py-5">
+                      {order.status === "Complete" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-yellow-200 bg-[#FFFDF5] text-[#D4A017] text-[12px] font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D4A017]"></span>
+                          {order.paymentMethod}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-5"><StatusPill status={order.status} /></td>
+                    <td className="px-5 py-5"><StatusPill status={order.paymentStatus || order.status} /></td>
+                    <td className="px-5 py-5">
+                      {order.status === "Complete" && (
+                        <button className="bg-[#15368B] text-white text-[12px] px-1 py-1 rounded-md font-medium hover:bg-[#152646]">Input Details</button>
+                      )}
+                    </td>
+                    <td className="px-5 py-5">
+                      {order.status !== "Complete" && (
+                        <div className="flex flex-col gap-2 min-w-[120px]">
+                          <select className="w-full border border-gray-200 rounded-md px-2 py-1 text-[12px] bg-white cursor-pointer">
+                            <option>Choose Method</option>
+                            <option>Credit Card</option>
+                            <option>PayPal</option>
+                          </select>
+                          <button className="w-full bg-[#0095FF] text-white text-[12px] font-medium py-1.5 rounded-md hover:bg-blue-600">Pay Now</button>
+                        </div>
+                      )}
+                    </td>
+                    {/* Action Column with Dropdown */}
+                    <td className="relative px-5 py-5 text-center">
+                      <button 
+                        onClick={() => setOpenMenuId(openMenuId === order.id ? null : order.id)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
+
+                      {/* Dropdown Menu */}
+                      {openMenuId === order.id && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                          <div className="absolute right-4 top-14 z-[100] w-30 rounded-xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden">
+                            <div className="group flex items-center gap-2 px-2 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                              <CheckCircle2 size={16} className="text-slate-400 group-hover:text-white" />
+                              <span className="text-[12px] font-[400] group-hover:text-white">Live Status</span>
+                            </div>
+                            <div className="group flex items-center gap-2 px-2 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                              <FileText size={16} className="text-slate-400 group-hover:text-white" />
+                              <span className="text-[12px] font-[400] group-hover:text-white">Invoices</span>
+                            </div>
+                            <div className="group flex items-center gap-2 px-2 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                              <Eye size={16} className="text-slate-400 group-hover:text-white" />
+                              <span className="text-[12px] font-[400] group-hover:text-white">See More</span>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan={10} className="text-center py-12 text-gray-500">No orders found.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Footer */}
+        {orders.length > 0 && (
+          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100">
+            <p className="text-[14px] text-gray-600">
+              Showing {showingFrom} to {showingTo} of {orders.length} Entries
+            </p>
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentPage(idx + 1)}
+                  className={`w-5 h-5 rounded-full text-[14px] font-medium transition-colors ${
+                    currentPage === idx + 1 ? "bg-black text-white" : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  {idx + 1}
+                </button>
+              ))}
+
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const isComplete = status === "Complete" || status === "Paid";
+  const colorClasses = isComplete ? "border-[#4CAF50] text-[#4CAF50] bg-white" : "border-[#F44336] text-[#F44336] bg-[#FFFBFA]"; 
+  const dotColor = isComplete ? "bg-[#4CAF50]" : "bg-[#F44336]";
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-[12px] font-medium w-max ${colorClasses}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`}></span>
+      {isComplete ? "Complete" : "Pending"}
+    </span>
   );
 }

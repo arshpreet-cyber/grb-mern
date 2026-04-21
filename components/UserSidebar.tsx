@@ -5,16 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
-import {
-  LayoutDashboard,
-  Package,
-  AlertCircle,
-  UserCircle,
-  LogOut,
-  ChevronsLeft,
-  ChevronDown,
-  ChevronUp,
-  Zap
+import { 
+  LayoutDashboard, 
+  Package, 
+  AlertCircle, 
+  UserCircle, 
+  LogOut, 
+  ChevronsLeft, 
+  ChevronDown, 
+  ChevronUp, 
+  Zap 
 } from "lucide-react";
 
 type SubMenuItem = { label: string; href: string };
@@ -83,7 +83,6 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
 
-  // FIX: Initialize as an empty object so all menus start closed
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
   const toggleMenu = (id: string) => {
@@ -108,7 +107,6 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
           />
         </Link>
         
-        {/* Toggle Button */}
         <button 
           onClick={onToggle}
           className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
@@ -149,6 +147,9 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
                 const active = item.href ? isActive(item.href) : false;
                 const IconComponent = item.icon;
                 const isOpen = item.id ? openMenus[item.id] : false;
+                
+                // Check if any sub-item is active to highlight parent
+                const isParentActive = item.subItems?.some((sub) => isActive(sub.href)) ?? false;
 
                 return (
                   <li key={item.label} className="relative">
@@ -171,16 +172,20 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
                       /* Render Accordion Button if it has sub-items */
                       <button
                         onClick={() => item.id && toggleMenu(item.id)}
-                        className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors"
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-colors ${
+                          isParentActive 
+                            ? "bg-[#FCF8EC] text-[#D8A720]" 
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <IconComponent size={18} strokeWidth={1.5} className="text-gray-600" />
+                          <IconComponent size={18} strokeWidth={isParentActive ? 2 : 1.5} />
                           <span className="text-[13px] font-[500]">{item.label}</span>
                         </div>
                         {isOpen ? (
-                          <ChevronUp size={16} className="text-gray-400" />
+                          <ChevronUp size={16} className={isParentActive ? "text-[#D8A720]" : "text-gray-400"} />
                         ) : (
-                          <ChevronDown size={16} className="text-gray-400" />
+                          <ChevronDown size={16} className={isParentActive ? "text-[#D8A720]" : "text-gray-400"} />
                         )}
                       </button>
                     )}
@@ -195,12 +200,11 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
                               <Link 
                                 href={sub.href} 
                                 className={`group flex items-center relative pl-[46px] pr-3 text-[13px] transition-colors ${
-                                  isSubActive ? "text-[#D8A720] font-medium" : "text-gray-400 hover:text-gray-700 font-[400]"
+                                  isSubActive ? "text-black font-semibold" : "text-gray-400 hover:text-gray-700 font-[400]"
                                 }`}
                               >
-                                {/* Tiny leading dot matched to image */}
                                 <span className={`absolute left-[24px] w-[3px] h-[3px] rounded-full transition-colors ${
-                                  isSubActive ? "bg-[#D8A720]" : "bg-gray-300 group-hover:bg-gray-400"
+                                  isSubActive ? "bg-black" : "bg-gray-300 group-hover:bg-gray-400"
                                 }`}></span>
                                 {sub.label}
                               </Link>
