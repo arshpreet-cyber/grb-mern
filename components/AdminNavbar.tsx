@@ -73,14 +73,14 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
         <div className="flex items-center gap-3">
           
           {/* Theme Toggle */}
-          <div className="hidden sm:flex gap-1 items-center bg-slate-50 rounded-full p-1 border border-slate-100 shadow-inner">
+          {/* <div className="hidden sm:flex gap-1 items-center bg-slate-50 rounded-full p-1 border border-slate-100 shadow-inner">
             <button className="flex items-center justify-center h-8 w-8 bg-black text-white rounded-full shadow-sm">
               <Sun size={16} />
             </button>
             <button className="flex items-center justify-center h-8 w-8 text-slate-400 hover:text-slate-700 transition">
               <Moon size={16} />
             </button>
-          </div>
+          </div> */}
 
           <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 text-slate-600 hover:bg-slate-50 transition">
             <MessageSquareText size={18} />
