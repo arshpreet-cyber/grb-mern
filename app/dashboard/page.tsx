@@ -112,7 +112,7 @@ const [openMenuId, setOpenMenuId] = useState<string | null>(null);
       <div className="rounded-2xl bg-white border border-slate-100 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
           <h2 className="text-[25px] font-[500] text-slate-800">Recent Order Details</h2>
-          <Link href="/dashboard/orders" className="text-[15px] font-[500] text-slate-400 hover:text-slate-600 underline uppercase tracking-widest">
+          <Link href="/dashboard/one-time-orders" className="text-[15px] font-[500] text-slate-400 hover:text-slate-600 underline uppercase tracking-widest">
             View All Orders
           </Link>
         </div>
