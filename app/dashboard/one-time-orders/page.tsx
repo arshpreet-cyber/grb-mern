@@ -20,6 +20,16 @@ interface Order {
   user?: { name: string; email: string };
 }
 
+type ApiOrder = {
+  id: string;
+  orderNumber: string;
+  amount: number;
+  date: string;
+  paymentMethod: string;
+  status: string;
+  paymentStatus: string;
+};
+
 // --- Constants ---
 const TABS = [
   { label: "All Orders", value: "all" },
@@ -28,6 +38,7 @@ const TABS = [
   { label: "Cancelled", value: "deleted" }, 
 ];
 
+// Fallback data if API fails
 const STATIC_ORDERS: Order[] = [
   { id: "1", orderNumber: "100452", paymentId: "PAY-88214A", amount: 150.00, createdAt: new Date().toISOString(), paymentMethod: "Credit Card", status: "Complete", paymentStatus: "Complete" },
   { id: "2", orderNumber: "100453", paymentId: "PAY-11992B", amount: 89.99, createdAt: new Date(Date.now() - 86400000).toISOString(), paymentMethod: "PayPal", status: "Pending", paymentStatus: "Pending" },
@@ -36,8 +47,10 @@ const STATIC_ORDERS: Order[] = [
 ];
 
 export default function DemoDashboard() {
-  const [orders, setOrders] = useState<Order[]>(STATIC_ORDERS);
-  const [loading, setLoading] = useState(false);
+  // --- State ---
+  const [allOrders, setAllOrders] = useState<Order[]>([]); // Source of truth from DB
+  const [orders, setOrders] = useState<Order[]>([]); // Filtered state for UI
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -46,13 +59,48 @@ export default function DemoDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10; 
 
-  // --- Logic ---
+  // --- Data Fetching ---
   useEffect(() => {
     setLoading(true);
+    fetch("/api/orders")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mappedOrders: Order[] = data.map((o: ApiOrder) => ({
+            id: o.id,
+            orderNumber: o.orderNumber,
+            paymentId: o.id.substring(0, 8).toUpperCase(),
+            amount: o.amount,
+            createdAt: o.date,
+            paymentMethod: o.paymentMethod,
+            status: o.status as Order["status"],
+            paymentStatus: o.paymentStatus as Order["paymentStatus"],
+          }));
+          setAllOrders(mappedOrders);
+          setOrders(mappedOrders);
+        } else {
+          // Fallback to static data if API returns empty/invalid
+          setAllOrders(STATIC_ORDERS);
+          setOrders(STATIC_ORDERS);
+        }
+      })
+      .catch(() => {
+        // Fallback on error
+        setAllOrders(STATIC_ORDERS);
+        setOrders(STATIC_ORDERS);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  // --- Filtering Logic ---
+  useEffect(() => {
+    // If initially loading, skip the filter delay
+    if (allOrders.length === 0) return;
+
     setCurrentPage(1); // Reset page on filter/search
     
     const delay = setTimeout(() => {
-      let filtered = STATIC_ORDERS;
+      let filtered = [...allOrders];
 
       if (activeTab === "completed") {
         filtered = filtered.filter(o => o.status === "Complete");
@@ -71,13 +119,12 @@ export default function DemoDashboard() {
       }
 
       setOrders(filtered);
-      setLoading(false);
     }, 300);
 
     return () => clearTimeout(delay);
-  }, [activeTab, searchQuery]);
+  }, [activeTab, searchQuery, allOrders]);
 
-  // Calculations for Pagination
+  // --- Calculations for Pagination ---
   const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE) || 1;
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedOrders = orders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -85,21 +132,21 @@ export default function DemoDashboard() {
   const showingTo = Math.min(startIndex + ITEMS_PER_PAGE, orders.length);
 
   const stats = [
-    { title: "TOTAL ORDERS", value: "50", icon: ShoppingBag, bgColor: "bg-[#FAEDE2]", iconColor: "text-[#D98A2C]" },
-    { title: "COMPLETED ORDERS", value: "38", icon: BadgeCheck, bgColor: "bg-[#EBF7E5]", iconColor: "text-[#5AC328]" },
-    { title: "PENDING ORDERS", value: "8", icon: History, bgColor: "bg-[#FDF9E7]", iconColor: "text-[#DBA32A]" },
-    { title: "CANCELLED ORDERS", value: "4", icon: BadgeX, bgColor: "bg-[#FBEBEB]", iconColor: "text-[#D32F2F]" },
+    { title: "TOTAL ORDERS", value: allOrders.length.toString(), icon: ShoppingBag, bgColor: "bg-[#FAEDE2]", iconColor: "text-[#D98A2C]" },
+    { title: "COMPLETED ORDERS", value: allOrders.filter(o => o.status === "Complete").length.toString(), icon: BadgeCheck, bgColor: "bg-[#EBF7E5]", iconColor: "text-[#5AC328]" },
+    { title: "PENDING ORDERS", value: allOrders.filter(o => o.status === "Pending" || o.status === "Processing").length.toString(), icon: History, bgColor: "bg-[#FDF9E7]", iconColor: "text-[#DBA32A]" },
+    { title: "CANCELLED ORDERS", value: allOrders.filter(o => o.status === "Cancelled").length.toString(), icon: BadgeX, bgColor: "bg-[#FBEBEB]", iconColor: "text-[#D32F2F]" },
   ];
 
   return (
     <div className="w-full mx-auto flex flex-col gap-6 ">
       <div>
         <h1 className="text-[36px] font-[500] text-gray-900 mb-1 mt-[30px] tracking-tight">All Orders</h1>
-        <p className="text-[15px] text-gray-600 font-normal">Lorem Ipsum is simply dummy text of the printing</p>
+        <p className="text-[15px] text-gray-600 font-normal">Manage your recent transactions and view order statuses.</p>
       </div>
 
       {/* Stat Cards */}
-      <div className="bg-[#FFFFFF] rounded-[20px] p-2 md:p-6 border border-gray-100">
+      <div className="bg-[#FFFFFF] rounded-[20px] p-2 md:p-6 border border-gray-100 shadow-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
@@ -117,8 +164,9 @@ export default function DemoDashboard() {
       </div>
 
       {/* Main Container */}
-      <div className="bg-white rounded-[20px] border border-gray-100 mt-1 overflow-hidden">
+      <div className="bg-white rounded-[20px] border border-gray-100 mt-1 overflow-hidden shadow-sm">
         <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100">
+          
           <div className="flex items-center gap-2">
             {TABS.map((tab) => (
               <button
@@ -132,11 +180,21 @@ export default function DemoDashboard() {
               </button>
             ))}
           </div>
+
           <div className="flex items-center gap-3">
+            {/* <input 
+              type="text" 
+              placeholder="Search orders..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-lg text-[13px] outline-none focus:border-gray-400"
+            /> */}
             <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50 whitespace-nowrap">
-              Short By <ChevronDown size={16} className="text-gray-400" />
+              Sort By <ChevronDown size={16} className="text-gray-400" />
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50"><Filter size={16} /> Filter</button>
+            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50">
+              <Filter size={16} /> Filter
+            </button>
           </div>
         </div>
 
@@ -162,34 +220,44 @@ export default function DemoDashboard() {
               ) : paginatedOrders.length > 0 ? (
                 paginatedOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-5 py-5 text-[13px] text-gray-800">#{order.orderNumber}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-600">{order.paymentId || "123456"}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-800">${order.amount}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-800">{order.orderNumber}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600">{order.paymentId || "N/A"}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-800">${order.amount.toFixed(2)}</td>
                     <td className="px-5 py-5 text-[13px] text-gray-600">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
                     <td className="px-5 py-5">
-                      {order.status === "Complete" && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-yellow-200 bg-[#FFFDF5] text-[#D4A017] text-[12px] font-medium">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#D4A017]"></span>
-                          {order.paymentMethod}
-                        </span>
-                      )}
+                      <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-[400] text-amber-600">
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                        {order.paymentMethod || "N/A"}
+                      </span>
                     </td>
-                    <td className="px-5 py-5"><StatusPill status={order.status} /></td>
-                    <td className="px-5 py-5"><StatusPill status={order.paymentStatus || order.status} /></td>
-                    <td className="px-5 py-5">
-                      {order.status === "Complete" && (
-                        <button className="bg-[#15368B] text-white text-[12px] px-1 py-1 rounded-md font-medium hover:bg-[#152646]">Input Details</button>
-                      )}
-                    </td>
+
+                  <td className="px-5 py-5">
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${order.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600" : "border-emerald-200 bg-emerald-50 text-emerald-600"}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${order.status === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
+                      {order.status}
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-5">
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${order.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600" : "border-emerald-200 bg-emerald-50 text-emerald-600"}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${order.paymentStatus === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
+                      {order.paymentStatus}
+                    </span>
+                  </td>
+                  <td className="px-5 py-5">
+                    <button className="rounded-[5px] bg-blue-600 px-3 py-1 text-[10px] font-[400] text-white shadow-sm hover:bg-blue-700 transition">
+                      Input Details
+                    </button>
+                  </td>
                     <td className="px-5 py-5">
                       {order.status !== "Complete" && (
                         <div className="flex flex-col gap-2 min-w-[120px]">
-                          <select className="w-full border border-gray-200 rounded-md px-2 py-1 text-[12px] bg-white cursor-pointer">
+                          <select className="w-full border border-gray-200 rounded-md px-2 py-1 text-[12px] bg-white cursor-pointer outline-none">
                             <option>Choose Method</option>
                             <option>Credit Card</option>
                             <option>PayPal</option>
                           </select>
-                          <button className="w-full bg-[#0095FF] text-white text-[12px] font-medium py-1.5 rounded-md hover:bg-blue-600">Pay Now</button>
+                          <button className="w-full bg-[#0092FF] text-white text-[12px] font-medium py-1.5 rounded-md transition-colors">Pay Now</button>
                         </div>
                       )}
                     </td>
@@ -206,16 +274,16 @@ export default function DemoDashboard() {
                       {openMenuId === order.id && (
                         <>
                           <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                          <div className="absolute right-4 top-14 z-[100] w-30 rounded-xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden">
-                            <div className="group flex items-center gap-2 px-2 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                          <div className="absolute right-4 top-14 z-[100] w-32 rounded-xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden">
+                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition-colors">
                               <CheckCircle2 size={16} className="text-slate-400 group-hover:text-white" />
                               <span className="text-[12px] font-[400] group-hover:text-white">Live Status</span>
                             </div>
-                            <div className="group flex items-center gap-2 px-2 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition-colors">
                               <FileText size={16} className="text-slate-400 group-hover:text-white" />
                               <span className="text-[12px] font-[400] group-hover:text-white">Invoices</span>
                             </div>
-                            <div className="group flex items-center gap-2 px-2 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition-colors">
                               <Eye size={16} className="text-slate-400 group-hover:text-white" />
                               <span className="text-[12px] font-[400] group-hover:text-white">See More</span>
                             </div>
@@ -234,7 +302,7 @@ export default function DemoDashboard() {
 
         {/* Pagination Footer */}
         {orders.length > 0 && (
-          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100">
+          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100 bg-gray-50/30">
             <p className="text-[14px] text-gray-600">
               Showing {showingFrom} to {showingTo} of {orders.length} Entries
             </p>
@@ -242,7 +310,7 @@ export default function DemoDashboard() {
               <button 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50"
+                className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -251,8 +319,8 @@ export default function DemoDashboard() {
                 <button
                   key={idx}
                   onClick={() => setCurrentPage(idx + 1)}
-                  className={`w-5 h-5 rounded-full text-[14px] font-medium transition-colors ${
-                    currentPage === idx + 1 ? "bg-black text-white" : "text-gray-600 hover:bg-gray-100"
+                  className={`w-7 h-7 rounded-full text-[13px] font-medium transition-colors ${
+                    currentPage === idx + 1 ? "bg-black text-white" : "text-gray-600 hover:bg-gray-200"
                   }`}
                 >
                   {idx + 1}
@@ -262,7 +330,7 @@ export default function DemoDashboard() {
               <button 
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50"
+                className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors"
               >
                 <ChevronRight size={18} />
               </button>
@@ -276,13 +344,22 @@ export default function DemoDashboard() {
 
 function StatusPill({ status }: { status: string }) {
   const isComplete = status === "Complete" || status === "Paid";
-  const colorClasses = isComplete ? "border-[#4CAF50] text-[#4CAF50] bg-white" : "border-[#F44336] text-[#F44336] bg-[#FFFBFA]"; 
-  const dotColor = isComplete ? "bg-[#4CAF50]" : "bg-[#F44336]";
+  const colorClasses = isComplete 
+    ? "border-[#4CAF50] text-[#4CAF50] bg-[#EBF7E5]" 
+    : status === "Cancelled" 
+      ? "border-[#F44336] text-[#F44336] bg-[#FBEBEB]" 
+      : "border-[#D98A2C] text-[#D98A2C] bg-[#FDF9E7]"; 
+  
+  const dotColor = isComplete 
+    ? "bg-[#4CAF50]" 
+    : status === "Cancelled" 
+      ? "bg-[#F44336]" 
+      : "bg-[#D98A2C]";
 
   return (
     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-[12px] font-medium w-max ${colorClasses}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`}></span>
-      {isComplete ? "Complete" : "Pending"}
+      {status}
     </span>
   );
 }
