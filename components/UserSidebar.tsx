@@ -66,7 +66,7 @@ const menuSections: MenuSection[] = [
         id: "administration",
         subItems: [
           { label: "Account Management", href: "/dashboard/account" },
-          { label: "Finance", href: "/dashboard/admin/finance" },
+          // { label: "Finance", href: "/dashboard/admin/finance" },
         ]
       },
     ],
