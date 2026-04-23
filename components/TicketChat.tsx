@@ -1,7 +1,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
 export type TicketMessage = {
   id: number;
@@ -19,8 +20,6 @@ type Props = {
   isAdmin?: boolean;
 };
 
-const POLL_INTERVAL = 2000; // Poll every 2 seconds for new messages
-
 export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }: Props) {
   const { data: session } = useSession();
   const [ticket, setTicket] = useState<any>(null);
@@ -29,9 +28,10 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [connected, setConnected] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const isClient = typeof window !== "undefined";
   const sessionUserId = session?.user?.id;
 
   const scrollToBottom = () => {
@@ -42,79 +42,78 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     scrollToBottom();
   }, [messages, ticket]);
 
-  // ── Fetch ticket details ──────────────────────────────────────
-  useEffect(() => {
-    if (!ticketId) return;
-    fetch(`/api/support/tickets/${ticketId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && !data.error) setTicket(data);
-      })
-      .catch((err) => console.error("Failed to load ticket details", err));
-  }, [ticketId]);
+  const connectSocket = () => {
+    if (!isClient) return;
+    
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+    }
 
-  // ── Fetch messages via HTTP ───────────────────────────────────
-  const fetchMessages = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/support/tickets/${ticketId}/messages`);
-      if (!res.ok) throw new Error("Failed to load messages");
-      const data: TicketMessage[] = await res.json();
-      setMessages((prev) => {
-        // Only update if there are new messages (avoids unnecessary re-renders)
-        if (data.length !== prev.length || (data.length > 0 && data[data.length - 1].id !== prev[prev.length - 1]?.id)) {
-          return data;
-        }
-        return prev;
-      });
+    const socket = io(window.location.origin, {
+      transports: ["websocket", "polling"],
+      reconnectionAttempts: 5,
+    });
+    
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
       setConnected(true);
       setError(null);
-    } catch (err) {
-      console.error("Polling error:", err);
+      socket.emit("join-ticket", ticketId);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket connect error", err);
       setConnected(false);
-    }
-  }, [ticketId]);
+      setError("Unable to connect to chat server. Trying to reconnect...");
+    });
 
-  // ── Initial fetch + start polling ─────────────────────────────
+    socket.on("ticket-history", (history: TicketMessage[]) => {
+      setMessages(history);
+    });
+
+    socket.on("ticket-message", (message: TicketMessage) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    socket.on("ticket-error", ({ message }: { message: string }) => {
+      setError(message);
+    });
+
+    return socket;
+  };
+
   useEffect(() => {
-    // Fetch immediately on mount
-    fetchMessages();
+    const socket = connectSocket();
 
-    // Start polling interval
-    pollingRef.current = setInterval(fetchMessages, POLL_INTERVAL);
+    // Fetch ticket details to get the initial query
+    fetch(`/api/support/tickets/${ticketId}`)
+      .then(res => res.json())
+      .then(data => setTicket(data))
+      .catch(err => console.error("Failed to load ticket details", err));
 
     return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current);
-        pollingRef.current = null;
-      }
+      socket?.disconnect();
+      socketRef.current = null;
     };
-  }, [fetchMessages]);
+  }, [ticketId]);
 
-  // ── Send message via HTTP POST ────────────────────────────────
   const handleSend = async () => {
     if (!draft.trim() || !sessionUserId) return;
     setSending(true);
     setError(null);
 
     try {
-      const res = await fetch(`/api/support/tickets/${ticketId}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: draft.trim(),
-          agentId: sessionUserId,
-          direction: isAdmin ? "2" : "1",
-        }),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Failed to send message");
+      if (!socketRef.current?.connected) {
+        throw new Error("Chat is disconnected. Please wait or refresh.");
       }
 
-      const newMessage: TicketMessage = await res.json();
-      // Optimistically add the message to the list
-      setMessages((prev) => [...prev, newMessage]);
+      socketRef.current.emit("send-ticket-message", {
+        ticketId,
+        content: draft.trim(),
+        agentId: sessionUserId,
+        direction: isAdmin ? "2" : "1",
+      });
       setDraft("");
     } catch (err: any) {
       console.error(err);
@@ -138,26 +137,28 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
             <div>
               <h2 className="text-lg font-bold text-slate-900">{ticketSubject || ticket?.subject || "Support Chat"}</h2>
               <div className="flex items-center gap-2">
-                <span className={`h-2 w-2 rounded-full ${connected ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}></span>
+                <span className={`h-2 w-2 rounded-full ${connected ? "bg-emerald-500" : "bg-rose-500"}`}></span>
                 <p className="text-xs font-medium text-slate-500">
-                  {connected ? "Live" : "Connecting..."} • {isAdmin ? "Admin View" : "User Support"}
+                  {connected ? "Live Connection" : "Disconnected"} • {isAdmin ? "Admin View" : "User Support"}
                 </p>
               </div>
             </div>
           </div>
-          <button
-            onClick={fetchMessages}
-            className="rounded-full bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200 transition"
-          >
-            Refresh
-          </button>
+          {!connected && (
+            <button 
+              onClick={connectSocket}
+              className="rounded-full bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+            >
+              Retry Connection
+            </button>
+          )}
         </div>
       </div>
 
       {/* Messages */}
       <div className="flex-1 space-y-6 overflow-y-auto bg-slate-50 p-6">
         {/* Initial Ticket Query */}
-        {ticket && ticket.query && (
+        {ticket && (
           <div className="flex justify-start">
             <div className="max-w-[85%] space-y-1">
               <div className="rounded-2xl rounded-tl-none bg-white p-4 shadow-sm ring-1 ring-slate-200">
@@ -170,18 +171,6 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
           </div>
         )}
 
-        {messages.length === 0 && !ticket?.query && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="mb-4 rounded-full bg-slate-100 p-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-slate-400">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-              </svg>
-            </div>
-            <p className="text-sm font-medium text-slate-500">No messages yet</p>
-            <p className="text-xs text-slate-400">Start the conversation below.</p>
-          </div>
-        )}
-
         {messages.map((message) => {
           const fromAdmin = message.direction === "2";
           const isOwnMessage = isAdmin ? fromAdmin : !fromAdmin;
@@ -189,11 +178,12 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
           return (
             <div key={message.id} className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[85%] space-y-1`}>
-                <div
-                  className={`rounded-2xl p-4 shadow-sm ${isOwnMessage
-                    ? "rounded-tr-none bg-violet-600 text-white"
-                    : "rounded-tl-none bg-white text-slate-800 ring-1 ring-slate-200"
-                    }`}
+                <div 
+                  className={`rounded-2xl p-4 shadow-sm ${
+                    isOwnMessage 
+                      ? "rounded-tr-none bg-violet-600 text-white" 
+                      : "rounded-tl-none bg-white text-slate-800 ring-1 ring-slate-200"
+                  }`}
                 >
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
                 </div>
@@ -211,7 +201,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
       <div className="border-t border-slate-100 bg-white p-6">
         {error && (
           <div className="mb-4 flex items-center gap-3 rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-100">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
             </svg>
             <p>{error}</p>
@@ -233,8 +223,8 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
           />
           <button
             onClick={handleSend}
-            disabled={!draft.trim() || sending}
-            className="absolute bottom-[1.5rem] right-4 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-lg transition hover:bg-violet-700 disabled:opacity-50 disabled:shadow-none"
+            disabled={!draft.trim() || !connected || sending}
+            className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-lg transition hover:bg-violet-700 disabled:opacity-50 disabled:shadow-none"
           >
             {sending ? (
               <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
@@ -242,12 +232,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-5 w-5"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 rotate-90">
                 <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
               </svg>
             )}

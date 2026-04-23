@@ -28,7 +28,7 @@ nextApp.prepare().then(async () => {
   const server = http.createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: dev ? "http://localhost:3000" : undefined,
+      origin: dev ? "*" : undefined,
       methods: ["GET", "POST"],
     },
   });
