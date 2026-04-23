@@ -39,6 +39,14 @@ export async function createTicket(data: CreateTicketPayload) {
 export async function getTickets(userId?: string) {
   return prisma.ticket.findMany({
     where: userId ? { userId } : undefined,
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
     take: 100,
   });
@@ -47,6 +55,14 @@ export async function getTickets(userId?: string) {
 export async function getTicketByTicketId(ticketId: string) {
   return prisma.ticket.findUnique({
     where: { ticketId },
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
   });
 }
 
