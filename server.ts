@@ -3,9 +3,9 @@ import express from "express";
 import http from "http";
 import next from "next";
 import { Server } from "socket.io";
-import supportRoutes from "./server/routes/supportRoutes";
-import { boss, initQueue } from "./server/queue";
-import prisma from "./lib/prisma";
+import supportRoutes from "./server/routes/supportRoutes.ts";
+import { boss, initQueue } from "./server/queue.ts";
+import prisma from "./lib/prisma.ts";
 
 const dev = process.env.NODE_ENV !== "production";
 const nextApp = next({ dev });

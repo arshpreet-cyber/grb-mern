@@ -1,8 +1,12 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("🌱 Starting database seed...");
@@ -134,49 +138,37 @@ async function main() {
       ticketId: "#TKT-10956",
       userId: user1Id,
       title: "Quality issue auto accounts",
-      description: "Issue with automated account generation",
-      status: "Awaiting Reply",
-      createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+      query: "Issue with automated account generation",
     },
     {
       ticketId: "#TKT-10985",
       userId: user2Id,
       title: "Review on order no. 177456031",
-      description: "Customer asking about order status",
-      status: "Open",
-      createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+      query: "Customer asking about order status",
     },
     {
       ticketId: "#TKT-10944",
       userId: user1Id,
       title: "All reviews has disappeared",
-      description: "Reviews not showing in dashboard",
-      status: "Closed",
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      query: "Reviews not showing in dashboard",
     },
     {
       ticketId: "#TKT-10953",
       userId: user2Id,
       title: "Order Number - 177220728",
-      description: "Payment processing issue",
-      status: "Pending",
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      query: "Payment processing issue",
     },
     {
       ticketId: "#TKT-10952",
       userId: user1Id,
       title: "Order Number - 177361288",
-      description: "Refund request for cancelled order",
-      status: "Open",
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      query: "Refund request for cancelled order",
     },
     {
       ticketId: "#TKT-11001",
       userId: user2Id,
       title: "Login issues with email",
-      description: "Cannot access account",
-      status: "Awaiting Reply",
-      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      query: "Cannot access account",
     },
   ];
 
