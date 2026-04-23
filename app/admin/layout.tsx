@@ -9,11 +9,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex min-h-screen bg-[#f5f6fa]">
-      {isSidebarOpen && (
-        <Suspense fallback={<div className="w-64 bg-[#fafafa]" />}>
-          <AdminSidebar onToggle={() => setIsSidebarOpen(false)} />
-        </Suspense>
-      )}
+      <Suspense fallback={<div className="w-64 bg-[#0f1117]" />}>
+        <AdminSidebar />
+      </Suspense>
+      
       <div className="flex flex-1 flex-col min-w-0">
         <AdminNavbar onToggle={!isSidebarOpen ? () => setIsSidebarOpen(true) : undefined} />
         <main className="flex-1 p-6 overflow-auto">{children}</main>

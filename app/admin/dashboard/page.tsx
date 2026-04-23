@@ -137,7 +137,7 @@ function StatCard({
   value: string;
   change: string;
   changeType: "up" | "down";
-  icon: React.ElementType;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   iconBg: string;
 }) {
   return (
