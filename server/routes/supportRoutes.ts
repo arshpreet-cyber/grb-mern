@@ -41,30 +41,35 @@ router.post("/tickets", async (req, res) => {
       ticketType: typeof ticketType === "number" ? ticketType : 1,
     });
 
-    if (boss) {
-      await boss.send("support-email-queue", {
-        type: "ticket.created",
-        ticketId: ticket.ticketId,
-        name: ticket.name,
-        email: ticket.email,
-        subject: ticket.subject,
-      });
+    try {
+      if (boss) {
+        await boss.send("support-email-queue", {
+          type: "ticket.created",
+          ticketId: ticket.ticketId,
+          name: ticket.name,
+          email: ticket.email,
+          subject: ticket.subject,
+        });
 
-      await boss.send("support-ticket-sync-queue", {
-        type: "ticket.created",
-        ticketId: ticket.ticketId,
-        userId: ticket.userId,
-        subject: ticket.subject,
-        query: ticket.query,
-        email: ticket.email,
-        name: ticket.name,
-        phone: ticket.phone,
-      });
+        await boss.send("support-ticket-sync-queue", {
+          type: "ticket.created",
+          ticketId: ticket.ticketId,
+          userId: ticket.userId,
+          subject: ticket.subject,
+          query: ticket.query,
+          email: ticket.email,
+          name: ticket.name,
+          phone: ticket.phone,
+        });
+      }
+    } catch (bossError) {
+      console.error("Failed to queue background jobs for ticket creation:", bossError);
+      // We don't fail the request because the ticket was successfully saved to DB
     }
 
     return res.json(ticket);
   } catch (error) {
-    console.error("Failed to create ticket", error);
+    console.error("CRITICAL: Failed to create ticket. Full error:", error);
     return res.status(500).json({ error: "Failed to create ticket" });
   }
 });

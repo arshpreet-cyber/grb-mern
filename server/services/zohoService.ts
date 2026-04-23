@@ -6,8 +6,8 @@ const ZOHO_ORG_ID = process.env.ZOHO_ORG_ID;
 const ZOHO_DEPARTMENT_ID = process.env.ZOHO_DEPARTMENT_ID;
 
 // Use your actual Zoho domain, default to .in or .com. Using .in here as fallback or whatever matches the env
-const ZOHO_ACCOUNTS_URL = "https://accounts.zoho.com";
-const ZOHO_DESK_URL = "https://desk.zoho.com/api/v1";
+const ZOHO_ACCOUNTS_URL = "https://accounts.zoho.in";
+const ZOHO_DESK_URL = "https://desk.zoho.in/api/v1";
 
 let currentAccessToken: string | null = null;
 let tokenExpiresAt: number = 0;

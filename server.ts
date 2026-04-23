@@ -5,12 +5,14 @@ import next from "next";
 import { Server } from "socket.io";
 import supportRoutes from "./server/routes/supportRoutes.ts";
 import { boss, initQueue } from "./server/queue.ts";
+import "./server/worker.ts"; // Start background workers
 import prisma from "./lib/prisma.ts";
 
 const dev = process.env.NODE_ENV !== "production";
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
 const port = Number(process.env.PORT || 3000);
+let ioInstance: Server;
 
 nextApp.prepare().then(async () => {
   await initQueue();
@@ -22,24 +24,35 @@ nextApp.prepare().then(async () => {
   app.use("/api/support", supportRoutes);
 
   app.all("*", (req, res) => {
+    if (req.url.startsWith("/_next") || req.url.includes("icon")) {
+      // Skip noise
+    } else {
+      console.log(`[HTTP] ${req.method} ${req.url}`);
+    }
     return handle(req, res);
   });
 
   const server = http.createServer(app);
-  const io = new Server(server, {
+  ioInstance = new Server(server, {
     cors: {
       origin: dev ? "*" : undefined,
       methods: ["GET", "POST"],
     },
   });
 
-  io.on("connection", (socket) => {
+  ioInstance.on("connection", (socket) => {
     console.log("Socket connected:", socket.id);
 
     socket.on("join-ticket", async (ticketId: string) => {
-      console.log(`Socket ${socket.id} joining ticket: ${ticketId}`);
-      if (typeof ticketId !== "string" || !ticketId) return;
-      socket.join(`ticket:${ticketId}`);
+      console.log(`[SOCKET] ${socket.id} attempting to join ticket room: ${ticketId}`);
+      if (typeof ticketId !== "string" || !ticketId) {
+        console.error(`[SOCKET] Invalid ticketId provided for join-ticket: ${ticketId}`);
+        return;
+      }
+      
+      const roomName = `ticket:${ticketId}`;
+      socket.join(roomName);
+      console.log(`[SOCKET] ${socket.id} successfully joined room: ${roomName}`);
 
       try {
         const history = await prisma.ticketThread.findMany({
@@ -72,18 +85,26 @@ nextApp.prepare().then(async () => {
             direction: typeof direction === "string" ? direction : "1",
           },
         });
-        console.log(`Created message ${message.id} for ticket ${ticketId}. Emitting to room ticket:${ticketId}`);
+        console.log(`[SOCKET] Created message ${message.id} for ticket ${ticketId}.`);
 
         if (boss) {
-          await boss.send("support-ticket-sync-queue", {
-            type: "ticket.message",
-            ticketId,
-            message: content.trim(),
-            isAgent: !!agentId,
-          });
+          try {
+            await boss.send("support-ticket-sync-queue", {
+              type: "ticket.message",
+              ticketId,
+              message: content.trim(),
+              isAgent: !!agentId,
+            });
+            console.log(`[SOCKET] Queued background sync for message ${message.id}`);
+          } catch (syncError) {
+            console.error(`[SOCKET] Failed to queue background sync:`, syncError);
+          }
         }
 
-        io.to(`ticket:${ticketId}`).emit("ticket-message", message);
+        const roomName = `ticket:${ticketId}`;
+        console.log(`[SOCKET] Broadcasting 'ticket-message' to room: ${roomName}`);
+        io.to(roomName).emit("ticket-message", message);
+        console.log(`[SOCKET] Broadcast complete for message ${message.id}`);
       } catch (error) {
         console.error("Socket.IO save error", error);
         socket.emit("ticket-error", { message: "Failed to save ticket message" });
@@ -99,3 +120,5 @@ nextApp.prepare().then(async () => {
     console.log(`> Express + Next ready on http://localhost:${port}`);
   });
 });
+
+export const getIO = () => ioInstance;
