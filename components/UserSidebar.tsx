@@ -55,9 +55,8 @@ const menuSections: MenuSection[] = [
         icon: AlertCircle, 
         id: "support",
         subItems: [
-          { label: "Tickets", href: "/dashboard/support/tickets" },
-          { label: "Chats", href: "/dashboard/support/chats" },
-          { label: "FAQs", href: "/dashboard/support/faqs" },
+          { label: "New Ticket", href: "/dashboard/support" },
+          { label: "My Tickets", href: "/dashboard/tickets" },
         ]
       },
       { 
@@ -145,7 +144,7 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
             <ul className="space-y-1">
               {section.items.map((item) => {
                 const active = item.href ? isActive(item.href) : false;
-                const IconComponent = item.icon;
+                const IconComponent = item.icon as any;
                 const isOpen = item.id ? openMenus[item.id] : false;
                 
                 // Check if any sub-item is active to highlight parent
@@ -164,7 +163,9 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
                             : "text-gray-600 hover:bg-gray-50 font-[400]"
                         }`}
                       >
-                        <IconComponent size={18} strokeWidth={active ? 2 : 1.5} />
+                        {IconComponent && (
+                          <IconComponent size={18} strokeWidth={active ? 2 : 1.5} />
+                        )}
                         <span className="flex-1 text-[13px]">{item.label}</span>
                       </Link>
                     ) : (
@@ -179,7 +180,9 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
                         }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <IconComponent size={18} strokeWidth={isParentActive ? 2 : 1.5} />
+                          {IconComponent && (
+                            <IconComponent size={18} strokeWidth={isParentActive ? 2 : 1.5} />
+                          )}
                           <span className="text-[13px] font-[500]">{item.label}</span>
                         </div>
                         {isOpen ? (

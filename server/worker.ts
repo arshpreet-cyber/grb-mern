@@ -1,8 +1,8 @@
 import "dotenv/config";
-import { boss, initQueue } from "./queue";
-import { sendEmailNotification, buildTicketCreatedEmail, buildTicketReplyEmail } from "./email";
-import { createZohoTicket, addZohoTicketReply, isZohoConfigured } from "./services/zohoService";
-import prisma from "../lib/prisma";
+import { boss, initQueue } from "./queue.ts";
+import { sendEmailNotification, buildTicketCreatedEmail, buildTicketReplyEmail } from "./email.ts";
+import { createZohoTicket, addZohoTicketReply, isZohoConfigured } from "./services/zohoService.ts";
+import prisma from "../lib/prisma.ts";
 
 async function startWorkers() {
   await initQueue();
