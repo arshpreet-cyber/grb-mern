@@ -49,7 +49,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
       socketRef.current.disconnect();
     }
 
-    const socket = io(window.location.origin, {
+    const socket = io({
       transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
     });
@@ -73,7 +73,12 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     });
 
     socket.on("ticket-message", (message: TicketMessage) => {
-      setMessages((prev) => [...prev, message]);
+      console.log("[SOCKET] Received new message:", message);
+      setMessages((prev) => {
+        // Prevent duplicates
+        if (prev.some(m => m.id === message.id)) return prev;
+        return [...prev, message];
+      });
     });
 
     socket.on("ticket-error", ({ message }: { message: string }) => {
@@ -159,12 +164,18 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
       <div className="flex-1 space-y-6 overflow-y-auto bg-slate-50 p-6">
         {/* Initial Ticket Query */}
         {ticket && (
-          <div className="flex justify-start">
+          <div className={`flex ${isAdmin ? "justify-start" : "justify-end"}`}>
             <div className="max-w-[85%] space-y-1">
-              <div className="rounded-2xl rounded-tl-none bg-white p-4 shadow-sm ring-1 ring-slate-200">
-                <p className="text-sm leading-relaxed text-slate-800">{ticket.query}</p>
+              <div 
+                className={`rounded-2xl p-4 shadow-sm ${
+                  !isAdmin 
+                    ? "rounded-tr-none bg-violet-600 text-white" 
+                    : "rounded-tl-none bg-white text-slate-800 ring-1 ring-slate-200"
+                }`}
+              >
+                <p className="text-sm leading-relaxed">{ticket.query}</p>
               </div>
-              <p className="pl-1 text-[10px] font-medium text-slate-400">
+              <p className={`px-1 text-[10px] font-medium text-slate-400 ${!isAdmin ? "text-right" : "text-left"}`}>
                 {new Date(ticket.createdAt).toLocaleString()} • Original Request
               </p>
             </div>
@@ -172,7 +183,8 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
         )}
 
         {messages.map((message) => {
-          const fromAdmin = message.direction === "2";
+          const direction = String(message.direction);
+          const fromAdmin = direction === "2";
           const isOwnMessage = isAdmin ? fromAdmin : !fromAdmin;
 
           return (
