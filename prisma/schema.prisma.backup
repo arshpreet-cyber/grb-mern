@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int
+  content    String
+  authorName String
+  createdAt  DateTime @default(now())
+}
+
+// Define your specific roles here
+enum Role {
+  ADMIN
+  MANAGER
+  SEO
+  DEVELOPER
+  TESTER
+  USER
+}
+
+// Make sure this is the ONLY "model User" in the entire file!
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String?
+  phone     String?
+  role      Role     @default(USER)
+  status    String   @default("passive")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  orders    Order[]
+  tickets   Ticket[]
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  orderNumber     String   @unique
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount          Float
+  paymentMethod   String
+  status          String   @default("Pending") // Pending, Complete, Cancelled
+  paymentStatus   String   @default("Pending") // Pending, Complete, Failed
+  date            DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Ticket {
+  id             Int             @id @default(autoincrement())
+  ticketNumber   String?         @db.VarChar(50)
+  userId         String?         @db.VarChar(255)
+  user           User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo     String?         @db.VarChar(30)
+  name           String?         @db.VarChar(225)
+  email          String?         @db.VarChar(225)
+  phone          String?         @db.VarChar(255)
+  subject        String?         @db.Text
+  query          String?         @db.Text
+  ticketId       String          @unique @default(cuid()) @db.VarChar(255)
+  byAdmin        String          @default("1") @db.VarChar(1)
+  ticketType     Int?
+  status         String          @default("1") @db.VarChar(1)
+  readStatus     String          @default("1") @db.VarChar(1)
+  repliedStatus  String          @default("1") @db.VarChar(1)
+  userReadStatus String?         @db.VarChar(1)
+  zohoTicketId   String?         @db.VarChar(255)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  repliedAt      DateTime?
+  lastThreadId   String?         @db.VarChar(255)
+  adminReplyAt   DateTime?
+  deletedAt      DateTime?
+  threads        TicketThread[]
+}
+
+model TicketThread {
+  id         Int      @id @default(autoincrement())
+  ticketId   String   @db.VarChar(255)
+  ticket     Ticket   @relation(fields: [ticketId], references: [ticketId], onDelete: Cascade)
+  agentId    String?  @db.VarChar(255)
+  content    String?  @db.Text
+  media      String?  @db.VarChar(255)
+  direction  String   @default("1") @db.VarChar(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}
+
+model Revenue {
+  id        String   @id @default(cuid())
+  month     String
+  year      Int
+  today     Float    @default(0)
+  monthly   Float    @default(0)
+  yearly    Float    @default(0)
+  allTime   Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Page {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  status          String   @default("Draft") // Draft, Published
+  titleImage      String?
+  opengraphImage  String?
+  canonicalLink   String?
+  robotsText      String   @default("index, follow")
+  keywords        String?
+  metaTitle       String?
+  metaDescription String?
+  inSitemap       Boolean  @default(true)
+  schemaCode      String?
+  headerScript    String?
+  bodyScript      String?
+  footerScript    String?
+  sections        Json     @default("[]")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// 1-blog, 2-banner, 3-category, 4-testimonial, 5-employees/users, 6-pages, 7-portfolio, 8-services, 9-logo
+enum AttachmentType {
+  BLOG
+  BANNER
+  CATEGORY
+  TESTIMONIAL
+  USER
+  PAGE
+  PORTFOLIO
+  SERVICE
+  LOGO
+}
+
+model Attachment {
+  id        Int             @id @default(autoincrement())
+  mediaUrl  String?
+  alt       String?
+  isTitle   String?         // If image set as title for blog or page
+  mediaType String?
+  type      AttachmentType
+  createdAt DateTime?       @default(now())
+  updatedAt DateTime?       @updatedAt
+  deletedAt DateTime?       // Soft delete
+}

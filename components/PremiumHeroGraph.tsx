@@ -42,7 +42,6 @@ function GraphLine({ points }: { points: THREE.Vector3[] }) {
       dashed={false}
       transparent
       opacity={0.9}
-      vertexColors={false}
       toneMapped={false}
     />
   );
