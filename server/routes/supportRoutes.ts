@@ -1,5 +1,5 @@
 import express from "express";
-import { boss } from "../queue";
+import { boss } from "../queue.ts";
 import {
   createTicket,
   createTicketMessage,
@@ -7,7 +7,7 @@ import {
   getTicketMessages,
   getTickets,
   updateTicket,
-} from "../services/ticketService";
+} from "../services/ticketService.ts";
 
 const router = express.Router();
 
