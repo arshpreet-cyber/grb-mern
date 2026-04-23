@@ -181,21 +181,21 @@ export default function DemoDashboard() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* <input 
+          {/* <div className="flex items-center gap-3">
+            <input 
               type="text" 
               placeholder="Search orders..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="px-4 py-2 border border-gray-200 rounded-lg text-[13px] outline-none focus:border-gray-400"
-            /> */}
+            />
             <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50 whitespace-nowrap">
               Sort By <ChevronDown size={16} className="text-gray-400" />
             </button>
             <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50">
               <Filter size={16} /> Filter
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Table */}
@@ -251,13 +251,13 @@ export default function DemoDashboard() {
                   </td>
                     <td className="px-5 py-5">
                       {order.status !== "Complete" && (
-                        <div className="flex flex-col gap-2 min-w-[120px]">
-                          <select className="w-full border border-gray-200 rounded-md px-2 py-1 text-[12px] bg-white cursor-pointer outline-none">
+                        <div className="flex flex-col gap-2">
+                        <select className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-slate-600 outline-none w-32">
                             <option>Choose Method</option>
                             <option>Credit Card</option>
                             <option>PayPal</option>
                           </select>
-                          <button className="w-full bg-[#0092FF] text-white text-[12px] font-medium py-1.5 rounded-md transition-colors">Pay Now</button>
+                          <button className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-[400] text-white transition w-32">Pay Now</button>
                         </div>
                       )}
                     </td>

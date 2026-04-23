@@ -27,49 +27,49 @@ const menuSections: MenuSection[] = [
       { label: "Visit Site", href: "/", icon: Globe },
       { label: "User Dashboard", href: "/dashboard", icon: User },
       { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-      { label: "Clear Cache", href: "/admin/cache", icon: RefreshCw },
+      // { label: "Clear Cache", href: "/admin/cache", icon: RefreshCw },
     ],
   },
   {
     title: "Pages",
     items: [
       { label: "Pages", href: "/admin/pages", icon: FileText },
-      { label: "Header & Footer", href: "/admin/pages/header-footer", icon: PanelTopDashed },
-      { label: "Menu", href: "/admin/pages/menu", icon: Menu },
-      { label: "Header & Footer Scripts", href: "/admin/pages/scripts", icon: Code },
-      { label: "File Editor", href: "/admin/pages/editor", icon: FileEdit },
-      { label: "Modules", href: "/admin/pages/modules", icon: Blocks },
-      { label: "Affiliates", href: "/admin/pages/affiliates", icon: Handshake },
+      // { label: "Header & Footer", href: "/admin/pages/header-footer", icon: PanelTopDashed },
+      // { label: "Menu", href: "/admin/pages/menu", icon: Menu },
+      // { label: "Header & Footer Scripts", href: "/admin/pages/scripts", icon: Code },
+      // { label: "File Editor", href: "/admin/pages/editor", icon: FileEdit },
+      // { label: "Modules", href: "/admin/pages/modules", icon: Blocks },
+      // { label: "Affiliates", href: "/admin/pages/affiliates", icon: Handshake },
     ],
   },
-  {
-    title: "Packages",
-    items: [
-      { label: "Product Packages Lists", href: "/admin/packages/products", icon: Package },
-    ],
-  },
-  {
-    title: "Orders",
-    items: [
-      { label: "Upload Excel for Order", href: "/admin/orders/upload", icon: Upload },
-    ],
-  },
+  // {
+  //   title: "Packages",
+  //   items: [
+  //     { label: "Product Packages Lists", href: "/admin/packages/products", icon: Package },
+  //   ],
+  // },
+  // {
+  //   title: "Orders",
+  //   items: [
+  //     { label: "Upload Excel for Order", href: "/admin/orders/upload", icon: Upload },
+  //   ],
+  // },
   {
     title: "Products",
     items: [
       { label: "Products", href: "/admin/products", icon: ShoppingBag },
-      { label: "Products Pricing Rules", href: "/admin/products/pricing", icon: CircleDollarSign },
+      // { label: "Products Pricing Rules", href: "/admin/products/pricing", icon: CircleDollarSign },
       { label: "Coupons", href: "/admin/coupons", icon: Tag },
-      { label: "Custom Forms", href: "/admin/products/forms", icon: ReceiptText },
+      // { label: "Custom Forms", href: "/admin/products/forms", icon: ReceiptText },
     ],
   },
-  {
-    title: "Staff Management",
-    items: [
-      { label: "Create Staff User", href: "/admin/staff/create", icon: UserPlus },
-      { label: "View Staff Members", href: "/admin/staff", icon: Users },
-    ],
-  },
+  // {
+  //   title: "Staff Management",
+  //   items: [
+  //     { label: "Create Staff User", href: "/admin/staff/create", icon: UserPlus },
+  //     { label: "View Staff Members", href: "/admin/staff", icon: Users },
+  //   ],
+  // },
   {
     title: "Order Management",
     items: [
@@ -81,8 +81,8 @@ const menuSections: MenuSection[] = [
     items: [
       { label: "Account Details", href: "/admin/account", icon: Settings },
       { label: "Users", href: "/admin/users", icon: Users },
-      { label: "Reports", href: "/admin/reports", icon: BarChart },
-      { label: "Reminder", href: "/admin/reminder", icon: Bell },
+      // { label: "Reports", href: "/admin/reports", icon: BarChart },
+      // { label: "Reminder", href: "/admin/reminder", icon: Bell },
       {
         label: "Media",
         icon: ImageIcon,
@@ -91,19 +91,19 @@ const menuSections: MenuSection[] = [
           { label: "All Media", href: "/admin/media?tab=all" },
         ],
       },
-      { label: "Blogs", href: "/admin/blogs", icon: PenTool },
-      { label: "FAQs", href: "/admin/faqs", icon: HelpCircle },
+      // { label: "Blogs", href: "/admin/blogs", icon: PenTool },
+      // { label: "FAQs", href: "/admin/faqs", icon: HelpCircle },
       { label: "Tickets", href: "/admin/tickets", icon: Headphones, badge: "207" },
-      { label: "Testimonials", href: "/admin/testimonials", icon: MessageSquare, badge: "7" },
+      // { label: "Testimonials", href: "/admin/testimonials", icon: MessageSquare, badge: "7" },
     ],
   },
-  {
-    title: "Settings",
-    items: [
-      { label: "Settings", href: "/admin/settings", icon: Settings },
-      { label: "Logs", href: "/admin/logs", icon: History },
-    ],
-  },
+  // {
+  //   title: "Settings",
+  //   items: [
+  //     { label: "Settings", href: "/admin/settings", icon: Settings },
+  //     { label: "Logs", href: "/admin/logs", icon: History },
+  //   ],
+  // },
 ];
 
 interface AdminSidebarProps {
