@@ -72,7 +72,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
 
         {/* Sections */}
         {sections.length > 0 && (
-          <div className="mx-auto max-w-4xl px-5 pb-16 space-y-10">
+          <div className="mx-auto max-w-12xl px-5 pb-16 space-y-10">
             {sections.map((section) => (
               <div key={section.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-8">
                 {section.heading && (
