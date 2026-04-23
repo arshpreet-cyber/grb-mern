@@ -190,7 +190,7 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
                             : "text-gray-600 hover:bg-gray-100"
                         }`}
                       >
-                        <IconComponent size={18} />
+                        {/* <IconComponent /> */}
                         <span className="flex-1 text-left">{item.label}</span>
                         <ChevronDown 
                           size={16} 
@@ -233,7 +233,7 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
                           : "text-gray-600 hover:bg-gray-100"
                       }`}
                     >
-                      <IconComponent size={18} />
+                      {/* <IconComponent /> */}
                       <span className="flex-1">{item.label}</span>
                       
                       {item.badge && (
