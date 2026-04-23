@@ -34,7 +34,10 @@ nextApp.prepare().then(async () => {
   });
 
   io.on("connection", (socket) => {
+    console.log("Socket connected:", socket.id);
+
     socket.on("join-ticket", async (ticketId: string) => {
+      console.log(`Socket ${socket.id} joining ticket: ${ticketId}`);
       if (typeof ticketId !== "string" || !ticketId) return;
       socket.join(`ticket:${ticketId}`);
 
@@ -43,6 +46,7 @@ nextApp.prepare().then(async () => {
           where: { ticketId },
           orderBy: { createdAt: "asc" },
         });
+        console.log(`Sending history of ${history.length} messages for ticket: ${ticketId}`);
         socket.emit("ticket-history", history);
       } catch (error) {
         console.error("Failed to load ticket history", error);
@@ -50,8 +54,10 @@ nextApp.prepare().then(async () => {
     });
 
     socket.on("send-ticket-message", async (payload) => {
+      console.log(`Received message payload from ${socket.id}:`, payload);
       const { ticketId, content, agentId, direction, media } = payload ?? {};
       if (typeof ticketId !== "string" || !ticketId || typeof content !== "string" || !content.trim()) {
+        console.error("Invalid ticket payload");
         socket.emit("ticket-error", { message: "Invalid ticket payload" });
         return;
       }
@@ -66,6 +72,7 @@ nextApp.prepare().then(async () => {
             direction: typeof direction === "string" ? direction : "1",
           },
         });
+        console.log(`Created message ${message.id} for ticket ${ticketId}. Emitting to room ticket:${ticketId}`);
 
         if (boss) {
           await boss.send("support-ticket-sync-queue", {
@@ -81,6 +88,10 @@ nextApp.prepare().then(async () => {
         console.error("Socket.IO save error", error);
         socket.emit("ticket-error", { message: "Failed to save ticket message" });
       }
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected:", socket.id);
     });
   });
 

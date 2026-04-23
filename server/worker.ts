@@ -65,7 +65,7 @@ async function startWorkers() {
             subject: subject || "New Ticket",
             description: query,
             contact: {
-              email: email || "unknown@example.com",
+              email: email || "mohit@adaired",
               firstName: name,
               phone: phone
             }
