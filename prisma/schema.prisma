@@ -43,60 +43,94 @@ model User {
 
 model Order {
   id                  String    @id @default(cuid())
-  isOrderApi          Int       @default(1) @map("isOrderApi")  // 1-Website, 2-Api
   orderNumber         String?   @unique
   userId              String?
-  user                User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  paymentId           String?
-  subscriptionId      String?
-  rzpaySubscriptionId String?
-  itemName            String?
-  itemId              String?
-  isRecurring         Int?
-  firstName           String?
-  lastName            String?
-  currency            String?
-  symbol              String?
   amount              Float?
-  couponId            String?
-  coupon              String?
-  couponDiscount      Int?
-  email               String?
-  billingCountry      String?
-  billingCity         String?
-  billingStreet       String?
-  billingZip          String?
-  shippingCountry     String?
-  shippingCity        String?
-  shippingStreet      String?
-  shippingZip         String?
-  status              String    @default("1") // 1-pending,2-completed,3-hold,4-cancelled,5-processing,6-refund,7-failed
-  paymentStatus       String?   @default("1") // 1-unpaid,2-paid,3-cancelled,4-unconfirmed
-  paymentMethod       String?   @default("1") // 1-bitcoin,2-razorpay,3-stripe,4-paypal,5-bankTransfer,6-binance
-  workStatus          Int?      // 1-pending,2-processing,3-completed,4-cancelled
-  detailsFilled       Boolean   @default(false)
-  detailsFilledAt     DateTime?
-  duedate             DateTime?
-  paymentDate         DateTime?
-  purchaseType        String?
-  isRenewal           Boolean   @default(false)
+  paymentMethod       String?   @default("1")
+  status              String    @default("1")
+  paymentStatus       String?   @default("1")
   date                DateTime  @default(now())
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  billingCity         String?
+  billingCountry      String?
+  billingStreet       String?
+  billingZip          String?
   completedOn         DateTime?
+  coupon              String?
+  couponDiscount      Int?
+  couponId            String?
+  currency            String?
   deletedAt           DateTime?
+  detailsFilled       Boolean   @default(false)
+  detailsFilledAt     DateTime?
+  duedate             DateTime?
+  email               String?
+  firstName           String?
+  isOrderApi          Int       @default(1)
+  isRecurring         Int?
+  isRenewal           Boolean   @default(false)
+  itemId              String?
+  itemName            String?
+  lastName            String?
+  paymentDate         DateTime?
+  paymentId           String?
+  purchaseType        String?
+  rzpaySubscriptionId String?
+  shippingCity        String?
+  shippingCountry     String?
+  shippingStreet      String?
+  shippingZip         String?
+  subscriptionId      String?
+  symbol              String?
+  workStatus          Int?
+  user                User?     @relation(fields: [userId], references: [id])
 }
 
 model Ticket {
-  id         String   @id @default(cuid())
-  ticketId   String   @unique
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title      String
-  description String?
-  status     String   @default("Open") // Open, Pending, Closed, Awaiting Reply
+  id             String          @id @map("id")
+  ticketNumber   String?         @db.VarChar(50) @map("ticket_number")
+  userId         String          @map("user_id")
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo     String?         @db.VarChar(30) @map("assigned_to")
+  name           String?         @db.VarChar(225)
+  email          String?         @db.VarChar(225)
+  phone          String?         @db.VarChar(255)
+  subject        String?
+  query          String?
+  title          String          @default("")
+  ticketId       String          @unique @default(cuid()) @db.VarChar(255) @map("ticket_id")
+  byAdmin        Int?            @default(1) @map("by_admin")
+  ticketType     Int?            @map("ticket_type")
+  status         String          @default("Open")
+  readStatus     Int?            @default(1) @db.SmallInt @map("read_status")
+  repliedStatus  Int?            @db.SmallInt @map("replied_status")
+  userReadStatus Int?            @db.SmallInt @map("user_read_status")
+  zohoTicketId   String?         @db.VarChar(255) @map("zohoTicketId")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  repliedAt      DateTime?       @db.Timestamp(6) @map("replied_at")
+  lastThreadId   String?         @db.VarChar(255) @map("last_thread_id")
+  adminReplyAt   DateTime?       @db.Timestamp(6) @map("admin_reply_at")
+  deleted_at     DateTime?       @db.Timestamp(6)
+  threads        TicketThread[]
+
+  @@map("Ticket")
+}
+
+model TicketThread {
+  id         Int      @id @default(autoincrement())
+  ticketId   String   @db.VarChar(255)
+  ticket     Ticket   @relation(fields: [ticketId], references: [ticketId], onDelete: Cascade)
+  agentId    String?  @db.VarChar(255)
+  content    String?  @db.Text
+  media      String?  @db.VarChar(255)
+  direction  String   @default("1") @db.VarChar(1)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+
+  @@map("TicketThread")
 }
 
 model Revenue {
@@ -250,4 +284,91 @@ model Attachment {
   createdAt DateTime?       @default(now())
   updatedAt DateTime?       @updatedAt
   deletedAt DateTime?       // Soft delete
+}
+
+model Product {
+  id                Int            @id @default(autoincrement())
+  userId            String?
+  formId            Int?
+  isAged            YesNo          @default(NO)
+  isZohoItem        YesNo?
+  isFreeProduct     Int?
+  zohoItemId        String?
+  bannerTitle       String?
+  title             String?
+  content           String?
+  categoryId        String?
+  subcategoryId     String?
+  accountTag        String?        @db.VarChar(30)
+  stock             String?
+  replacementPolicy String?
+  minimumQuantity   Int            @default(1)
+  seeDetailLink     String?
+  isMultiplePrice   Int?
+  price             String?
+  dropdownPrice     String?
+  isMonthly         Int?
+  colorCode         String?
+  slug              String?
+  keywords          String?
+  metaDescription   String?
+  metaTitle         String?
+  canonicalLink     String?
+  media             String?
+  allowMultiple     YesNo?
+  paymentType       PaymentType?
+  productType       ProductType?
+  catType           CatType?
+  formAttached      String?        @db.VarChar(30)
+  priority          Int?           @default(1000)
+  status            ProductStatus?
+  platformRange     Int?
+  createdAt         DateTime?      @default(now())
+  updatedAt         DateTime?
+  deletedAt         DateTime?
+}
+
+model coupons {
+  id            Int       @id @default(autoincrement())
+  code          String?
+  discount      String?
+  discount_type String?
+  discount_on   String?
+  quantity      String?
+  expiry        String?
+  discount_for  Int       @default(1)
+  meta          String?
+  status        String?
+  created_at    DateTime? @default(now())
+  updated_at    DateTime?
+  deleted_at    DateTime?
+}
+
+enum CatType {
+  REVIEWS
+  SEO
+  SMM
+  ACCOUNTS
+  GBP
+}
+
+enum PaymentType {
+  ONE_TIME
+  RECURRING
+}
+
+enum ProductStatus {
+  PUBLISH
+  DRAFT
+  UNUSED
+}
+
+enum ProductType {
+  SERVICE
+  GOODS
+}
+
+enum YesNo {
+  YES
+  NO
 }
