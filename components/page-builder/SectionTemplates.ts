@@ -14,7 +14,7 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   "description": "Centered hero section with animated typing text and highlight line",
   "defaultContent": `<style>
   .hero-section { background: linear-gradient(to bottom, #FDFCF200 0%, #FDFCF2FF 100%); text-align: center; padding: 45px 20px 45px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; }
-  .hero-content { max-width: 700px; margin: 0 auto; }
+  .hero-content { max-width: 350px; margin: 0 auto; }
   .hero-heading { font-size: 40px; font-weight: 350; color: #1a1a1a; line-height: 1.3; margin: 0 0 7px; letter-spacing: -0.02em; }
   .hero-heading strong { font-weight: 510; }
   .bar { width: 7px; height: 50px; flex-shrink: 0; }
@@ -137,7 +137,7 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
       </div>
       <div>
         <h2 class="text-3xl lg:text-5xl font-bold text-black leading-tight mb-6">
-          Where Reputation Meets <span class="text-blue-600 font-bold">Real Business Growth</span>
+          Where Reputation Meets <span class="text-yellow-600 font-bold">Real Business Growth</span>
         </h2>
         <p class="text-gray-600 leading-relaxed mb-6">
           A strong online presence boosts visibility. But to turn that visibility into growth, you need the right approach. This is where a solid review strategy matters.
@@ -356,4 +356,36 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   <p style="font-size:16px;color:#555;line-height:1.8;">Add more paragraphs as needed. You can also add <strong>bold text</strong>, <em>italic text</em>, or <a href="#">links</a>.</p>
 </section>`,
   },
+{
+  "type": "custom-platform-cta",
+  "icon": "⭐",
+  "label": "CTA — Custom Platform",
+  "description": "Call to action section with floating stars and custom platform messaging using Tailwind",
+  "defaultContent": `<section id="custom-platform" class="relative w-full py-24 md:py-32 overflow-hidden flex items-center justify-center" style="background-color: #FFFEF9;">
+  
+  <img src="https://beta.getreviews.buzz/storage/app/blog/0339272001776325180_golden-star-icon-transparent-background-2.png" 
+       alt="" 
+       class="absolute z-0 pointer-events-none hidden md:block" 
+       style="width: 280px; top: 50%; left: 5%; transform: translateY(-50%) rotate(15deg); opacity: 0.35;">
+  
+  <img src="https://beta.getreviews.buzz/storage/app/blog/0339272001776325180_golden-star-icon-transparent-background-2.png" 
+       alt="" 
+       class="absolute z-0 pointer-events-none hidden md:block" 
+       style="width: 280px; top: 50%; right: 5%; transform: translateY(-50%) rotate(-15deg); opacity: 0.35;">
+
+  <div class="relative z-10 max-w-350 mx-auto px-4 text-center">
+    <h2 class="text-3xl md:text-[42px] leading-tight text-black mb-5" style="font-weight: 400;">
+      Can’t Find Your <strong style="font-weight: 700;">Platform</strong><br>Listed Above?
+    </h2>
+    
+    <p class="text-base md:text-[18px] text-[#4b5563] max-w-[800px] mx-auto mb-10 leading-relaxed">
+      Share your preferred platform with us, and our team will design a customized approach <br> to help you build a credible review presence where it matters the most.
+    </p>
+
+    <a href="/contact-us" class="inline-flex items-center justify-center text-black font-medium rounded-lg transition-transform hover:-translate-y-1 shadow-sm hover:shadow" style="background-color: #FCD12A; padding: 14px 40px; font-size: 16px; gap: 8px;">
+      Contact Us <span style="font-size: 18px; line-height: 1;">&rarr;</span>
+    </a>
+  </div>
+</section>`
+},
 ];

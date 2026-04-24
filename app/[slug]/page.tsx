@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
-import Link from "next/link";
-import Navbar from "@/components/HomeNavbar"
+import HomeNavbar from "@/components/HomeNavbar"
 
 type Section = { id: string; type: string; heading: string; content: string };
 
@@ -47,17 +46,7 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
       )}
 
       <div className="min-h-screen bg-white text-slate-900">
-        {/* Navbar */}
-        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100 shadow-sm">
-          {/* <div className="mx-auto max-w-7xl px-5 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-violet-600 to-indigo-700 text-sm font-bold text-white shadow">G</div>
-              <span className="text-lg font-bold text-slate-900">GetReviews<span className="text-violet-600">.buzz</span></span>
-            </Link>
-            <Link href="/" className="text-sm text-slate-500 hover:text-violet-600 transition">← Back to Home</Link>
-          </div> */}
-          <Navbar />
-        </header>
+        <HomeNavbar />
 
 
 
