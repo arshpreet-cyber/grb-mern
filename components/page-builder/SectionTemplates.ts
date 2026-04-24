@@ -388,4 +388,98 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   </div>
 </section>`
 },
+{
+  "type": "why-trust-us",
+  "icon": "🛡️",
+  "label": "Why Trust Us Grid",
+  "description": "A 6-card grid layout using custom SVG icons for trust factors",
+  "defaultContent": `<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Why Do Businesses Trust Get Reviews Buzz?</h2>
+    <p class="text-gray-600 max-w-2xl mx-auto mb-12">As your reliable partner, we help your business strengthen their online reputation, build lasting customer trust, and drive consistent growth through effective review strategies.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0809068001728298556_experience.svg" alt="Experience" class="w-12 h-12 mb-4">
+        <h3 class="text-xl font-semibold mb-2">Experience and Expertise</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">Our team brings hands-on experience in digital reputation management, helping businesses enhance visibility and build stronger customer trust.</p>
+      </div>
+      
+      <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0744774001728298333_Idea.svg" alt="Solutions" class="w-12 h-12 mb-4">
+        <h3 class="text-xl font-semibold mb-2">Tailored Solutions</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">Every business is different. That's why we create customized strategies designed to match your specific goals, audience, and market needs.</p>
+      </div>
+      
+      <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0746809001728298333_customer.svg" alt="Satisfaction" class="w-12 h-12 mb-4">
+        <h3 class="text-xl font-semibold mb-2">Customer Satisfaction Focused</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">We're committed to a seamless experience, ensuring every client sees real value and measurable improvement in their online presence.</p>
+      </div>
+      
+      <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0503869001728298428_global.svg" alt="Global Reach" class="w-12 h-12 mb-4">
+        <h3 class="text-xl font-semibold mb-2">Global Reach, Local Understanding</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">We help you connect with a wider audience while maintaining strong relevance in your local market, ensuring balanced and effective growth.</p>
+      </div>
+      
+      <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0751261001728298333_privacy.svg" alt="Privacy" class="w-12 h-12 mb-4">
+        <h3 class="text-xl font-semibold mb-2">Privacy & Security</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">Your data and business information are handled with the highest level of confidentiality and care at every stage, ensuring complete protection.</p>
+      </div>
+      
+      <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0748952001728298333_support.svg" alt="Support" class="w-12 h-12 mb-4">
+        <h3 class="text-xl font-semibold mb-2">Dedicated Support & Guidance</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">Our team is always available to support you. From strategy to execution, our experts are available to assist whenever you need it, with timely guidance.</p>
+      </div>
+    </div>
+  </div>
+</section>`
+},
+{
+  "type": "faq-section",
+  "icon": "❓",
+  "label": "FAQ Accordion Section",
+  "description": "A 2-column layout with heading and accordion-style FAQ list",
+  "defaultContent": `<section class="bg-white py-16 lg:py-24 font-sans">
+  <div class="max-w-[1300px] mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-[490px_1fr] gap-12 lg:gap-24 items-start">
+      
+      <div class="lg:sticky lg:top-24">
+        <h2 class="text-3xl md:text-4xl font-normal text-gray-900 leading-tight mb-6">
+          Frequently <strong class="font-bold">Asked<br />Questions</strong>
+        </h2>
+        <p class="text-gray-600 text-lg mb-8">
+          Find clear answers to common questions about our services, process, and delivery timelines.
+        </p>
+        <a href="/contact-us" class="inline-flex items-center gap-2 border-2 border-black px-6 py-3 rounded-lg font-medium hover:bg-black hover:text-white transition-all">
+          Reach out today &rarr;
+        </a>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="border border-gray-200 rounded-xl p-6 shadow-sm">
+          <h3 class="font-semibold text-lg mb-2">What Services Does Get Reviews Buzz Provide?</h3>
+          <p class="text-gray-600 text-sm">We help businesses strengthen their online reputation through review growth strategies, reputation management, and digital marketing solutions.</p>
+        </div>
+        <div class="border border-gray-200 rounded-xl p-6 shadow-sm">
+          <h3 class="font-semibold text-lg mb-2">How Long Does It Take To See Results?</h3>
+          <p class="text-gray-600 text-sm">Most businesses begin to see noticeable improvements within 7 to 14 days, depending on the platform, industry, and strategy.</p>
+        </div>
+        <div class="border border-gray-200 rounded-xl p-6 shadow-sm">
+          <h3 class="font-semibold text-lg mb-2">Are The Reviews From Real People?</h3>
+          <p class="text-gray-600 text-sm">We focus on promoting genuine customer feedback and building a credible review presence through ethical strategies.</p>
+        </div>
+        <div class="border border-gray-200 rounded-xl p-6 shadow-sm">
+          <h3 class="font-semibold text-lg mb-2">What Platforms Do You Support?</h3>
+          <p class="text-gray-600 text-sm">We support major platforms including Google, Trustpilot, Yelp, Facebook, and others based on your specific requirements.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>`
+},
 ];
