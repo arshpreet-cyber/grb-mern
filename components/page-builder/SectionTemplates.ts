@@ -7,66 +7,152 @@ export type SectionTemplate = {
 };
 
 export const SECTION_TEMPLATES: SectionTemplate[] = [
-  {
-    type: "hero",
-    icon: "🖼️",
-    label: "Hero Banner",
-    description: "Full-width hero with heading, text and CTA button",
-    defaultContent: `<section class="hero-banner" style="background:linear-gradient(135deg,#1e1b4b,#4c1d95);padding:80px 40px;text-align:center;color:#fff;">
-  <h1 style="font-size:48px;font-weight:800;margin-bottom:16px;">Your Headline Here</h1>
-  <p style="font-size:18px;opacity:0.85;max-width:600px;margin:0 auto 32px;">Supporting text that explains your value proposition clearly and concisely.</p>
-  <a href="#" style="background:#FFCE2E;color:#000;padding:14px 32px;border-radius:8px;font-weight:700;text-decoration:none;font-size:16px;">Get Started →</a>
-</section>`,
-  },
+{
+  "type": "hero-typing",
+  "icon": "⌨️✨",
+  "label": "Hero — Typing Animation",
+  "description": "Centered hero section with animated typing text and highlight line",
+  "defaultContent": `<style>
+  .hero-section { background: linear-gradient(to bottom, #FDFCF200 0%, #FDFCF2FF 100%); text-align: center; padding: 45px 20px 45px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; }
+  .hero-content { max-width: 700px; margin: 0 auto; }
+  .hero-heading { font-size: 40px; font-weight: 350; color: #1a1a1a; line-height: 1.3; margin: 0 0 7px; letter-spacing: -0.02em; }
+  .hero-heading strong { font-weight: 510; }
+  .bar { width: 7px; height: 50px; flex-shrink: 0; }
+  .highlight-line { display: inline-flex; align-items: center; gap: 10px; background-color: #FFE58233; min-height: 64px; vertical-align: middle; padding: 4px 8px; box-sizing: border-box; }
+  
+  #hero-typing-text { display: inline-block; min-width: 0px; text-align: left; line-height: 1.3; vertical-align: middle; }
+  .hero-subtext { font-size: 16px; color: #000000; margin: 0; letter-spacing: 0.01em; }
+  .hero-cursor { display: inline-block; width: 3px; height: 1em; background: #1a1a1a; margin-left: 3px; vertical-align: middle; animation: blink 0.75s step-end infinite; }
+  
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  
+  @media (max-width: 1470px) { .hero-heading { font-size: 32px; } .hero-subtext { font-size: 14px; } .hero-section { padding: 40px 16px 52px; } .highlight-line { min-height: 52px; } #hero-typing-text { min-width: 0px; } }
+  @media (max-width: 768px) { .hero-section { padding: 40px 16px; } .hero-content { max-width: 100%; } .hero-heading { font-size: 26px; line-height: 1.3; letter-spacing: -0.01em; } .hero-subtext { font-size: 14px; margin-top: 8px; } .highlight-line { gap: 6px; padding: 2px 6px; flex-wrap: nowrap; justify-content: center; min-height: 44px; } .bar { width: 5px; height: 32px; } #hero-typing-text { font-size: 18px; line-height: 1.3; min-width: 0px; } }
+  @media (max-width: 480px) { .hero-heading { font-size: 22px; } #hero-typing-text { font-size: 16px; min-width: 0px; } .hero-subtext { font-size: 13px; } .bar { height: 26px; } .highlight-line { min-height: 36px; } }
+</style>
+
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-heading">
+      Turn Reputation into <strong>Revenue</strong> with<br>
+      <span class="highlight-line">
+        <img src="https://beta.getreviews.buzz/storage/app/blog/0635691001775712992_Line-18.png" alt="|" class="bar">
+        <strong>
+          <span id="hero-typing-text">Hotel Reviews</span><span class="hero-cursor"></span>
+        </strong>
+        <img src="https://beta.getreviews.buzz/storage/app/blog/0227099001775713012_Line-16.png" alt="|" class="bar">
+      </span>
+    </h1>
+    <p class="hero-subtext">
+      Elevate your brand with reviews that actually convert.
+    </p>
+  </div>
+</section>
+
+<script>
+  (function() {
+    const services = [
+      "Hotel Reviews",
+      "Health Services Reviews",
+      "Plumbing Services Reviews",
+      "Real Estate Reviews",
+      "Legal Services Reviews",
+      "Authentic Reviews"
+    ];
+
+    const textEl = document.getElementById('hero-typing-text');
+    if (!textEl) return;
+
+    let current = 0;
+    let charIdx = services[0].length; 
+    let deleting = true; 
+    const TYPE_SPEED = 80, DELETE_SPEED = 40, PAUSE = 1000;
+
+    function loop() {
+      const full = services[current];
+      if (!deleting) {
+        charIdx++;
+        textEl.textContent = full.slice(0, charIdx);
+        if (charIdx === full.length) {
+          setTimeout(() => { deleting = true; loop(); }, PAUSE);
+          return;
+        }
+        setTimeout(loop, TYPE_SPEED);
+      } else {
+        charIdx--;
+        textEl.textContent = full.slice(0, charIdx);
+        if (charIdx === 0) {
+          deleting = false;
+          current = (current + 1) % services.length;
+        }
+        setTimeout(loop, DELETE_SPEED);
+      }
+    }
+    
+    setTimeout(loop, PAUSE);
+  })();
+</script>`
+},
 {
     type: "image-right",
     icon: "🖼️➡️",
     label: "Section — Image Right",
     description: "Text on left, image on right with yellow offset background",
-    defaultContent: `<section class="bg-[#f5f6f7] py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-6">
+    defaultContent: `<section class="py-16 lg:py-24 bg-white">
+  <div class="max-w-350 mx-auto px-6">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
       
       <div>
-        <h2 class="text-3xl lg:text-5xl font-bold text-black leading-tight mb-6">Propel Your Business To New Heights With Google Business Optimization</h2>
-        <p class="text-gray-600 leading-relaxed mb-8">Create a robust Google presence for your business with Get Reviews Buzz. We offer a range of Google Business Optimization services to help you stand out in the crowded online marketplace. Our targeted optimization strategies can help you attract local customers and increase your reach.</p>
-        <a href="#" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-md transition">GET A QUOTE</a>
+        <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+          Turn Reviews into Brand Visibility and Growth
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-6">
+          Customer reviews shape how people see your business. They often decide whether someone chooses you or looks elsewhere. Most customers rely on reviews to judge quality and trust, and they look for real experiences. But here’s the thing. A small number of reviews rarely creates a strong impact.
+          Regular feedback builds credibility over time. It shows that your business consistently delivers value. Recent reviews matter just as much, since they reflect how your business performs today. Strong and consistent reviews improve your visibility across search and local platforms. They help your business appear when customers are actively looking and ready to take action. With a clear and consistent approach, reviews become a valuable asset that builds trust, strengthens visibility, and supports steady growth.
+        </p>
       </div>
 
       <div class="relative">
-        <div class="absolute top-3 left-3 w-full h-full bg-yellow-200 rounded-xl"></div>
-        <div class="relative z-10 bg-white rounded-xl shadow-md p-4">
-            <img src="https://placehold.co/800x600" alt="business" class="rounded-lg w-full" />
+        
+        <div class="relative ">
+          <img src="YOUR_IMAGE_URL" alt="Review and growth illustration" class=" w-full h-auto" />
         </div>
-      </div>
       
     </div>
   </div>
 </section>`,
   },
 {
-    type: "image-left",
-    icon: "⬅️🖼️",
-    label: "Section — Image Left",
-    description: "Image on left, text on right with features list",
-    defaultContent: `<section class="bg-[#f5f6f7] py-16 lg:py-24">
-  <div class="max-w-7xl mx-auto px-6">
+  type: "image-left",
+  icon: "⬅️🖼️",
+  label: "Section — Image Left",
+  description: "Image on left, text on right with features list",
+  defaultContent: `<section class="py-16 lg:py-24">
+  <div class="max-w-350 mx-auto px-6">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
       <div class="relative">
-        <div class="absolute top-3 right-3 w-full h-full bg-yellow-200 rounded-xl"></div>
-        <div class="relative bg-white rounded-xl p-4">
-          <img src="https://placehold.co/800x600" alt="seo" class="rounded-lg w-full" />
+        <div>
+          <img src="https://placehold.co/800x600" alt="illustration of floating review boxes" class="rounded-lg w-full" />
         </div>
       </div>
       <div>
-        <h2 class="text-3xl lg:text-5xl font-bold text-black leading-tight mb-6">SEO Services To Rank Your Website Across The Top Search Engines</h2>       
-        <p class="text-gray-600 leading-relaxed mb-6">Looking to secure the top spot in search engine results? We have got you covered! With our SEO expertise and knowledge, we can help make it happen.</p>
-        <a href="#" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-md transition">GET A QUOTE</a>
+        <h2 class="text-3xl lg:text-5xl font-bold text-black leading-tight mb-6">
+          Where Reputation Meets <span class="text-blue-600 font-bold">Real Business Growth</span>
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-6">
+          A strong online presence boosts visibility. But to turn that visibility into growth, you need the right approach. This is where a solid review strategy matters.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-6">
+          At Get Reviews Buzz, we help businesses build and enhance their reputation. Our structured and goal-focused approach improves how your brand is perceived. We ensure it connects with your target audience and stands out in the market.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          Our process supports long-term results. We help you encourage repeat customers and build a lasting reputation that benefits your business over time. When your reputation matches your growth goals, it builds customer trust. This leads to better conversions and lasting success.
+        </p>
       </div>
     </div>
   </div>
 </section>`,
-  },
+},
   {
     type: "product-banner",
     icon: "🛍️",
@@ -268,16 +354,6 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   <h2 style="font-size:32px;font-weight:700;color:#1e1b4b;margin-bottom:16px;">Section Heading</h2>
   <p style="font-size:16px;color:#555;line-height:1.8;margin-bottom:16px;">Your content goes here. Write as much as you need. This is a simple text block for articles, descriptions, or any long-form content.</p>
   <p style="font-size:16px;color:#555;line-height:1.8;">Add more paragraphs as needed. You can also add <strong>bold text</strong>, <em>italic text</em>, or <a href="#">links</a>.</p>
-</section>`,
-  },
-  {
-    type: "custom-html",
-    icon: "💻",
-    label: "Custom HTML",
-    description: "Write your own custom HTML",
-    defaultContent: `<!-- Write your custom HTML here -->
-<section style="padding:40px;">
-  <p>Your custom content here...</p>
 </section>`,
   },
 ];
