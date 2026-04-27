@@ -292,11 +292,8 @@ export default function HomePage() {
       {/* ── Navbar ── */}
       <HomeNavbar />
 
-      {/* ── New Premium Hero ── */}
-      <PremiumHeroSection />
-
       {/* ── Hero ── */}
-      {/* <HeroBanner /> */}
+      <HeroBanner />
 
       {/* ── Stats Bar ── */}
 
