@@ -31,7 +31,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <li
-      className={`relative bg-white rounded-[16px] p-[24px] flex flex-col font-sans cursor-pointer transform-gpu transition-shadow duration-200 w-full h-auto ${product.badge === "Most Popular" ? "most-popular-card" : ""}`}
+      className={`relative bg-[#FDFCF2] rounded-[16px] p-[24px] flex flex-col font-sans cursor-pointer transform-gpu transition-shadow duration-200 w-full h-auto ${product.badge === "Most Popular" ? "most-popular-card" : ""}`}
       style={{
         border: "2px solid transparent",
         backgroundImage: "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)",
@@ -140,12 +140,17 @@ export function ProductCard({ product }: { product: Product }) {
 
 export function BuyReviewsSection() {
   const [search, setSearch] = useState("");
+  const [visibleCount, setVisibleCount] = useState(8);
 
   const filtered = products.filter((p) =>
     p.platform.toLowerCase().includes(search.toLowerCase())
   );
 
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
   return (
+    <section className="w-full bg-[#FDFCF2]">
     <Wrapper>
     <div className="w-full mx-auto px-4 sm:px-6 py-12">
       {/* Centered search bar */}
@@ -155,7 +160,7 @@ export function BuyReviewsSection() {
             type="text"
             placeholder="Search review Platforms (e.g., Google, Trustpilot...)"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setVisibleCount(8); }}
             className="w-full h-[50px] pl-[24px] pr-[52px] rounded-[50px] border border-[#E5E5E5] bg-white text-[14px] text-[#333] outline-none transition-all focus:border-[#ccc] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] font-sans box-border placeholder:text-[#999] shadow-sm"
           />
           <Search className="absolute right-[18px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#aaa] pointer-events-none" />
@@ -163,12 +168,38 @@ export function BuyReviewsSection() {
       </div>
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[20px] lg:gap-[24px] p-0 m-0 list-none">
-        {filtered.map((product) => (
+        {visible.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </ul>
+
+      {/* View More Button */}
+      {hasMore && (
+        <div className="flex justify-center mt-[48px] mb-[20px]">
+          <button
+            onClick={() => setVisibleCount((c) => c + 8)}
+            className="inline-flex items-center gap-[10px] px-[28px] py-[13px] rounded-[10px] border border-[#333] bg-white text-[#1a1a1a] text-[14px] font-medium font-sans transition-all hover:bg-[#f5f5f3] hover:border-[#111] hover:shadow-sm"
+          >
+            View More Platforms
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
     </Wrapper>
+    </section>
   );
   
 }

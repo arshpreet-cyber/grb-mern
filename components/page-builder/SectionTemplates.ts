@@ -444,7 +444,7 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   "label": "FAQ Accordion Section",
   "description": "A 2-column layout with heading and accordion-style FAQ list",
   "defaultContent": `<section class="bg-white py-16 lg:py-24 font-sans">
-  <div class="max-w-[1300px] mx-auto px-4">
+  <div class="max-w-[1500px] mx-auto px-4">
     <div class="grid grid-cols-1 lg:grid-cols-[490px_1fr] gap-12 lg:gap-24 items-start">
       
       <div class="lg:sticky lg:top-24">
