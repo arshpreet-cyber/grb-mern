@@ -20,21 +20,21 @@ import { BuyReviewsSection } from "@/components/BuyReviewsSection";
 
 export default function HomePage() {
   return (
-    <Wrapper>
+    // <Wrapper>
       <div className="min-h-screen bg-white text-slate-900 font-sans">
         <HomeNavbar />
         <HeroBanner />
         <BuyReviewsSection />
         <StatsBar />
         <IconGrid />
-        <ServicesSection />
+        {/* <ServicesSection /> */}
         <CustomPlatform />
         <SectionWithRightImage />
         <SectionWithLeftImage />
-        <CTABanner />
+        {/* <CTABanner /> */}
         <FaqSection />
         <HomeFooter />
       </div>
-    </Wrapper>
+    // </Wrapper>
   );
 }
