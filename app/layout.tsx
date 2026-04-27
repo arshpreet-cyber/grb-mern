@@ -23,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} h-full antialiased`}>
       <body className="min-h-full bg-slate-50">
-        <Providers>{children}</Providers>
+        <div className="max-w-[1500px] mx-auto w-full relative">
+          <Providers>{children}</Providers>
+        </div>
       </body>
     </html>
   );
