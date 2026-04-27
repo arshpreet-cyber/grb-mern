@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { randomUUID } from "crypto";
+import { syncTicketToZoho } from "@/server/services/zohoSync";
 
 // GET /api/support/tickets?userId=xxx
 export async function GET(req: NextRequest) {
@@ -51,6 +52,11 @@ export async function POST(req: NextRequest) {
         repliedStatus: 1,
         userReadStatus: 1,
       },
+    });
+
+    // Sync to Zoho Desk in the background (non-blocking)
+    syncTicketToZoho(ticket.ticketId).catch((err) => {
+      console.error("[API] Background Zoho sync failed for ticket:", ticket.ticketId, err);
     });
 
     return NextResponse.json(ticket);

@@ -7,6 +7,7 @@ import supportRoutes from "./server/routes/supportRoutes.ts";
 import { boss, initQueue } from "./server/queue.ts";
 import "./server/worker.ts"; // Start background workers
 import prisma from "./lib/prisma.ts";
+import { syncMessageToZoho } from "./server/services/zohoSync.ts";
 
 const dev = process.env.NODE_ENV !== "production";
 const nextApp = next({ dev });
@@ -87,23 +88,14 @@ nextApp.prepare().then(async () => {
         });
         console.log(`[SOCKET] Created message ${message.id} for ticket ${ticketId}.`);
 
-        if (boss) {
-          try {
-            await boss.send("support-ticket-sync-queue", {
-              type: "ticket.message",
-              ticketId,
-              message: content.trim(),
-              isAgent: !!agentId,
-            });
-            console.log(`[SOCKET] Queued background sync for message ${message.id}`);
-          } catch (syncError) {
-            console.error(`[SOCKET] Failed to queue background sync:`, syncError);
-          }
-        }
+        // Sync to Zoho Desk in the background (non-blocking)
+        syncMessageToZoho(ticketId, content.trim(), !!agentId).catch((syncError) => {
+          console.error(`[SOCKET] Background Zoho sync failed for message ${message.id}:`, syncError);
+        });
 
         const roomName = `ticket:${ticketId}`;
         console.log(`[SOCKET] Broadcasting 'ticket-message' to room: ${roomName}`);
-        io.to(roomName).emit("ticket-message", message);
+        ioInstance.to(roomName).emit("ticket-message", message);
         console.log(`[SOCKET] Broadcast complete for message ${message.id}`);
       } catch (error) {
         console.error("Socket.IO save error", error);

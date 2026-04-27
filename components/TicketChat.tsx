@@ -182,7 +182,16 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
           </div>
         )}
 
-        {messages.map((message) => {
+        {messages
+          .filter((m) => {
+            // Skip messages that duplicate the original ticket query
+            // (the query is already rendered above as "Original Request")
+            if (ticket?.query && m.content?.trim().toLowerCase() === ticket.query.trim().toLowerCase()) {
+              return false;
+            }
+            return true;
+          })
+          .map((message) => {
           const direction = String(message.direction);
           const fromAdmin = direction === "2";
           const isOwnMessage = isAdmin ? fromAdmin : !fromAdmin;
