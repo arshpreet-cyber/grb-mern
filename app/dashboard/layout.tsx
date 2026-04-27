@@ -15,7 +15,7 @@ import {
   LogOut 
 } from "lucide-react";
 
-import Wrapper from "@/components/Wrapper";
+// import Wrapper from "@/components/Wrapper";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
@@ -39,7 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, []);
 
   return (
-    <Wrapper>
+    // <Wrapper>
       <div className="flex min-h-screen bg-[#f5f6fa]">
         {isSidebarOpen && (
           <UserSidebar onToggle={() => setIsSidebarOpen(false)} />
@@ -127,6 +127,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </footer> 
         </div>
       </div>
-    </Wrapper>
+    // </Wrapper>
   );
 }
