@@ -4,185 +4,195 @@ import { useCart } from "@/context/CartContext";
 import HomeNavbar from "@/components/HomeNavbar";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Search } from "lucide-react";
 
 const products = [
   {
     id: "google-reviews",
     platform: "Google Reviews",
-    icon: "🌟",
+    image: "https://logo.clearbit.com/google.com",
     desc: "Boost your Google Business rating with real, verified 5-star reviews from genuine accounts.",
     oneTimePrice: 2.99,
     subscribePrice: 2.49,
     badge: "Most Popular",
-    badgeColor: "bg-violet-600",
-    features: ["Real aged accounts", "Permanent reviews", "Drip delivery", "Refill guarantee"],
-    color: "from-violet-500 to-indigo-600",
+    minimumQuantity: 10,
   },
   {
     id: "facebook-reviews",
     platform: "Facebook Reviews",
-    icon: "👍",
+    image: "https://logo.clearbit.com/facebook.com",
     desc: "Increase trust on your Facebook page with authentic positive reviews from real users.",
     oneTimePrice: 2.49,
     subscribePrice: 1.99,
-    badge: "Best Value",
-    badgeColor: "bg-emerald-600",
-    features: ["Real profiles", "Fast delivery", "Safe method", "24/7 support"],
-    color: "from-blue-500 to-cyan-600",
+    badge: null,
+    minimumQuantity: 10,
   },
   {
     id: "trustpilot-reviews",
     platform: "Trustpilot Reviews",
-    icon: "⭐",
+    image: "https://logo.clearbit.com/trustpilot.com",
     desc: "Strengthen your Trustpilot score and convert more visitors into paying customers.",
     oneTimePrice: 3.49,
     subscribePrice: 2.99,
     badge: null,
-    badgeColor: "",
-    features: ["Verified accounts", "Natural delivery", "High retention", "Refill guarantee"],
-    color: "from-emerald-500 to-teal-600",
+    minimumQuantity: 5,
   },
   {
     id: "amazon-reviews",
     platform: "Amazon Reviews",
-    icon: "🛍️",
+    image: "https://logo.clearbit.com/amazon.com",
     desc: "Increase product credibility and boost sales with verified Amazon product reviews.",
     oneTimePrice: 4.49,
     subscribePrice: 3.99,
-    badge: "Premium",
-    badgeColor: "bg-amber-500",
-    features: ["Verified purchase", "Detailed reviews", "Safe & compliant", "Dedicated manager"],
-    color: "from-amber-500 to-orange-600",
+    badge: null,
+    minimumQuantity: 5,
   },
   {
     id: "yelp-reviews",
     platform: "Yelp Reviews",
-    icon: "🏪",
+    image: "https://logo.clearbit.com/yelp.com",
     desc: "Dominate local search with high-quality Yelp reviews for your business listing.",
     oneTimePrice: 2.99,
     subscribePrice: 2.49,
     badge: null,
-    badgeColor: "",
-    features: ["Local accounts", "Geo-targeted", "Natural pacing", "Safe delivery"],
-    color: "from-red-500 to-rose-600",
+    minimumQuantity: 10,
   },
   {
     id: "appstore-reviews",
     platform: "App Store Reviews",
-    icon: "📱",
+    image: "https://logo.clearbit.com/apple.com",
     desc: "Improve your app ranking with genuine iOS & Android store reviews and ratings.",
     oneTimePrice: 3.99,
     subscribePrice: 3.49,
     badge: null,
-    badgeColor: "",
-    features: ["iOS & Android", "Real downloads", "Keyword reviews", "Ranking boost"],
-    color: "from-sky-500 to-blue-600",
+    minimumQuantity: 10,
   },
   {
     id: "tripadvisor-reviews",
     platform: "TripAdvisor Reviews",
-    icon: "✈️",
+    image: "https://logo.clearbit.com/tripadvisor.com",
     desc: "Boost your TripAdvisor ranking and attract more tourists and travelers to your business.",
     oneTimePrice: 3.99,
     subscribePrice: 3.49,
     badge: null,
-    badgeColor: "",
-    features: ["Travel accounts", "Detailed reviews", "Fast delivery", "Safe method"],
-    color: "from-teal-500 to-emerald-600",
+    minimumQuantity: 5,
   },
   {
     id: "gmb-reviews",
     platform: "GMB Reviews",
-    icon: "📍",
+    image: "https://logo.clearbit.com/google.com",
     desc: "Improve your Google Maps presence with authentic Google My Business reviews.",
     oneTimePrice: 2.99,
     subscribePrice: 2.49,
-    badge: "Hot",
-    badgeColor: "bg-red-500",
-    features: ["Maps ranking", "Local SEO boost", "Real accounts", "Permanent"],
-    color: "from-indigo-500 to-violet-600",
+    badge: null,
+    minimumQuantity: 10,
   },
 ];
 
 function ProductCard({ product }: { product: typeof products[0] }) {
   const { addItem } = useCart();
-  const [added, setAdded] = useState<"one-time" | "subscribe" | null>(null);
+  const [mode, setMode] = useState<"onetime" | "monthly">("onetime");
+  const [added, setAdded] = useState(false);
 
-  const handleAdd = (type: "one-time" | "subscribe") => {
+  const price = mode === "onetime" ? product.oneTimePrice : product.subscribePrice;
+  const isMonthly = mode === "monthly";
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
     addItem({
-      id: `${product.id}-${type}`,
+      id: `${product.id}-${mode}`,
       platform: product.platform,
-      icon: product.icon,
-      type,
-      pricePerUnit: type === "one-time" ? product.oneTimePrice : product.subscribePrice,
+      icon: "🌟", // Using generic icon or we can use product.image in cart later
+      type: mode === "monthly" ? "subscribe" : "one-time",
+      pricePerUnit: price,
     });
-    setAdded(type);
-    setTimeout(() => setAdded(null), 1500);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   return (
-    <div className="relative rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col">
-      {product.badge && (
-        <span className={`absolute top-4 right-4 rounded-full ${product.badgeColor} px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white z-10`}>
+    <li 
+      className={`relative bg-white rounded-[16px] p-[24px] flex flex-col font-sans cursor-pointer transform-gpu transition-shadow duration-200 w-full h-auto ${product.badge === 'Most Popular' ? 'most-popular-card' : ''}`}
+      style={{
+        border: "2px solid transparent",
+        backgroundImage: "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)",
+        backgroundOrigin: "border-box",
+        backgroundClip: "padding-box, border-box"
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundImage = "linear-gradient(#fff, #fff), linear-gradient(to right, #FFC107, #E49D56)";
+        e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
+        if(product.badge === 'Most Popular') e.currentTarget.style.boxShadow = "0 6px 24px rgba(228, 157, 86, 0.25)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundImage = "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)";
+        e.currentTarget.style.boxShadow = "none";
+      }}
+    >
+      {/* Most Popular Badge */}
+      {product.badge === "Most Popular" && (
+        <div className="absolute -top-[13px] right-[16px] bg-linear-to-r from-[#FFC107] to-[#E49D56] text-white font-sans text-[11px] font-semibold px-[16px] py-[5px] rounded-[20px] uppercase tracking-[0.8px] z-10 shadow-[0_2px_8px_rgba(228,157,86,0.35)] leading-[1.4]">
           {product.badge}
-        </span>
+        </div>
       )}
 
-      {/* Card Header */}
-      <div className={`bg-linear-to-br ${product.color} p-6 text-white`}>
-        <div className="text-4xl mb-3">{product.icon}</div>
-        <h3 className="text-lg font-extrabold">{product.platform}</h3>
-        <p className="mt-1 text-sm text-white/80 leading-relaxed">{product.desc}</p>
+      {/* Logo */}
+      <div className="w-[56px] h-[56px] bg-white border border-black/10 rounded-[12px] shrink-0 flex items-center justify-center">
+        <img src={product.image} alt={product.platform} className="w-[34px] h-[34px] object-contain rounded-[4px]" onError={(e) => { e.currentTarget.src = "https://getreviews.buzz/storage/app/blog/0809068001728298556_experience.svg"; }} />
       </div>
 
-      {/* Features */}
-      <div className="px-6 py-4 flex-1">
-        <ul className="space-y-2">
-          {product.features.map((f) => (
-            <li key={f} className="flex items-center gap-2 text-sm text-slate-600">
-              <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 text-[9px] font-bold">✓</span>
-              {f}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Title */}
+      <h4 className="text-[17px] font-semibold text-[#323232] mt-[25px] leading-[1.35]">
+        {product.platform}
+      </h4>
 
-      {/* Pricing & Buttons */}
-      <div className="px-6 pb-6 space-y-3">
-        {/* One-Time Purchase */}
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">One-Time</p>
-              <p className="text-xl font-extrabold text-slate-900">${product.oneTimePrice.toFixed(2)} <span className="text-xs font-normal text-slate-400">/ review</span></p>
-            </div>
-          </div>
-          <button
-            onClick={() => handleAdd("one-time")}
-            className={`w-full rounded-xl py-2.5 text-sm font-bold transition ${added === "one-time" ? "bg-emerald-500 text-white" : "bg-linear-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90"}`}>
-            {added === "one-time" ? "✓ Added to Cart!" : "🛒 Add to Cart"}
-          </button>
+      {/* Pricing */}
+      <div className="my-[36px]">
+        <div className="text-[14px] font-semibold text-black flex items-baseline gap-[2px] leading-none">
+          <span className="text-[24px] font-semibold text-black">$</span>
+          <span className="text-[24px] font-semibold text-black">{price.toFixed(2)}</span>
+          <span className="text-[13px] font-normal text-[#555] ml-[2px]">/ per unit</span>
         </div>
-
-        {/* Subscribe */}
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Subscribe & Save</p>
-                <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-bold text-white">SAVE 17%</span>
-              </div>
-              <p className="text-xl font-extrabold text-slate-900">${product.subscribePrice.toFixed(2)} <span className="text-xs font-normal text-slate-400">/ review/mo</span></p>
-            </div>
-          </div>
-          <button
-            onClick={() => handleAdd("subscribe")}
-            className={`w-full rounded-xl py-2.5 text-sm font-bold transition ${added === "subscribe" ? "bg-emerald-500 text-white" : "bg-emerald-600 text-white hover:bg-emerald-700"}`}>
-            {added === "subscribe" ? "✓ Added to Cart!" : "♻️ Subscribe"}
-          </button>
-        </div>
+        <p className="text-[13px] text-[#888] m-0 mt-1">Min. {product.minimumQuantity} Units</p>
       </div>
-    </div>
+
+      {/* Toggle Buttons */}
+      <div className="grid grid-cols-2 gap-[8px] mb-[12px]">
+        <button
+          onClick={(e) => { e.stopPropagation(); setMode("onetime"); }}
+          className={`py-[8px] px-[10px] md:px-[16px] font-sans text-[13px] md:text-[14px] font-medium rounded-[8px] border transition-all text-center whitespace-nowrap ${
+            !isMonthly ? "bg-[#F0EFEB] text-black/70 border-black/15" : "bg-white text-black/60 border-black/10 hover:border-[#ccc] hover:bg-[#F5F5F3]"
+          }`}
+        >
+          One-time
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); setMode("monthly"); }}
+          className={`py-[8px] px-[10px] md:px-[16px] font-sans text-[13px] md:text-[14px] font-medium rounded-[8px] border transition-all text-center whitespace-nowrap ${
+            isMonthly ? "bg-[#F0EFEB] text-black/70 border-black/15" : "bg-white text-black/60 border-black/10 hover:border-[#ccc] hover:bg-[#F5F5F3]"
+          }`}
+        >
+          Monthly
+        </button>
+      </div>
+
+      {/* Add to Cart */}
+      <button
+        onClick={handleAdd}
+        className={`flex items-center justify-center gap-[8px] h-[46px] w-full border border-black/15 rounded-[10px] text-[14px] md:text-[15px] font-semibold cursor-pointer transition-all font-sans m-0 ${
+          isMonthly 
+            ? "bg-linear-to-b from-[#ffffff] to-[#e5e5e5] text-[#1a1a1a] hover:bg-[#F5F5F3] hover:-translate-y-[1px]" 
+            : "bg-white text-[#1a1a1a] hover:bg-[#F5F5F3] hover:-translate-y-[1px]"
+        }`}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span>{added ? "Added to Cart" : isMonthly ? "Subscribe" : "Add to Cart"}</span>
+      </button>
+    </li>
   );
 }
 
@@ -190,74 +200,70 @@ export default function BuyReviewsPage() {
   const { count } = useCart();
   const router = useRouter();
   const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
 
-  const filtered = filter === "all" ? products : products.filter((p) =>
-    p.platform.toLowerCase().includes(filter)
-  );
+  const filtered = products.filter((p) => {
+    const matchFilter = filter === "all" || p.platform.toLowerCase().includes(filter);
+    const matchSearch = p.platform.toLowerCase().includes(search.toLowerCase());
+    return matchFilter && matchSearch;
+  });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 font-sans">
       <HomeNavbar />
 
-      {/* Hero */}
-      <section className="bg-linear-to-br from-slate-950 via-violet-950 to-indigo-950 px-5 py-16 text-center text-white">
-        <div className="mx-auto max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-violet-300 mb-6">
-            ⭐ 50,000+ Reviews Delivered
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-12">
+        {/* Top Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-[30px] gap-[20px]">
+          
+          {/* Categories Pill */}
+          <div className="flex gap-[10px] items-center flex-nowrap md:flex-wrap overflow-x-auto w-full md:w-auto pb-[10px] md:pb-0 scrollbar-hide">
+            {["all", "google", "facebook", "amazon", "trustpilot", "yelp"].map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-[20px] py-[10px] rounded-[25px] border font-sans text-[14px] font-medium transition-all outline-none whitespace-nowrap ${
+                  filter === f 
+                    ? "bg-black text-white border-black" 
+                    : "bg-white text-[#666] border-[#E5E5E5] hover:border-[#ccc] hover:text-[#333]"
+                }`}
+              >
+                {f === "all" ? "All Platforms" : f.charAt(0).toUpperCase() + f.slice(1)}
+              </button>
+            ))}
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">
-            Buy Reviews Online
-          </h1>
-          <p className="mt-4 text-lg text-slate-300 max-w-xl mx-auto">
-            Real reviews from real accounts. Choose your platform, pick one-time or subscribe, and watch your reputation grow.
-          </p>
-          {count > 0 && (
-            <button onClick={() => router.push("/cart")}
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-violet-700 shadow-lg hover:bg-violet-50 transition">
-              🛒 View Cart ({count} items)
-            </button>
-          )}
-        </div>
-      </section>
 
-      {/* Filter Tabs */}
-      <div className="sticky top-16.25 z-30 border-b border-slate-100 bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-5 py-3 flex items-center gap-2 overflow-x-auto">
-          {["all", "google", "facebook", "amazon", "trustpilot", "yelp", "app"].map((f) => (
-            <button key={f} onClick={() => setFilter(f)}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition ${filter === f ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
-              {f === "all" ? "All Platforms" : f}
-            </button>
-          ))}
+          {/* Search Bar */}
+          <div className="relative w-full md:w-[280px]">
+            <input
+              type="text"
+              placeholder="Search platforms..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-[44px] pl-[20px] pr-[45px] py-[10px] rounded-[25px] border border-[#E5E5E5] bg-white text-[14px] text-[#333] outline-none transition-all focus:border-[#ccc] font-sans box-border placeholder:text-[#999]"
+            />
+            <Search className="absolute right-[15px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#666] pointer-events-none" />
+          </div>
         </div>
-      </div>
 
-      {/* Products Grid */}
-      <div className="mx-auto max-w-7xl px-5 py-12">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {/* Product Grid */}
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[20px] lg:gap-[24px] p-0 m-0 list-none">
           {filtered.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
-        </div>
+        </ul>
 
-        {/* Trust Section */}
-        <div className="mt-16 rounded-2xl bg-linear-to-r from-violet-600 to-indigo-700 p-8 text-center text-white">
-          <h2 className="text-2xl font-extrabold mb-2">Why Choose Us?</h2>
-          <p className="text-violet-200 mb-8">Trusted by 12,000+ businesses worldwide</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { icon: "✅", label: "100% Real Accounts" },
-              { icon: "🔒", label: "Secure & Safe" },
-              { icon: "⚡", label: "Fast Delivery" },
-              { icon: "♻️", label: "Refill Guarantee" },
-            ].map((t) => (
-              <div key={t.label} className="flex flex-col items-center gap-2">
-                <span className="text-3xl">{t.icon}</span>
-                <p className="text-sm font-semibold text-violet-100">{t.label}</p>
-              </div>
-            ))}
+        {/* View More Button */}
+        {filtered.length > 0 && (
+          <div className="flex justify-center pt-[40px] pb-[100px] w-full">
+            <button className="flex items-center gap-[8px] px-[28px] py-[12px] bg-white text-[#333] border border-[#333] rounded-[10px] text-[14px] font-medium cursor-pointer transition-all hover:bg-[#F5F5F5] font-sans">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[16px] h-[16px]">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+              View More
+            </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
