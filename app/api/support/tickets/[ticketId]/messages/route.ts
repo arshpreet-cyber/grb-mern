@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { syncMessageToZoho } from "@/server/services/zohoSync";
 
 // GET /api/support/tickets/[ticketId]/messages
 export async function GET(
@@ -41,6 +42,11 @@ export async function POST(
         media: media ?? null,
         direction: typeof direction === "string" ? direction : "1",
       },
+    });
+
+    // Sync message to Zoho Desk in the background (non-blocking)
+    syncMessageToZoho(ticketId, content.trim(), !!agentId).catch((err) => {
+      console.error("[API] Background Zoho message sync failed:", ticketId, err);
     });
 
     return NextResponse.json(message);

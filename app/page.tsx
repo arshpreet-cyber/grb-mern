@@ -2,8 +2,8 @@
 import Link from "next/link";
 import HomeNavbar from "@/components/HomeNavbar";
 // import HeroBanner from "@/components/HeroBanner";
-import PremiumHeroSection from "@/components/PremiumHeroSection";
-
+// import PremiumHeroSection from "@/components/PremiumHeroSection";
+import HeroBanner from "@/components/HeroBanner";
 const services = [
   {
     icon: "🌟",
@@ -156,11 +156,8 @@ export default function HomePage() {
       {/* ── Navbar ── */}
       <HomeNavbar />
 
-      {/* ── New Premium Hero ── */}
-      <PremiumHeroSection />
-
       {/* ── Hero ── */}
-      {/* <HeroBanner /> */}
+      <HeroBanner />
 
       {/* ── Stats Bar ── */}
       <section className="bg-linear-to-r from-violet-600 to-indigo-700 text-white">

@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { boss, initQueue } from "./queue.ts";
 import { sendEmailNotification, buildTicketCreatedEmail, buildTicketReplyEmail } from "./email.ts";
-import { createZohoTicket, addZohoTicketReply, isZohoConfigured } from "./services/zohoService.ts";
-import prisma from "../lib/prisma.ts";
+import { syncTicketToZoho, syncMessageToZoho, syncAllZohoThreadsToLocal } from "./services/zohoSync.ts";
+import { isZohoConfigured } from "./services/zohoService.ts";
 
 async function startWorkers() {
   await initQueue();
@@ -52,44 +52,13 @@ async function startWorkers() {
       console.log("Processing ticket sync job", job.id, job.data);
       const data = job.data as any;
       
-      if (!isZohoConfigured()) {
-        console.log("Zoho is not configured. Skipping sync for job", job.id);
-        continue;
-      }
-      
       try {
         if (data.type === "ticket.created") {
-          const { ticketId, subject, query, email, name, phone } = data;
-          
-          const zohoTicketId = await createZohoTicket({
-            subject: subject || "New Ticket",
-            description: query,
-            contact: {
-              email: email || "mohit@adaired",
-              firstName: name,
-              phone: phone
-            }
-          });
-
-          await prisma.ticket.update({
-            where: { ticketId },
-            data: { zohoTicketId }
-          });
-          
-          console.log(`Synced ticket ${ticketId} to Zoho Desk with ID ${zohoTicketId}`);
+          const { ticketId } = data;
+          await syncTicketToZoho(ticketId);
         } else if (data.type === "ticket.message") {
           const { ticketId, message, isAgent } = data;
-          
-          const ticket = await prisma.ticket.findUnique({
-            where: { ticketId }
-          });
-          
-          if (ticket?.zohoTicketId) {
-            await addZohoTicketReply(ticket.zohoTicketId, message, isAgent);
-            console.log(`Synced message for ticket ${ticketId} to Zoho Desk`);
-          } else {
-            console.warn(`Ticket ${ticketId} does not have a zohoTicketId. Cannot sync message.`);
-          }
+          await syncMessageToZoho(ticketId, message, isAgent);
         }
       } catch (error) {
         console.error("Error in ticket sync worker:", error);
@@ -99,6 +68,32 @@ async function startWorkers() {
   });
 
   console.log("pg-boss workers started for email and ticket sync queues.");
+
+  // Start periodic Zoho → local thread sync (every 2 minutes)
+  // This catches email replies made in Zoho Desk that need to appear locally
+  if (isZohoConfigured()) {
+    const SYNC_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+    
+    async function runPeriodicSync() {
+      try {
+        const result = await syncAllZohoThreadsToLocal();
+        if (result.messagesImported > 0) {
+          console.log(`[PERIODIC-SYNC] Imported ${result.messagesImported} new messages from Zoho (checked ${result.ticketsChecked} tickets)`);
+        }
+      } catch (err) {
+        console.error("[PERIODIC-SYNC] Error:", err);
+      }
+    }
+
+    // Run first sync after 30 seconds (let server settle)
+    setTimeout(() => {
+      runPeriodicSync();
+      // Then run every 2 minutes
+      setInterval(runPeriodicSync, SYNC_INTERVAL_MS);
+    }, 30_000);
+
+    console.log("Zoho → local periodic sync scheduled (every 2 minutes).");
+  }
 }
 
 startWorkers().catch((err) => {
