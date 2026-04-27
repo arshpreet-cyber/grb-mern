@@ -196,6 +196,8 @@ function ProductCard({ product }: { product: typeof products[0] }) {
   );
 }
 
+import Wrapper from "@/components/Wrapper";
+
 export default function BuyReviewsPage() {
   const { count } = useCart();
   const router = useRouter();
@@ -209,62 +211,64 @@ export default function BuyReviewsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <HomeNavbar />
+    <Wrapper>
+      <div className="min-h-screen bg-slate-50 font-sans">
+        <HomeNavbar />
 
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-12">
-        {/* Top Bar */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-[30px] gap-[20px]">
-          
-          {/* Categories Pill */}
-          <div className="flex gap-[10px] items-center flex-nowrap md:flex-wrap overflow-x-auto w-full md:w-auto pb-[10px] md:pb-0 scrollbar-hide">
-            {["all", "google", "facebook", "amazon", "trustpilot", "yelp"].map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-[20px] py-[10px] rounded-[25px] border font-sans text-[14px] font-medium transition-all outline-none whitespace-nowrap ${
-                  filter === f 
-                    ? "bg-black text-white border-black" 
-                    : "bg-white text-[#666] border-[#E5E5E5] hover:border-[#ccc] hover:text-[#333]"
-                }`}
-              >
-                {f === "all" ? "All Platforms" : f.charAt(0).toUpperCase() + f.slice(1)}
-              </button>
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-12">
+          {/* Top Bar */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-[30px] gap-[20px]">
+            
+            {/* Categories Pill */}
+            <div className="flex gap-[10px] items-center flex-nowrap md:flex-wrap overflow-x-auto w-full md:w-auto pb-[10px] md:pb-0 scrollbar-hide">
+              {["all", "google", "facebook", "amazon", "trustpilot", "yelp"].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-[20px] py-[10px] rounded-[25px] border font-sans text-[14px] font-medium transition-all outline-none whitespace-nowrap ${
+                    filter === f 
+                      ? "bg-black text-white border-black" 
+                      : "bg-white text-[#666] border-[#E5E5E5] hover:border-[#ccc] hover:text-[#333]"
+                  }`}
+                >
+                  {f === "all" ? "All Platforms" : f.charAt(0).toUpperCase() + f.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative w-full md:w-[280px]">
+              <input
+                type="text"
+                placeholder="Search platforms..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-[44px] pl-[20px] pr-[45px] py-[10px] rounded-[25px] border border-[#E5E5E5] bg-white text-[14px] text-[#333] outline-none transition-all focus:border-[#ccc] font-sans box-border placeholder:text-[#999]"
+              />
+              <Search className="absolute right-[15px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#666] pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Product Grid */}
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[20px] lg:gap-[24px] p-0 m-0 list-none">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
-          </div>
+          </ul>
 
-          {/* Search Bar */}
-          <div className="relative w-full md:w-[280px]">
-            <input
-              type="text"
-              placeholder="Search platforms..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-[44px] pl-[20px] pr-[45px] py-[10px] rounded-[25px] border border-[#E5E5E5] bg-white text-[14px] text-[#333] outline-none transition-all focus:border-[#ccc] font-sans box-border placeholder:text-[#999]"
-            />
-            <Search className="absolute right-[15px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#666] pointer-events-none" />
-          </div>
+          {/* View More Button */}
+          {filtered.length > 0 && (
+            <div className="flex justify-center pt-[40px] pb-[100px] w-full">
+              <button className="flex items-center gap-[8px] px-[28px] py-[12px] bg-white text-[#333] border border-[#333] rounded-[10px] text-[14px] font-medium cursor-pointer transition-all hover:bg-[#F5F5F5] font-sans">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[16px] h-[16px]">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+                View More
+              </button>
+            </div>
+          )}
         </div>
-
-        {/* Product Grid */}
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[20px] lg:gap-[24px] p-0 m-0 list-none">
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </ul>
-
-        {/* View More Button */}
-        {filtered.length > 0 && (
-          <div className="flex justify-center pt-[40px] pb-[100px] w-full">
-            <button className="flex items-center gap-[8px] px-[28px] py-[12px] bg-white text-[#333] border border-[#333] rounded-[10px] text-[14px] font-medium cursor-pointer transition-all hover:bg-[#F5F5F5] font-sans">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[16px] h-[16px]">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-              View More
-            </button>
-          </div>
-        )}
       </div>
-    </div>
+    </Wrapper>
   );
 }

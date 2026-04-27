@@ -14,20 +14,24 @@ import {
   HomeFooter
 } from "@/components/HomeComponents";
 
+import Wrapper from "@/components/Wrapper";
+
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans">
-      <HomeNavbar />
-      <HeroBanner />
-      <StatsBar />
-      <IconGrid />
-      <ServicesSection />
-      <CustomPlatform />
-      <SectionWithRightImage />
-      <SectionWithLeftImage />
-      <CTABanner />
-      <FaqSection />
-      <HomeFooter />
-    </div>
+    <Wrapper>
+      <div className="min-h-screen bg-white text-slate-900 font-sans">
+        <HomeNavbar />
+        <HeroBanner />
+        <StatsBar />
+        <IconGrid />
+        <ServicesSection />
+        <CustomPlatform />
+        <SectionWithRightImage />
+        <SectionWithLeftImage />
+        <CTABanner />
+        <FaqSection />
+        <HomeFooter />
+      </div>
+    </Wrapper>
   );
 }
