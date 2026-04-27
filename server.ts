@@ -103,7 +103,7 @@ nextApp.prepare().then(async () => {
 
         const roomName = `ticket:${ticketId}`;
         console.log(`[SOCKET] Broadcasting 'ticket-message' to room: ${roomName}`);
-        io.to(roomName).emit("ticket-message", message);
+        ioInstance.to(roomName).emit("ticket-message", message);
         console.log(`[SOCKET] Broadcast complete for message ${message.id}`);
       } catch (error) {
         console.error("Socket.IO save error", error);
