@@ -4,8 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import HomeNavbar from "@/components/HomeNavbar";
-// import HeroBanner from "@/components/HeroBanner";
-import PremiumHeroSection from "@/components/PremiumHeroSection";
+import HeroBanner from "@/components/HeroBanner";
 
 const services = [
   {
