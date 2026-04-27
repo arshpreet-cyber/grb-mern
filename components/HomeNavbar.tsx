@@ -175,7 +175,7 @@ export default function HomeNavbar() {
               href="mailto:marketing@getreviews.buzz"
               className="inline-flex h-12.5 w-12.5 items-center justify-center rounded-[10px] border border-[#ddd] bg-white transition-colors hover:border-[#ffcc00]"
             >
-              <img src="https://beta.getreviews.buzz/storage/app/blog/0520560001775463982_email-1.svg" alt="Email Us" width={25} height={25} />
+              <img src="https://beta.getreviews.buzz/storage/app/blog/0520560001775463982_email-1.svg" alt="Email Us" width={22} height={22} />
             </a>
 
             <div className="relative" ref={phoneRef}>
@@ -183,7 +183,7 @@ export default function HomeNavbar() {
                 onClick={() => setPhoneDropOpen((v) => !v)}
                 className="inline-flex h-12.5 w-12.5 items-center justify-center rounded-[10px] border border-[#ddd] bg-white transition-colors hover:border-[#ffcc00]"
               >
-                <img src="https://beta.getreviews.buzz/storage/app/blog/0901060001775463990_Vector.svg" alt="Call Us" width={25} height={25} />
+                <img src="https://beta.getreviews.buzz/storage/app/blog/0901060001775463990_Vector.svg" alt="Call Us" width={22} height={22} />
               </button>
 
               {phoneDropOpen && (

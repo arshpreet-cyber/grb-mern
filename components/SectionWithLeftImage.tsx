@@ -5,7 +5,7 @@ import Wrapper from "@/components/Wrapper";
 
 export default function SectionWithLeftImage() {
   return (
-    <section className="py-16 lg:py-24">
+    <section className="py-5 lg:py-15">
       <Wrapper>
         <div className="w-full mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">

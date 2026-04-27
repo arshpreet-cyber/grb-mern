@@ -8,8 +8,8 @@ export default function IconGrid() {
     <section className="py-16 bg-gray-50">
       <Wrapper>
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Why Do Businesses Trust Get Reviews Buzz?</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-12">As your reliable partner, we help your business strengthen their online reputation, build lasting customer trust, and drive consistent growth through effective review strategies.</p>
+          <p className="text-[40px] md:text-[40px] lg:text-[40px] font-bold mb-4 text-gray-900">Why Do Businesses Trust Get Reviews Buzz?</p>
+          <p className="text-gray-600  mx-auto mb-12" >As your reliable partner, we help your business strengthen their online reputation, build lasting customer trust, and drive consistent growth through effective review strategies.</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
