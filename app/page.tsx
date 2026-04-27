@@ -1,4 +1,7 @@
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
+import { useState } from "react";
 import Link from "next/link";
 import HomeNavbar from "@/components/HomeNavbar";
 // import HeroBanner from "@/components/HeroBanner";
@@ -120,34 +123,167 @@ const testimonials = [
 ];
 
 const faqs = [
-  {
-    q: "Are the reviews from real people?",
-    a: "Yes. All reviews come from real, aged accounts with genuine activity. We never use bots or fake profiles.",
-  },
-  {
-    q: "Will the reviews be removed?",
-    a: "Our reviews are designed to be permanent. We offer a free refill guarantee if any are removed within 30 days.",
-  },
-  {
-    q: "How long does delivery take?",
-    a: "Delivery starts within 24–48 hours. We drip-feed reviews gradually to ensure they look completely natural.",
-  },
-  {
-    q: "Is this safe for my business?",
-    a: "Absolutely. We use safe, manual delivery methods that comply with platform guidelines to protect your account.",
-  },
-  {
-    q: "What payment methods do you accept?",
-    a: "We accept all major credit cards, PayPal, and cryptocurrency for maximum privacy and convenience.",
-  },
-];
-
+    {
+      q: "What Services Does Get Reviews Buzz Provide?",
+      a: "We help businesses strengthen their online reputation through review growth strategies, reputation management, and digital marketing solutions across leading platforms.",
+    },
+    {
+      q: "How Long Does It Take To See Results?",
+      a: "Most businesses begin to see noticeable improvements within 7 to 14 days, depending on the platform, industry, and strategy in place.",
+    },
+    {
+      q: "Are The Reviews From Real People?",
+      a: "We focus on promoting genuine customer feedback and building a credible review presence through ethical and effective strategies.",
+    },
+    {
+      q: "What Platforms Do You Support?",
+      a: "We support major platforms, including Google, Trustpilot, Yelp, Facebook, and others, based on your business requirements. Visit our website to check the platforms we provide genuine reviews for!",
+    },
+    {
+      q: "Is My Business Information Kept Confidential?",
+      a: "Definitely. We maintain strict confidentiality and ensure that all client information is handled securely and responsibly.",
+    },
+    {
+      q: "Do You Offer a Refund Policy?",
+      a: "We're really committed to making sure our clients are happy. If we fall short of your expectations, our team will work to identify the issue and resolve it. We'll do our best to work out a refund or come up with a solution that works for you.",
+    },
+    {
+      q: "Can I Choose a Monthly Subscription Plan?",
+      a: "Yes, we offer both one-time and flexible monthly plans to suit different business goals and budgets.",
+    },
+    {
+      q: "Is this safe for my business?",
+      a: "Certainly! You've got nothing to worry about. Our strategy is all about building a strong review presence that not only gets you good results but also keeps you out of trouble with the platforms and helps your brand grow in the long run.",
+    },
+    {
+      q: "How do I get started?",
+      a: "Getting started with us is really simple. Share your requirements with us, and our team will create a customized strategy based on your business goals, needs, and targeted platforms.",
+    },
+    {
+      q: "Can I customize my review strategy?",
+      a: "Every strategy is tailored to your business needs. With this, you can reach the right target audience, drive growth, and help your business become more visible.",
+    },
+  ];
 const stats = [
   { value: "50,000+", label: "Reviews Delivered" },
   { value: "12,000+", label: "Happy Clients" },
   { value: "98%", label: "Satisfaction Rate" },
   { value: "24/7", label: "Customer Support" },
 ];
+
+// --- Internal FAQ Component to handle Accordion State ---
+function FaqSection({ faqs }: { faqs: { q: string; a: string }[] }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggleFAQ = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  return (
+    <section className="bg-white py-[50px] lg:py-[90px] font-['Poppins',sans-serif]">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-5 lg:px-[20px]">
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-[490px_1fr] gap-[28px] lg:gap-[150px] items-start">
+          
+          {/* ── LEFT COLUMN ── */}
+          <div className="lg:sticky lg:top-[100px] flex flex-col md:flex-row lg:flex-col flex-wrap lg:flex-nowrap items-start gap-[16px] md:gap-[24px] lg:gap-[40px]">
+            
+            {/* Main Heading */}
+            <div className="flex-1 min-w-[280px]">
+              <h2 className="text-[21px] md:text-[30px] lg:text-[36px] font-normal text-[#111] leading-[1.3] lg:leading-[1.25] mb-[14px]">
+                Frequently <strong className="font-bold">Asked<br />Questions</strong>
+              </h2>
+              <p className="text-[13px] md:text-[14px] lg:text-[18px] text-[#323232] leading-[1.5] m-0">
+                Find clear answers to common questions about our services, process, and delivery timelines, and how we support your online reputation.
+              </p>
+            </div>
+
+            {/* CTA Box */}
+            <div className="flex-1 min-w-[220px] flex flex-col gap-[8px] max-md:p-4 max-md:border max-md:border-[#eee] max-md:rounded-[10px]">
+              <p className="text-[16px] lg:text-[20px] font-semibold text-[#111] m-0">
+                Still have a doubts?
+              </p>
+              <p className="text-[14px] lg:text-[18px] text-[#666] leading-[1.6] m-0">
+                Everything is explained in a clear and simple way to help you make the right decision.
+              </p>
+              <a
+                href="/contact-us"
+                className="inline-flex items-center gap-[6px] mt-[16px] py-[10px] px-[16px] lg:px-[22px] border-[1.5px] border-[#111] rounded-[8px] lg:rounded-[10px] text-[14px] lg:text-[16px] font-normal text-[#111] w-fit hover:bg-[#111] hover:text-white transition-colors duration-200"
+              >
+                Reach out today
+                <span className="shrink-0">
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          {/* ── RIGHT COLUMN (Accordion) ── */}
+          <div className="flex flex-col gap-[10px]">
+            {faqs.map((faq, index) => {
+              const isActive = openIndex === index;
+              return (
+                <div
+                  key={index}
+                  className={`border border-[#e8e8e8] rounded-[12px] bg-white overflow-hidden transition-shadow duration-200 ${
+                    isActive ? "shadow-[0_4px_20px_rgba(0,0,0,0.07)]" : ""
+                  }`}
+                >
+                  <button
+                    onClick={() => toggleFAQ(index)}
+                    className={`w-full text-left py-[14px] pr-[50px] pl-[14px] lg:py-[18px] lg:pr-[64px] lg:pl-[20px] text-[13px] md:text-[14px] lg:text-[18px] text-[#111] relative leading-[1.5] transition-all duration-300 ${
+                      isActive ? "font-semibold" : "font-normal"
+                    }`}
+                  >
+                    {faq.q}
+
+                    {/* Plus / Cross Icon */}
+                    <div
+                      className={`absolute right-[12px] lg:right-[16px] top-1/2 -translate-y-1/2 w-[28px] h-[28px] lg:w-[36px] lg:h-[36px] rounded-full border-[1.5px] flex items-center justify-center shrink-0 transition-all duration-300 ${
+                        isActive
+                          ? "border-black bg-[#fff3b0] rotate-180"
+                          : "border-black bg-transparent"
+                      }`}
+                    >
+                      {isActive ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]">
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" className="w-[18px] h-[18px] lg:w-[24px] lg:h-[24px]">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Expandable Panel (Using CSS Grid transition for smooth height animation) */}
+                  <div
+                    className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+                      isActive ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="m-0 text-[13px] md:text-[14px] lg:text-[16px] text-[#555] leading-[1.6] lg:leading-[1.7] pt-[10px] pb-[14px] lg:pt-[14px] lg:pb-[18px] px-[14px] lg:px-[20px]">
+                        {faq.a}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -163,16 +299,90 @@ export default function HomePage() {
       {/* <HeroBanner /> */}
 
       {/* ── Stats Bar ── */}
-      <section className="bg-linear-to-r from-violet-600 to-indigo-700 text-white">
-        <div className="mx-auto grid max-w-350 grid-cols-2 gap-8 px-5 py-10 text-center lg:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.label}>
-              <p className="text-3xl font-extrabold">{s.value}</p>
-              <p className="mt-1 text-sm text-violet-200">{s.label}</p>
+
+      <section className="bg-white py-16 px-4 sm:px-6 relative w-full font-sans">
+        <div className="max-w-[1300px] mx-auto">
+          <div className="text-center mb-16 md:mb-[80px]">
+            <h2 className="text-[28px] sm:text-[30px] lg:text-[44px] leading-[1.25] text-[#111]">
+              <span className="font-normal text-[#222]">Why Businesses Keep Coming Back:</span>
+              <strong className="font-bold text-black lg:mt-3 inline-block">Proven Results, Trusted Reviews, Consistent Growth</strong>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-12 sm:gap-y-16 lg:gap-y-0 lg:divide-x lg:divide-gray-200">
+            <div className="flex flex-col text-left px-4 lg:px-8 xl:px-10">
+              <div className="text-[48px] lg:text-[64px] leading-none text-black mb-4 lg:mb-6 font-normal tracking-[-1px]">12804+</div>
+              <div className="text-[#FFC000] font-semibold text-[18px] mb-3">Orders Delivered</div>
+              <div className="text-[#777] text-[15px] leading-[1.6] sm:max-w-[280px]">Focused on getting every delivery right with care and consistency.</div>
             </div>
-          ))}
+
+            <div className="flex flex-col text-left px-4 lg:px-8 xl:px-10">
+              <div className="text-[48px] lg:text-[64px] leading-none text-black mb-4 lg:mb-6 font-normal tracking-[-1px]">6090+</div>
+              <div className="text-[#FFC000] font-semibold text-[18px] mb-3">Active Users</div>
+              <div className="text-[#777] text-[15px] leading-[1.6] sm:max-w-[280px]">Partnering with businesses across industries to build a lasting reputation.</div>
+            </div>
+
+            <div className="flex flex-col text-left px-4 lg:px-8 xl:px-10">
+              <div className="text-[48px] lg:text-[64px] leading-none text-black mb-4 lg:mb-6 font-normal tracking-[-1px]">95%</div>
+              <div className="text-[#FFC000] font-semibold text-[18px] mb-3">Client Satisfaction</div>
+              <div className="text-[#777] text-[15px] leading-[1.6] sm:max-w-[280px]">A reflection of our commitment to quality, trust, and measurable results.</div>
+            </div>
+
+            <div className="flex flex-col text-left px-4 lg:px-8 xl:px-10">
+              <div className="text-[48px] lg:text-[64px] leading-none text-black mb-4 lg:mb-6 font-normal tracking-[-1px]">7+</div>
+              <div className="text-[#FFC000] font-semibold text-[18px] mb-3">Years Of Proven Growth</div>
+              <div className="text-[#777] text-[15px] leading-[1.6] sm:max-w-[280px]">Determined to adapt experienced strategies in reputation management.</div>
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* icon grid */}
+
+      <section className="py-16 bg-gray-50">
+  <div className="max-w-350 container mx-auto px-4 text-center">
+<h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Why Do Businesses Trust Get Reviews Buzz?</h2>
+    <p className="text-gray-600 max-w-2xl mx-auto mb-12">As your reliable partner, we help your business strengthen their online reputation, build lasting customer trust, and drive consistent growth through effective review strategies.</p>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+      <img src="https://getreviews.buzz/storage/app/blog/0809068001728298556_experience.svg" alt="Experience" className="w-12 h-12 mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Experience and Expertise</h3>
+        <p className="text-gray-600 text-sm leading-relaxed">Our team brings hands-on experience in digital reputation management, helping businesses enhance visibility and build stronger customer trust.</p>
+      </div>
+      
+      <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0744774001728298333_Idea.svg" alt="Solutions" className="w-12 h-12 mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Tailored Solutions</h3>
+        <p className="text-gray-600 text-sm leading-relaxed">Every business is different. That's why we create customized strategies designed to match your specific goals, audience, and market needs.</p>
+      </div>
+      
+      <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0746809001728298333_customer.svg" alt="Satisfaction" className="w-12 h-12 mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Customer Satisfaction Focused</h3>
+        <p className="text-gray-600 text-sm leading-relaxed">We're committed to a seamless experience, ensuring every client sees real value and measurable improvement in their online presence.</p>
+      </div>
+      
+      <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0503869001728298428_global.svg" alt="Global Reach" className="w-12 h-12 mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Global Reach, Local Understanding</h3>
+        <p className="text-gray-600 text-sm leading-relaxed">We help you connect with a wider audience while maintaining strong relevance in your local market, ensuring balanced and effective growth.</p>
+      </div>
+      
+      <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0751261001728298333_privacy.svg" alt="Privacy" className="w-12 h-12 mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Privacy & Security</h3>
+        <p className="text-gray-600 text-sm leading-relaxed">Your data and business information are handled with the highest level of confidentiality and care at every stage, ensuring complete protection.</p>
+      </div>
+      
+      <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
+        <img src="https://getreviews.buzz/storage/app/blog/0748952001728298333_support.svg" alt="Support" className="w-12 h-12 mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Dedicated Support & Guidance</h3>
+        <p className="text-gray-600 text-sm leading-relaxed">Our team is always available to support you. From strategy to execution, our experts are available to assist whenever you need it, with timely guidance.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* ── Services ── */}
       <section id="services" className="py-24 bg-slate-50">
@@ -211,126 +421,115 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Pricing Packages ── */}
-      <section id="pricing" className="py-24 bg-white">
-        <div className="mx-auto max-w-350 px-5">
-          <div className="text-center mb-14">
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Pricing</p>
-            <h2 className="text-4xl font-extrabold text-slate-900">Simple, Transparent Pricing</h2>
-            <p className="mt-4 text-slate-500 max-w-xl mx-auto">
-              No hidden fees. No subscriptions. Pay once and watch your reputation grow.
-            </p>
-          </div>
+      {/* Star */}
 
-          <div className="grid gap-8 lg:grid-cols-3 max-w-5xl mx-auto">
-            {packages.map((pkg) => (
-              <div
-                key={pkg.name}
-                className={`relative rounded-3xl p-8 flex flex-col ${
-                  pkg.highlight
-                    ? "bg-linear-to-br from-violet-600 to-indigo-700 text-white shadow-2xl scale-105"
-                    : "bg-white border border-slate-200 text-slate-900 shadow-sm"
-                }`}
-              >
-                {pkg.highlight && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-amber-400 px-5 py-1.5 text-xs font-bold text-slate-900 shadow">
-                    ⭐ Most Popular
-                  </div>
-                )}
-                <p className={`text-sm font-bold uppercase tracking-widest ${pkg.highlight ? "text-violet-200" : "text-violet-600"}`}>
-                  {pkg.name}
-                </p>
-                <div className="mt-4 flex items-end gap-1">
-                  <span className="text-5xl font-extrabold">{pkg.price}</span>
-                  <span className={`mb-2 text-sm ${pkg.highlight ? "text-violet-200" : "text-slate-400"}`}>/ package</span>
-                </div>
-                <p className={`mt-1 text-sm font-semibold ${pkg.highlight ? "text-violet-200" : "text-slate-500"}`}>{pkg.reviews}</p>
+      <section
+        id="custom-platform"
+        className="relative w-full py-24 md:py-32 overflow-hidden flex items-center justify-center"
+        style={{ backgroundColor: "#FFFEF9" }}
+      >
+        <img
+          src="https://beta.getreviews.buzz/storage/app/blog/0339272001776325180_golden-star-icon-transparent-background-2.png"
+          alt=""
+          className="absolute z-0 pointer-events-none hidden md:block"
+          style={{
+            width: "280px",
+            top: "50%",
+            left: "5%",
+            transform: "translateY(-50%) rotate(15deg)",
+            opacity: 0.35,
+          }}
+        />
+        <img
+          src="https://beta.getreviews.buzz/storage/app/blog/0339272001776325180_golden-star-icon-transparent-background-2.png"
+          alt=""
+          className="absolute z-0 pointer-events-none hidden md:block"
+          style={{
+            width: "280px",
+            top: "50%",
+            right: "5%",
+            transform: "translateY(-50%) rotate(-15deg)",
+            opacity: 0.35,
+          }}
+        />
 
-                <ul className="mt-8 space-y-3 flex-1">
-                  {pkg.features.map((f) => (
-                    <li key={f} className={`flex items-center gap-2.5 text-sm ${pkg.highlight ? "text-violet-100" : "text-slate-600"}`}>
-                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs ${pkg.highlight ? "bg-white/20 text-white" : "bg-violet-100 text-violet-600"}`}>
-                        ✓
-                      </span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+        <div className="relative z-10 max-w-350 mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-[42px] leading-tight text-black mb-5" style={{ fontWeight: 400 }}>
+            Can’t Find Your <strong style={{ fontWeight: 700 }}>Platform</strong>
+            <br />
+            Listed Above?
+          </h2>
 
-                <Link
-                  href="/register"
-                  className={`mt-8 block rounded-2xl py-3.5 text-center text-sm font-bold transition ${
-                    pkg.highlight
-                      ? "bg-white text-violet-700 hover:bg-violet-50"
-                      : "bg-linear-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90"
-                  }`}
-                >
-                  {pkg.cta} →
-                </Link>
+          <p className="text-base md:text-[18px] text-[#4b5563] max-w-[800px] mx-auto mb-10 leading-relaxed">
+            Share your preferred platform with us, and our team will design a customized approach
+            <br />
+            to help you build a credible review presence where it matters the most.
+          </p>
+
+          <a
+            href="/contact-us"
+            className="inline-flex items-center justify-center text-black font-medium rounded-lg transition-transform hover:-translate-y-1 shadow-sm hover:shadow"
+            style={{
+              backgroundColor: "#FCD12A",
+              padding: "14px 40px",
+              fontSize: "16px",
+              gap: "8px",
+            }}
+          >
+            Contact Us <span style={{ fontSize: "18px", lineHeight: 1 }}>&rarr;</span>
+          </a>
+        </div>
+      </section>
+
+      {/* Section With Right Image */}
+
+      <section className="py-16 lg:py-24 bg-white">
+        <div className="max-w-350 mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            
+            <div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+                Turn Reviews into Brand Visibility and Growth
+              </h2>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                Customer reviews shape how people see your business. They often decide whether someone chooses you or looks elsewhere. Most customers rely on reviews to judge quality and trust, and they look for real experiences. But here’s the thing. A small number of reviews rarely creates a strong impact.
+                Regular feedback builds credibility over time. It shows that your business consistently delivers value. Recent reviews matter just as much, since they reflect how your business performs today. Strong and consistent reviews improve your visibility across search and local platforms. They help your business appear when customers are actively looking and ready to take action. With a clear and consistent approach, reviews become a valuable asset that builds trust, strengthens visibility, and supports steady growth.
+              </p>
+            </div>
+
+            <div className="relative">
+              <div className="relative">
+                <img src="https://getreviews.buzz/storage/app/blog/0547241001776770835_0936012001776065359_right-img.png" alt="Review and growth illustration" className=" w-full h-auto" />
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── How It Works ── */}
-      <section id="how-it-works" className="py-24 bg-slate-950 text-white">
-        <div className="mx-auto max-w-350 px-5">
-          <div className="text-center mb-14">
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Process</p>
-            <h2 className="text-4xl font-extrabold">How It Works</h2>
-            <p className="mt-4 text-slate-400 max-w-xl mx-auto">
-              Getting more reviews is simple. Just 4 easy steps and you&apos;re done.
-            </p>
-          </div>
+      {/* Section With Left Image */}
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s, i) => (
-              <div key={s.step} className="relative">
-                {i < steps.length - 1 && (
-                  <div className="absolute top-8 left-full z-0 hidden h-px w-full bg-linear-to-r from-violet-600/50 to-transparent lg:block" />
-                )}
-                <div className="relative z-10 rounded-2xl bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition">
-                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-indigo-700 text-lg font-extrabold text-white shadow-lg">
-                    {s.step}
-                  </div>
-                  <h3 className="text-base font-bold text-white">{s.title}</h3>
-                  <p className="mt-2 text-sm text-slate-400 leading-relaxed">{s.desc}</p>
-                </div>
+      <section className="py-16 lg:py-24">
+        <div className="max-w-350 mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="relative">
+              <div>
+                <img src="https://getreviews.buzz/storage/app/blog/0539654001776770835_0702272001776065346_left-img.png" alt="illustration of floating review boxes" className="rounded-lg w-full" />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Testimonials ── */}
-      <section className="py-24 bg-slate-50">
-        <div className="mx-auto max-w-350 px-5">
-          <div className="text-center mb-14">
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Testimonials</p>
-            <h2 className="text-4xl font-extrabold text-slate-900">What Our Clients Say</h2>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {testimonials.map((t) => (
-              <div key={t.name} className="rounded-2xl bg-white border border-slate-100 p-7 shadow-sm">
-                <div className="flex gap-0.5 mb-5">
-                  {Array.from({ length: t.stars }).map((_, i) => (
-                    <span key={i} className="text-amber-400 text-lg">★</span>
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed text-slate-700">&quot;{t.text}&quot;</p>
-                <div className="mt-6 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white">
-                    {t.avatar}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{t.name}</p>
-                    <p className="text-xs text-slate-500">{t.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+            </div>
+            <div>
+              <h2 className="text-3xl lg:text-5xl font-bold text-black leading-tight mb-6">
+                Where Reputation Meets <span className="text-[#FCD12A] font-bold">Real Business Growth</span>
+              </h2>
+              <p className="text-gray-600 leading-relaxed mb-6">
+                A strong online presence boosts visibility. But to turn that visibility into growth, you need the right approach. This is where a solid review strategy matters.
+              </p>
+              <p className="text-gray-600 leading-relaxed mb-6">
+                At Get Reviews Buzz, we help businesses build and enhance their reputation. Our structured and goal-focused approach improves how your brand is perceived. We ensure it connects with your target audience and stands out in the market.
+              </p>
+              <p className="text-gray-600 leading-relaxed">
+                Our process supports long-term results. We help you encourage repeat customers and build a lasting reputation that benefits your business over time. When your reputation matches your growth goals, it builds customer trust. This leads to better conversions and lasting success.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -353,27 +552,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── FAQ ── */}
-      <section id="faq" className="py-24 bg-white">
-        <div className="mx-auto max-w-350 px-5">
-          <div className="text-center mb-14">
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">FAQ</p>
-            <h2 className="text-4xl font-extrabold text-slate-900">Frequently Asked Questions</h2>
-          </div>
-
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <div key={faq.q} className="rounded-2xl border border-slate-100 bg-slate-50 p-6">
-                <p className="font-bold text-slate-900 flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 text-xs">?</span>
-                  {faq.q}
-                </p>
-                <p className="mt-3 text-sm text-slate-600 leading-relaxed pl-8">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ── Updated FAQ Component ── */}
+      <FaqSection faqs={faqs} />
 
       {/* ── Footer ── */}
       <footer className="bg-slate-950 text-slate-400 py-14">
@@ -433,4 +613,3 @@ export default function HomePage() {
     </div>
   );
 }
-
