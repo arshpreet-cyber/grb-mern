@@ -8,22 +8,33 @@ import products from "@/data/products";
 import type { Product } from "@/data/products";
 
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  selectedMode,
+  onSelect,
+}: {
+  product: Product;
+  selectedMode: "onetime" | "monthly" | null;
+  onSelect: (mode: "onetime" | "monthly") => void;
+}) {
   const { addItem } = useCart();
-  const [mode, setMode] = useState<"onetime" | "monthly">("onetime");
   const [added, setAdded] = useState(false);
 
-  const price = mode === "onetime" ? product.oneTimePrice : product.subscribePrice;
-  const isMonthly = mode === "monthly";
+  const isMonthly = selectedMode === "monthly";
+  const isOnetime = selectedMode === "onetime";
+  const price = isMonthly ? product.subscribePrice : product.oneTimePrice;
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+    const effectiveMode = selectedMode || "onetime";
+    const effectivePrice = effectiveMode === "onetime" ? product.oneTimePrice : product.subscribePrice;
+
     addItem({
-      id: `${product.id}-${mode}`,
+      id: `${product.id}-${effectiveMode}`,
       platform: product.platform,
       icon: "🌟",
-      type: mode === "monthly" ? "subscribe" : "one-time",
-      pricePerUnit: price,
+      type: effectiveMode === "monthly" ? "subscribe" : "one-time",
+      pricePerUnit: effectivePrice,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -34,7 +45,10 @@ export function ProductCard({ product }: { product: Product }) {
       className={`relative bg-[#FDFCF2] rounded-[16px] p-[24px] flex flex-col font-sans cursor-pointer transform-gpu transition-shadow duration-200 w-full h-auto ${product.badge === "Most Popular" ? "most-popular-card" : ""}`}
       style={{
         border: "2px solid transparent",
-        backgroundImage: "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)",
+        backgroundImage:
+          product.badge === "Most Popular"
+            ? "linear-gradient(#fff, #fff), linear-gradient(to right, #FFC107, #E49D56)"
+            : "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)",
         backgroundOrigin: "border-box",
         backgroundClip: "padding-box, border-box",
       }}
@@ -47,7 +61,9 @@ export function ProductCard({ product }: { product: Product }) {
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundImage =
-          "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)";
+          product.badge === "Most Popular"
+            ? "linear-gradient(#fff, #fff), linear-gradient(to right, #FFC107, #E49D56)"
+            : "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)";
         e.currentTarget.style.boxShadow = "none";
       }}
     >
@@ -86,10 +102,10 @@ export function ProductCard({ product }: { product: Product }) {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setMode("onetime");
+            onSelect("onetime");
           }}
           className={`py-[8px] px-[10px] md:px-[16px] font-sans text-[13px] md:text-[14px] font-medium rounded-[8px] border transition-all text-center whitespace-nowrap ${
-            !isMonthly
+            isOnetime
               ? "bg-[#F0EFEB] text-black/70 border-black/15"
               : "bg-white text-black/60 border-black/10 hover:border-[#ccc] hover:bg-[#F5F5F3]"
           }`}
@@ -99,7 +115,7 @@ export function ProductCard({ product }: { product: Product }) {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setMode("monthly");
+            onSelect("monthly");
           }}
           className={`py-[8px] px-[10px] md:px-[16px] font-sans text-[13px] md:text-[14px] font-medium rounded-[8px] border transition-all text-center whitespace-nowrap ${
             isMonthly
@@ -113,10 +129,10 @@ export function ProductCard({ product }: { product: Product }) {
 
       <button
         onClick={handleAdd}
-        className={`flex items-center justify-center gap-[8px] h-[46px] w-full border border-black/15 rounded-[10px] text-[14px] md:text-[15px] font-semibold cursor-pointer transition-all font-sans m-0 ${
-          isMonthly
-            ? "bg-linear-to-b from-[#ffffff] to-[#e5e5e5] text-[#1a1a1a] hover:bg-[#F5F5F3] hover:-translate-y-[1px]"
-            : "bg-white text-[#1a1a1a] hover:bg-[#F5F5F3] hover:-translate-y-[1px]"
+        className={`flex items-center justify-center gap-[8px] h-[46px] w-full border rounded-[10px] text-[14px] md:text-[15px] font-semibold cursor-pointer transition-all font-sans m-0 ${
+          selectedMode !== null
+            ? "bg-[#fc0] text-[#1a1a1a] border-[#fc0] hover:bg-[#e6b800]"
+            : "bg-white text-[#1a1a1a] border-black/15 hover:bg-[#F5F5F3] hover:-translate-y-[1px]"
         }`}
       >
         <svg
@@ -141,6 +157,7 @@ export function ProductCard({ product }: { product: Product }) {
 export function BuyReviewsSection() {
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(8);
+  const [selection, setSelection] = useState<{ productId: string; mode: "onetime" | "monthly" } | null>(null);
 
   const filtered = products.filter((p) =>
     p.platform.toLowerCase().includes(search.toLowerCase())
@@ -152,7 +169,7 @@ export function BuyReviewsSection() {
   return (
     <section className="w-full bg-[#FDFCF2]">
     <Wrapper>
-    <div className="w-full mx-auto px-4 sm:px-6 py-12">
+    <div className="w-full mx-auto px-4 sm:px-6 py-2">
       {/* Centered search bar */}
       <div className="flex justify-center mb-[40px]">
         <div className="relative w-full max-w-[520px]">
@@ -167,9 +184,14 @@ export function BuyReviewsSection() {
         </div>
       </div>
 
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[20px] lg:gap-[24px] p-0 m-0 list-none">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[20px] lg:gap-[20px] p-0 m-0 list-none">
         {visible.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            selectedMode={selection?.productId === product.id ? selection.mode : null}
+            onSelect={(mode) => setSelection({ productId: product.id, mode })}
+          />
         ))}
       </ul>
 

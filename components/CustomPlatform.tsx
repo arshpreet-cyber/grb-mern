@@ -7,7 +7,7 @@ export default function CustomPlatform() {
   return (
     <section
       id="custom-platform"
-      className="relative w-full py-24 md:py-32 overflow-hidden flex items-center justify-center"
+      className="relative w-full py-5 md:py-10 overflow-hidden flex items-center justify-center"
       style={{ backgroundColor: "#FFFEF9" }}
     >
       <Wrapper>

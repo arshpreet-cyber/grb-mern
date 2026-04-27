@@ -26,7 +26,7 @@ export default function FaqSection() {
   return (
     <section className="bg-white py-[50px] lg:py-[90px] font-['Poppins',sans-serif]">
       <Wrapper>
-        <div className="w-full px-4 sm:px-5 lg:px-[20px]">
+        <div className="w-full px-4 sm:px-5 lg:px-[30px]">
           <div className="grid grid-cols-1 lg:grid-cols-[490px_1fr] gap-[28px] lg:gap-[150px] items-start">
 
             <div className="lg:sticky lg:top-[100px] flex flex-col md:flex-row lg:flex-col flex-wrap lg:flex-nowrap items-start gap-[16px] md:gap-[24px] lg:gap-[40px]">
