@@ -215,7 +215,7 @@ export default function BuyReviewsPage() {
       <div className="min-h-screen bg-slate-50 font-sans">
         <HomeNavbar />
 
-        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-12">
+        <div className="w-full mx-auto px-4 sm:px-6 py-12">
           {/* Top Bar */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-[30px] gap-[20px]">
             

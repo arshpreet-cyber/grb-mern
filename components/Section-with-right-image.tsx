@@ -40,7 +40,7 @@ const VelvetSection: React.FC<Props> = ({ data = {} }) => {
       id={customId}
       className="bg-[#f5f6f7] py-16 lg:py-24"
     >
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="w-full mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           
           {/* LEFT CONTENT */}

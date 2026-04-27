@@ -94,7 +94,7 @@ export default function HomeNavbar() {
           sticky ? "fixed top-0 left-0 right-0 shadow-md" : "relative"
         }`}
       >
-        <div className="mx-auto max-w-350 px-5">
+        <div className="mx-auto w-full px-5">
           <div className="flex items-center justify-between py-3 gap-6">
             {/* Logo */}
             <Link href="/" aria-label="GetReviews.Buzz Home" className="shrink-0">
@@ -130,7 +130,7 @@ export default function HomeNavbar() {
                   className="fixed right-0 left-0 z-1000 invisible border-t border-[rgba(0,0,0,0.1)] bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100"
                   style={{ top: `${headerHeight}px` }}
                 >
-                  <div className="mx-auto max-w-350 px-10 pt-8 pb-5">
+                  <div className="mx-auto w-full px-10 pt-8 pb-5">
                     {/* 5-col icon grid — same as .rev_grid */}
                     <div className="grid grid-cols-5 gap-3">
                       {buyReviewsLinks.map((item) => (
