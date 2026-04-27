@@ -24,7 +24,7 @@ type Props = {
 const SectionWithLeftImage: React.FC<Props> = ({ data = {} }) => {
   return (
     <section className="bg-[#f5f6f7] py-16 lg:py-24">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="w-full mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
 
           {/* LEFT IMAGE */}

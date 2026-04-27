@@ -180,7 +180,7 @@ export function FaqSection() {
 
   return (
     <section className="bg-white py-[50px] lg:py-[90px] font-['Poppins',sans-serif]">
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-5 lg:px-[20px]">
+      <div className="w-full px-4 sm:px-5 lg:px-[20px]">
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-[490px_1fr] gap-[28px] lg:gap-[150px] items-start">
           
@@ -287,7 +287,7 @@ export function FaqSection() {
 export function StatsBar() {
   return (
       <section className="bg-white py-16 px-4 sm:px-6 relative w-full font-sans">
-        <div className="max-w-[1300px] mx-auto">
+        <div className="w-full">
           <div className="text-center mb-16 md:mb-[80px]">
             <h2 className="text-[28px] sm:text-[30px] lg:text-[44px] leading-[1.25] text-[#111]">
               <span className="font-normal text-[#222]">Why Businesses Keep Coming Back:</span>
@@ -328,7 +328,7 @@ export function StatsBar() {
 export function IconGrid() {
   return (
       <section className="py-16 bg-gray-50">
-  <div className="max-w-350 container mx-auto px-4 text-center">
+  <div className="container mx-auto px-4 text-center">
 <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Why Do Businesses Trust Get Reviews Buzz?</h2>
     <p className="text-gray-600 max-w-2xl mx-auto mb-12">As your reliable partner, we help your business strengthen their online reputation, build lasting customer trust, and drive consistent growth through effective review strategies.</p>
     
@@ -377,7 +377,7 @@ export function IconGrid() {
 export function ServicesSection() {
   return (
       <section id="services" className="py-24 bg-slate-50">
-        <div className="mx-auto max-w-350 px-5">
+        <div className="mx-auto w-full px-5">
           <div className="text-center mb-14">
             <p className="text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">Our Services</p>
             <h2 className="text-4xl font-extrabold text-slate-900">Reviews for Every Platform</h2>
@@ -446,7 +446,7 @@ export function CustomPlatform() {
           }}
         />
 
-        <div className="relative z-10 max-w-350 mx-auto px-4 text-center">
+        <div className="relative z-10 w-full mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-[42px] leading-tight text-black mb-5" style={{ fontWeight: 400 }}>
             Can’t Find Your <strong style={{ fontWeight: 700 }}>Platform</strong>
             <br />
@@ -479,7 +479,7 @@ export function CustomPlatform() {
 export function SectionWithRightImage() {
   return (
       <section className="py-16 lg:py-24 bg-white">
-        <div className="max-w-350 mx-auto px-6">
+        <div className="w-full mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             
             <div>
@@ -506,7 +506,7 @@ export function SectionWithRightImage() {
 export function SectionWithLeftImage() {
   return (
       <section className="py-16 lg:py-24">
-        <div className="max-w-350 mx-auto px-6">
+        <div className="w-full mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="relative">
               <div>
@@ -536,7 +536,7 @@ export function SectionWithLeftImage() {
 export function CTABanner() {
   return (
       <section className="bg-linear-to-r from-violet-600 to-indigo-700 py-20 text-center text-white">
-        <div className="mx-auto max-w-350 px-5">
+        <div className="mx-auto w-full px-5">
           <h2 className="text-4xl font-extrabold">Ready to Boost Your Reputation?</h2>
           <p className="mt-4 text-violet-200 text-lg">
             Join 12,000+ businesses that trust us to grow their online presence.
@@ -557,7 +557,7 @@ export function CTABanner() {
 export function HomeFooter() {
   return (
       <footer className="bg-slate-950 text-slate-400 py-14">
-        <div className="mx-auto max-w-350 px-5">
+        <div className="mx-auto w-full px-5">
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 mb-12">
             <div>
               <div className="mb-4">

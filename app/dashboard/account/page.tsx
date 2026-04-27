@@ -106,7 +106,7 @@ export default function AccountPage() {
         </div>
       </header>
 
-      <div className="max-w-5xl px-4 md:px-8">
+      <div className="w-full px-4 md:px-8">
 
         {message && (
           <div className={`mb-6 rounded px-4 py-3 text-sm font-medium ${message.includes("success") ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-600 border border-red-200"}`}>
