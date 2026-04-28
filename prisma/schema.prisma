@@ -285,4 +285,29 @@ model Attachment {
   updatedAt DateTime?       @updatedAt
   deletedAt DateTime?       // Soft delete
 }
+
+model Blog {
+  id               BigInt   @id @default(autoincrement())
+  user_id          String?
+  category         String?  @db.Text
+  tag              String?  @db.Text
+  title            String?
+  excerpt          String?  @db.Text
+  content          String?  @db.Text
+  category_id      String?
+  subcategory_id   String?
+  slug             String?  @unique
+  keywords         String?
+  meta_description String?  @db.Text
+  meta_title       String?  @db.Text
+  canonical_link   String?  @db.Text
+  media            String?
+  author           String?
+  about_author     String?  @db.Text
+  status           Int      @default(2) // 1=publish, 2=draft, 3=unused
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  deleted_at       DateTime?
+}
+
 

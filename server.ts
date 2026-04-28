@@ -19,10 +19,10 @@ nextApp.prepare().then(async () => {
   await initQueue();
   
   const app = express();
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: false }));
-
-  app.use("/api/support", supportRoutes);
+  
+  // Only apply express body parsers to specific Express routes
+  // so we don't consume the request body before Next.js can read it
+  app.use("/api/support", express.json(), express.urlencoded({ extended: false }), supportRoutes);
 
   app.all("*", (req, res) => {
     if (req.url.startsWith("/_next") || req.url.includes("icon")) {
