@@ -52,7 +52,7 @@ function StatItem({ target, suffix, label, description, shouldAnimate }: StatIte
         {count.toLocaleString()}{suffix}
       </div>
       <div className="text-[#FFC000] font-semibold text-[18px] mb-3">{label}</div>
-      <div className="text-[#777] text-[15px] leading-[1.6] sm:max-w-[280px]">{description}</div>
+      <div className="text-[#777] text-[15px] leading-[1.5] sm:max-w-[300px]">{description}</div>
     </div>
   );
 }
@@ -89,7 +89,7 @@ export default function StatsBar() {
           <div className="text-center mb-16 md:mb-[80px]">
             <h2 className="text-[28px] sm:text-[30px] lg:text-[40px] leading-[1.25] text-[#111]">
               <span className="font-normal text-[#222]">Why Businesses Keep Coming Back:</span>
-              <strong className="font-bold text-black lg:mt-3 inline-block">Proven Results, Trusted Reviews, Consistent Growth</strong>
+              <strong className="font-semibold text-black lg:mt-3 inline-block">Proven Results, Trusted Reviews, Consistent Growth</strong>
             </h2>
           </div>
 

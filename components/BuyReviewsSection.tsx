@@ -104,11 +104,10 @@ export function ProductCard({
             e.stopPropagation();
             onSelect("onetime");
           }}
-          className={`py-[8px] px-[10px] md:px-[16px] font-sans text-[13px] md:text-[14px] font-medium rounded-[8px] border transition-all text-center whitespace-nowrap ${
-            isOnetime
-              ? "bg-[#F0EFEB] text-black/70 border-black/15"
-              : "bg-white text-black/60 border-black/10 hover:border-[#ccc] hover:bg-[#F5F5F3]"
-          }`}
+          className={`py-[8px] px-[10px] md:px-[16px] font-sans text-[13px] md:text-[14px] font-medium rounded-[8px] border transition-all text-center whitespace-nowrap ${isOnetime
+            ? "bg-[#F0EFEB] text-black/70 border-black/15"
+            : "bg-white text-black/60 border-black/10 hover:border-[#ccc] hover:bg-[#F5F5F3]"
+            }`}
         >
           One-time
         </button>
@@ -117,11 +116,10 @@ export function ProductCard({
             e.stopPropagation();
             onSelect("monthly");
           }}
-          className={`py-[8px] px-[10px] md:px-[16px] font-sans text-[13px] md:text-[14px] font-medium rounded-[8px] border transition-all text-center whitespace-nowrap ${
-            isMonthly
-              ? "bg-[#F0EFEB] text-black/70 border-black/15"
-              : "bg-white text-black/60 border-black/10 hover:border-[#ccc] hover:bg-[#F5F5F3]"
-          }`}
+          className={`py-[8px] px-[10px] md:px-[16px] font-sans text-[13px] md:text-[14px] font-medium rounded-[8px] border transition-all text-center whitespace-nowrap ${isMonthly
+            ? "bg-[#F0EFEB] text-black/70 border-black/15"
+            : "bg-white text-black/60 border-black/10 hover:border-[#ccc] hover:bg-[#F5F5F3]"
+            }`}
         >
           Monthly
         </button>
@@ -129,11 +127,10 @@ export function ProductCard({
 
       <button
         onClick={handleAdd}
-        className={`flex items-center justify-center gap-[8px] h-[46px] w-full border rounded-[10px] text-[14px] md:text-[15px] font-semibold cursor-pointer transition-all font-sans m-0 ${
-          selectedMode !== null
-            ? "bg-[#fc0] text-[#1a1a1a] border-[#fc0] hover:bg-[#e6b800]"
-            : "bg-white text-[#1a1a1a] border-black/15 hover:bg-[#F5F5F3] hover:-translate-y-[1px]"
-        }`}
+        className={`flex items-center justify-center gap-[8px] h-[46px] w-full border rounded-[10px] text-[14px] md:text-[15px] font-semibold cursor-pointer transition-all font-sans m-0 ${selectedMode !== null
+          ? "bg-[#fc0] text-[#1a1a1a] border-[#fc0] hover:bg-[#e6b800]"
+          : "bg-white text-[#1a1a1a] border-black/15 hover:bg-[#F5F5F3] hover:-translate-y-[1px]"
+          }`}
       >
         <svg
           viewBox="0 0 24 24"
@@ -168,60 +165,61 @@ export function BuyReviewsSection() {
 
   return (
     <section className="w-full bg-[#FDFCF2]">
-    <Wrapper>
-    <div className="w-full mx-auto px-4 sm:px-6 py-2">
-      {/* Centered search bar */}
-      <div className="flex justify-center mb-[40px]">
-        <div className="relative w-full max-w-[520px]">
-          <input
-            type="text"
-            placeholder="Search review Platforms (e.g., Google, Trustpilot...)"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setVisibleCount(8); }}
-            className="w-full h-[50px] pl-[24px] pr-[52px] rounded-[50px] border border-[#E5E5E5] bg-white text-[14px] text-[#333] outline-none transition-all focus:border-[#ccc] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] font-sans box-border placeholder:text-[#999] shadow-sm"
-          />
-          <Search className="absolute right-[18px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#aaa] pointer-events-none" />
-        </div>
-      </div>
+      <Wrapper>
+        <div className="w-full mx-auto px-4 sm:px-6 py-2">
+          {/* Centered search bar */}
+          <div className="sticky top-[10%] z-[90] flex justify-center mb-[40px] py-[15px] bg-[#FDFCF2]/90 backdrop-blur-md -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="relative w-full max-w-[700px]">
+              <input
+                type="text"
+                placeholder="Search review Platforms (e.g., Google, Trustpilot...)"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setVisibleCount(8); }}
+                className="w-full h-[55px] pl-[24px] pr-[52px] rounded-[50px] border-2 border-[#e5e5e5] bg-white text-[15px] text-[#323232d9] outline-none transition-all focus:border-[#ccc] font-sans box-border placeholder:text-[#323232d9]"
+              />
+              <Search className="absolute right-[18px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#aaa] pointer-events-none" />
+            </div>
+          </div>
 
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[20px] lg:gap-[20px] p-0 m-0 list-none">
-        {visible.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            selectedMode={selection?.productId === product.id ? selection.mode : null}
-            onSelect={(mode) => setSelection({ productId: product.id, mode })}
-          />
-        ))}
-      </ul>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[20px] lg:gap-[20px] p-0 m-0 list-none">
+            {visible.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                selectedMode={selection?.productId === product.id ? selection.mode : null}
+                onSelect={(mode) => setSelection({ productId: product.id, mode })}
+              />
+            ))}
+          </ul>
 
-      {/* View More Button */}
-      {hasMore && (
-        <div className="flex justify-center mt-[48px] mb-[20px]">
-          <button
-            onClick={() => setVisibleCount((c) => c + 8)}
-            className="inline-flex items-center gap-[10px] px-[28px] py-[13px] rounded-[10px] border border-[#333] bg-white text-[#1a1a1a] text-[14px] font-medium font-sans transition-all hover:bg-[#f5f5f3] hover:border-[#111] hover:shadow-sm"
-          >
-            View More Platforms
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
+          {/* View More Button */}
+          {hasMore && (
+            <div className="flex justify-center mt-[48px] mb-[20px]">
+              <button
+                onClick={() => setVisibleCount((c) => c + 8)}
+                className="inline-flex items-center gap-[8px] px-[24px] py-[12px] rounded-[10px] border border-[#333] bg-[#ffffff] text-[#1a1a1a] text-[14px] font-medium font-sans transition-all hover:bg-[#e4e4e7] hover:shadow-sm"
+              >
+                View More Platforms
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#1a1a1a"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
-      )}
-    </div>
-    </Wrapper>
+      </Wrapper>
     </section>
   );
-  
+
 }
