@@ -67,8 +67,7 @@ export default function HomeNavbar() {
   const buyReviewsActive = isActive("/services/buy-reviews-online") || isActive("/products");
 
   const navLinkClass = (active: boolean) =>
-    `relative text-sm font-medium transition-colors duration-150 hover:text-[#ffcc00] ${
-      active ? "text-[#ffcc00]" : "text-[#212121]"
+    `relative text-[15px] font-medium transition-colors duration-150 hover:text-[#ffcc00] ${active ? "text-[#ffcc00]" : "text-[#212121]"
     }`;
 
   const activeUnderline = (active: boolean) =>
@@ -78,15 +77,16 @@ export default function HomeNavbar() {
 
   const userInitials = session?.user?.name
     ? session.user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2)
     : "U";
 
   const NavContent = (
     <header ref={headerRef} className="w-full bg-white z-[1001]">
+
       <div className="mx-auto w-full px-5">
         <div className="flex items-center justify-between py-3 gap-6">
           {/* Logo */}
@@ -101,73 +101,68 @@ export default function HomeNavbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-8 ml-[5%]">
-            <div className="group static">
-              <Link
-                href="/buy-reviews"
-                className={`${navLinkClass(buyReviewsActive)} ${activeUnderline(buyReviewsActive)} flex items-center gap-1`}
-              >
-                Buy Reviews
-                <svg className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180" viewBox="0 0 10 6" fill="none">
-                  <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </Link>
+          <Wrapper>
+            <nav className="hidden lg:flex items-center gap-10 ml-[25%]">
+              <div className="group static">
+                <Link
+                  href="/buy-reviews"
+                  className={`${navLinkClass(buyReviewsActive)} ${activeUnderline(buyReviewsActive)} flex items-center gap-1`}
+                >
+                  Get Reviews
+                  <svg className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180" viewBox="0 0 10 6" fill="none">
+                    <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </Link>
 
-              {/* Mega dropdown */}
-              <div
-                className="fixed right-0 left-0 z-[1000] invisible border-t border-[rgba(0,0,0,0.1)] bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100"
-                style={{ top: `${headerHeight}px` }}
-              >
-                <div className="mx-auto w-full px-10 pt-8 pb-5">
-                  <div className="grid grid-cols-5 gap-3">
-                    {buyReviewsLinks.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="flex items-center gap-2 p-2.5 rounded-[9px] hover:bg-[#FFF6A8] transition-colors group/item"
-                      >
-                        <img
-                          src={item.img}
-                          alt={item.label}
-                          width={40}
-                          height={40}
-                          className="h-10 w-10 shrink-0 rounded border border-[#ffcc00] bg-white p-1.5"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                        />
-                        <span className="text-base text-[#212121] group-hover/item:text-[#212121]">
-                          {item.label}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="mt-5 pt-4 border-t border-[#ffcc00]">
-                    <Link
-                      href="/buy-reviews"
-                      className="inline-flex items-center gap-2 rounded-lg text-sm font-semibold text-black transition-colors hover:text-[#ffcc00]"
-                    >
-                      Discover 100+ other Platforms
-                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                        <path d="M5.97111 6.96629C5.8427 6.83788 5.78106 6.68272 5.7862 6.5008C5.79176 6.31889 5.85875 6.16372 5.98716 6.03531L7.80096 4.22151H0.642055C0.460139 4.22151 0.307544 4.15987 0.18427 4.0366C0.0614233 3.91375 0 3.76137 0 3.57945C0 3.39754 0.0614233 3.24494 0.18427 3.12167C0.307544 2.99882 0.460139 2.9374 0.642055 2.9374H7.80096L5.97111 1.10754C5.8427 0.979133 5.77849 0.826538 5.77849 0.649759C5.77849 0.473408 5.8427 0.321027 5.97111 0.192616C6.09952 0.0642053 6.25211 0 6.42889 0C6.60524 0 6.75762 0.0642053 6.88604 0.192616L9.82343 3.13002C9.88764 3.19422 9.93323 3.26378 9.96019 3.33868C9.98673 3.41359 10 3.49385 10 3.57945C10 3.66506 9.98673 3.74532 9.96019 3.82022C9.93323 3.89513 9.88764 3.96469 9.82343 4.02889L6.86998 6.98234C6.75227 7.10005 6.60524 7.15891 6.42889 7.15891C6.25211 7.15891 6.09952 7.0947 5.97111 6.96629Z" fill="#000000" />
-                      </svg>
-                    </Link>
-                  </div>
+                {/* Mega dropdown */}
+                <div
+                  className="fixed right-0 left-0 z-[1000] invisible border-t border-[rgba(0,0,0,0.1)] bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100"
+                  style={{ top: `${headerHeight}px` }}
+                ><Wrapper>
+                    <div className="mx-auto w-full px-10 pt-8 pb-5">
+                      <div className="grid grid-cols-5 gap-3">
+                        {buyReviewsLinks.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className="flex items-center gap-2 p-2.5 rounded-[9px] hover:bg-[#FFF6A8] transition-colors group/item"
+                          >
+                            <img
+                              src={item.img}
+                              alt={item.label}
+                              width={40}
+                              height={40}
+                              className="h-10 w-10 shrink-0 rounded border border-[#ffcc00] bg-white p-1.5"
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                            />
+                            <span className="text-base text-[#212121] group-hover/item:text-[#212121]">
+                              {item.label}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                      <div className="mt-5 pt-4 border-t border-[#ffcc00]">
+
+                      </div>
+                    </div>
+                  </Wrapper>
                 </div>
               </div>
-            </div>
 
-            <Link href="/how-it-works/" className={`${navLinkClass(isActive("/how-it-works"))} ${activeUnderline(isActive("/how-it-works"))}`}>
-              How it Works
-            </Link>
-            <Link href="/about-us/" className={`${navLinkClass(isActive("/about-us"))} ${activeUnderline(isActive("/about-us"))}`}>
-              About
-            </Link>
-            <Link href="/blog" className={`${navLinkClass(isActive("/blog"))} ${activeUnderline(isActive("/blog"))}`}>
-              Blog
-            </Link>
-            <Link href="#" className={`${navLinkClass(false)} ${activeUnderline(false)}`}>
-              Tools
-            </Link>
-          </nav>
+              <Link href="/how-it-works/" className={`${navLinkClass(isActive("/how-it-works"))} ${activeUnderline(isActive("/how-it-works"))}`}>
+                How it Works
+              </Link>
+              <Link href="/about-us/" className={`${navLinkClass(isActive("/about-us"))} ${activeUnderline(isActive("/about-us"))}`}>
+                About
+              </Link>
+              <Link href="/blog" className={`${navLinkClass(isActive("/blog"))} ${activeUnderline(isActive("/blog"))}`}>
+                Blog
+              </Link>
+              <Link href="#" className={`${navLinkClass(false)} ${activeUnderline(false)}`}>
+                Tools
+              </Link>
+            </nav>
+          </Wrapper>
 
           {/* Right side actions */}
           <div className="hidden lg:flex items-center gap-3 ml-auto">
@@ -243,7 +238,7 @@ export default function HomeNavbar() {
             ) : session ? (
               <div className="relative group">
                 <button className="inline-flex h-12.5 w-30 items-center justify-center gap-2 rounded-[10px] border border-[#ddd] bg-white text-sm font-medium text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
-                  <img src="https://beta.getreviews.buzz/storage/app/blog/0908809001775472579_login-1.svg" alt="login icon" width={20} height={20} />
+                  <img src="https://beta.getreviews.buzz/storage/app/blog/0908809001775472579_login-1.svg" alt="login icon" width={22} height={22} />
                   <span>{userInitials}</span>
                 </button>
                 <div className="absolute top-[calc(100%+4px)] right-0 z-[1000] invisible w-48 rounded-xl border border-[#eee] bg-white py-1 opacity-0 shadow-lg transition-all duration-150 group-hover:visible group-hover:opacity-100">
