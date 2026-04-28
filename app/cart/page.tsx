@@ -3,143 +3,240 @@
 import { useCart } from "@/context/CartContext";
 import HomeNavbar from "@/components/HomeNavbar";
 import Link from "next/link";
-
 import Wrapper from "@/components/Wrapper";
+import { X, Info, RefreshCcw, ShoppingCart, Eye } from "lucide-react";
+import HomeFooter from "@/components/HomeFooter";
+import { useRouter } from "next/navigation";
+import products from "@/data/products";
 
 export default function CartPage() {
-  const { items, removeItem, updateQty, clearCart, total, count } = useCart();
+  const { items, removeItem, updateQty, clearCart, total } = useCart();
+  const router = useRouter();
+
+  // Pick 3 random similar products
+  const randomProducts = products
+    .filter(p => !items.find(item => item.id === p.id))
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 3);
+
+  const steps = [
+    { number: 1, label: "Configure & Order", active: true },
+    { number: 2, label: "order details", active: false },
+    { number: 3, label: "order placed", active: false },
+  ];
 
   return (
-    <Wrapper>
-      <div className="min-h-screen bg-slate-50">
-        <HomeNavbar />
+    <div className="min-h-screen bg-white font-['Poppins']">
+      <HomeNavbar />
 
-        <div className="mx-auto w-full px-5 py-10">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-2xl font-extrabold text-slate-900">Shopping Cart</h1>
-              <p className="text-sm text-slate-500 mt-1">{count} {count === 1 ? "item" : "items"} in your cart</p>
-            </div>
-            <Link href="/buy-reviews" className="text-sm font-semibold text-violet-600 hover:text-violet-700 transition">
-              ← Continue Shopping
-            </Link>
-          </div>
-
-          {items.length === 0 ? (
-            <div className="rounded-2xl bg-white border border-slate-100 shadow-sm py-24 text-center">
-              <div className="text-6xl mb-4">🛒</div>
-              <h2 className="text-xl font-bold text-slate-800">Your cart is empty</h2>
-              <p className="text-slate-500 mt-2 mb-6">Browse our review packages and add items to your cart.</p>
-              <Link href="/buy-reviews"
-                className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow transition hover:opacity-90">
-                Browse Packages →
-              </Link>
-            </div>
-          ) : (
-            <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-              {/* Cart Items */}
-              <div className="space-y-4">
-                {/* Clear Cart */}
-                <div className="flex justify-end">
-                  <button onClick={clearCart}
-                    className="text-xs font-semibold text-red-400 hover:text-red-600 transition flex items-center gap-1">
-                    🗑 Clear All Items
-                  </button>
+      <div className="bg-[#f7f7f7] py-[50px] md:pb-[60px]">
+        <Wrapper>
+          {items.length > 0 && (
+            <div className="flex justify-center mb-[60px] pt-[10px]">
+              <div className="relative flex justify-between w-[600px] max-w-full">
+                {/* Progress Lines */}
+                <div className="absolute top-[25px] left-[40px] w-[87%] h-[2px] z-0 flex">
+                  <div className="bg-[#fcd535] flex-1"></div>
+                  <div className="bg-[#e9ecef] flex-1"></div>
                 </div>
 
-                {items.map((item) => (
-                  <div key={item.id} className="rounded-2xl bg-white border border-slate-100 shadow-sm p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-violet-100 to-indigo-100 text-3xl">
-                        {item.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <h3 className="font-bold text-slate-900">{item.platform}</h3>
-                            <span className={`inline-flex mt-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${item.type === "subscribe" ? "bg-emerald-100 text-emerald-700" : "bg-violet-100 text-violet-700"}`}>
-                              {item.type === "subscribe" ? "♻️ Subscribe" : "🛒 One-Time"}
-                            </span>
-                          </div>
-                          <button onClick={() => removeItem(item.id)}
-                            className="text-slate-300 hover:text-red-400 transition shrink-0">✕</button>
-                        </div>
-
-                        <div className="mt-4 flex items-center justify-between">
-                          {/* Qty */}
-                          <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
-                            <button onClick={() => updateQty(item.id, item.qty - 1)}
-                              className="px-3 py-2 text-slate-500 hover:bg-slate-100 transition font-bold">−</button>
-                            <span className="px-3 py-2 text-sm font-bold text-slate-800 min-w-3rem text-center">{item.qty}</span>
-                            <button onClick={() => updateQty(item.id, item.qty + 1)}
-                              className="px-3 py-2 text-slate-500 hover:bg-slate-100 transition font-bold">+</button>
-                          </div>
-
-                          <div className="text-right">
-                            <p className="text-xs text-slate-400">${item.pricePerUnit.toFixed(2)} × {item.qty}</p>
-                            <p className="text-lg font-extrabold text-violet-700">${(item.pricePerUnit * item.qty).toFixed(2)}</p>
-                          </div>
-                        </div>
-                      </div>
+                {steps.map((step) => (
+                  <div key={step.number} className="relative z-[2] text-center w-[120px]">
+                    <div className={`w-[50px] h-[50px] rounded-full flex items-center justify-center border-2 mx-auto mb-[10px] font-semibold text-[18px] transition-all duration-300 ${
+                      step.active 
+                      ? "bg-[#fcd535] border-[#fcd535] text-[#212529] outline outline-[2px] outline-[#212529]" 
+                      : "bg-white border-[#e9ecef] text-[#adb5bd]"
+                    }`}>
+                      {step.number}
+                    </div>
+                    <div className={`text-[11px] font-bold uppercase tracking-[0.5px] whitespace-nowrap ${
+                      step.active ? "text-[#212529]" : "text-[#adb5bd]"
+                    }`}>
+                      {step.label}
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
+          )}
 
-              {/* Order Summary */}
-              <div className="space-y-4">
-                <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-6 sticky top-24">
-                  <h2 className="text-base font-bold text-slate-800 mb-5">Order Summary</h2>
+          {items.length === 0 ? (
+            <div className="text-center p-[50px] bg-white rounded shadow-sm border mt-4 max-w-4xl mx-auto">
+              <h3 className="text-[24px] font-bold text-[#333] mb-4">Your cart is empty</h3>
+              <br />
+              <Link href="/buy-reviews" className="bg-[#333] text-white px-[30px] py-[12px] rounded-md font-medium text-[15px] hover:bg-black transition-all inline-block">
+                Continue Shopping
+              </Link>
+            </div>
+          ) : (
+            <div className="bg-white p-[30px] rounded-[11px]">
+              {/* Cart Header */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between pb-5 mb-5 border-b border-[#f1f1f1]">
+                <h2 className="text-[18px] font-semibold uppercase tracking-[1px] text-[#333] m-0">Configure & Order</h2>
+                <div className="flex flex-wrap gap-2.5 mt-4 md:mt-0">
+                  <Link href="/buy-reviews" className="bg-[#448aff] text-white px-5 py-2.5 rounded-lg text-[14px] font-medium hover:opacity-90 transition-all flex items-center justify-center min-w-[140px]">
+                    Continue Shopping
+                  </Link>
+                  <button 
+                    onClick={() => { if(confirm("Are you sure you want to clear your entire cart?")) clearCart(); }}
+                    className="bg-transparent text-[#888] border border-[#ccc] px-5 py-2.5 rounded-lg text-[14px] font-medium hover:bg-[#dc3545] hover:text-white hover:border-[#dc3545] transition-all flex items-center gap-2 justify-center min-w-[120px] group"
+                  >
+                    <X size={16} /> Clear Cart
+                  </button>
+                </div>
+              </div>
 
-                  <div className="space-y-3 mb-5">
+              <div className="flex flex-col lg:flex-row gap-10 items-start">
+                {/* Left Column */}
+                <div className="flex-1 w-full">
+                  <div className="space-y-5">
                     {items.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between text-sm">
-                        <span className="text-slate-600 truncate mr-2">{item.icon} {item.platform} ×{item.qty}</span>
-                        <span className="font-semibold text-slate-800 shrink-0">${(item.pricePerUnit * item.qty).toFixed(2)}</span>
+                      <div key={item.id} className="bg-white border border-[#f0f0f0] rounded-xl p-[25px] flex justify-between shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative group">
+                        <div className="flex flex-1 items-start">
+                          {/* Image Box */}
+                          <div className="w-[65px] h-[65px] bg-[#f8f9fa] rounded-lg flex items-center justify-center mr-[25px] p-2 shrink-0">
+                            <img src={item.image} alt={item.platform} className="max-w-full max-h-full object-contain" />
+                          </div>
+
+                          {/* Info Box */}
+                          <div className="flex flex-col">
+                            <div className="text-[16px] font-bold text-[#333] mb-3 flex flex-wrap items-center gap-2 leading-[1.3]">
+                              {item.platform}
+                              {item.type === "subscribe" ? (
+                                <div className="relative group/tooltip inline-flex items-center gap-2">
+                                  <span className="bg-[#fff3cd] text-[#856404] border border-[#ffeeba] text-[10px] px-2 py-[3px] rounded font-bold uppercase tracking-[0.5px] flex items-center gap-1">
+                                    <RefreshCcw size={10} className="animate-spin-slow" /> Monthly
+                                  </span>
+                                  <div className="w-5 h-5 bg-black text-white rounded-full flex items-center justify-center text-[10px] cursor-help relative">
+                                    <Info size={10} />
+                                    <div className="absolute left-[110%] top-0 w-[180px] bg-[#6c6c6c] text-white p-3 rounded-xl shadow-lg opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all text-[12px] font-normal z-20 text-left">
+                                      Subscription renews monthly with automatic billing.
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="bg-[#f3f4f6] text-[#6b7280] border border-[#e5e7eb] text-[10px] px-2 py-[3px] rounded font-bold uppercase tracking-[0.5px]">
+                                  One-time
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Qty Selector */}
+                            <div className="flex items-center bg-white border border-[#e0e0e0] rounded-md h-[36px] w-fit overflow-hidden">
+                              <button onClick={() => updateQty(item.id, item.qty - 1)} className="w-[30px] h-full flex items-center justify-center text-[#bbb] hover:text-[#333] transition-colors text-[18px] pb-0.5">
+                                −
+                              </button>
+                              <input 
+                                type="number" 
+                                value={item.qty} 
+                                onChange={(e) => updateQty(item.id, Number(e.target.value))}
+                                className="w-[35px] text-center font-semibold text-[14px] border-none text-[#333] bg-transparent focus:outline-none appearance-none" 
+                              />
+                              <button onClick={() => updateQty(item.id, item.qty + 1)} className="w-[30px] h-full flex items-center justify-center text-[#bbb] hover:text-[#333] transition-colors text-[18px] pb-0.5">
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col justify-between items-end min-h-[80px]">
+                          <button onClick={() => removeItem(item.id)} className="btn-remove bg-transparent border-none text-[#999] hover:text-[#dc3545] transition-colors text-[18px] p-0 leading-none cursor-pointer">
+                            <X size={18} />
+                          </button>
+                          <div className="price-box text-right">
+                            <div className="price-main text-[#28a745] font-bold text-[18px]">${(item.pricePerUnit * item.qty).toFixed(2)}</div>
+                            <div className="price-sub text-[11px] text-[#333] font-medium uppercase mt-0.5">/ Per unit</div>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="border-t border-slate-100 pt-4 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-500">Subtotal</span>
-                      <span className="font-semibold">${total.toFixed(2)}</span>
+                  {/* Coupon Block */}
+                  <div className="coupon-block mt-10">
+                    <label className="coupon-label text-[15px] font-bold mb-3 block text-[#333]">Have a coupon?</label>
+                    <div className="coupon-row flex max-w-[420px]">
+                      <input 
+                        type="text" 
+                        placeholder="Enter your Coupon Code" 
+                        className="coupon-field flex-1 border border-[#ced4da] border-r-0 rounded-l-md px-[15px] h-[46px] text-[14px] outline-none focus:border-[#333] transition-colors"
+                      />
+                      <button className="coupon-submit bg-[#333] text-white border-none rounded-r-md px-[30px] h-[46px] text-[14px] font-medium hover:bg-black transition-colors">
+                        Apply
+                      </button>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-500">Processing Fee</span>
-                      <span className="font-semibold text-emerald-600">Free</span>
-                    </div>
-                    <div className="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-100">
-                      <span>Total</span>
-                      <span className="text-violet-700">${total.toFixed(2)}</span>
-                    </div>
-                  </div>
-
-                  <button className="mt-5 w-full rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow transition hover:opacity-90">
-                    Proceed to Checkout →
-                  </button>
-
-                  <div className="mt-4 flex items-center justify-center gap-4 text-xs text-slate-400">
-                    <span>🔒 Secure</span>
-                    <span>💳 All Cards</span>
-                    <span>⚡ Instant</span>
                   </div>
                 </div>
 
-                {/* Promo Code */}
-                <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-5">
-                  <p className="text-sm font-semibold text-slate-700 mb-3">Have a promo code?</p>
-                  <div className="flex gap-2">
-                    <input placeholder="Enter code..." className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition" />
-                    <button className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-700 transition">Apply</button>
+                {/* Right Column (Summary) */}
+                <div className="cart-right-col w-full lg:w-[380px] shrink-0">
+                  <div className="summary-panel bg-[#fffcf8] rounded-xl p-[30px] w-full">
+                    <h3 className="summary-head text-[18px] font-semibold mb-[25px] text-[#333] uppercase tracking-wide">Net Total</h3>
+                    
+                    <div className="space-y-[15px] mb-5">
+                      {items.map((item) => (
+                        <div key={item.id} className="sum-row flex justify-between text-[14px] leading-relaxed">
+                          <span className="text-[#6c757d]">{item.platform} Reviews</span>
+                          <span className="text-[#333] font-medium">${(item.pricePerUnit * item.qty).toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="sum-divider h-[1px] bg-[#e9ecef] my-5"></div>
+
+                    <div className="sum-total flex justify-between items-center mb-[30px]">
+                      <span className="text-[16px] font-medium text-[#6c757d]">Subtotal</span>
+                      <span className="text-[24px] font-bold text-black">${total.toFixed(2)}</span>
+                    </div>
+
+                    <div className="space-y-[15px]">
+                      <button className="pay-submit-btn w-full bg-black text-white text-[17px] font-medium py-[7px] rounded-[50px] border-none cursor-pointer transition-all duration-[0.9s] hover:bg-[#9A9A9A]">
+                        Pay by Card
+                      </button>
+                      <button className="pay-submit-btn w-full bg-black text-white text-[17px] font-medium py-[7px] rounded-[50px] border-none cursor-pointer transition-all duration-[0.9s] hover:bg-[#9A9A9A]">
+                        PayPal
+                      </button>
+                    </div>
+
+                    {/* Payment Icons */}
+                    <div className="payment-icons-row flex justify-center gap-2.5 mt-5 mb-5">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" alt="Visa" className="h-[20px] object-contain grayscale opacity-50" />
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-[20px] object-contain grayscale opacity-50" />
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-[20px] object-contain grayscale opacity-50" />
+                    </div>
+
+                    <p className="text-center text-[14px] text-[#515151] mt-[10px]">*You will input your order details on the next page</p>
                   </div>
                 </div>
               </div>
             </div>
           )}
-        </div>
+         
+        </Wrapper>
       </div>
-    </Wrapper>
+
+      <HomeFooter />
+
+      <style jsx global>{`
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 8s linear infinite;
+        }
+        .pay-submit-btn {
+          transition: background-color 0.9s ease;
+        }
+      `}</style>
+    </div>
   );
 }
