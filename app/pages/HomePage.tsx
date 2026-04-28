@@ -17,9 +17,9 @@ export default function HomePage() {
         <StatsBar />
         <IconGrid />
     
-        
-        <SectionWithLeftImage />
         <SectionWithRightImage />
+        <SectionWithLeftImage />
+        
         <FaqSection />
         </>
     );

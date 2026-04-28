@@ -54,9 +54,9 @@ export default function HeroTyping() {
   }, [charIndex, deleting, index, services]);
 
   return (
-    <section className="flex items-center justify-center text-center px-[16px] py-[10px] md:pb-[52px] min-[1470px]:px-[20px] min-[1470px]:py-[20px] bg-gradient-to-b from-transparent to-[#FDFCF2] font-[Poppins] w-full">
+    <section className="flex items-center justify-center text-center px-[16px] py-[10px] md:pb-[30px] min-[1470px]:px-[20px] min-[1470px]:py-[30px] bg-gradient-to-b from-transparent to-[#FDFCF2] font-[Poppins] w-full">
       <div className="w-full max-w-full  mx-auto">
-        <h1 className="text-[22px] min-[480px]:text-[26px] md:text-[32px] min-[1470px]:text-[40px] font-[350] text-[#1a1a1a] leading-[1.3] mb-[7px] tracking-[-0.01em] min-[1470px]:tracking-[-0.02em]">
+        <h1 className="text-[40px] min-[480px]:text-[40px] md:text-[40px] min-[1470px]:text-[40px] font-[350] text-[#1a1a1a] leading-[1.3] mb-[7px] tracking-[-0.01em] min-[1470px]:tracking-[-0.02em]">
           Turn Reputation into <strong className="font-[510]">Revenue</strong> with
           <br />
           <span className="inline-flex items-center justify-center flex-nowrap align-middle box-border gap-[6px] px-[6px] py-[2px] min-h-[36px] min-[480px]:min-h-[44px] md:gap-[10px] md:px-[8px] md:py-[4px] md:min-h-[52px] min-[1470px]:min-h-[64px] bg-[#FFE58233]">
@@ -68,7 +68,7 @@ export default function HeroTyping() {
             />
 
             <strong className="font-[510]">
-              <span className="inline-block min-w-0 text-left align-middle leading-[1.3] text-[26px] min-[480px]:text-[32px] md:text-inherit">
+              <span className="inline-block min-w-0 text-left align-middle leading-[1.3] text-[26px] min-[480px]:text-[40px] md:text-inherit">
              {text}
               </span>
               {/* <span className="inline-block w-[3px] h-[1em] bg-[#1a1a1a] ml-[3px] align-middle animate-pulse"></span> */}
