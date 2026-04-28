@@ -33,6 +33,7 @@ export function ProductCard({
       id: `${product.id}-${effectiveMode}`,
       platform: product.platform,
       icon: "🌟",
+      image: product.image,
       type: effectiveMode === "monthly" ? "subscribe" : "one-time",
       pricePerUnit: effectivePrice,
     });

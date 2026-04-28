@@ -6,6 +6,7 @@ export type CartItem = {
   id: string;
   platform: string;
   icon: string;
+  image: string;
   type: "one-time" | "subscribe";
   qty: number;
   pricePerUnit: number;
@@ -54,6 +55,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (existing) return prev.map((i) => i.id === item.id ? { ...i, qty: i.qty + 1 } : i);
       return [...prev, { ...item, qty: 1 }];
     });
+    setIsOpen(true);
   };
 
   const removeItem = (id: string) => setItems((p) => p.filter((i) => i.id !== id));
