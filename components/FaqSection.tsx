@@ -24,7 +24,7 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="bg-white py-[50px] lg:py-[90px] font-['Poppins',sans-serif]">
+    <section className="bg-[#faf8f7] py-[50px] lg:py-[90px] font-['Poppins',sans-serif]">
       <Wrapper>
         <div className="w-full px-4 sm:px-5 lg:px-[30px]">
           <div className="grid grid-cols-1 lg:grid-cols-[490px_1fr] gap-[28px] lg:gap-[150px] items-start">
@@ -32,10 +32,10 @@ export default function FaqSection() {
             <div className="lg:sticky lg:top-[100px] flex flex-col md:flex-row lg:flex-col flex-wrap lg:flex-nowrap items-start gap-[16px] md:gap-[24px] lg:gap-[40px]">
               <div className="flex-1 min-w-[280px]">
                 <h2 className="text-[21px] md:text-[30px] lg:text-[36px] font-normal text-[#111] leading-[1.3] lg:leading-[1.25] mb-[14px]">
-                  Frequently <strong className="font-bold">Asked<br />Questions</strong>
+                  Frequently <strong className="font-semibold">Asked<br />Questions</strong>
                 </h2>
                 <p className="text-[13px] md:text-[14px] lg:text-[18px] text-[#323232] leading-[1.5] m-0">
-                  Find clear answers to common questions about our services, process, and delivery timelines.
+                  Find clear answers to common questions about our services, process, and delivery timelines, and how we support your online reputation.
                 </p>
               </div>
 
