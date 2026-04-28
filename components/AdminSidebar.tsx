@@ -91,7 +91,7 @@ const menuSections: MenuSection[] = [
           { label: "All Media", href: "/admin/media?tab=all" },
         ],
       },
-      // { label: "Blogs", href: "/admin/blogs", icon: PenTool },
+      { label: "Blogs", href: "/admin/blogs", icon: PenTool },
       // { label: "FAQs", href: "/admin/faqs", icon: HelpCircle },
       { label: "Tickets", href: "/admin/tickets", icon: Headphones, badge: "207" },
       // { label: "Testimonials", href: "/admin/testimonials", icon: MessageSquare, badge: "7" },
