@@ -14,13 +14,10 @@ export default function HomePage() {
         <HeroBanner />
         <BuyReviewsSection />
         <CustomPlatform />
-        
         <StatsBar />
         <IconGrid />
-    
         <SectionWithRightImage />
         <SectionWithLeftImage />
-        
         <HomeBlogSection />
         <FaqSection />
         </>
