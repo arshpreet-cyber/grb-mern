@@ -1,5 +1,5 @@
-import SectionWithRightImage from "@/components/Section-with-right-image";
-import SectionWithLeftImage from "@/components/Section-with-left-image";
+import SectionWithRightImage from "@/components/SectionWithRightImage";
+import SectionWithLeftImage from "@/components/SectionWithLeftImage";
 
 export const sectionMap: Record<string, any> = {
   
