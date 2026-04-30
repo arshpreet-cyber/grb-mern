@@ -41,6 +41,7 @@ const menuSections: MenuSection[] = [
         id: "orders",
         subItems: [
           { label: "Orders", href: "/dashboard/orders" },
+          { label: "Subscriptions", href: "/dashboard/orders/subscriptions" },
         ],
         hasDivider: true
       },
