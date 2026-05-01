@@ -36,7 +36,7 @@ export default async function SlugPage({
   searchParams 
 }: { 
   params: Promise<{ slug: string }>,
-  searchParams: Promise<{ edit?: string }>
+  searchParams: Promise<{ edit?: string, preview?: string }>
 }) {
   const { slug } = await params;
   const { edit, preview } = await searchParams;
