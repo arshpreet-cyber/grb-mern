@@ -163,6 +163,7 @@ model Page {
   bodyScript      String?
   footerScript    String?
   sections        Json     @default("[]")
+  draftSections   Json     @default("[]")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

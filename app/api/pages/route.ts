@@ -8,6 +8,7 @@ export async function GET() {
       select: {
         id: true, title: true, slug: true, status: true,
         inSitemap: true, createdAt: true, updatedAt: true,
+        sections: true, draftSections: true,
       },
     });
     return NextResponse.json(pages);
