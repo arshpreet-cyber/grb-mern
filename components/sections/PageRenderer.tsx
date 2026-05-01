@@ -8,6 +8,9 @@ import ImageTextSection from './ImageTextSection';
 import IconGrid from './IconGrid';
 import FaqSection from './FaqSection';
 import BlogSection from './BlogSection';
+import PartnerLogosSection from './PartnerLogosSection';
+import VisionMissionSectionBuilder from './VisionMissionSectionBuilder';
+import CTABannerSection from './CTABannerSection';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -21,6 +24,9 @@ const sectionMap: Record<string, React.FC<any>> = {
   'icon-grid': IconGrid,
   'faq-section': FaqSection,
   'blog-section': BlogSection,
+  'partner-logos': PartnerLogosSection,
+  'vision-mission': VisionMissionSectionBuilder,
+  'cta-banner': CTABannerSection,
 };
 
 interface PageRendererProps {
