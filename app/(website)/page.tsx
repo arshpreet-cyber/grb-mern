@@ -30,7 +30,7 @@ async function getHomePage() {
   try {
     return await prisma.page.findUnique({
       where: { slug: 'home' },
-    });
+    }) as any;
   } catch (error) {
     console.error("Failed to load home page", error);
     return null;
