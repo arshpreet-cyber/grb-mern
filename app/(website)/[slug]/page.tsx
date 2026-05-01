@@ -1,9 +1,10 @@
+export const dynamic = 'force-dynamic';
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
 import HomeNavbar from "@/components/layout/HomeNavbar"
-
-type Section = { id: string; type: string; heading: string; content: string };
+import EditorWrapper from "@/components/editor/EditorWrapper";
+import PageRenderer from "@/components/sections/PageRenderer";
 
 async function getPageBySlug(slug: string) {
   try {
@@ -30,54 +31,47 @@ export async function generateMetadata(
   };
 }
 
-export default async function SlugPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function SlugPage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ slug: string }>,
+  searchParams: Promise<{ edit?: string }>
+}) {
   const { slug } = await params;
+  const { edit, preview } = await searchParams;
   const page = await getPageBySlug(slug);
 
   if (!page) notFound();
 
-  const sections = Array.isArray(page.sections) ? (page.sections as Section[]) : [];
+  const isEditMode = edit === 'true';
+  const isPreviewMode = preview === 'true';
+
+  if (isEditMode) {
+    return <EditorWrapper initialPage={page} />;
+  }
+
+  // Use draft sections if in preview mode, otherwise use live sections
+  const sections = isPreviewMode 
+    ? (Array.isArray(page.draftSections) && (page.draftSections as any[]).length > 0 ? (page.draftSections as any[]) : (page.sections as any[]))
+    : (Array.isArray(page.sections) ? (page.sections as any[]) : []);
 
   return (
     <>
-      {/* Header Script */}
       {page.headerScript && (
         <div dangerouslySetInnerHTML={{ __html: page.headerScript }} />
       )}
 
       <div className="min-h-screen bg-white text-slate-900">
-        <HomeNavbar />
-
-
-
-        {/* Sections */}
-        {sections.length > 0 && (
-          <div className="mx-auto max-w-10xl px-5 pb-16 space-y-10">
-            {sections.map((section) => (
-              <div key={section.id}>
-                {section.heading && (
-                  <h2 className="text-2xl font-bold text-slate-800 mb-4">{section.heading}</h2>
-                )}
-                {section.content && (
-                  <div
-                    className="prose prose-slate max-w-none text-slate-600 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: section.content }}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Footer */}
-        <footer className="border-t border-slate-100 py-8 text-center text-sm text-slate-400">
-          © {new Date().getFullYear()} GetReviews.buzz
-        </footer>
+        <PageRenderer sections={sections.filter((s: any) => s.settings?.visibility !== false)} />
       </div>
 
-      {/* Body / Footer Scripts */}
-      {page.bodyScript && <div dangerouslySetInnerHTML={{ __html: page.bodyScript }} />}
-      {page.footerScript && <div dangerouslySetInnerHTML={{ __html: page.footerScript }} />}
+      {page.bodyScript && (
+        <div dangerouslySetInnerHTML={{ __html: page.bodyScript }} />
+      )}
+      {page.footerScript && (
+        <div dangerouslySetInnerHTML={{ __html: page.footerScript }} />
+      )}
     </>
   );
 }

@@ -33,7 +33,8 @@ const menuSections: MenuSection[] = [
   {
     title: "Pages",
     items: [
-      { label: "Pages", href: "/admin/pages", icon: FileText },
+      { label: "All Pages", href: "/admin/pages", icon: FileText },
+      { label: "Draft Pages", href: "/admin/pages/drafts", icon: FileEdit },
       // { label: "Header & Footer", href: "/admin/pages/header-footer", icon: PanelTopDashed },
       // { label: "Menu", href: "/admin/pages/menu", icon: Menu },
       // { label: "Header & Footer Scripts", href: "/admin/pages/scripts", icon: Code },

@@ -1,3 +1,4 @@
+// Updated schema to include draftSections field
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'

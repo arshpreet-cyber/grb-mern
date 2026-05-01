@@ -2,8 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import Wrapper from "@/components/ui/Wrapper"; // Assuming this is your standard wrapper, if not replace with a standard div
-
+import Wrapper from "@/components/ui/Wrapper"; 
 export default function HomeFooter() {
   return (
     <footer className="relative text-[#a0a4b0] font-sans bg-[#2c303a] bg-[url('https://getreviews.buzz/storage/app/blog/0555537001734005932_Footer-Image.webp')] bg-cover bg-center bg-no-repeat">
