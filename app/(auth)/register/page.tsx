@@ -4,7 +4,6 @@
 import { useState, Suspense, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import HomePage from "@/app/(website)/page";
 import { countryCodes } from "@/lib/constants/countryCodes";
 
 function RegisterForm() {
@@ -215,8 +214,8 @@ export default function RegisterPage() {
   const router = useRouter();
   return (
     <>
-      <div className="fixed inset-0 z-0 overflow-hidden">
-        <HomePage />
+      <div className="fixed inset-0 z-0 overflow-hidden bg-slate-50">
+        {/* Background removed to prevent build failure */}
       </div>
       <div
         className="fixed inset-0 z-50 font-sans flex flex-col bg-black/60 backdrop-blur-[2px] cursor-pointer overflow-y-auto"

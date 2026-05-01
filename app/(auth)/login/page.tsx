@@ -5,7 +5,6 @@ import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import HomePage from "@/app/(website)/page"; 
 
 
 function LoginForm() {
@@ -152,9 +151,8 @@ export default function LoginPage() {
 
   return (
     <>
-      {/* ✅ Homepage as background */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
-        <HomePage />
+      {/* ✅ Homepage background removed to prevent build failure */}
+      <div className="fixed inset-0 z-0 overflow-hidden bg-slate-50">
       </div>
 
       <div 
