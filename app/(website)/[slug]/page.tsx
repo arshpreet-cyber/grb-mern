@@ -8,7 +8,7 @@ import PageRenderer from "@/components/sections/PageRenderer";
 
 async function getPageBySlug(slug: string) {
   try {
-    return await prisma.page.findUnique({ where: { slug } });
+    return await prisma.page.findUnique({ where: { slug } }) as any;
   } catch (error) {
     console.error(`Failed to load page for slug "${slug}"`, error);
     return null;
