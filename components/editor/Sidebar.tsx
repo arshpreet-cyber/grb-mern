@@ -477,7 +477,7 @@ export default function Sidebar() {
                   type="range"
                   min="20"
                   max="120"
-                  value={parseInt(selectedSection.settings.titleSize) || 40}
+                  value={parseInt(selectedSection.settings.titleSize || '40')}
                   onChange={(e) => handleSettingChange('titleSize', e.target.value + 'px')}
                   className="flex-1 accent-[#fc0]"
                 />
@@ -534,7 +534,7 @@ export default function Sidebar() {
                   type="range"
                   min="12"
                   max="40"
-                  value={parseInt(selectedSection.settings.contentSize) || 16}
+                  value={parseInt(selectedSection.settings.contentSize || '16')}
                   onChange={(e) => handleSettingChange('contentSize', e.target.value + 'px')}
                   className="flex-1 accent-[#fc0]"
                 />
