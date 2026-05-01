@@ -37,7 +37,7 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
       <HomeNavbar />
-      
+
       {/* Blog Header / Hero */}
       <div className="pt-32 pb-16">
         <Wrapper>
@@ -95,7 +95,7 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
               </div>
             )}
 
-            <article 
+            <article
               className="prose prose-lg md:prose-xl max-w-none text-gray-800 prose-headings:font-semibold prose-a:text-blue-600 hover:prose-a:text-blue-500"
               dangerouslySetInnerHTML={{ __html: blog.content || "" }}
             />

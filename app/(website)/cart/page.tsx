@@ -1,11 +1,9 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import HomeNavbar from "@/components/layout/HomeNavbar";
 import Link from "next/link";
 import Wrapper from "@/components/ui/Wrapper";
-import { X, Info, RefreshCcw, ShoppingCart, Eye } from "lucide-react";
-import HomeFooter from "@/components/layout/HomeFooter";
+import { X, Info, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import products from "@/lib/constants/products";
 
@@ -27,8 +25,6 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-white font-['Poppins']">
-      <HomeNavbar />
-
       <div className="bg-[#f7f7f7] py-[50px] md:pb-[60px]">
         <Wrapper>
           {items.length > 0 && (
@@ -211,12 +207,8 @@ export default function CartPage() {
               </div>
             </div>
           )}
-         
         </Wrapper>
       </div>
-
-      <HomeFooter />
     </div>
   );
 }
-
