@@ -8,9 +8,9 @@ export default function TextSection({ data, settings }: SectionProps) {
     padding: settings.padding || '4rem 0',
     margin: settings.margin || '0',
     backgroundColor: settings.backgroundColor || '#f9fafb',
-    color: settings.textColor || 'inherit',
-    fontSize: settings.fontSize || 'inherit',
-    fontWeight: settings.fontWeight || 'inherit',
+    color: settings.contentColor || 'inherit',
+    fontSize: settings.contentSize || 'inherit',
+    fontWeight: settings.contentWeight || 'inherit',
     borderRadius: settings.borderRadius || '0',
     textAlign: settings.alignment || 'left',
   };

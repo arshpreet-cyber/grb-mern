@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 
 export default function Layout({
@@ -5,5 +6,9 @@ export default function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  return <WebsiteLayout>{children}</WebsiteLayout>;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <WebsiteLayout>{children}</WebsiteLayout>
+    </Suspense>
+  );
 }
