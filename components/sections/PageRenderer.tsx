@@ -1,3 +1,4 @@
+// Triggering HMR refresh for new sections
 import Hero from './Hero';
 import TextSection from './TextSection';
 import ImageSection from './ImageSection';
