@@ -10,6 +10,13 @@ export interface SectionSettings {
   alignment?: 'left' | 'center' | 'right';
   visibility?: boolean;
   customClass?: string;
+  titleColor?: string;
+  titleSize?: string;
+  titleWeight?: string;
+  contentColor?: string;
+  contentSize?: string;
+  contentWeight?: string;
+  borderRadius?: string;
 }
 
 export interface Section {

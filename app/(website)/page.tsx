@@ -60,7 +60,7 @@ export default async function HomePage({
   if (sectionsToRender && sectionsToRender.length > 0) {
     return (
       <>
-        {page?.headScript && <div dangerouslySetInnerHTML={{ __html: page.headScript }} />}
+        {page?.headerScript && <div dangerouslySetInnerHTML={{ __html: page.headerScript }} />}
         <div className="min-h-screen bg-white text-slate-900 font-sans">
           <PageRenderer sections={sectionsToRender.filter((s: any) => s.settings?.visibility !== false)} />
         </div>
