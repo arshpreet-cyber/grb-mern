@@ -5,22 +5,24 @@ import Wrapper from "@/components/ui/Wrapper";
 
 export default function CTABanner() {
   return (
-    <section className="bg-linear-to-r from-violet-600 to-indigo-700 py-20 text-center text-white">
+    <section className="w-full bg-[#ffcc00] font-sans py-12 px-6">
       <Wrapper>
-        <div className="mx-auto w-full px-5">
-          <h2 className="text-4xl font-extrabold">Ready to Boost Your Reputation?</h2>
-          <p className="mt-4 text-violet-200 text-lg">
-            Join 12,000+ businesses that trust us to grow their online presence.
+      <div className="max-w-[1500] mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+        
+        <div className="text-center md:text-left">
+          <p className="text-lg md:text-[32px] font-normal text-black mb-1">
+            Want To Know How We Can Help You Get
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register" className="rounded-2xl bg-white px-8 py-4 text-base font-bold text-violet-700 shadow-xl hover:bg-violet-50 transition">
-              Start Today — It&apos;s Easy →
-            </Link>
-            <Link href="#pricing" className="rounded-2xl border border-white/30 px-8 py-4 text-base font-semibold text-white hover:bg-white/10 transition">
-              View Pricing
-            </Link>
-          </div>
+          <h2 className="text-2xl md:text-[46px] font-bold text-black tracking-tight mt-1">
+            Business Leads And Positive Reviews?
+          </h2>
         </div>
+
+        <a href="#" className="shrink-0 bg-gradient-to-r from-black to-[#333333] text-white text-[13px] font-bold tracking-wider px-8 py-4 rounded shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all uppercase">
+          Contact With Us
+        </a>
+
+      </div>
       </Wrapper>
     </section>
   );

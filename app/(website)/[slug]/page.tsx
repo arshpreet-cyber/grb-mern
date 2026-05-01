@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
-import HomeNavbar from "@/components/layout/HomeNavbar"
 
 type Section = { id: string; type: string; heading: string; content: string };
 
@@ -46,9 +45,6 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
       )}
 
       <div className="min-h-screen bg-white text-slate-900">
-        <HomeNavbar />
-
-
 
         {/* Sections */}
         {sections.length > 0 && (
@@ -70,9 +66,6 @@ export default async function SlugPage({ params }: { params: Promise<{ slug: str
         )}
 
         {/* Footer */}
-        <footer className="border-t border-slate-100 py-8 text-center text-sm text-slate-400">
-          © {new Date().getFullYear()} GetReviews.buzz
-        </footer>
       </div>
 
       {/* Body / Footer Scripts */}
