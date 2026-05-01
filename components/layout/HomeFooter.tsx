@@ -3,6 +3,21 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Wrapper from "@/components/ui/Wrapper"; 
+
+const links = [
+  { name: "Home", href: "/" },
+  { name: "About Us", href: "/about-us" },
+  { name: "Blog", href: "/blog" },
+];
+
+const links1 = [
+  { name: "Help", href: "/help" },
+  { name: "Login / Signup", href: "/login" },
+  { name: "Contact", href: "/contact" },
+  { name: "Privacy Policy", href: "/privacy-policy" },
+  { name: "Terms & Conditions", href: "/terms-and-conditions" },
+];
+
 export default function HomeFooter() {
   return (
     <footer className="relative text-[#a0a4b0] font-sans bg-[#2c303a] bg-[url('https://getreviews.buzz/storage/app/blog/0555537001734005932_Footer-Image.webp')] bg-cover bg-center bg-no-repeat">
@@ -26,24 +41,30 @@ export default function HomeFooter() {
               
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-[#b3b3b2] hover:text-[#fc0] transition-colors cursor-pointer">
-                  <svg className="w-5 h-5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                  </svg>
-                  <span className="text-sm">marketing@getreviews.buzz</span>
+                  <a href="mailto:marketing@getreviews.buzz" className="flex items-center gap-3 text-[#b3b3b2] hover:text-[#fc0] transition-colors" >
+                    <svg className="w-5 h-5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm">marketing@getreviews.buzz</span>
+                  </a>
                 </div>
 
                 <div className="flex items-center gap-3 text-[#b3b3b2] hover:text-[#fc0] transition-colors cursor-pointer">
+                <a href="tel:+14302335402" className="flex items-center gap-3 text-[#b3b3b2] hover:text-[#fc0] transition-colors" >
                   <svg className="w-5 h-5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                   </svg>
                   <span className="text-sm">+1 430-233-5402</span>
+                </a>
                 </div>
 
                 <div className="flex items-center gap-3 text-[#b3b3b2] hover:text-[#fc0] transition-colors cursor-pointer">
-                <svg className="w-5 h-5 text-current" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.52 3.48A11.8 11.8 0 0012.05 0C5.5 0 .17 5.33.17 11.89c0 2.1.55 4.14 1.6 5.94L0 24l6.35-1.66a11.9 11.9 0 005.7 1.45h.01c6.55 0 11.88-5.33 11.89-11.89a11.8 11.8 0 00-3.43-8.42zM12.06 21.6h-.01a9.9 9.9 0 01-5.05-1.38l-.36-.21-3.77.98 1-3.68-.24-.38a9.88 9.88 0 01-1.51-5.27C2.12 6.5 6.5 2.12 12.06 2.12c2.64 0 5.13 1.03 7 2.9a9.8 9.8 0 012.9 7c0 5.56-4.38 9.94-9.9 9.94zm5.47-7.39c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.47-1.76-1.64-2.06-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.18-1.41-.08-.13-.27-.2-.57-.35z"/>
-              </svg>
-                  <span className="text-sm">@WhatsApp</span>
+                  <a href="https://api.whatsapp.com/send?phone=13068025402" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-[#b3b3b2] hover:text-[#fc0] transition-colors">
+                    <svg className="w-5 h-5 text-current" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.52 3.48A11.8 11.8 0 0012.05 0C5.5 0 .17 5.33.17 11.89c0 2.1.55 4.14 1.6 5.94L0 24l6.35-1.66a11.9 11.9 0 005.7 1.45h.01c6.55 0 11.88-5.33 11.89-11.89a11.8 11.8 0 00-3.43-8.42zM12.06 21.6h-.01a9.9 9.9 0 01-5.05-1.38l-.36-.21-3.77.98 1-3.68-.24-.38a9.88 9.88 0 01-1.51-5.27C2.12 6.5 6.5 2.12 12.06 2.12c2.64 0 5.13 1.03 7 2.9a9.8 9.8 0 012.9 7c0 5.56-4.38 9.94-9.9 9.94zm5.47-7.39c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.47-1.76-1.64-2.06-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.18-1.41-.08-.13-.27-.2-.57-.35z"/>
+                    </svg>
+                    <span className="text-sm">@WhatsApp</span>
+                  </a>
                 </div>
               </div>
             </div>
@@ -52,12 +73,17 @@ export default function HomeFooter() {
             <div className="w-full sm:w-[25%] lg:w-[12%]">
               <h3 className="text-white text-lg font-bold mb-5">Company</h3>
               <ul className="space-y-3 text-sm">
-                {["Home", "About Us", "Blog"].map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="hover:text-[#fc0] transition-colors">{link}</Link>
-                  </li>
-                ))}
-              </ul>
+                  {links.map((link) => (
+                    <li key={link.name}>
+                      <Link
+                        href={link.href}
+                        className="hover:text-[#fc0] transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
             </div>
 
             {/* Column 3: Services */}
@@ -82,15 +108,14 @@ export default function HomeFooter() {
             <div className="w-full sm:w-[25%] lg:w-[16%]">
               <h3 className="text-white text-lg font-bold mb-5">Customer Care</h3>
               <ul className="space-y-3 text-sm text-[#b3b3b2]">
-                {[
-                  "Help",
-                  "Login / Signup",
-                  "Contact",
-                  "Privacy Policy",
-                  "Terms & Conditions"
-                ].map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="hover:text-[#fc0] transition-colors">{link}</Link>
+                {links1.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="hover:text-[#fc0] transition-colors"
+                    >
+                      {link.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
