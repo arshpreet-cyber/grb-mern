@@ -6,7 +6,12 @@ export const HOW_IT_WORKS_DATA = {
     buttonText: "GET A QUOTE",
     image: "https://beta.getreviews.buzz/storage/app/blog/0177903001731483557_How-it-Works-Main-banner-image.webp"
   },
-  // Add other sections here as needed
+  sectionwithleftimage: {
+    title: "Get Positive Reviews From Local Profiles",
+    highlightedText: "From Local Profiles",
+    content: "Authentic positive reviews are a crucial factor in attracting potential customers, and it’s important to aim for as many as possible. Getreviews.buzz specializes in delivering genuine positive customer reviews, which can make a significant difference in building trust and credibility. Moreover, the reviews we provide are from local profiles, adding to their authenticity and relevance.",
+    image: "https://getreviews.buzz/storage/app/blog/0175005001731483557_Get-Positive-Reviews-From-Local-Profiles.webp"
+  }
 };
 
 export const HOME_PAGE_DATA = {
@@ -18,4 +23,16 @@ export const HOME_PAGE_DATA = {
       "Strong and consistent reviews improve your visibility across search and local platforms. They help your business appear when customers are actively looking and ready to take action. With a clear and consistent approach, reviews become a valuable asset that builds trust, strengthens visibility, and supports steady growth."
     ]
   }
+};
+
+export const ABOUT_US_DATA = {
+  hero: {
+    title: "Who We Are?",
+    highlightedText: "Are?",
+    content: ["As a holistic internet marketing and online reputation management service provider, Getreviews Buzz thrives to help businesses expand their digital footprint and establish a positive brand image.",
+            "We know that whether you own a startup or an established business, the challenge is the same and that is to find the proper balance in your reputation marketing and business expansion strategy. This is when you need us! We don’t adhere to a fixed methodology when it comes to online branding.",
+            "Our team conducts extensive research to identify your company’s strengths, ideal customers, customer pain points, and more in order to direct the right audience to your business and ensure you’re their first choice. In the long run, our strategies will increase your revenue!",],
+    buttonText: "GET A QUOTE",
+    image: "https://getreviews.buzz/storage/app/blog/0704067001728480878_About1.png"
+  },
 };
