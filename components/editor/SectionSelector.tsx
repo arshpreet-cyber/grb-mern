@@ -20,6 +20,7 @@ export default function SectionSelector({ onSelect, onClose }: SectionSelectorPr
     { type: 'image', label: 'Simple Image', icon: <ImageIcon />, description: 'A single full-width image' },
     { type: 'productbanner', label: 'Product Banner', icon: <ShoppingCart />, description: 'A customizable product banner' },
     { type: 'similar-products', label: 'Similar Products', icon: <ShoppingCart />, description: 'Showcase similar products in a grid' },
+    { type: 'how-it-work-card', label: 'How It Works Card', icon: <Layout />, description: 'A 3-step how it works card' },
   ];
 
   return (

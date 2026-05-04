@@ -14,6 +14,7 @@ import VisionMissionSectionBuilder from './VisionMissionSectionBuilder';
 import CTABannerSection from './CTABannerSection';
 import ProductBanner from './ProductBanner';
 import SimilarProducts from './SimilarProducts';
+import HowItWorkCard from './HowItWorkCard';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -32,6 +33,7 @@ const sectionMap: Record<string, React.FC<any>> = {
   'cta-banner': CTABannerSection,
   'productbanner': ProductBanner,
   'similar-products': SimilarProducts,
+  'how-it-work-card': HowItWorkCard,
 };
 
 interface PageRendererProps {
