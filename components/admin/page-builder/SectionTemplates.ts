@@ -1,4 +1,4 @@
-﻿export type SectionTemplate = {
+export type SectionTemplate = {
   type: string;
   icon: string;
   label: string;

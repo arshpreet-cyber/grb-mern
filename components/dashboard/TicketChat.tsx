@@ -1,8 +1,9 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { Send, Wifi, WifiOff, RefreshCw, Headset, ShieldCheck, User, AlertCircle, Loader2 } from "lucide-react";
 
 export type TicketMessage = {
   id: number;
@@ -20,6 +21,51 @@ type Props = {
   isAdmin?: boolean;
 };
 
+function formatTime(dateStr: string) {
+  return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return "Today";
+  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+  return d.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" });
+}
+
+/** Customer avatar = gray, Agent avatar = yellow */
+function Avatar({ isAgent }: { isAgent: boolean }) {
+  return (
+    <div
+      className={`h-9 w-9 shrink-0 rounded-full flex items-center justify-center font-bold shadow-sm ${
+        isAgent
+          ? "text-[#111]"
+          : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-300"
+      }`}
+      style={isAgent ? { background: "#ffcc00" } : {}}
+    >
+      {isAgent ? <ShieldCheck size={16} /> : <User size={16} />}
+    </div>
+  );
+}
+
+function groupByDate(messages: TicketMessage[]) {
+  const groups: { date: string; messages: TicketMessage[] }[] = [];
+  let currentDate = "";
+  for (const msg of messages) {
+    const date = formatDate(msg.createdAt);
+    if (date !== currentDate) {
+      currentDate = date;
+      groups.push({ date, messages: [msg] });
+    } else {
+      groups[groups.length - 1].messages.push(msg);
+    }
+  }
+  return groups;
+}
+
 export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }: Props) {
   const { data: session } = useSession();
   const [ticket, setTicket] = useState<any>(null);
@@ -30,237 +76,289 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   const [connected, setConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const isClient = typeof window !== "undefined";
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const sessionUserId = session?.user?.id;
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => { scrollToBottom(); }, [messages, ticket]);
 
+  // Auto-grow textarea
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, ticket]);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px";
+    }
+  }, [draft]);
 
   const connectSocket = () => {
-    if (!isClient) return;
-    
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-    }
-
-    const socket = io({
-      transports: ["websocket", "polling"],
-      reconnectionAttempts: 5,
-    });
-    
+    if (typeof window === "undefined") return;
+    if (socketRef.current) socketRef.current.disconnect();
+    const socket = io({ transports: ["websocket", "polling"], reconnectionAttempts: 5 });
     socketRef.current = socket;
-
-    socket.on("connect", () => {
-      setConnected(true);
-      setError(null);
-      socket.emit("join-ticket", ticketId);
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("Socket connect error", err);
-      setConnected(false);
-      setError("Unable to connect to chat server. Trying to reconnect...");
-    });
-
-    socket.on("ticket-history", (history: TicketMessage[]) => {
-      setMessages(history);
-    });
-
-    socket.on("ticket-message", (message: TicketMessage) => {
-      console.log("[SOCKET] Received new message:", message);
-      setMessages((prev) => {
-        // Prevent duplicates
-        if (prev.some(m => m.id === message.id)) return prev;
-        return [...prev, message];
-      });
-    });
-
-    socket.on("ticket-error", ({ message }: { message: string }) => {
-      setError(message);
-    });
-
+    socket.on("connect", () => { setConnected(true); setError(null); socket.emit("join-ticket", ticketId); });
+    socket.on("connect_error", () => { setConnected(false); setError("Unable to connect. Retrying..."); });
+    socket.on("ticket-history", (h: TicketMessage[]) => setMessages(h));
+    socket.on("ticket-message", (m: TicketMessage) => setMessages(prev => prev.some(p => p.id === m.id) ? prev : [...prev, m]));
+    socket.on("ticket-error", ({ message }: { message: string }) => setError(message));
     return socket;
   };
 
   useEffect(() => {
     const socket = connectSocket();
-
-    // Fetch ticket details to get the initial query
-    fetch(`/api/support/tickets/${ticketId}`)
-      .then(res => res.json())
-      .then(data => setTicket(data))
-      .catch(err => console.error("Failed to load ticket details", err));
-
-    return () => {
-      socket?.disconnect();
-      socketRef.current = null;
-    };
+    fetch(`/api/support/tickets/${ticketId}`).then(r => r.json()).then(setTicket).catch(() => {});
+    return () => { socket?.disconnect(); socketRef.current = null; };
   }, [ticketId]);
 
   const handleSend = async () => {
     if (!draft.trim() || !sessionUserId) return;
-    setSending(true);
-    setError(null);
-
+    setSending(true); setError(null);
     try {
-      if (!socketRef.current?.connected) {
-        throw new Error("Chat is disconnected. Please wait or refresh.");
-      }
-
-      socketRef.current.emit("send-ticket-message", {
-        ticketId,
-        content: draft.trim(),
-        agentId: sessionUserId,
-        direction: isAdmin ? "2" : "1",
-      });
+      if (!socketRef.current?.connected) throw new Error("Disconnected. Please refresh.");
+      socketRef.current.emit("send-ticket-message", { ticketId, content: draft.trim(), agentId: sessionUserId, direction: isAdmin ? "2" : "1" });
       setDraft("");
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Failed to send message.");
-    } finally {
-      setSending(false);
-    }
+      setError(err.message || "Failed to send.");
+    } finally { setSending(false); }
   };
 
+  // Filter duplicate of original query
+  const filteredMessages = messages.filter(m =>
+    !(ticket?.query && m.content?.trim().toLowerCase() === ticket.query.trim().toLowerCase())
+  );
+
+  const grouped = groupByDate(filteredMessages);
+  const customerName = ticket?.user?.name || ticket?.userName || "Customer";
+
   return (
-    <div className="flex h-[75vh] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl">
-      {/* Header */}
-      <div className="border-b border-slate-100 bg-white px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-6 w-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-              </svg>
+    <div className="flex h-[80vh] flex-col overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f1117] shadow-2xl">
+
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#13161f] px-6 py-4">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-2xl text-[#111] shadow-lg"
+              style={{ background: "#ffcc00", boxShadow: "0 8px 24px rgba(255,204,0,0.35)" }}
+            >
+              <Headset size={22} />
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">{ticketSubject || ticket?.subject || "Support Chat"}</h2>
-              <div className="flex items-center gap-2">
-                <span className={`h-2 w-2 rounded-full ${connected ? "bg-emerald-500" : "bg-rose-500"}`}></span>
-                <p className="text-xs font-medium text-slate-500">
-                  {connected ? "Live Connection" : "Disconnected"} • {isAdmin ? "Admin View" : "User Support"}
-                </p>
-              </div>
+            {connected && (
+              <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-[#13161f]" />
+              </span>
+            )}
+          </div>
+          <div>
+            <h2 className="text-[15px] font-bold text-slate-900 dark:text-white leading-tight">
+              {customerName}
+            </h2>
+            <div className="mt-0.5 flex items-center gap-1.5 text-[11px] font-semibold">
+              {connected ? (
+                <><Wifi size={11} className="text-emerald-500" /><span className="text-emerald-500">Live</span></>
+              ) : (
+                <><WifiOff size={11} className="text-rose-500" /><span className="text-rose-500">Disconnected</span></>
+              )}
+              <span className="text-slate-300 dark:text-slate-600">•</span>
+              <span className="text-slate-400 dark:text-slate-500">{isAdmin ? "Admin View" : "User Support"}</span>
             </div>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Full ticket ID */}
+          <span
+            className="inline-flex items-center rounded-lg px-2.5 py-1 text-[10px] font-black tracking-wider border font-mono"
+            style={{ background: "rgba(255,204,0,0.12)", color: "#b38a00", borderColor: "rgba(255,204,0,0.3)" }}
+          >
+            #{ticketId}
+          </span>
           {!connected && (
-            <button 
+            <button
               onClick={connectSocket}
-              className="rounded-full bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+              className="flex items-center gap-1.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 px-3 py-1.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-all border border-rose-100 dark:border-rose-900/40"
             >
-              Retry Connection
+              <RefreshCw size={11} className="animate-spin" />
+              Reconnect
             </button>
           )}
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 space-y-6 overflow-y-auto bg-slate-50 p-6">
-        {/* Initial Ticket Query */}
-        {ticket && (
-          <div className={`flex ${isAdmin ? "justify-start" : "justify-end"}`}>
-            <div className="max-w-[85%] space-y-1">
-              <div 
-                className={`rounded-2xl p-4 shadow-sm ${
-                  !isAdmin 
-                    ? "rounded-tr-none bg-violet-600 text-white" 
-                    : "rounded-tl-none bg-white text-slate-800 ring-1 ring-slate-200"
-                }`}
+      {/* ── Messages ── */}
+      <div className="flex-1 overflow-y-auto bg-slate-50/60 dark:bg-[#0f1117] px-4 py-6 space-y-3 scroll-smooth">
+
+        {/* Original ticket query — Customer → LEFT */}
+        {ticket?.query && (
+          <div className="flex items-end gap-2.5 mb-4">
+            {/* Avatar on LEFT */}
+            <Avatar isAgent={false} />
+            <div className="max-w-[70%] flex flex-col items-start">
+              <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#b38a00" }}>
+                {customerName}
+              </span>
+              <div
+                className="rounded-2xl rounded-bl-sm px-4 py-3 text-sm leading-relaxed text-[#111] font-medium"
+                style={{ background: "#ffcc00", boxShadow: "0 4px 16px rgba(255,204,0,0.25)" }}
               >
-                <p className="text-sm leading-relaxed">{ticket.query}</p>
+                {ticket.query}
               </div>
-              <p className={`px-1 text-[10px] font-medium text-slate-400 ${!isAdmin ? "text-right" : "text-left"}`}>
-                {new Date(ticket.createdAt).toLocaleString()} • Original Request
+              <p className="mt-1 px-1 text-[10px] font-medium text-slate-400 dark:text-slate-600 flex items-center gap-1">
+                {formatTime(ticket.createdAt)}
+                <span className="opacity-50">·</span>
+                <span className="font-semibold" style={{ color: "#b38a00" }}>Original Request</span>
               </p>
             </div>
           </div>
         )}
 
-        {messages
-          .filter((m) => {
-            // Skip messages that duplicate the original ticket query
-            // (the query is already rendered above as "Original Request")
-            if (ticket?.query && m.content?.trim().toLowerCase() === ticket.query.trim().toLowerCase()) {
-              return false;
-            }
-            return true;
-          })
-          .map((message) => {
-          const direction = String(message.direction);
-          const fromAdmin = direction === "2";
-          const isOwnMessage = isAdmin ? fromAdmin : !fromAdmin;
-
-          return (
-            <div key={message.id} className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[85%] space-y-1`}>
-                <div 
-                  className={`rounded-2xl p-4 shadow-sm ${
-                    isOwnMessage 
-                      ? "rounded-tr-none bg-violet-600 text-white" 
-                      : "rounded-tl-none bg-white text-slate-800 ring-1 ring-slate-200"
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
-                </div>
-                <p className={`px-1 text-[10px] font-medium text-slate-400 ${isOwnMessage ? "text-right" : "text-left"}`}>
-                  {new Date(message.createdAt).toLocaleString()} {fromAdmin && !isAdmin && "• Agent Support"}
-                </p>
-              </div>
+        {/* Grouped messages */}
+        {grouped.map(({ date, messages: dayMessages }) => (
+          <div key={date} className="space-y-1.5">
+            {/* Date divider */}
+            <div className="flex items-center gap-3 py-2">
+              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+              <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-600">{date}</span>
+              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
             </div>
-          );
-        })}
+
+            {dayMessages.map((message, idx) => {
+              // direction "2" = Agent/Admin, direction "1" = Customer
+              const isAgent = String(message.direction) === "2";
+
+              const isSameDir = (m: TicketMessage) => String(m.direction) === String(message.direction);
+              const isFirst = idx === 0 || !isSameDir(dayMessages[idx - 1]);
+              const isLast  = idx === dayMessages.length - 1 || !isSameDir(dayMessages[idx + 1]);
+
+              // Bubble corner rounding
+              const corners = (() => {
+                if (isFirst && isLast) return "rounded-2xl";
+                if (!isAgent) {
+                  // Customer LEFT: flat corners on left side
+                  if (isFirst) return "rounded-2xl rounded-bl-sm";
+                  if (isLast)  return "rounded-2xl rounded-tl-sm rounded-bl-sm";
+                  return "rounded-r-2xl rounded-l-sm";
+                } else {
+                  // Agent RIGHT: flat corners on right side
+                  if (isFirst) return "rounded-2xl rounded-br-sm";
+                  if (isLast)  return "rounded-2xl rounded-tr-sm rounded-br-sm";
+                  return "rounded-l-2xl rounded-r-sm";
+                }
+              })();
+
+              if (!isAgent) {
+                // ── CUSTOMER message: Avatar LEFT, Bubble RIGHT-of-avatar, row left-aligned ──
+                return (
+                  <div key={message.id} className="flex items-end gap-2.5">
+                    {/* Avatar slot: always reserve space, only render on last */}
+                    <div className="w-9 shrink-0 flex justify-center">
+                      {isLast && <Avatar isAgent={false} />}
+                    </div>
+                    <div className="max-w-[68%] flex flex-col items-start">
+                      {isFirst && (
+                        <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#b38a00" }}>
+                          {customerName}
+                        </span>
+                      )}
+                      <div
+                        className={`${corners} px-4 py-2.5 text-sm leading-relaxed font-medium text-[#111]`}
+                        style={{ background: "#ffcc00", boxShadow: "0 3px 12px rgba(255,204,0,0.2)" }}
+                      >
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                      </div>
+                      {isLast && (
+                        <p className="mt-1 px-1 text-[10px] font-medium text-slate-400 dark:text-slate-600">
+                          {formatTime(message.createdAt)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              } else {
+                // ── AGENT message: Bubble LEFT-of-avatar, Avatar RIGHT, row right-aligned ──
+                return (
+                  <div key={message.id} className="flex items-end gap-2.5 justify-end">
+                    <div className="max-w-[68%] flex flex-col items-end">
+                      {isFirst && (
+                        <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                          {isAdmin ? "You (Agent)" : "Support Agent"}
+                        </span>
+                      )}
+                      <div
+                        className={`${corners} px-4 py-2.5 text-sm leading-relaxed bg-white dark:bg-[#1c1f2e] text-slate-800 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700/50 shadow-sm`}
+                      >
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                      </div>
+                      {isLast && (
+                        <p className="mt-1 px-1 text-[10px] font-medium text-slate-400 dark:text-slate-600">
+                          {formatTime(message.createdAt)}
+                          {!isAdmin && <span className="ml-1 font-semibold" style={{ color: "#b38a00" }}>· Agent</span>}
+                        </p>
+                      )}
+                    </div>
+                    {/* Avatar slot: always reserve space, only render on last */}
+                    <div className="w-9 shrink-0 flex justify-center">
+                      {isLast && <Avatar isAgent={true} />}
+                    </div>
+                  </div>
+                );
+              }
+            })}
+          </div>
+        ))}
+
+        {/* Empty state */}
+        {!ticket && filteredMessages.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full gap-3 pt-20">
+            <div className="h-16 w-16 rounded-3xl flex items-center justify-center" style={{ background: "rgba(255,204,0,0.12)" }}>
+              <Headset size={28} style={{ color: "#ffcc00" }} />
+            </div>
+            <p className="text-sm font-semibold text-slate-400 dark:text-slate-500">No messages yet</p>
+            <p className="text-xs text-slate-300 dark:text-slate-600">Start the conversation below</p>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="border-t border-slate-100 bg-white p-6">
+      {/* ── Input ── */}
+      <div className="border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-[#13161f] px-5 pt-4 pb-5">
         {error && (
-          <div className="mb-4 flex items-center gap-3 rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-100">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-            </svg>
-            <p>{error}</p>
+          <div className="mb-3 flex items-center gap-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 px-4 py-2.5 text-xs font-semibold text-rose-600 dark:text-rose-400 ring-1 ring-rose-100 dark:ring-rose-900/40">
+            <AlertCircle size={14} className="shrink-0" />
+            {error}
           </div>
         )}
-        <div className="relative">
-          <textarea
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            placeholder="Type your message here..."
-            className="w-full resize-none rounded-2xl border-0 bg-slate-50 py-4 pl-4 pr-16 text-sm text-slate-900 outline-none ring-1 ring-inset ring-slate-200 transition focus:ring-2 focus:ring-violet-600"
-            rows={2}
-          />
+
+        <div className="flex items-end gap-3">
+          <div
+            className="relative flex-1 rounded-2xl bg-slate-50 dark:bg-[#1c1f2e] ring-1 ring-slate-200 dark:ring-slate-700/50 overflow-hidden transition-all duration-200"
+            onFocusCapture={e => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 2px #ffcc00"; }}
+            onBlurCapture={e => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+          >
+            <textarea
+              ref={textareaRef}
+              value={draft}
+              onChange={e => setDraft(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+              placeholder="Type a message..."
+              rows={1}
+              className="w-full resize-none bg-transparent py-3.5 pl-4 pr-4 text-sm text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-600 outline-none min-h-[48px] max-h-[120px]"
+            />
+          </div>
+
           <button
             onClick={handleSend}
             disabled={!draft.trim() || !connected || sending}
-            className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-lg transition hover:bg-violet-700 disabled:opacity-50 disabled:shadow-none"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-[#111] font-black shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:shadow-none disabled:scale-100"
+            style={{ background: "#ffcc00", boxShadow: draft.trim() ? "0 8px 20px rgba(255,204,0,0.4)" : "none" }}
           >
-            {sending ? (
-              <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 rotate-90">
-                <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-              </svg>
-            )}
+            {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={17} />}
           </button>
         </div>
-        <p className="mt-3 text-center text-[10px] text-slate-400">
-          Press Enter to send, Shift + Enter for new line.
+
+        <p className="mt-2.5 text-center text-[10px] font-medium text-slate-300 dark:text-slate-700">
+          Press <kbd className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 font-mono text-[9px] text-slate-500 dark:text-slate-400">Enter</kbd> to send &nbsp;·&nbsp; <kbd className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 font-mono text-[9px] text-slate-500 dark:text-slate-400">Shift+Enter</kbd> for new line
         </p>
       </div>
     </div>

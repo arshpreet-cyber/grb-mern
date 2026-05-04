@@ -3,10 +3,20 @@ import prisma from "@/lib/prisma";
 import { randomUUID } from "crypto";
 import { syncTicketToZoho } from "@/server/services/zohoSync";
 
-// GET /api/support/tickets?userId=xxx
+// GET /api/support/tickets?userId=xxx  OR  ?countOnly=true
 export async function GET(req: NextRequest) {
   try {
     const userId = req.nextUrl.searchParams.get("userId") || undefined;
+    const countOnly = req.nextUrl.searchParams.get("countOnly") === "true";
+
+    // Fast path: just return the total count for sidebar badge
+    if (countOnly) {
+      const count = await prisma.ticket.count({
+        where: userId ? { userId } : undefined,
+      });
+      return NextResponse.json({ count });
+    }
+
     const tickets = await prisma.ticket.findMany({
       where: userId ? { userId } : undefined,
       include: {
