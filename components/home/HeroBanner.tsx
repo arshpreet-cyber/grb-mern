@@ -62,7 +62,7 @@ export default function HeroTyping() {
           <span className="inline-flex items-center justify-center flex-nowrap align-middle box-border gap-[6px] px-[6px] py-[2px] min-h-[36px] min-[480px]:min-h-[44px] md:gap-[10px] md:px-[8px] md:py-[4px] md:min-h-[52px] min-[1470px]:min-h-[64px] bg-[#FFE58233]">
             
             <img
-              src="https://beta.getreviews.buzz/storage/app/blog/0635691001775712992_Line-18.png"
+              src="https://getreviews.buzz/storage/app/blog/0571820001777624061_line1.png"
               alt="|"
               className="shrink-0 w-[5px] h-[26px] min-[480px]:h-[32px] md:w-[7px] md:h-[50px]"
             />
@@ -75,7 +75,7 @@ export default function HeroTyping() {
             </strong>
 
             <img
-              src="https://beta.getreviews.buzz/storage/app/blog/0227099001775713012_Line-16.png"
+              src="https://getreviews.buzz/storage/app/blog/0567963001777624061_line2.png"
               alt="|"
               className="shrink-0 w-[5px] h-[26px] min-[480px]:h-[32px] md:w-[7px] md:h-[50px]"
             />

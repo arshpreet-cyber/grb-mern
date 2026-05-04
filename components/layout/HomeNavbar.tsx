@@ -170,7 +170,7 @@ export default function HomeNavbar() {
               href="mailto:marketing@getreviews.buzz"
               className="inline-flex h-12.5 w-12.5 items-center justify-center rounded-[10px] border border-[#ddd] bg-white transition-colors hover:border-[#ffcc00]"
             >
-              <img src="https://beta.getreviews.buzz/storage/app/blog/0520560001775463982_email-1.svg" alt="Email Us" width={22} height={22} />
+              <img src=" https://getreviews.buzz/storage/app/blog/0031902001777623735_email.svg" alt="Email Us" width={22} height={22} />
             </a>
 
             <div className="relative" ref={phoneRef}>
@@ -178,7 +178,7 @@ export default function HomeNavbar() {
                 onClick={() => setPhoneDropOpen((v) => !v)}
                 className="inline-flex h-12.5 w-12.5 items-center justify-center rounded-[10px] border border-[#ddd] bg-white transition-colors hover:border-[#ffcc00]"
               >
-                <img src="https://beta.getreviews.buzz/storage/app/blog/0901060001775463990_Vector.svg" alt="Call Us" width={22} height={22} />
+                <img src="https://getreviews.buzz/storage/app/blog/0028106001777623735_phone.svg" alt="Call Us" width={22} height={22} />
               </button>
 
               {phoneDropOpen && (
@@ -238,7 +238,7 @@ export default function HomeNavbar() {
             ) : session ? (
               <div className="relative group">
                 <button className="inline-flex h-12.5 w-30 items-center justify-center gap-2 rounded-[10px] border border-[#ddd] bg-white text-sm font-medium text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
-                  <img src="https://beta.getreviews.buzz/storage/app/blog/0908809001775472579_login-1.svg" alt="login icon" width={22} height={22} />
+                  <img src="https://getreviews.buzz/storage/app/blog/0020717001777623735_login-1.svg" alt="login icon" width={22} height={22} />
                   <span>{userInitials}</span>
                 </button>
                 <div className="absolute top-[calc(100%+4px)] right-0 z-[1000] invisible w-48 rounded-xl border border-[#eee] bg-white py-1 opacity-0 shadow-lg transition-all duration-150 group-hover:visible group-hover:opacity-100">
@@ -249,7 +249,7 @@ export default function HomeNavbar() {
               </div>
             ) : (
               <Link href="/login" className="inline-flex h-12.5 w-30 items-center justify-center gap-2 rounded-[10px] border border-[#ddd] bg-white text-sm font-medium text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
-                <img src="https://beta.getreviews.buzz/storage/app/blog/0908809001775472579_login-1.svg" alt="login icon" width={20} height={20} />
+                <img src="https://getreviews.buzz/storage/app/blog/0020717001777623735_login-1.svg" alt="login icon" width={20} height={20} />
                 <span>Login</span>
               </Link>
             )}
