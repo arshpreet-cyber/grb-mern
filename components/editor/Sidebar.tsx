@@ -141,6 +141,43 @@ export default function Sidebar() {
                   <option value="right">Right</option>
                 </select>
               </div>
+              <div className="flex items-center justify-between p-4 bg-[#fc0]/5 rounded-2xl border border-[#fc0]/10">
+                <label className="text-[11px] font-black text-[#1a1a1a] uppercase tracking-wider">Show Button</label>
+                <button
+                  onClick={() => handleDataChange('showButton', selectedSection.data.showButton === false ? true : false)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    selectedSection.data.showButton !== false ? 'bg-[#fc0]' : 'bg-black/10'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                      selectedSection.data.showButton !== false ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              {selectedSection.data.showButton !== false && (
+                <>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Button Text</label>
+                    <input
+                      type="text"
+                      value={selectedSection.data.buttonText || ''}
+                      onChange={(e) => handleDataChange('buttonText', e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Button Link</label>
+                    <input
+                      type="text"
+                      value={selectedSection.data.buttonLink || ''}
+                      onChange={(e) => handleDataChange('buttonLink', e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </>
+              )}
             </>
           )}
 
