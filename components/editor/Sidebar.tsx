@@ -141,6 +141,43 @@ export default function Sidebar() {
                   <option value="right">Right</option>
                 </select>
               </div>
+              <div className="flex items-center justify-between p-4 bg-[#fc0]/5 rounded-2xl border border-[#fc0]/10">
+                <label className="text-[11px] font-black text-[#1a1a1a] uppercase tracking-wider">Show Button</label>
+                <button
+                  onClick={() => handleDataChange('showButton', selectedSection.data.showButton === false ? true : false)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    selectedSection.data.showButton !== false ? 'bg-[#fc0]' : 'bg-black/10'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                      selectedSection.data.showButton !== false ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              {selectedSection.data.showButton !== false && (
+                <>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Button Text</label>
+                    <input
+                      type="text"
+                      value={selectedSection.data.buttonText || ''}
+                      onChange={(e) => handleDataChange('buttonText', e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Button Link</label>
+                    <input
+                      type="text"
+                      value={selectedSection.data.buttonLink || ''}
+                      onChange={(e) => handleDataChange('buttonLink', e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </>
+              )}
             </>
           )}
 
@@ -394,6 +431,174 @@ export default function Sidebar() {
             <div className="p-4 bg-slate-50 rounded-lg text-sm text-slate-600 italic">
               The product grid pulls data automatically from your products list.
             </div>
+          )}
+
+          {selectedSection.type === 'how-it-work-card' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.heading || ''}
+                  onChange={(e) => handleDataChange('heading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea
+                  value={selectedSection.data.subheading || ''}
+                  onChange={(e) => handleDataChange('subheading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-4 pt-2">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Steps</label>
+                {(selectedSection.data.steps || []).map((step: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Step {idx + 1}</span>
+                    <input
+                      type="text"
+                      placeholder="Icon (emoji)"
+                      value={step.icon || ''}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.steps];
+                        updated[idx] = { ...updated[idx], icon: e.target.value };
+                        handleDataChange('steps', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Title"
+                      value={step.title || ''}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.steps];
+                        updated[idx] = { ...updated[idx], title: e.target.value };
+                        handleDataChange('steps', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                    />
+                    <textarea
+                      placeholder="Description"
+                      value={step.desc || ''}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.steps];
+                        updated[idx] = { ...updated[idx], desc: e.target.value };
+                        handleDataChange('steps', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                    />
+                    <select
+                      value={step.color || 'bg-yellow-100'}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.steps];
+                        updated[idx] = { ...updated[idx], color: e.target.value };
+                        handleDataChange('steps', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    >
+                      <option value="bg-yellow-100">Yellow</option>
+                      <option value="bg-blue-100">Blue</option>
+                      <option value="bg-green-100">Green</option>
+                      <option value="bg-indigo-100">Indigo</option>
+                      <option value="bg-red-100">Red</option>
+                      <option value="bg-pink-100">Pink</option>
+                      <option value="bg-purple-100">Purple</option>
+                      <option value="bg-orange-100">Orange</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {selectedSection.type === 'customer-reviews' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input type="text" value={selectedSection.data.heading || ''} onChange={(e) => handleDataChange('heading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea value={selectedSection.data.subheading || ''} onChange={(e) => handleDataChange('subheading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]" />
+              </div>
+              <div className="space-y-4 pt-2">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Reviews</label>
+                {(selectedSection.data.reviews || []).map((review: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Review {idx + 1}</span>
+                    <textarea placeholder="Review text" value={review.text || ''} onChange={(e) => { const u = [...selectedSection.data.reviews]; u[idx] = { ...u[idx], text: e.target.value }; handleDataChange('reviews', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[80px]" />
+                    <input placeholder="Name" value={review.name || ''} onChange={(e) => { const u = [...selectedSection.data.reviews]; u[idx] = { ...u[idx], name: e.target.value }; handleDataChange('reviews', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold" />
+                    <input placeholder="Date" value={review.date || ''} onChange={(e) => { const u = [...selectedSection.data.reviews]; u[idx] = { ...u[idx], date: e.target.value }; handleDataChange('reviews', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {selectedSection.type === 'productbanner' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Product ID</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.productId || ''}
+                  onChange={(e) => handleDataChange('productId', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="e.g. google-reviews"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Title</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.title || ''}
+                  onChange={(e) => handleDataChange('title', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="Buy Google Reviews"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Description</label>
+                <textarea
+                  value={selectedSection.data.description || ''}
+                  onChange={(e) => handleDataChange('description', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[100px]"
+                  placeholder="Improve your business's online reputation..."
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Image URL</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.image || ''}
+                  onChange={(e) => handleDataChange('image', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="https://..."
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Rating Text</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.ratingText || ''}
+                  onChange={(e) => handleDataChange('ratingText', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="4.9 (11 verified Customer Reviews)"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Price Per Review ($)</label>
+                <input
+                  type="number"
+                  value={selectedSection.data.pricePerReview || 15}
+                  onChange={(e) => handleDataChange('pricePerReview', parseFloat(e.target.value))}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="15"
+                />
+              </div>
+            </>
           )}
         </div>
 
