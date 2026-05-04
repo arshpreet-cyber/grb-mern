@@ -61,7 +61,7 @@ export default function PageRenderer({ sections, isEditing = false, renderWrappe
             key={section.id} 
             id={section.id} 
             data={section.type === 'similar-products'
-              ? { ...section.data, excludeIds: sections.filter((s) => s.type === 'productbanner').map((s) => s.data?.id || s.id) }
+              ? { ...section.data, excludeIds: sections.filter((s) => s.type === 'productbanner').map((s) => s.data?.productId).filter(Boolean) }
               : section.data
             }
             settings={section.settings} 
