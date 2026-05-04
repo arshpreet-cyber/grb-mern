@@ -2,8 +2,10 @@
 import React from 'react';
 import Wrapper from "@/components/ui/Wrapper";
 import { SectionProps } from '@/types/section';
+import { useAppDispatch } from '@/lib/redux/hooks';
+import { updateSectionData } from '@/lib/redux/features/pageEditorSlice';
 
-export default function IconGrid({ data, settings }: SectionProps) {
+export default function IconGrid({ id, data, settings, isEditing }: SectionProps) {
   const {
     title = "Why Do Businesses Trust <strong class='font-semibold text-black'>Get Reviews Buzz?</strong>",
     subtitle = "As your reliable partner, we help your business strengthen their online reputation,<br /> build lasting customer trust, and drive consistent growth through effective review strategies.",
@@ -40,6 +42,15 @@ export default function IconGrid({ data, settings }: SectionProps) {
       }
     ]
   } = data;
+
+  const dispatch = useAppDispatch();
+
+  const handleFeatureChange = (index: number, field: string, value: string) => {
+    const updated = features.map((f: any, i: number) =>
+      i === index ? { ...f, [field]: value } : f
+    );
+    dispatch(updateSectionData({ id, data: { features: updated } }));
+  };
 
   const titleStyles: React.CSSProperties = {
     color: settings.titleColor || 'inherit',
@@ -83,8 +94,26 @@ export default function IconGrid({ data, settings }: SectionProps) {
                 className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md"
               >
                 <img src={feature.icon} alt={feature.title} className="w-[78px] h-[98px] mb-4 object-contain" />
-                <h3 className="text-xl font-normal my-8">{feature.title}</h3>
-                <p className="text-gray-600 text-m leading-relaxed text-justify">{feature.description}</p>
+                {isEditing ? (
+                  <>
+                    <input
+                      className="text-xl font-normal my-8 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent"
+                      value={feature.title}
+                      onChange={(e) => handleFeatureChange(index, 'title', e.target.value)}
+                    />
+                    <textarea
+                      className="text-gray-600 text-m leading-relaxed text-justify w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none"
+                      value={feature.description}
+                      rows={4}
+                      onChange={(e) => handleFeatureChange(index, 'description', e.target.value)}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-normal my-8">{feature.title}</h3>
+                    <p className="text-gray-600 text-m leading-relaxed text-justify">{feature.description}</p>
+                  </>
+                )}
               </div>
             ))}
           </div>

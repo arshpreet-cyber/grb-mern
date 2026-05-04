@@ -433,8 +433,98 @@ export default function Sidebar() {
             </div>
           )}
 
+          {selectedSection.type === 'how-it-work-card' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.heading || ''}
+                  onChange={(e) => handleDataChange('heading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea
+                  value={selectedSection.data.subheading || ''}
+                  onChange={(e) => handleDataChange('subheading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-4 pt-2">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Steps</label>
+                {(selectedSection.data.steps || []).map((step: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Step {idx + 1}</span>
+                    <input
+                      type="text"
+                      placeholder="Icon (emoji)"
+                      value={step.icon || ''}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.steps];
+                        updated[idx] = { ...updated[idx], icon: e.target.value };
+                        handleDataChange('steps', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Title"
+                      value={step.title || ''}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.steps];
+                        updated[idx] = { ...updated[idx], title: e.target.value };
+                        handleDataChange('steps', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                    />
+                    <textarea
+                      placeholder="Description"
+                      value={step.desc || ''}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.steps];
+                        updated[idx] = { ...updated[idx], desc: e.target.value };
+                        handleDataChange('steps', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                    />
+                    <select
+                      value={step.color || 'bg-yellow-100'}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.steps];
+                        updated[idx] = { ...updated[idx], color: e.target.value };
+                        handleDataChange('steps', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    >
+                      <option value="bg-yellow-100">Yellow</option>
+                      <option value="bg-blue-100">Blue</option>
+                      <option value="bg-green-100">Green</option>
+                      <option value="bg-indigo-100">Indigo</option>
+                      <option value="bg-red-100">Red</option>
+                      <option value="bg-pink-100">Pink</option>
+                      <option value="bg-purple-100">Purple</option>
+                      <option value="bg-orange-100">Orange</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
           {selectedSection.type === 'productbanner' && (
             <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Product ID</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.productId || ''}
+                  onChange={(e) => handleDataChange('productId', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="e.g. google-reviews"
+                />
+              </div>
               <div className="space-y-3">
                 <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Title</label>
                 <input
