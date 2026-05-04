@@ -18,6 +18,10 @@ export default function SectionSelector({ onSelect, onClose }: SectionSelectorPr
     { type: 'faq-section', label: 'FAQ Accordion', icon: <Layout />, description: 'Frequently asked questions with CTA' },
     { type: 'text', label: 'Rich Text', icon: <Type />, description: 'Full width rich text/HTML content' },
     { type: 'image', label: 'Simple Image', icon: <ImageIcon />, description: 'A single full-width image' },
+    { type: 'productbanner', label: 'Product Banner', icon: <ShoppingCart />, description: 'A customizable product banner' },
+    { type: 'similar-products', label: 'Similar Products', icon: <ShoppingCart />, description: 'Showcase similar products in a grid' },
+    { type: 'how-it-work-card', label: 'How It Works Card', icon: <Layout />, description: 'A 3-step how it works card' },
+    { type: 'customer-reviews', label: 'Customer Reviews', icon: <MessageSquare />, description: 'A slider showcasing customer reviews' },
   ];
 
   return (
