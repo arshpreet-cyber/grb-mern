@@ -262,7 +262,7 @@ export default function AdminDashboard() {
                   contentStyle={{ borderRadius: 10, border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.2)", background: "#1e293b", color: "#fff", fontSize: 13, padding: "10px 16px" }}
                   itemStyle={{ color: "#fff", fontWeight: "bold" }}
                   labelStyle={{ color: "#94a3b8", fontSize: 11, marginBottom: 4 }}
-                  formatter={(value: number) => [`$${value.toLocaleString()}.00`, ""]}
+                  formatter={(value: any) => [`$${Number(value || 0).toLocaleString()}.00`, ""]}
                   cursor={{ stroke: "#818cf8", strokeWidth: 1, strokeDasharray: "4 4" }}
                 />
                 <Area type="monotone" dataKey="earnings" stroke="#818cf8" strokeWidth={2.5} fillOpacity={1} fill="url(#colorEarnings)" activeDot={{ r: 6, strokeWidth: 2, stroke: "#fff", fill: "#6366f1" }} dot={false} />
