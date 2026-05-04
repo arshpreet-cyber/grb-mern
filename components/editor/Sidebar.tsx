@@ -395,6 +395,60 @@ export default function Sidebar() {
               The product grid pulls data automatically from your products list.
             </div>
           )}
+
+          {selectedSection.type === 'productbanner' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Title</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.title || ''}
+                  onChange={(e) => handleDataChange('title', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="Buy Google Reviews"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Description</label>
+                <textarea
+                  value={selectedSection.data.description || ''}
+                  onChange={(e) => handleDataChange('description', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[100px]"
+                  placeholder="Improve your business's online reputation..."
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Image URL</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.image || ''}
+                  onChange={(e) => handleDataChange('image', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="https://..."
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Rating Text</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.ratingText || ''}
+                  onChange={(e) => handleDataChange('ratingText', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="4.9 (11 verified Customer Reviews)"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Price Per Review ($)</label>
+                <input
+                  type="number"
+                  value={selectedSection.data.pricePerReview || 15}
+                  onChange={(e) => handleDataChange('pricePerReview', parseFloat(e.target.value))}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="15"
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Style Settings */}

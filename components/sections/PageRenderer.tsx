@@ -12,6 +12,7 @@ import BlogSection from './BlogSection';
 import PartnerLogosSection from './PartnerLogosSection';
 import VisionMissionSectionBuilder from './VisionMissionSectionBuilder';
 import CTABannerSection from './CTABannerSection';
+import ProductBanner from './ProductBanner';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -28,6 +29,7 @@ const sectionMap: Record<string, React.FC<any>> = {
   'partner-logos': PartnerLogosSection,
   'vision-mission': VisionMissionSectionBuilder,
   'cta-banner': CTABannerSection,
+  'productbanner': ProductBanner,
 };
 
 interface PageRendererProps {

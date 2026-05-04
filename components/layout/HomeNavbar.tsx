@@ -9,7 +9,7 @@ import Wrapper from "@/components/ui/Wrapper";
 
 const buyReviewsLinks = [
   { href: "/products/google-reviews/", label: "Google", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
-  { href: "/products/buy-google-local-guide-reviews/", label: "Google Local Guide", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
+  { href: "/buy-google-local-guide-reviews/", label: "Google Local Guide", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
   { href: "/products/buy-trustpilot-reviews/", label: "TrustPilot", img: "https://www.google.com/s2/favicons?domain=trustpilot.com&sz=64" },
   { href: "/products/buy-glassdoor-reviews/", label: "Glassdoor", img: "https://www.google.com/s2/favicons?domain=glassdoor.com&sz=64" },
   { href: "/products/facebook-reviews/", label: "Facebook", img: "https://www.google.com/s2/favicons?domain=facebook.com&sz=64" },
