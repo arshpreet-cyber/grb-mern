@@ -513,6 +513,30 @@ export default function Sidebar() {
             </>
           )}
 
+          {selectedSection.type === 'customer-reviews' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input type="text" value={selectedSection.data.heading || ''} onChange={(e) => handleDataChange('heading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea value={selectedSection.data.subheading || ''} onChange={(e) => handleDataChange('subheading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]" />
+              </div>
+              <div className="space-y-4 pt-2">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Reviews</label>
+                {(selectedSection.data.reviews || []).map((review: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Review {idx + 1}</span>
+                    <textarea placeholder="Review text" value={review.text || ''} onChange={(e) => { const u = [...selectedSection.data.reviews]; u[idx] = { ...u[idx], text: e.target.value }; handleDataChange('reviews', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[80px]" />
+                    <input placeholder="Name" value={review.name || ''} onChange={(e) => { const u = [...selectedSection.data.reviews]; u[idx] = { ...u[idx], name: e.target.value }; handleDataChange('reviews', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold" />
+                    <input placeholder="Date" value={review.date || ''} onChange={(e) => { const u = [...selectedSection.data.reviews]; u[idx] = { ...u[idx], date: e.target.value }; handleDataChange('reviews', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
           {selectedSection.type === 'productbanner' && (
             <>
               <div className="space-y-3">
