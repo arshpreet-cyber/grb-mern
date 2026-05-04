@@ -13,6 +13,7 @@ import PartnerLogosSection from './PartnerLogosSection';
 import VisionMissionSectionBuilder from './VisionMissionSectionBuilder';
 import CTABannerSection from './CTABannerSection';
 import ProductBanner from './ProductBanner';
+import SimilarProducts from './SimilarProducts';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -30,6 +31,7 @@ const sectionMap: Record<string, React.FC<any>> = {
   'vision-mission': VisionMissionSectionBuilder,
   'cta-banner': CTABannerSection,
   'productbanner': ProductBanner,
+  'similar-products': SimilarProducts,
 };
 
 interface PageRendererProps {
@@ -56,7 +58,10 @@ export default function PageRenderer({ sections, isEditing = false, renderWrappe
           <SectionComponent 
             key={section.id} 
             id={section.id} 
-            data={section.data} 
+            data={section.type === 'similar-products'
+              ? { ...section.data, excludeIds: sections.filter((s) => s.type === 'productbanner').map((s) => s.data?.id || s.id) }
+              : section.data
+            }
             settings={section.settings} 
             isEditing={isEditing} 
           />
