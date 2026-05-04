@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Wrapper from "@/components/ui/Wrapper";
 import { SectionProps } from "@/types/section";
+import { useCart } from "@/context/CartContext";
 
 export default function BuySection({ data = {}, settings }: SectionProps) {
   const {
@@ -13,11 +14,26 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
     image,
     ratingText = "4.9 (11 verified Customer Reviews)",
     pricePerReview = 15,
+    breadcrumbText = "Google Review",
   } = data;
   const router = useRouter();
+  const { addItem, updateQty } = useCart();
 
   const [quantity, setQuantity] = useState(5);
   const [plan, setPlan] = useState<"one-time" | "monthly">("one-time");
+
+  const handleAddToCart = () => {
+    const id = `${title || "product"}-${plan}`;
+    addItem({
+      id,
+      platform: typeof title === "string" ? title : "Product",
+      icon: image || "",
+      image: image || "",
+      type: plan === "monthly" ? "subscribe" : "one-time",
+      pricePerUnit: pricePerReview,
+    });
+    updateQty(id, quantity);
+  };
 
   const renderDescription = () => {
     if (Array.isArray(description)) {
@@ -34,9 +50,9 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
   const total = quantity * pricePerReview;
 
   return (
-    <section className="bg-[#f3efe7] py-12 lg:py-20" style={{ padding: settings?.padding, margin: settings?.margin, backgroundColor: settings?.backgroundColor || undefined }}>
+    <section className="bg-[#FDFCF2] py-12 lg:py-20" style={{ padding: settings?.padding, margin: settings?.margin, backgroundColor: settings?.backgroundColor || undefined }}>
       <Wrapper>
-        <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-[1500] mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
 
           {/* LEFT */}
           <div>
@@ -48,7 +64,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               >
                 Home
               </span>{" "}
-              / <span className="text-black">Google Review</span>
+              / <span className="text-black">{breadcrumbText}</span>
             </p>
 
             {/* Title */}
@@ -132,7 +148,10 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                   </button>
                 </div>
 
-                <button className="bg-black text-white px-6 py-3 rounded-md font-medium">
+                <button
+                  onClick={handleAddToCart}
+                  className="bg-black text-white px-6 py-3 rounded-md font-medium hover:bg-yellow-400 hover:text-black transition"
+                >
                   Add to Cart – ${total.toFixed(2)}
                 </button>
               </div>
@@ -151,7 +170,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                 "https://getreviews.buzz/storage/app/blog/0539654001776770835_0702272001776065346_left-img.png"
               }
               alt="preview"
-              className="w-full max-w-[420px] object-contain rounded-xl shadow-lg"
+              className="w-full max-w-[620px] object-contain "
             />
           </div>
 

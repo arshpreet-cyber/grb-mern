@@ -10,7 +10,8 @@ export default function ImageTextSection({ data, settings }: SectionProps) {
     image = "https://getreviews.buzz/storage/app/blog/0547241001776770835_0936012001776065359_right-img.png",
     buttonText = "Read More",
     buttonLink = "#",
-    imagePosition = "right" // or "left"
+    imagePosition = "right",
+    showButton = true,
   } = data;
 
   const titleStyles: React.CSSProperties = {
@@ -50,7 +51,7 @@ export default function ImageTextSection({ data, settings }: SectionProps) {
                 dangerouslySetInnerHTML={{ __html: content }} 
               />
               
-              {buttonText && (
+              {showButton !== false && buttonText && (
                 <a 
                   href={buttonLink} 
                   className="inline-block bg-[#fcd535] text-gray-900 px-8 py-4 rounded-md font-bold text-sm tracking-wider hover:bg-black hover:text-white transition-all uppercase"
