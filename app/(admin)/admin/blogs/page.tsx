@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Edit, Trash2, Eye, Plus } from "lucide-react";
+import { Edit, Trash2, Eye, Plus, PenTool } from "lucide-react";
+import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
 
 export default function BlogsListing() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   const fetchBlogs = async () => {
     try {
@@ -48,75 +50,98 @@ export default function BlogsListing() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading blogs...</div>;
-  if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+  const columns: Column<any>[] = [
+    {
+      key: "title",
+      header: "Blog Title",
+      render: (b) => (
+        <div className="flex flex-col gap-0.5">
+          <span className="font-bold text-gray-900 dark:text-white text-[13px]">{b.title}</span>
+          <span className="text-[11px] text-gray-400 dark:text-white/50 font-mono">/{b.slug}</span>
+        </div>
+      ),
+    },
+    {
+      key: "author",
+      header: "Author",
+      render: (b) => <span className="text-gray-600 dark:text-white text-[13px]">{b.author || "-"}</span>,
+    },
+    {
+      key: "category",
+      header: "Category",
+      render: (b) => <span className="text-gray-600 dark:text-white text-[13px] font-medium">{b.category || "-"}</span>,
+    },
+    {
+      key: "status",
+      header: "Status",
+      render: (b) => (
+        <StatusPill 
+          value={b.status === 1 ? "Published" : "Draft"} 
+          colorMap={{
+            Published: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
+            Draft: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
+          }}
+        />
+      ),
+    },
+    {
+      key: "created_at",
+      header: "Created Date",
+      render: (b) => <span className="text-gray-500 dark:text-white text-[12px]">{new Date(b.created_at).toLocaleDateString()}</span>,
+    },
+  ];
+
+  const actions = [
+    {
+      label: "View Live",
+      icon: <Eye size={14} />,
+      onClick: (b: any) => window.open(`/blog/${b.slug}`, "_blank"),
+    },
+    {
+      label: "Edit Blog",
+      icon: <Edit size={14} />,
+      onClick: (b: any) => { window.location.href = `/admin/blogs/${b.id}`; },
+    },
+    {
+      label: "Delete",
+      icon: <Trash2 size={14} className="text-red-500" />,
+      onClick: (b: any) => handleDelete(b.id),
+    },
+  ];
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-sm">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">Blogs</h1>
+    <div className="space-y-6">
+      <div className="rounded-[20px] bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-6 shadow-sm flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+            <PenTool size={20} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Blogs</h1>
+            <p className="mt-0.5 text-sm text-gray-500 dark:text-white">Manage your content and articles.</p>
+          </div>
+        </div>
         <Link 
           href="/admin/blogs/create" 
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+          className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-violet-500/20 flex items-center gap-2"
         >
           <Plus size={18} />
-          <span>Add New Blog</span>
+          Add New Blog
         </Link>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-600">
-              <th className="p-4 font-medium">Title</th>
-              <th className="p-4 font-medium">Author</th>
-              <th className="p-4 font-medium">Category</th>
-              <th className="p-4 font-medium">Status</th>
-              <th className="p-4 font-medium">Created Date</th>
-              <th className="p-4 font-medium text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm text-gray-700">
-            {blogs.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="p-8 text-center text-gray-500">
-                  No blogs found. Create your first blog!
-                </td>
-              </tr>
-            ) : (
-              blogs.map((blog) => (
-                <tr key={blog.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                  <td className="p-4 max-w-xs truncate font-medium">{blog.title}</td>
-                  <td className="p-4">{blog.author || "-"}</td>
-                  <td className="p-4">{blog.category || "-"}</td>
-                  <td className="p-4">
-                    {blog.status === 1 ? (
-                      <span className="px-2.5 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Published</span>
-                    ) : blog.status === 2 ? (
-                      <span className="px-2.5 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">Draft</span>
-                    ) : (
-                      <span className="px-2.5 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">Unused</span>
-                    )}
-                  </td>
-                  <td className="p-4">{new Date(blog.created_at).toLocaleDateString()}</td>
-                  <td className="p-4 text-right">
-                    <div className="flex justify-end gap-3">
-                      <a href={`/blog/${blog.slug}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700" title="View">
-                        <Eye size={18} />
-                      </a>
-                      <Link href={`/admin/blogs/${blog.id}`} className="text-gray-500 hover:text-gray-700" title="Edit">
-                        <Edit size={18} />
-                      </Link>
-                      <button onClick={() => handleDelete(blog.id)} className="text-red-500 hover:text-red-700" title="Delete">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      <div className="bg-white dark:bg-[#1a1f2c] rounded-[20px] border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
+        <DataTable
+          data={blogs}
+          columns={columns}
+          loading={loading}
+          actions={actions}
+          searchable
+          searchPlaceholder="Search blogs by title or author..."
+          searchValue={search}
+          onSearchChange={setSearch}
+          pageSize={10}
+        />
       </div>
     </div>
   );

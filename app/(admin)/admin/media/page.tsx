@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { attachmentTypeOptions, MediaAttachmentType } from "@/lib/media";
+import { Image as ImageIcon, Upload, Copy, Check, Search, File, Trash2, X } from "lucide-react";
 
 type MediaRow = {
   id: number;
@@ -56,6 +57,7 @@ function AdminMediaPageInner() {
   const [type, setType] = useState<MediaAttachmentType>(defaultType);
   const [isTitle, setIsTitle] = useState(false);
   const [search, setSearch] = useState("");
+  const [copiedId, setCopiedId] = useState<number | null>(null);
 
   const previewUrl = useMemo(
     () => (selectedFile ? URL.createObjectURL(selectedFile) : null),
@@ -132,7 +134,7 @@ function AdminMediaPageInner() {
       setIsTitle(false);
       setMessage("Media uploaded successfully.");
       await fetchMedia();
-      setTab("all");
+      setTimeout(() => setTab("all"), 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
@@ -157,81 +159,104 @@ function AdminMediaPageInner() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:flex sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Media Manager</h1>
-          <p className="mt-2 text-sm text-slate-500">
-            Upload and manage assets for blogs, pages, and products.
-          </p>
+      <div className="rounded-[20px] bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Media Manager</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-white">Upload and manage assets for blogs, pages, and products.</p>
+          </div>
+          <div className="flex items-center gap-3 p-1 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-100 dark:border-slate-800">
+            <button
+              onClick={() => setTab("all")}
+              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                currentTab === "all" ? "bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-slate-300"
+              }`}
+            >
+              Library
+            </button>
+            <button
+              onClick={() => setTab("new")}
+              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                currentTab === "new" ? "bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-slate-300"
+              }`}
+            >
+              Upload New
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="flex gap-2 rounded-2xl bg-white p-1 ring-1 ring-slate-200 w-fit">
-        <button
-          onClick={() => setTab("all")}
-          className={`rounded-xl px-6 py-2 text-sm font-semibold transition ${
-            currentTab === "all" ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-50"
-          }`}
-        >
-          All Media
-        </button>
-        <button
-          onClick={() => setTab("new")}
-          className={`rounded-xl px-6 py-2 text-sm font-semibold transition ${
-            currentTab === "new" ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-50"
-          }`}
-        >
-          Upload New
-        </button>
       </div>
 
       {currentTab === "all" ? (
         <div className="space-y-6">
-          <div className="relative">
+          <div className="relative group max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-violet-500 transition-colors" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by alt text, URL or type..."
-              className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] pl-11 pr-5 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-violet-500/10 focus:border-violet-500"
             />
           </div>
 
           {loading ? (
-            <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center text-slate-500">
-              Loading library...
+            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#1a1f2c] rounded-[20px] border border-gray-100 dark:border-slate-800">
+              <div className="h-12 w-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin mb-4"></div>
+              <p className="text-sm text-gray-500 dark:text-white font-medium">Loading your media library...</p>
             </div>
           ) : error ? (
-            <div className="rounded-2xl bg-rose-50 px-5 py-4 text-sm text-rose-700 ring-1 ring-rose-100">
+            <div className="rounded-2xl bg-rose-50 dark:bg-rose-900/10 px-5 py-4 text-sm text-rose-700 dark:text-rose-400 ring-1 ring-rose-100 dark:ring-rose-900/30">
               {error}
             </div>
           ) : filteredMedia.length === 0 ? (
-            <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center text-slate-500">
-              No media found.
+            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#1a1f2c] rounded-[20px] border border-gray-100 dark:border-slate-800 text-center px-6">
+              <div className="h-16 w-16 bg-gray-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-4">
+                <ImageIcon className="h-8 w-8 text-gray-300" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">No media assets found</h3>
+              <p className="text-sm text-gray-500 dark:text-white mt-1 max-w-xs">Start building your library by uploading images for your blogs or products.</p>
+              <button onClick={() => setTab("new")} className="mt-6 text-violet-600 dark:text-violet-400 font-bold text-sm hover:underline">Upload your first asset</button>
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredMedia.map((item) => (
-                <div key={item.id} className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
-                  <div className="aspect-video bg-slate-100 overflow-hidden">
+                <div key={item.id} className="group relative overflow-hidden rounded-[20px] border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] shadow-sm transition-all hover:shadow-xl hover:-translate-y-1">
+                  <div className="aspect-[4/3] bg-gray-50 dark:bg-slate-900 overflow-hidden relative">
                     {item.mediaType?.startsWith("image/") ? (
-                      <img src={item.absoluteUrl || item.staticUrl || ""} alt={item.alt || ""} className="h-full w-full object-cover transition duration-300 group-hover:scale-110" />
+                      <img src={item.absoluteUrl || item.staticUrl || ""} alt={item.alt || ""} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-10 w-10">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                        </svg>
+                      <div className="flex h-full w-full items-center justify-center text-gray-400">
+                        <File className="h-12 w-12 opacity-20" />
                       </div>
                     )}
+                    <div className="absolute top-3 left-3">
+                      <span className="px-2 py-1 bg-black/40 backdrop-blur-md text-[10px] font-bold text-white rounded-md uppercase tracking-widest">
+                        {item.type}
+                      </span>
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <p className="truncate text-xs font-semibold text-slate-500 uppercase tracking-wider">{item.type}</p>
-                    <p className="mt-1 truncate text-sm font-bold text-slate-900">{item.alt || "Untitled"}</p>
+                  <div className="p-4 bg-white dark:bg-slate-900/20">
+                    <p className="truncate text-sm font-bold text-gray-900 dark:text-white">{item.alt || "Untitled Asset"}</p>
                     <div className="mt-4 flex gap-2">
                       <button
-                        onClick={() => copyToClipboard(item.absoluteUrl || item.staticUrl, () => setMessage("Link copied!"), (msg) => setError(msg))}
-                        className="flex-1 rounded-xl bg-slate-100 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-200"
+                        onClick={() => {
+                          copyToClipboard(item.absoluteUrl || item.staticUrl, () => {
+                            setCopiedId(item.id);
+                            setTimeout(() => setCopiedId(null), 2000);
+                          }, (msg) => setError(msg));
+                        }}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gray-50 dark:bg-slate-800 py-2.5 text-xs font-bold text-gray-600 dark:text-white transition hover:bg-violet-600 hover:text-white"
                       >
-                        Copy Link
+                        {copiedId === item.id ? (
+                          <>
+                            <Check size={14} className="text-emerald-400" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={14} />
+                            Copy URL
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -241,31 +266,37 @@ function AdminMediaPageInner() {
           )}
         </div>
       ) : (
-        <div className="max-w-2xl">
-          <form onSubmit={handleUpload} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            {message && <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 ring-1 ring-emerald-100">{message}</div>}
-            {error && <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-100">{error}</div>}
+        <div className="max-w-2xl mx-auto">
+          <form onSubmit={handleUpload} className="space-y-6 rounded-[30px] border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] p-8 shadow-xl">
+            <div className="text-center mb-8">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upload New Media</h2>
+              <p className="text-sm text-gray-500 dark:text-white mt-1">Select a file to add to your library.</p>
+            </div>
+
+            {message && <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-900/30 font-medium">{message}</div>}
+            {error && <div className="rounded-2xl bg-rose-50 dark:bg-rose-900/10 px-4 py-3 text-sm text-rose-700 dark:text-rose-400 ring-1 ring-rose-100 dark:ring-rose-900/30 font-medium">{error}</div>}
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700">File</label>
-              <div className="flex items-center justify-center rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 p-8 transition hover:border-violet-300">
+              <label className="text-xs font-bold text-gray-500 dark:text-white uppercase tracking-wider mb-2 block">Source File</label>
+              <div className={`relative group flex flex-col items-center justify-center rounded-3xl border-2 border-dashed transition-all p-2 ${previewUrl ? 'border-violet-500/50 bg-violet-50/10' : 'border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 hover:border-violet-500'}`}>
                 {previewUrl ? (
-                  <div className="relative h-48 w-full">
-                    <img src={previewUrl} className="h-full w-full object-contain" alt="Preview" />
-                    <button type="button" onClick={() => setSelectedFile(null)} className="absolute -right-2 -top-2 rounded-full bg-rose-500 p-1 text-white shadow-sm hover:bg-rose-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-4 w-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden group">
+                    <img src={previewUrl} className="h-full w-full object-contain bg-black/5" alt="Preview" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button type="button" onClick={() => setSelectedFile(null)} className="h-10 w-10 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
                   </div>
                 ) : (
-                  <label className="flex cursor-pointer flex-col items-center gap-2">
-                    <div className="rounded-full bg-white p-4 shadow-sm ring-1 ring-slate-100">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-8 w-8 text-slate-400">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-                      </svg>
+                  <label className="flex cursor-pointer flex-col items-center gap-3 py-12 w-full">
+                    <div className="h-16 w-16 rounded-2xl bg-white dark:bg-slate-800 shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Upload className="h-8 w-8 text-violet-500" />
                     </div>
-                    <p className="text-sm font-semibold text-slate-500">Click to choose image</p>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">Click to choose image</p>
+                      <p className="text-xs text-gray-500 dark:text-white mt-1">PNG, JPG or WEBP up to 2MB</p>
+                    </div>
                     <input type="file" className="hidden" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} accept="image/*" />
                   </label>
                 )}
@@ -274,12 +305,21 @@ function AdminMediaPageInner() {
 
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Alt Text</label>
-                <input value={alt} onChange={(e) => setAlt(e.target.value)} placeholder="Accessibility description" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100" />
+                <label className="text-xs font-bold text-gray-500 dark:text-white uppercase tracking-wider mb-2 block">Alt Description</label>
+                <input 
+                  value={alt} 
+                  onChange={(e) => setAlt(e.target.value)} 
+                  placeholder="Accessibility description" 
+                  className="w-full rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-violet-500/10 focus:border-violet-500" 
+                />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Type</label>
-                <select value={type} onChange={(e) => setType(e.target.value as MediaAttachmentType)} className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100">
+                <label className="text-xs font-bold text-gray-500 dark:text-white uppercase tracking-wider mb-2 block">Asset Category</label>
+                <select 
+                  value={type} 
+                  onChange={(e) => setType(e.target.value as MediaAttachmentType)} 
+                  className="w-full rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-violet-500/10 focus:border-violet-500 appearance-none"
+                >
                   {attachmentTypeOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
@@ -287,8 +327,22 @@ function AdminMediaPageInner() {
               </div>
             </div>
 
-            <button disabled={uploading} type="submit" className="w-full rounded-full bg-violet-600 py-4 text-sm font-bold text-white shadow-lg transition hover:bg-violet-700 disabled:opacity-50">
-              {uploading ? "Uploading..." : "Upload Media Asset"}
+            <button 
+              disabled={uploading} 
+              type="submit" 
+              className="w-full flex items-center justify-center gap-3 rounded-2xl bg-violet-600 py-4 text-sm font-bold text-white shadow-xl shadow-violet-500/30 transition hover:bg-violet-700 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+            >
+              {uploading ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  Uploading Asset...
+                </>
+              ) : (
+                <>
+                  <Upload size={18} />
+                  Upload Media Asset
+                </>
+              )}
             </button>
           </form>
         </div>

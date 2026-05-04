@@ -8,7 +8,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className="flex min-h-screen bg-[#f5f6fa]">
+    <div className="flex min-h-screen bg-[#f5f6fa] dark:bg-[#0f1117]">
       <Suspense fallback={<div className="w-64 bg-[#0f1117]" />}>
         <AdminSidebar />
       </Suspense>
