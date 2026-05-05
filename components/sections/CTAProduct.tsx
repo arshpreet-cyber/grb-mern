@@ -39,7 +39,7 @@ export default function HeroSection({ id, data = {}, settings, isEditing }: Sect
   };
 
   return (
-    <section className="relative bg-[#F8F5D566] py-24 overflow-hidden">
+    <section className="relative bg-[#F8F5D5]/40 py-24 overflow-hidden">
 
       {/* Center Content */}
       <div className="max-w-[1500] mx-auto text-center relative z-10 px-6">

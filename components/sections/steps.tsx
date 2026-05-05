@@ -63,11 +63,11 @@ export default function ReviewsSection({ id, data = {}, settings, isEditing }: S
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1400] mx-auto">
           {steps.map((item: any, index: number) => (
             <div
               key={index}
-              className="group rounded-2xl p-6 h-[340px] flex flex-col justify-between bg-[#F5F5F5] transition-all duration-300 ease-in-out hover:-translate-y-4 hover:shadow-xl hover:bg-gradient-to-b hover:from-[#f3e8c8] hover:to-[#e6c46a]"
+              className="group rounded-2xl p-6 h-[380] max-w-[298] flex flex-col justify-between bg-[#F5F5F5] transition-all duration-300 ease-in-out hover:-translate-y-4 hover:shadow-xl hover:bg-gradient-to-b hover:from-[#FCFBEE] hover:to-[#FFBF00]"
             >
               {isEditing ? (
                 <input

@@ -43,7 +43,7 @@ export default function Testimonials({ id, data = {}, settings, isEditing }: Sec
   const actualIndex = (i: number) => page * CARDS_PER_PAGE + i;
 
   return (
-    <section className="bg-[#f5f3ef] py-20 px-6">
+    <section className="bg-gradient-to-b from-[#FEFEFC] to-[#FDFCF2] py-20 px-6">
       <div className="max-w-[1500px] mx-auto text-center">
 
         {/* Heading */}
