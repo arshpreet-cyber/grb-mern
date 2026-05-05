@@ -15,12 +15,11 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
     image,
     ratingText = "4.9 (11 verified Customer Reviews)",
     pricePerReview = 15,
-    breadcrumbText = "Google Review",
     productId,
   } = data;
 
   const product = productId ? products.find((p) => p.id === productId) : null;
-  const resolvedImage = image !== undefined ? image : product?.image;
+  const resolvedImage = image;
   const resolvedPlatform = product?.platform || (typeof title === "string" ? title : "Product");
   const resolvedPrice = (p: string) => p === "monthly"
     ? (product?.subscribePrice ?? pricePerReview)
@@ -60,20 +59,12 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
   };
 
   return (
-    <section className="bg-[#FDFCF2] py-12 lg:py-20" style={{ padding: settings?.padding, margin: settings?.margin, backgroundColor: settings?.backgroundColor || undefined }}>
+    <section className="bg-gradient-to-b from-[#FEFEFC] to-[#FDFCF2] py-12 lg:py-20" style={{ padding: settings?.padding, margin: settings?.margin, backgroundColor: settings?.backgroundColor || undefined }}>
       <Wrapper>
         <div className="max-w-[1500] mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
 
           {/* LEFT */}
           <div>
-            {/* Breadcrumb */}
-            <p className="text-sm text-gray-500 mb-4">
-              <span onClick={() => router.push("/")} className="cursor-pointer hover:underline">
-                Home
-              </span>{" "}
-              / <span className="text-black">{breadcrumbText}</span>
-            </p>
-
             {/* Title */}
             <h1 className="text-4xl font-bold mb-4">
               {title || <>Buy <span className="font-extrabold">Google Reviews</span></>}
