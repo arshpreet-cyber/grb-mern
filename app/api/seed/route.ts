@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     // Check for authorization header or query param
@@ -143,7 +145,7 @@ export async function GET(req: NextRequest) {
           ticketId: "#TKT-10956",
           userId: user1Id,
           title: "Quality issue auto accounts",
-          description: "Issue with automated account generation",
+          query: "Issue with automated account generation",
           status: "Awaiting Reply",
           createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
         },
@@ -151,7 +153,7 @@ export async function GET(req: NextRequest) {
           ticketId: "#TKT-10985",
           userId: user2Id,
           title: "Review on order no. 177456031",
-          description: "Customer asking about order status",
+          query: "Customer asking about order status",
           status: "Open",
           createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
         },
@@ -159,7 +161,7 @@ export async function GET(req: NextRequest) {
           ticketId: "#TKT-10944",
           userId: user1Id,
           title: "All reviews has disappeared",
-          description: "Reviews not showing in dashboard",
+          query: "Reviews not showing in dashboard",
           status: "Closed",
           createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         },
@@ -167,7 +169,7 @@ export async function GET(req: NextRequest) {
           ticketId: "#TKT-10953",
           userId: user2Id,
           title: "Order Number - 177220728",
-          description: "Payment processing issue",
+          query: "Payment processing issue",
           status: "Pending",
           createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         },
@@ -175,7 +177,7 @@ export async function GET(req: NextRequest) {
           ticketId: "#TKT-10952",
           userId: user1Id,
           title: "Order Number - 177361288",
-          description: "Refund request for cancelled order",
+          query: "Refund request for cancelled order",
           status: "Open",
           createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         },
@@ -183,7 +185,7 @@ export async function GET(req: NextRequest) {
           ticketId: "#TKT-11001",
           userId: user2Id,
           title: "Login issues with email",
-          description: "Cannot access account",
+          query: "Cannot access account",
           status: "Awaiting Reply",
           createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         },
