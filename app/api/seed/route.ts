@@ -3,9 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    // Check for authorization header
+    // Check for authorization header or query param
     const auth = req.headers.get("authorization");
-    if (auth !== "Bearer seed-secret-key-123") {
+    const secret = req.nextUrl.searchParams.get("secret");
+    if (auth !== "Bearer seed-secret-key-123" && secret !== "seed-secret-key-123") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
