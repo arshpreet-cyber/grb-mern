@@ -537,6 +537,61 @@ export default function Sidebar() {
             </>
           )}
 
+          {selectedSection.type === 'steps' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <textarea value={selectedSection.data.heading || ''} onChange={(e) => handleDataChange('heading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea value={selectedSection.data.subheading || ''} onChange={(e) => handleDataChange('subheading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]" />
+              </div>
+              <div className="space-y-4 pt-2">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Steps</label>
+                {(selectedSection.data.steps || []).map((step: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Step {idx + 1}</span>
+                    <input placeholder="Step label (e.g. STEP 01)" value={step.step || ''} onChange={(e) => { const u = [...selectedSection.data.steps]; u[idx] = { ...u[idx], step: e.target.value }; handleDataChange('steps', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                    <input placeholder="Title" value={step.title || ''} onChange={(e) => { const u = [...selectedSection.data.steps]; u[idx] = { ...u[idx], title: e.target.value }; handleDataChange('steps', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold" />
+                    <textarea placeholder="Description" value={step.desc || ''} onChange={(e) => { const u = [...selectedSection.data.steps]; u[idx] = { ...u[idx], desc: e.target.value }; handleDataChange('steps', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]" />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {selectedSection.type === 'cta-product' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <textarea value={selectedSection.data.heading || ''} onChange={(e) => handleDataChange('heading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea value={selectedSection.data.subheading || ''} onChange={(e) => handleDataChange('subheading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Button Text</label>
+                <input type="text" value={selectedSection.data.buttonText || ''} onChange={(e) => handleDataChange('buttonText', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Button Link</label>
+                <input type="text" value={selectedSection.data.buttonLink || ''} onChange={(e) => handleDataChange('buttonLink', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" placeholder="#" />
+              </div>
+              <div className="space-y-4 pt-2">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Floating Icons</label>
+                {(selectedSection.data.icons || []).map((icon: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Icon {idx + 1}</span>
+                    <input placeholder="Image URL" value={icon.src || ''} onChange={(e) => { const u = [...selectedSection.data.icons]; u[idx] = { ...u[idx], src: e.target.value }; handleDataChange('icons', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                    <input placeholder="Position class (e.g. top-20 left-10)" value={icon.className || ''} onChange={(e) => { const u = [...selectedSection.data.icons]; u[idx] = { ...u[idx], className: e.target.value }; handleDataChange('icons', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
           {selectedSection.type === 'productbanner' && (
             <>
               <div className="space-y-3">
