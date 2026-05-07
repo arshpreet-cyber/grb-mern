@@ -8,13 +8,15 @@ import { updateSectionData } from "@/lib/redux/features/pageEditorSlice";
 
 const defaultIcons = [
   { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "top-20 left-10" },
-  { src: "/icons/shop.png", className: "top-16 left-1/4" },
-  { src: "/icons/trust.png", className: "top-12 right-1/4" },
-  { src: "/icons/facebook.png", className: "top-10 right-10" },
+  { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "top-16 left-1/4" },
+  { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "top-12 right-1/4" },
+  { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "top-10 right-10" },
   { src: "http://localhost:3000/uploads/media/1777957627129-d57e7019-a38b-452b-b43d-fe9b0949ebfc-Group-912.svg", className: "top-100 left-10" },
-  { src: "/icons/google.png", className: "bottom-16 left-1/4" },
-  { src: "/icons/star.png", className: "bottom-16 right-1/4" },
-  { src: "/icons/info.png", className: "bottom-10 right-10" },
+  { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "bottom-16 left-1/4" },
+  { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "bottom-16 right-1/4" },
+  { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "bottom-10 right-10" },
+  { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "top-1/2 left-[15%]" },
+  { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "bottom-1/2 right-[15%]" },
 ];
 
 export default function HeroSection({ id, data = {}, settings, isEditing }: SectionProps) {
@@ -98,7 +100,7 @@ export default function HeroSection({ id, data = {}, settings, isEditing }: Sect
               title="Icon URL"
             />
           ) : (
-            icon.src && !icon.src.includes("/icons/") && (
+            icon.src && (
               <img src={icon.src} alt="icon" className="w-15 h-15 object-contain" />
             )
           )}

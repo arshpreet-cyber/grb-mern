@@ -81,7 +81,7 @@ export default function EditableSection({ section, children }: EditableSectionPr
       </div>
 
       {/* Visibility Overlay */}
-      {section.settings.visibility === false && (
+      {section.settings?.visibility === false && (
         <div className="absolute inset-0 bg-[#fafafa]/60 backdrop-blur-[2px] flex items-center justify-center pointer-events-none z-10">
           <div className="bg-[#1a1a1a] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl">
             Section Hidden
