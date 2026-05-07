@@ -102,6 +102,7 @@ export interface DataTableProps<T> {
   /* ── Styling ── */
   className?: string;
   compact?: boolean;
+  rowClassName?: (row: T) => string;
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -187,6 +188,7 @@ export default function DataTable<T extends Record<string, any>>({
   headerRight,
   className = "",
   compact = false,
+  rowClassName,
 }: DataTableProps<T>) {
   /* ── Internal state ── */
   const [internalSearch, setInternalSearch] = useState("");
@@ -430,7 +432,7 @@ export default function DataTable<T extends Record<string, any>>({
                 return (
                   <tr
                     key={key}
-                    className="hover:bg-gray-50/70 dark:hover:bg-slate-800/40 transition-colors"
+                    className={`hover:bg-gray-50/70 dark:hover:bg-slate-800/40 transition-colors ${rowClassName ? rowClassName(row) : ""}`}
                   >
                     {columns.map((col) => (
                       <td

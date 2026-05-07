@@ -11,6 +11,7 @@ type Ticket = {
   subject?: string | null;
   status: string;
   createdAt: string;
+  threads?: { direction: string; createdAt: string; id: number }[];
 };
 
 export default function DashboardTicketsPage() {
@@ -77,16 +78,26 @@ export default function DashboardTicketsPage() {
                   <th className="px-5 py-4">Ticket</th>
                   <th className="px-5 py-4">Subject</th>
                   <th className="px-5 py-4">Status</th>
+                  <th className="px-5 py-4">Reply Status</th>
                   <th className="px-5 py-4">Created</th>
                   <th className="px-5 py-4">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 bg-white">
-                {tickets.map((ticket) => (
-                  <tr key={ticket.id} className="hover:bg-slate-50">
+                {tickets.map((ticket) => {
+                  const isAwaitingUser = ticket.threads && ticket.threads.length > 0 && ticket.threads[0].direction === "2";
+                  return (
+                  <tr key={ticket.id} className={`transition-colors ${isAwaitingUser ? "bg-emerald-50/50 hover:bg-emerald-50" : "hover:bg-slate-50"}`}>
                     <td className="px-5 py-4 font-medium text-slate-800">{ticket.ticketNumber ?? ticket.ticketId}</td>
                     <td className="px-5 py-4 text-slate-700">{ticket.subject ?? "Support conversation"}</td>
                     <td className="px-5 py-4 text-slate-700">{ticket.status}</td>
+                    <td className="px-5 py-4">
+                      {isAwaitingUser ? (
+                        <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">New Reply</span>
+                      ) : (
+                        <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Awaiting Admin</span>
+                      )}
+                    </td>
                     <td className="px-5 py-4 text-slate-700">{new Date(ticket.createdAt).toLocaleDateString()}</td>
                     <td className="px-5 py-4">
                       <Link
@@ -97,7 +108,8 @@ export default function DashboardTicketsPage() {
                       </Link>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

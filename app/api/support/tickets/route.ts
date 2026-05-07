@@ -21,10 +21,23 @@ export async function GET(req: NextRequest) {
       where: userId ? { userId } : undefined,
       include: {
         user: { select: { name: true, email: true } },
+        threads: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { direction: true, createdAt: true, id: true }
+        }
       },
       orderBy: { createdAt: "desc" },
-      take: 100,
+      take: 200,
     });
+
+    // Sort by latest activity (either latest thread or ticket creation)
+    tickets.sort((a, b) => {
+      const aTime = a.threads.length > 0 ? a.threads[0].createdAt.getTime() : a.createdAt.getTime();
+      const bTime = b.threads.length > 0 ? b.threads[0].createdAt.getTime() : b.createdAt.getTime();
+      return bTime - aTime;
+    });
+
     return NextResponse.json(tickets);
   } catch (error) {
     console.error("Failed to load tickets", error);

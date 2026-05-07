@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { 
   ShoppingBag, BadgeCheck, History, BadgeX, 
   ChevronDown, Filter, MoreVertical, ChevronLeft, ChevronRight,
-  CheckCircle2, FileText, Eye
+  CheckCircle2, FileText, Eye, SlidersHorizontal
 } from "lucide-react";
 
 // --- Types ---
@@ -40,10 +40,8 @@ const TABS = [
 
 // Fallback data if API fails
 const STATIC_ORDERS: Order[] = [
-  { id: "1", orderNumber: "100452", paymentId: "PAY-88214A", amount: 150.00, createdAt: new Date().toISOString(), paymentMethod: "Credit Card", status: "Complete", paymentStatus: "Complete" },
-  { id: "2", orderNumber: "100453", paymentId: "PAY-11992B", amount: 89.99, createdAt: new Date(Date.now() - 86400000).toISOString(), paymentMethod: "PayPal", status: "Pending", paymentStatus: "Pending" },
-  { id: "3", orderNumber: "100454", paymentId: "PAY-44556C", amount: 210.50, createdAt: new Date(Date.now() - 172800000).toISOString(), paymentMethod: "Stripe", status: "Cancelled", paymentStatus: "Pending" },
-  { id: "4", orderNumber: "100455", paymentId: "PAY-77332D", amount: 45.00, createdAt: new Date(Date.now() - 259200000).toISOString(), paymentMethod: "Credit Card", status: "Processing", paymentStatus: "Complete" },
+  { id: "1", orderNumber: "#1771509416", paymentId: "123456", amount: 100.00, createdAt: "2028-02-19T00:00:00.000Z", paymentMethod: "", status: "Pending", paymentStatus: "Pending" },
+  { id: "2", orderNumber: "#1771509416", paymentId: "123456", amount: 100.00, createdAt: "2025-02-19T00:00:00.000Z", paymentMethod: "Credit Card", status: "Complete", paymentStatus: "Complete" },
 ];
 
 export default function DemoDashboard() {
@@ -142,7 +140,7 @@ export default function DemoDashboard() {
     <div className="w-full mx-auto flex flex-col gap-6 ">
       <div>
         <h1 className="text-[36px] font-[500] text-gray-900 mb-1 mt-[30px] tracking-tight">All Orders</h1>
-        <p className="text-[15px] text-gray-600 font-normal">Manage your recent transactions and view order statuses.</p>
+        <p className="text-[15px] text-gray-600 font-normal">Lorem Ipsum is simply dummy text of the printing</p>
       </div>
 
       {/* Stat Cards */}
@@ -181,21 +179,14 @@ export default function DemoDashboard() {
             ))}
           </div>
 
-          {/* <div className="flex items-center gap-3">
-            <input 
-              type="text" 
-              placeholder="Search orders..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-4 py-2 border border-gray-200 rounded-lg text-[13px] outline-none focus:border-gray-400"
-            />
+          <div className="flex items-center gap-3">
             <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50 whitespace-nowrap">
-              Sort By <ChevronDown size={16} className="text-gray-400" />
+              Short By <ChevronDown size={16} className="text-gray-400" />
             </button>
             <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50">
-              <Filter size={16} /> Filter
+              Filter <SlidersHorizontal size={14} />
             </button>
-          </div> */}
+          </div>
         </div>
 
         {/* Table */}
@@ -223,12 +214,14 @@ export default function DemoDashboard() {
                     <td className="px-5 py-5 text-[13px] text-gray-800">{order.orderNumber}</td>
                     <td className="px-5 py-5 text-[13px] text-gray-600">{order.paymentId || "N/A"}</td>
                     <td className="px-5 py-5 text-[13px] text-gray-800">${order.amount.toFixed(2)}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-600">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600">{new Date(order.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>
                     <td className="px-5 py-5">
-                      <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-[400] text-amber-600">
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                        {order.paymentMethod || "N/A"}
-                      </span>
+                      {order.paymentMethod ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-[400] text-amber-600">
+                          <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                          {order.paymentMethod}
+                        </span>
+                      ) : null}
                     </td>
 
                   <td className="px-5 py-5">
@@ -245,19 +238,21 @@ export default function DemoDashboard() {
                     </span>
                   </td>
                   <td className="px-5 py-5">
-                    <button className="rounded-[5px] bg-blue-600 px-3 py-1 text-[10px] font-[400] text-white shadow-sm hover:bg-blue-700 transition">
-                      Input Details
-                    </button>
+                    {order.status === "Complete" && (
+                      <button className="rounded-[5px] bg-[#1E3A8A] px-3 py-1.5 text-[10px] font-[500] text-white shadow-sm hover:bg-blue-900 transition">
+                        Input Details
+                      </button>
+                    )}
                   </td>
                     <td className="px-5 py-5">
                       {order.status !== "Complete" && (
                         <div className="flex flex-col gap-2">
-                        <select className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-slate-600 outline-none w-32">
-                            <option>Choose Method</option>
+                        <select className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-slate-600 outline-none w-32">
+                            <option>Choose Methods</option>
                             <option>Credit Card</option>
                             <option>PayPal</option>
                           </select>
-                          <button className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-[400] text-white transition w-32">Pay Now</button>
+                          <button className="rounded-[5px] bg-[#0084FF] px-3 py-1.5 text-[11px] font-[500] text-white transition w-32">Pay Now</button>
                         </div>
                       )}
                     </td>

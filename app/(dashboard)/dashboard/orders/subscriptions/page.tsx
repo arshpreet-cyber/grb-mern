@@ -38,7 +38,13 @@ export default function DemoDashboard() {
       })
       .catch((error) => {
         console.error("Error fetching plans:", error);
-        // Optional: Set fallback data or leave as empty array on error
+        // Fallback data
+        setActivePlans([
+          { id: "#1771509416", product: "Google Review", details: "$100/Monthly", duration: "30 Days", renewalDate: "27-04-2026", method: "Credit Card" },
+          { id: "#1771509416", product: "Google Review", details: "$100/Monthly", duration: "30 Days", renewalDate: "27-04-2026", method: "Credit Card" },
+          { id: "#1771509416", product: "Google Review", details: "$100/Monthly", duration: "30 Days", renewalDate: "27-04-2026", method: "Credit Card" },
+          { id: "#1771509416", product: "Google Review", details: "$100/Monthly", duration: "30 Days", renewalDate: "27-04-2026", method: "Credit Card" }
+        ]);
       })
       .finally(() => {
         setLoading(false);
@@ -120,14 +126,14 @@ export default function DemoDashboard() {
           {/* Billing Details Card */}
           <div className="bg-white rounded-[20px] border border-gray-100 shadow-sm p-6 lg:p-8">
             <h2 className="text-[18px] font-semibold text-gray-900">Billing Details</h2>
-            <p className="text-[14px] text-gray-500 mt-1 mb-8">Manage your billing information</p>
+            <p className="text-[14px] text-gray-500 mt-1 mb-8">Lorem Ipsum is simply dummy text</p>
 
             <h3 className="text-[16px] font-semibold text-gray-900 mb-3">Billing Address</h3>
             <div className="text-[14px] text-gray-600 leading-relaxed flex flex-col gap-4">
-              <p>Get Reviews Buzz</p>
+              <p>ABC Business Solutions, 456 Market Street, Sector 22, Gurugram,<br />Haryana 122015, India</p>
               <div>
                 <p><span className="font-semibold text-gray-800">Phone:</span> +91 98765 43210</p>
-                <p><span className="font-semibold text-gray-800">Email:</span> support@getreviews.buzz</p>
+                <p><span className="font-semibold text-gray-800">Email:</span> billing@example.com</p>
               </div>
             </div>
           </div>
@@ -141,8 +147,7 @@ export default function DemoDashboard() {
               <h2 className="text-[28px] md:text-[32px] font-medium text-black mb-4 tracking-tight">Upcoming Payment</h2>
               <p className="text-[15px] text-gray-800 leading-relaxed max-w-[280px] mb-8">
                 Your next subscription payment will be processed on <span className="font-semibold text-black">
-                  {/* Optional: Dynamically display the closest renewal date here */}
-                  {activePlans.length > 0 ? activePlans[0].renewalDate : "N/A"}
+                  15 Aug 2026
                 </span>. Please confirm your billing details.
               </p>
               <button className="bg-black text-white text-[14px] font-medium px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors w-max">
