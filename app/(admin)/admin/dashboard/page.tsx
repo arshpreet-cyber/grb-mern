@@ -65,6 +65,7 @@ interface Ticket {
   ticketId: string;
   title: string;
   status: string;
+  readStatus?: number | null;
   createdAt: string;
   updatedAt?: string;
   user?: { name: string; email: string };
@@ -146,11 +147,11 @@ export default function AdminDashboard() {
   ];
 
   const fallbackTickets: Ticket[] = [
-    { id: "1", ticketId: "TKT-10956", title: "Quality issue auto accounts", status: "Open", createdAt: new Date(Date.now() - 1*3600000).toISOString(), updatedAt: new Date(Date.now() - 1*3600000).toISOString(), user: { name: "John Doe", email: "john@example.com" } },
-    { id: "2", ticketId: "TKT-10985", title: "Review on order no. 177456031", status: "Open", createdAt: new Date(Date.now() - 3*3600000).toISOString(), updatedAt: new Date(Date.now() - 2*3600000).toISOString(), user: { name: "Jane Smith", email: "jane@example.com" } },
-    { id: "3", ticketId: "TKT-10944", title: "All reviews has disappeared", status: "Pending", createdAt: new Date(Date.now() - 1*86400000).toISOString(), updatedAt: new Date(Date.now() - 12*3600000).toISOString(), user: { name: "John Doe", email: "john@example.com" } },
-    { id: "4", ticketId: "TKT-10953", title: "Order Number - 177220728", status: "Open", createdAt: new Date(Date.now() - 2*86400000).toISOString(), updatedAt: new Date(Date.now() - 1*86400000).toISOString(), user: { name: "Jane Smith", email: "jane@example.com" } },
-    { id: "5", ticketId: "TKT-10952", title: "Order Number - 177361288", status: "Open", createdAt: new Date(Date.now() - 2*86400000).toISOString(), updatedAt: new Date(Date.now() - 1*86400000).toISOString(), user: { name: "John Doe", email: "john@example.com" } },
+    { id: "1", ticketId: "TKT-10956", title: "Quality issue auto accounts", status: "Open", readStatus: 1, createdAt: new Date(Date.now() - 1*3600000).toISOString(), updatedAt: new Date(Date.now() - 1*3600000).toISOString(), user: { name: "John Doe", email: "john@example.com" } },
+    { id: "2", ticketId: "TKT-10985", title: "Review on order no. 177456031", status: "Open", readStatus: 2, createdAt: new Date(Date.now() - 3*3600000).toISOString(), updatedAt: new Date(Date.now() - 2*3600000).toISOString(), user: { name: "Jane Smith", email: "jane@example.com" } },
+    { id: "3", ticketId: "TKT-10944", title: "All reviews has disappeared", status: "Pending", readStatus: 2, createdAt: new Date(Date.now() - 1*86400000).toISOString(), updatedAt: new Date(Date.now() - 12*3600000).toISOString(), user: { name: "John Doe", email: "john@example.com" } },
+    { id: "4", ticketId: "TKT-10953", title: "Order Number - 177220728", status: "Open", readStatus: 1, createdAt: new Date(Date.now() - 2*86400000).toISOString(), updatedAt: new Date(Date.now() - 1*86400000).toISOString(), user: { name: "Jane Smith", email: "jane@example.com" } },
+    { id: "5", ticketId: "TKT-10952", title: "Order Number - 177361288", status: "Open", readStatus: 2, createdAt: new Date(Date.now() - 2*86400000).toISOString(), updatedAt: new Date(Date.now() - 1*86400000).toISOString(), user: { name: "John Doe", email: "john@example.com" } },
   ];
 
   const fallbackCharts = {
@@ -469,6 +470,10 @@ export default function AdminDashboard() {
         headerRight={<Link href="/admin/tickets" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL</Link>}
         data={recentTickets}
         columns={ticketColumns}
+        rowClassName={(t) => {
+          const isUnread = t.readStatus === 1;
+          return isUnread ? "bg-amber-50/50 dark:bg-amber-900/20" : "";
+        }}
       />
 
       <DataTable<Order>

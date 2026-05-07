@@ -147,6 +147,7 @@ export async function GET(req: NextRequest) {
           title: "Quality issue auto accounts",
           query: "Issue with automated account generation",
           status: "Awaiting Reply",
+          readStatus: 1, // Unread
           createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
         },
         {
@@ -155,6 +156,7 @@ export async function GET(req: NextRequest) {
           title: "Review on order no. 177456031",
           query: "Customer asking about order status",
           status: "Open",
+          readStatus: 2, // Read
           createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
         },
         {
@@ -163,6 +165,7 @@ export async function GET(req: NextRequest) {
           title: "All reviews has disappeared",
           query: "Reviews not showing in dashboard",
           status: "Closed",
+          readStatus: 2, // Read
           createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         },
         {
@@ -171,6 +174,7 @@ export async function GET(req: NextRequest) {
           title: "Order Number - 177220728",
           query: "Payment processing issue",
           status: "Pending",
+          readStatus: 1, // Unread
           createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         },
         {
@@ -179,6 +183,7 @@ export async function GET(req: NextRequest) {
           title: "Order Number - 177361288",
           query: "Refund request for cancelled order",
           status: "Open",
+          readStatus: 2, // Read
           createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         },
         {
@@ -187,6 +192,7 @@ export async function GET(req: NextRequest) {
           title: "Login issues with email",
           query: "Cannot access account",
           status: "Awaiting Reply",
+          readStatus: 1, // Unread
           createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         },
       ];

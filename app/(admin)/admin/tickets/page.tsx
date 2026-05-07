@@ -10,6 +10,7 @@ type Ticket = {
   ticketNumber?: string | null;
   subject?: string | null;
   status: string;
+  readStatus?: number | null;
   user?: { name?: string | null; email?: string | null };
   createdAt: string;
   threads?: { direction: string; createdAt: string; id: number }[];
@@ -39,9 +40,14 @@ export default function AdminTicketsPage() {
       key: "ticketId",
       header: "Ticket",
       render: (t) => (
-        <span className="font-mono font-semibold text-gray-800 dark:text-white text-[13px]">
-          {t.ticketNumber ?? t.ticketId}
-        </span>
+        <div className="flex items-center gap-2">
+          {t.readStatus === 1 && (
+            <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" title="Unread" />
+          )}
+          <span className="font-mono font-semibold text-gray-800 dark:text-white text-[13px]">
+            {t.ticketNumber ?? t.ticketId}
+          </span>
+        </div>
       ),
     },
     {
@@ -133,8 +139,8 @@ export default function AdminTicketsPage() {
           searchPlaceholder="Search tickets..."
           pageSize={10}
           rowClassName={(t) => {
-            const isAwaitingAdmin = !t.threads || t.threads.length === 0 || t.threads[0].direction === "1";
-            return isAwaitingAdmin ? "bg-amber-50/50 dark:bg-amber-900/20" : "";
+            const isUnread = t.readStatus === 1;
+            return isUnread ? "bg-amber-50/50 dark:bg-amber-900/20" : "";
           }}
         />
       </div>
