@@ -1,15 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { SectionProps } from "@/types/section";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { updateSectionData } from "@/lib/redux/features/pageEditorSlice";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
 
 import "swiper/css";
-
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 const defaultReviews = [
   {
@@ -50,12 +51,16 @@ export default function Testimonials({
   settings,
   isEditing,
 }: SectionProps) {
-
   const dispatch = useAppDispatch();
+
+  const paginationRef = useRef(null);
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   const {
     heading = "Read Our <strong>Customer Reviews</strong>",
-    subheading = "Below are the advantages of buying Google reviews online, demonstrating how it improves your business profile:",
+    subheading =
+      "Below are the advantages of buying Google reviews online, demonstrating how it improves your business profile:",
     reviews = defaultReviews,
   } = data;
 
@@ -63,15 +68,10 @@ export default function Testimonials({
     dispatch(updateSectionData({ id, data: { [field]: value } }));
   };
 
-  const handleReviewChange = (
-    index: number,
-    field: string,
-    value: string
-  ) => {
+  const handleReviewChange = (index: number, field: string, value: string) => {
     const updated = reviews.map((r: any, i: number) =>
       i === index ? { ...r, [field]: value } : r
     );
-
     dispatch(updateSectionData({ id, data: { reviews: updated } }));
   };
 
@@ -79,7 +79,7 @@ export default function Testimonials({
     <section className="bg-gradient-to-b from-[#FEFEFC] to-[#FDFCF2] py-20 px-6">
       <div className="max-w-[1500px] mx-auto text-center">
 
-        {/* Heading */}
+        {/* HEADING */}
         {isEditing ? (
           <input
             className="text-4xl font-semibold text-gray-900 w-full text-center outline-none border-b border-dashed border-[#fc0] bg-transparent mb-2"
@@ -93,7 +93,7 @@ export default function Testimonials({
           />
         )}
 
-        {/* Subheading */}
+        {/* SUBHEADING */}
         {isEditing ? (
           <textarea
             className="mt-4 text-gray-600 max-w-2xl mx-auto w-full text-center outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none"
@@ -108,42 +108,55 @@ export default function Testimonials({
         )}
 
         {/* SWIPER */}
-        <div className="mt-14">
+        <div className="relative mt-14">
 
           <Swiper
+            modules={[Autoplay, Pagination, Navigation]}
             spaceBetween={24}
             slidesPerView={1}
+            loop={true}
             autoplay={{
               delay: 3000,
               disableOnInteraction: false,
             }}
+
             pagination={{
               clickable: true,
+              el: paginationRef.current,
+              bulletClass:
+                "swiper-pagination-bullet !w-8 !h-[6px] !rounded-full !bg-gray-300 !opacity-100 transition-all",
+              bulletActiveClass:
+                "swiper-pagination-bullet-active !bg-black !w-10",
             }}
-            loop={true}
-            breakpoints={{
-              768: {
-                slidesPerView: 2,
-              },
-              1024: {
-                slidesPerView: 3,
-              },
-            }}
-            className="testimonialSwiper pb-14"
-          >
 
+            navigation={{
+              prevEl: prevRef.current,
+              nextEl: nextRef.current,
+            }}
+
+            onBeforeInit={(swiper: any) => {
+              swiper.params.pagination.el = paginationRef.current;
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+            }}
+
+            breakpoints={{
+              768: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            }}
+
+            className="pb-16"
+          >
             {reviews.map((item: any, i: number) => (
               <SwiperSlide key={i} className="h-auto">
 
-                {/* ORIGINAL CARD STYLE */}
+                {/* CARD (UNCHANGED STYLE) */}
                 <div className="bg-white rounded-2xl p-6 border border-gray-200 text-left shadow-sm h-full flex flex-col">
 
-                  {/* Stars */}
                   <div className="text-yellow-400 text-lg mb-3">
                     ★★★★★
                   </div>
 
-                  {/* Review Text */}
                   {isEditing ? (
                     <textarea
                       className="text-gray-700 leading-relaxed w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none flex-1"
@@ -159,64 +172,43 @@ export default function Testimonials({
                     </p>
                   )}
 
-                  {/* User */}
                   <div className="mt-5">
-
-                    {isEditing ? (
-                      <>
-                        <input
-                          className="font-semibold text-gray-900 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent"
-                          value={item.name}
-                          onChange={(e) =>
-                            handleReviewChange(i, "name", e.target.value)
-                          }
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="w-5 h-5 text-green-600"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 2l2.2 2.5 3.3-.5 1.2 3.1 3.1 1.2-.5 3.3L22 12l-2.5 2.2.5 3.3-3.1 1.2-1.2 3.1-3.3-.5L12 22l-2.2-2.5-3.3.5-1.2-3.1-3.1-1.2.5-3.3L2 12l2.5-2.2-.5-3.3 3.1-1.2 1.2-3.1 3.3.5L12 2z" />
+                        <path
+                          d="M9.5 12.5l1.5 1.5 3-3"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="2"
                         />
+                      </svg>
 
-                        <input
-                          className="text-sm text-gray-500 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent mt-1"
-                          value={item.date}
-                          onChange={(e) =>
-                            handleReviewChange(i, "date", e.target.value)
-                          }
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">
+                        {item.name}
+                      </p>
+                    </div>
 
-                          <svg
-                            className="w-5 h-5 text-green-600"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                          >
-                            <path d="M12 2l2.2 2.5 3.3-.5 1.2 3.1 3.1 1.2-.5 3.3L22 12l-2.5 2.2.5 3.3-3.1 1.2-1.2 3.1-3.3-.5L12 22l-2.2-2.5-3.3.5-1.2-3.1-3.1-1.2.5-3.3L2 12l2.5-2.2-.5-3.3 3.1-1.2 1.2-3.1 3.3.5L12 2z" />
-
-                            <path
-                              d="M9.5 12.5l1.5 1.5 3-3"
-                              fill="none"
-                              stroke="white"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-
-                          <p className="font-semibold text-gray-900">
-                            {item.name}
-                          </p>
-                        </div>
-
-                        <p className="text-sm text-gray-500 ml-0">
-                          {item.date}
-                        </p>
-                      </>
-                    )}
+                    <p className="text-sm text-gray-500">
+                      {item.date}
+                    </p>
                   </div>
-                </div>
 
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
+
+          {/* PAGINATION */}
+          <div
+            ref={paginationRef}
+            className="flex justify-center gap-2 mt-8"
+          ></div>
+
         </div>
       </div>
     </section>
