@@ -9,6 +9,7 @@ type Ticket = {
   ticketNumber?: string | null;
   subject?: string | null;
   status: string;
+  readStatus?: number | null;
 };
 
 export default function AdminTicketThreadPage() {
@@ -27,7 +28,17 @@ export default function AdminTicketThreadPage() {
         if (!response.ok) throw new Error("Ticket not found");
         return response.json();
       })
-      .then((data) => setTicket(data))
+      .then((data) => {
+        setTicket(data);
+        // Mark as read if currently unread (1)
+        if (data.readStatus === 1) {
+          fetch(`/api/support/tickets/${ticketId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ readStatus: 2 }),
+          }).catch(console.error);
+        }
+      })
       .catch((err) => {
         console.error(err);
         setError("Unable to load ticket details.");

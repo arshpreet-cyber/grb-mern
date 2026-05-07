@@ -88,6 +88,13 @@ nextApp.prepare().then(async () => {
         });
         console.log(`[SOCKET] Created message ${message.id} for ticket ${ticketId}.`);
 
+        // Update ticket read status based on direction
+        // direction "1" = User (mark unread for admin), direction "2" = Admin (mark read)
+        await prisma.ticket.update({
+          where: { ticketId },
+          data: { readStatus: String(message.direction) === "1" ? 1 : 2 }
+        }).catch(err => console.error("[SOCKET] Failed to update ticket readStatus:", err));
+
         // Sync to Zoho Desk in the background (non-blocking)
         syncMessageToZoho(ticketId, content.trim(), !!agentId).catch((syncError) => {
           console.error(`[SOCKET] Background Zoho sync failed for message ${message.id}:`, syncError);
