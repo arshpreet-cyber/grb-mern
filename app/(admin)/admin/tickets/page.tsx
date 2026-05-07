@@ -12,6 +12,7 @@ type Ticket = {
   status: string;
   user?: { name?: string | null; email?: string | null };
   createdAt: string;
+  threads?: { direction: string; createdAt: string; id: number }[];
 };
 
 export default function AdminTicketsPage() {
@@ -60,6 +61,18 @@ export default function AdminTicketsPage() {
           {t.user?.name || t.user?.email || "Anonymous"}
         </span>
       ),
+    },
+    {
+      key: "replyStatus",
+      header: "Reply Status",
+      render: (t) => {
+        const isAwaitingAdmin = !t.threads || t.threads.length === 0 || t.threads[0].direction === "1";
+        if (isAwaitingAdmin) {
+          return <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Awaiting Admin Reply</span>;
+        } else {
+          return <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Admin Replied</span>;
+        }
+      },
     },
     {
       key: "status",
@@ -119,6 +132,10 @@ export default function AdminTicketsPage() {
           searchable
           searchPlaceholder="Search tickets..."
           pageSize={10}
+          rowClassName={(t) => {
+            const isAwaitingAdmin = !t.threads || t.threads.length === 0 || t.threads[0].direction === "1";
+            return isAwaitingAdmin ? "bg-amber-50/50 dark:bg-amber-900/20" : "";
+          }}
         />
       </div>
     </div>

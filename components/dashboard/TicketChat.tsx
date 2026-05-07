@@ -188,17 +188,16 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
       {/* ── Messages ── */}
       <div className="flex-1 overflow-y-auto bg-slate-50/60 dark:bg-[#0f1117] px-4 py-6 space-y-3 scroll-smooth">
 
-        {/* Original ticket query — Customer → LEFT */}
+        {/* Original ticket query */}
         {ticket?.query && (
-          <div className="flex items-end gap-2.5 mb-4">
-            {/* Avatar on LEFT */}
-            <Avatar isAgent={false} />
-            <div className="max-w-[70%] flex flex-col items-start">
+          <div className={`flex items-end gap-2.5 mb-4 ${!isAdmin ? 'justify-end' : ''}`}>
+            {isAdmin && <Avatar isAgent={false} />}
+            <div className={`max-w-[70%] flex flex-col ${!isAdmin ? 'items-end' : 'items-start'}`}>
               <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#b38a00" }}>
-                {customerName}
+                {!isAdmin ? "You" : customerName}
               </span>
               <div
-                className="rounded-2xl rounded-bl-sm px-4 py-3 text-sm leading-relaxed text-[#111] font-medium"
+                className={`rounded-2xl ${!isAdmin ? 'rounded-br-sm' : 'rounded-bl-sm'} px-4 py-3 text-sm leading-relaxed text-[#111] font-medium`}
                 style={{ background: "#ffcc00", boxShadow: "0 4px 16px rgba(255,204,0,0.25)" }}
               >
                 {ticket.query}
@@ -209,6 +208,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
                 <span className="font-semibold" style={{ color: "#b38a00" }}>Original Request</span>
               </p>
             </div>
+            {!isAdmin && <Avatar isAgent={false} />}
           </div>
         )}
 
@@ -224,7 +224,8 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
 
             {dayMessages.map((message, idx) => {
               // direction "2" = Agent/Admin, direction "1" = Customer
-              const isAgent = String(message.direction) === "2";
+              const isAgentMsg = String(message.direction) === "2";
+              const isMine = isAdmin ? isAgentMsg : !isAgentMsg;
 
               const isSameDir = (m: TicketMessage) => String(m.direction) === String(message.direction);
               const isFirst = idx === 0 || !isSameDir(dayMessages[idx - 1]);
@@ -233,72 +234,73 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
               // Bubble corner rounding
               const corners = (() => {
                 if (isFirst && isLast) return "rounded-2xl";
-                if (!isAgent) {
-                  // Customer LEFT: flat corners on left side
+                if (!isMine) {
+                  // OTHER PERSON message: flat corners on left side
                   if (isFirst) return "rounded-2xl rounded-bl-sm";
                   if (isLast)  return "rounded-2xl rounded-tl-sm rounded-bl-sm";
                   return "rounded-r-2xl rounded-l-sm";
                 } else {
-                  // Agent RIGHT: flat corners on right side
+                  // MY message: flat corners on right side
                   if (isFirst) return "rounded-2xl rounded-br-sm";
                   if (isLast)  return "rounded-2xl rounded-tr-sm rounded-br-sm";
                   return "rounded-l-2xl rounded-r-sm";
                 }
               })();
 
-              if (!isAgent) {
-                // ── CUSTOMER message: Avatar LEFT, Bubble RIGHT-of-avatar, row left-aligned ──
+              const bubbleClasses = !isAgentMsg 
+                ? `${corners} px-4 py-2.5 text-sm leading-relaxed font-medium text-[#111]`
+                : `${corners} px-4 py-2.5 text-sm leading-relaxed bg-white dark:bg-[#1c1f2e] text-slate-800 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700/50 shadow-sm`;
+
+              const bubbleStyle = !isAgentMsg 
+                ? { background: "#ffcc00", boxShadow: "0 3px 12px rgba(255,204,0,0.2)" } 
+                : {};
+
+              if (!isMine) {
+                // ── OTHER PERSON message: Avatar LEFT, Bubble RIGHT-of-avatar, row left-aligned ──
                 return (
                   <div key={message.id} className="flex items-end gap-2.5">
-                    {/* Avatar slot: always reserve space, only render on last */}
                     <div className="w-9 shrink-0 flex justify-center">
-                      {isLast && <Avatar isAgent={false} />}
+                      {isLast && <Avatar isAgent={isAgentMsg} />}
                     </div>
                     <div className="max-w-[68%] flex flex-col items-start">
                       {isFirst && (
-                        <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#b38a00" }}>
-                          {customerName}
+                        <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider" style={isAgentMsg ? { color: "#94a3b8" } : { color: "#b38a00" }}>
+                          {isAgentMsg ? "Support Agent" : customerName}
                         </span>
                       )}
-                      <div
-                        className={`${corners} px-4 py-2.5 text-sm leading-relaxed font-medium text-[#111]`}
-                        style={{ background: "#ffcc00", boxShadow: "0 3px 12px rgba(255,204,0,0.2)" }}
-                      >
+                      <div className={bubbleClasses} style={bubbleStyle}>
                         <p className="whitespace-pre-wrap">{message.content}</p>
                       </div>
                       {isLast && (
                         <p className="mt-1 px-1 text-[10px] font-medium text-slate-400 dark:text-slate-600">
                           {formatTime(message.createdAt)}
+                          {isAgentMsg && <span className="ml-1 font-semibold" style={{ color: "#b38a00" }}>· Agent</span>}
                         </p>
                       )}
                     </div>
                   </div>
                 );
               } else {
-                // ── AGENT message: Bubble LEFT-of-avatar, Avatar RIGHT, row right-aligned ──
+                // ── MY message: Bubble LEFT-of-avatar, Avatar RIGHT, row right-aligned ──
                 return (
                   <div key={message.id} className="flex items-end gap-2.5 justify-end">
                     <div className="max-w-[68%] flex flex-col items-end">
                       {isFirst && (
                         <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                          {isAdmin ? "You (Agent)" : "Support Agent"}
+                          {isAgentMsg ? "You (Agent)" : "You"}
                         </span>
                       )}
-                      <div
-                        className={`${corners} px-4 py-2.5 text-sm leading-relaxed bg-white dark:bg-[#1c1f2e] text-slate-800 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700/50 shadow-sm`}
-                      >
+                      <div className={bubbleClasses} style={bubbleStyle}>
                         <p className="whitespace-pre-wrap">{message.content}</p>
                       </div>
                       {isLast && (
                         <p className="mt-1 px-1 text-[10px] font-medium text-slate-400 dark:text-slate-600">
                           {formatTime(message.createdAt)}
-                          {!isAdmin && <span className="ml-1 font-semibold" style={{ color: "#b38a00" }}>· Agent</span>}
                         </p>
                       )}
                     </div>
-                    {/* Avatar slot: always reserve space, only render on last */}
                     <div className="w-9 shrink-0 flex justify-center">
-                      {isLast && <Avatar isAgent={true} />}
+                      {isLast && <Avatar isAgent={isAgentMsg} />}
                     </div>
                   </div>
                 );
