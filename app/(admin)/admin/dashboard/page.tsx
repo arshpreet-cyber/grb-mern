@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import {
   AreaChart,
   Area,
@@ -70,12 +71,12 @@ interface Ticket {
 }
 
 // Helper for Stat Card
-function StatCard({ title, value, change, bg, text, pillBg, isDown }: { title: string; value: string | number; change: string; bg: string; text: string; pillBg: string; isDown?: boolean }) {
+function StatCard({ title, value, change, bg, text, pillBg, isDown, href }: { title: string; value: string | number; change: string; bg: string; text: string; pillBg: string; isDown?: boolean; href?: string }) {
   // Extracting the tailwind background class to derive a dark mode background
   const darkBg = "dark:bg-slate-800/40";
   
-  return (
-    <div className={`relative overflow-hidden rounded-[16px] bg-white dark:bg-[#1a1f2c] border border-[#f0f0f0] dark:border-slate-800 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-colors`}>
+  const content = (
+    <div className={`relative overflow-hidden rounded-[16px] bg-white dark:bg-[#1a1f2c] border border-[#f0f0f0] dark:border-slate-800 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:shadow-md ${href ? 'cursor-pointer hover:border-gray-300 dark:hover:border-slate-600' : ''}`}>
       <div className="p-5 pb-4">
         <div className="flex items-center justify-between">
           <p className={`text-[14px] font-semibold ${text}`}>{title}</p>
@@ -94,6 +95,12 @@ function StatCard({ title, value, change, bg, text, pillBg, isDown }: { title: s
       </div>
     </div>
   );
+
+  if (href) {
+    return <Link href={href}>{content}</Link>;
+  }
+
+  return content;
 }
 
 export default function AdminDashboard() {
@@ -309,10 +316,10 @@ export default function AdminDashboard() {
 
       {/* Stats Cards */}
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Total Revenue" value={`$${revenue.allTime.toLocaleString()}`} change="12.5%" bg="bg-[#FCF3E8]" pillBg="bg-[#AF670F]" text="text-[#AF670F]" />
-        <StatCard title="Total Orders" value={stats.totalOrders.toLocaleString()} change="08.3%" bg="bg-[#F2F6FE]" pillBg="bg-[#285FF5]" text="text-[#285FF5]" />
-        <StatCard title="Total Users" value={stats.totalUsers.toLocaleString()} change="15.2%" bg="bg-[#EEFAEB]" pillBg="bg-[#54CE12]" text="text-[#54CE12]" />
-        <StatCard title="Total Tickets" value={(stats.openTickets + stats.closedTickets + stats.awaitingTickets).toLocaleString()} change="03.6%" bg="bg-[#F4EBFE]" pillBg="bg-[#9B52F0]" text="text-[#9B52F0]" isDown />
+        <StatCard title="Total Revenue" value={`$${revenue.allTime.toLocaleString()}`} change="12.5%" bg="bg-[#FCF3E8]" pillBg="bg-[#AF670F]" text="text-[#AF670F]" href="/admin/orders" />
+        <StatCard title="Total Orders" value={stats.totalOrders.toLocaleString()} change="08.3%" bg="bg-[#F2F6FE]" pillBg="bg-[#285FF5]" text="text-[#285FF5]" href="/admin/orders" />
+        <StatCard title="Total Users" value={stats.totalUsers.toLocaleString()} change="15.2%" bg="bg-[#EEFAEB]" pillBg="bg-[#54CE12]" text="text-[#54CE12]" href="/admin/users" />
+        <StatCard title="Total Tickets" value={(stats.openTickets + stats.closedTickets + stats.awaitingTickets).toLocaleString()} change="03.6%" bg="bg-[#F4EBFE]" pillBg="bg-[#9B52F0]" text="text-[#9B52F0]" isDown href="/admin/tickets" />
       </div>
 
       {/* Charts Row 1 */}
@@ -321,7 +328,7 @@ export default function AdminDashboard() {
         <div className="rounded-[16px] bg-white dark:bg-[#1a1f2c] border border-[#f0f0f0] dark:border-slate-800 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-colors">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-[16px] font-bold text-[#111827] dark:text-white">Earnings Overview</h2>
-            <button className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW DETAILS</button>
+            <Link href="/admin/orders" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW DETAILS</Link>
           </div>
           <div className="h-72 mt-2">
             <ResponsiveContainer width="100%" height="100%">
@@ -352,7 +359,7 @@ export default function AdminDashboard() {
         <div className="rounded-[16px] bg-white dark:bg-[#1a1f2c] border border-[#f0f0f0] dark:border-slate-800 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col transition-colors">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-[16px] font-bold text-[#111827] dark:text-white">Order Overview</h2>
-            <button className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW DETAILS</button>
+            <Link href="/admin/orders" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW DETAILS</Link>
           </div>
           <div className="flex-1 flex flex-row items-center justify-center gap-6 md:gap-10">
             <div className="h-52 w-52 relative flex items-center justify-center shrink-0">
@@ -392,7 +399,7 @@ export default function AdminDashboard() {
         <div className="rounded-[16px] bg-white dark:bg-[#1a1f2c] border border-[#f0f0f0] dark:border-slate-800 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-colors">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-[16px] font-bold text-[#111827] dark:text-white">Users Overview</h2>
-            <button className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW DETAILS</button>
+            <Link href="/admin/users" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW DETAILS</Link>
           </div>
           <div className="h-72 mt-2">
             <ResponsiveContainer width="100%" height="100%">
@@ -414,7 +421,7 @@ export default function AdminDashboard() {
         <div className="rounded-[16px] bg-white dark:bg-[#1a1f2c] border border-[#f0f0f0] dark:border-slate-800 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-colors">
           <div className="mb-8 flex items-center justify-between">
             <h2 className="text-[18px] font-bold text-[#111827] dark:text-white">Top Selling Product</h2>
-            <button className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW DETAILS</button>
+            <Link href="/admin/products" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW DETAILS</Link>
           </div>
           <div className="space-y-8">
             {charts.topProducts.map((p, i) => (
@@ -459,14 +466,14 @@ export default function AdminDashboard() {
       {/* Tables */}
       <DataTable<Ticket>
         title="Recent Ticket"
-        headerRight={<button className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL</button>}
+        headerRight={<Link href="/admin/tickets" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL</Link>}
         data={recentTickets}
         columns={ticketColumns}
       />
 
       <DataTable<Order>
         title="Recent Order Details"
-        headerRight={<button className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL ORDERS</button>}
+        headerRight={<Link href="/admin/orders" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL ORDERS</Link>}
         data={recentOrders}
         columns={orderColumns}
         actions={orderActions}
