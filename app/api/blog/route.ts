@@ -44,6 +44,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get('status');
+    const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
 
@@ -51,6 +52,14 @@ export async function GET(req: Request) {
 
     if (statusParam && statusParam !== 'all') {
       where.status = parseInt(statusParam);
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { content: { contains: search, mode: 'insensitive' } },
+        { excerpt: { contains: search, mode: 'insensitive' } },
+      ];
     }
 
     const blogs = await prisma.blog.findMany({
