@@ -80,11 +80,13 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
   const savePage = async (publish = false) => {
     dispatch(setIsSaving(true));
     try {
-      console.log(`Updating page: ${slug}`, { title, publish, sectionCount: sections?.length });
-      const response = await fetch(`/api/page/${slug}`, {
+      const pageSlug = slug || initialPage.slug;
+      const pageId = id || initialPage.id;
+      console.log(`Updating page: ${pageSlug}`, { title, publish, sectionCount: sections?.length });
+      const response = await fetch(`/api/page/${pageSlug}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, sections: serializeData(sections), title, publish }),
+        body: JSON.stringify({ id: pageId, sections: serializeData(sections), title, publish }),
       });
       if (!response.ok) {
         let errorMessage = 'Failed to save';

@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import Wrapper from "@/components/ui/Wrapper";
 import products from "@/lib/constants/products";
 import type { Product } from "@/lib/constants/products";
+import { useRouter } from "next/navigation";
 
 
 export function ProductCard({
@@ -18,6 +19,7 @@ export function ProductCard({
   onSelect: (mode: "onetime" | "monthly") => void;
 }) {
   const { addItem } = useCart();
+  const router = useRouter();
   const [added, setAdded] = useState(false);
 
   const isMonthly = selectedMode === "monthly";
@@ -44,6 +46,7 @@ export function ProductCard({
   return (
     <li
       className={`relative bg-[#FDFCF2] rounded-[16px] p-[24px] flex flex-col font-sans cursor-pointer transform-gpu transition-shadow duration-200 w-full h-auto ${product.badge === "Most Popular" ? "most-popular-card" : ""}`}
+      onClick={() => router.push(`/${product.id}`)}
       style={{
         border: "2px solid transparent",
         backgroundImage:
