@@ -36,7 +36,7 @@ export default function SectionSelector({ onSelect, onClose }: SectionSelectorPr
           </button>
         </div>
         
-        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-[65vh]">
           {options.map((opt) => (
             <button
               key={opt.type}
