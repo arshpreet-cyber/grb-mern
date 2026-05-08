@@ -131,21 +131,21 @@ export default function HomeFooter() {
 
               <ul className="space-y-4 text-[#bdbdbd] text-[14px]">
                 {[
-                  "Google-reviews",
-                  "Google Local Guide",
-                  "TrustPilot",
-                  "Glassdoor Reviews",
-                  "Facebook Reviews",
-                  "Thumbtack Reviews",
-                  "BBB Reviews",
-                  "Indeed Reviews",
+                  { label: "Google Reviews", href: "/google-reviews" },
+                  { label: "Google Local Guide", href: "/google-local-guide" },
+                  { label: "TrustPilot", href: "/trustpilot-reviews" },
+                  { label: "Glassdoor Reviews", href: "/glassdoor-reviews" },
+                  { label: "Facebook Reviews", href: "/facebook-reviews" },
+                  { label: "Thumbtack Reviews", href: "/thumbtack-reviews" },
+                  { label: "BBB Reviews", href: "/bbb-reviews" },
+                  { label: "Indeed Reviews", href: "/indeed-reviews" },
                 ].map((item) => (
-                  <li key={item}>
+                  <li key={item.label}>
                     <Link
-                      href="#"
+                      href={item.href}
                       className="hover:text-[#f5c518] transition"
                     >
-                      {item}
+                      {item.label}
                     </Link>
                   </li>
                 ))}
@@ -160,18 +160,18 @@ export default function HomeFooter() {
 
               <ul className="space-y-4 text-[#bdbdbd] text-[14px]">
                 {[
-                  "Help",
-                  "Login / signup",
-                  "Contact",
-                  "Privacy Policy",
-                  "Terms & Conditions",
+                  { label: "Help", href: "/help" },
+                  { label: "Login / Signup", href: "/login" },
+                  { label: "Contact", href: "/contact" },
+                  { label: "Privacy Policy", href: "/privacy-policy" },
+                  { label: "Terms & Conditions", href: "/terms-and-conditions" },
                 ].map((item) => (
-                  <li key={item}>
+                  <li key={item.label}>
                     <Link
-                      href="#"
+                      href={item.href}
                       className="hover:text-[#f5c518] transition"
                     >
-                      {item}
+                      {item.label}
                     </Link>
                   </li>
                 ))}

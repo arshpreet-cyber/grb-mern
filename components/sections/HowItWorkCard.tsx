@@ -34,10 +34,10 @@ const defaultSteps = [
 
 // Scattered default positions to match your image
 const defaultPositions = [
-  "-rotate-8 translate-y-4",
-  "rotate-10 -translate-y-0",
-  "-rotate-8 translate-y-4",
-  "rotate-10 translate-y-4",
+  "lg:-rotate-8 lg:translate-y-4",
+  "lg:rotate-10 lg:-translate-y-0",
+  "lg:-rotate-8 lg:translate-y-4",
+  "lg:rotate-10 lg:translate-y-4",
 ];
 
 export default function HowItWorks({ id, data = {}, settings, isEditing }: SectionProps) {

@@ -91,7 +91,7 @@ export default function HeroSection({ id, data = {}, settings, isEditing }: Sect
 
       {/* Floating Image Icons */}
       {icons.map((icon: any, i: number) => (
-        <div key={i} className={`absolute ${icon.className} icon-circle`}>
+        <div key={i} className={`absolute ${icon.className} icon-circle hidden lg:block`}>
           {isEditing ? (
             <input
               className="text-[10px] w-24 outline-none border border-dashed border-[#fc0] bg-white/80 rounded px-1"

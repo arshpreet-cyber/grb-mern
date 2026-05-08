@@ -181,11 +181,11 @@ function AllPagesTab({
                         className="rounded-lg bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 transition">
                         ✏ Edit
                       </button>
-                      <a href={`/${page.slug}?edit=true`} target="_blank" rel="noreferrer"
+                      <a href={`/admin/pages/editor/${page.id}`}
                         className="rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition">
                         🎨 Visual Editor
                       </a>
-                      <a href={`https://grb-mern-gilt.vercel.app/${page.slug}`} target="_blank" rel="noreferrer"
+                      <a href={`/${page.slug === 'home' ? '' : page.slug}`} target="_blank" rel="noreferrer"
                         className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
                         👁 View
                       </a>

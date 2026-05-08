@@ -40,12 +40,21 @@ export default async function SlugPage({
 }) {
   const { slug } = await params;
   const { edit, preview } = await searchParams;
-  const page = await getPageBySlug(slug);
-
-  if (!page) notFound();
-
   const isEditMode = edit === 'true';
   const isPreviewMode = preview === 'true';
+  const page = await getPageBySlug(slug);
+
+  if (!page) {
+    if (isEditMode) {
+      return (
+        <div className="flex h-screen items-center justify-center flex-col gap-4">
+          <p className="text-xl font-bold text-gray-700">Page not found in database.</p>
+          <p className="text-sm text-gray-500">Slug: <code>{slug}</code></p>
+        </div>
+      );
+    }
+    notFound();
+  }
 
   if (isEditMode) {
     return <EditorWrapper initialPage={page} />;

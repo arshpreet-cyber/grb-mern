@@ -33,7 +33,7 @@ export default function ReviewsSection({ id, data = {}, settings, isEditing }: S
 
   return (
     <section className="bg-[#fff] py-20 px-10">
-      <div className="max-w-[1500] mx-auto">
+      <div className="max-w-[1400] mx-auto">
 
         {/* Top Content */}
         <div className="flex flex-col lg:flex-row justify-between items-start mb-16 gap-8">
@@ -63,7 +63,7 @@ export default function ReviewsSection({ id, data = {}, settings, isEditing }: S
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1400] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1200] mx-auto">
           {steps.map((item: any, index: number) => (
             <div
               key={index}
