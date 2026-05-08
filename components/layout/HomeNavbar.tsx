@@ -155,10 +155,10 @@ export default function HomeNavbar() {
               <Link href="/about-us/" className={`${navLinkClass(isActive("/about-us"))} ${activeUnderline(isActive("/about-us"))}`}>
                 About
               </Link>
-              <Link href="/blog" className={`${navLinkClass(isActive("/blog"))} ${activeUnderline(isActive("/blog"))}`}>
+              <Link href="/blog/" className={`${navLinkClass(isActive("/blog"))} ${activeUnderline(isActive("/blog"))}`}>
                 Blog
               </Link>
-              <Link href="#" className={`${navLinkClass(false)} ${activeUnderline(false)}`}>
+              <Link href="/review-rating-calculator/" className={`${navLinkClass(isActive("/review-rating-calculator"))} ${activeUnderline(isActive("/review-rating-calculator"))}`}>
                 Tools
               </Link>
             </nav>
@@ -315,10 +315,10 @@ export default function HomeNavbar() {
               <Link href="/about-us/" className="text-[#212121] text-base font-medium" onClick={() => setMobileOpen(false)}>About</Link>
             </li>
             <li className="px-5 py-3">
-              <Link href="/blog" className="text-[#212121] text-base font-medium" onClick={() => setMobileOpen(false)}>Blog</Link>
+              <Link href="/blog/" className="text-[#212121] text-base font-medium" onClick={() => setMobileOpen(false)}>Blog</Link>
             </li>
             <li className="px-5 py-3">
-              <Link href="#" className="text-[#212121] text-base font-medium" onClick={() => setMobileOpen(false)}>Tools</Link>
+              <Link href="/review-rating-calculator/" className="text-[#212121] text-base font-medium" onClick={() => setMobileOpen(false)}>Tools</Link>
             </li>
             {session ? (
               <>

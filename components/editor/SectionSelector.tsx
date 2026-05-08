@@ -24,6 +24,9 @@ export default function SectionSelector({ onSelect, onClose }: SectionSelectorPr
     { type: 'customer-reviews', label: 'Customer Reviews', icon: <MessageSquare />, description: 'A slider showcasing customer reviews' },
     { type: 'steps', label: 'Steps Section', icon: <BarChart3 />, description: 'A section showcasing steps or processes' },
     { type: 'cta-product', label: 'CTA Product', icon: <Megaphone />, description: 'A call-to-action section for products' },
+    { type: 'rating-calculator', label: 'Rating Calculator', icon: <BarChart3 />, description: 'A review rating calculator hero section' },
+    { type: 'rating-stats-bar', label: 'Rating Stats Bar', icon: <BarChart3 />, description: 'Industry statistics for reviews' },
+    { type: 'rating-cta', label: 'Rating CTA', icon: <Megaphone />, description: 'A specialized CTA section for ratings' },
   ];
 
   return (

@@ -18,6 +18,9 @@ import HowItWorkCard from './HowItWorkCard';
 import CustomerReviews from './CustomerReviews';
 import steps from './steps';
 import CTAProduct from './CTAProduct';
+import RatingCalculator from './RatingCalculator';
+import RatingStatsBar from './RatingStatsBar';
+import RatingCTA from './RatingCTA';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -40,6 +43,9 @@ const sectionMap: Record<string, React.FC<any>> = {
   'customer-reviews': CustomerReviews,
   'steps': steps,
   'cta-product': CTAProduct,
+  'rating-calculator': RatingCalculator,
+  'rating-stats-bar': RatingStatsBar,
+  'rating-cta': RatingCTA,
 };
 
 interface PageRendererProps {
