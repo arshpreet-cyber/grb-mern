@@ -41,9 +41,18 @@ export async function PUT(
       console.log(`[API] SAVING DRAFT: ${slug}`);
     }
 
-    const updatedPage = await prisma.page.update({
-      where: { id: id || undefined, slug: !id ? slug : undefined },
-      data: JSON.parse(JSON.stringify(updateData, (k, v) => typeof v === 'bigint' ? v.toString() : v))
+    const updatedPage = await prisma.page.upsert({
+      where: { slug },
+      update: JSON.parse(JSON.stringify(updateData, (k, v) => typeof v === 'bigint' ? v.toString() : v)),
+      create: {
+        slug,
+        title: updateData.title,
+        sections: publish ? updateData.sections : [],
+        draftSections: updateData.draftSections,
+        status: publish ? 'Published' : 'Draft',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
     });
 
     // Only revalidate the public path if we are publishing live
