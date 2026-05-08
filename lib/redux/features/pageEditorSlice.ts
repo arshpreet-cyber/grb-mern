@@ -17,6 +17,7 @@ export interface SectionSettings {
   contentSize?: string;
   contentWeight?: string;
   borderRadius?: string;
+  statColor?: string;
 }
 
 export interface Section {
