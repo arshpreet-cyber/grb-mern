@@ -16,7 +16,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params;
     const body = await req.json();
-    const page = await prisma.page.update({ where: { id }, data: body });
+    const { draftSections, createdAt, updatedAt, ...safeData } = body;
+    const page = await prisma.page.update({ where: { id }, data: safeData });
     return NextResponse.json(page);
   } catch {
     return NextResponse.json({ error: "Failed to update page" }, { status: 500 });

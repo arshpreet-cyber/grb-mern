@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Wrapper from "@/components/ui/Wrapper";
 import { SectionProps } from '@/types/section';
 
-export default function FaqSection({ data, settings }: SectionProps) {
+export default function FaqSection({ data = {}, settings = {} as any }: SectionProps) {
   const {
     title = "Frequently <strong class='font-semibold'>Asked<br />Questions</strong>",
     description = "Find clear answers to common questions about our services, process, and delivery timelines, and how we support your online reputation.",
