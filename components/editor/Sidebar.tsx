@@ -319,26 +319,46 @@ export default function Sidebar() {
                 />
               </div>
               <div className="space-y-4 pt-4">
-                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Questions & Answers</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Questions & Answers</label>
+                  <button 
+                    onClick={() => {
+                      const newFaqs = [...(selectedSection.data.faqs || []), { q: 'New Question', a: 'New Answer' }];
+                      handleDataChange('faqs', newFaqs);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Question
+                  </button>
+                </div>
                 {(selectedSection.data.faqs || []).map((faq: any, idx: number) => (
-                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button 
+                      onClick={() => {
+                        const newFaqs = selectedSection.data.faqs.filter((_: any, i: number) => i !== idx);
+                        handleDataChange('faqs', newFaqs);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
                     <input 
                       type="text"
                       placeholder="Question"
-                      value={faq.question || ''}
+                      value={faq.q || ''}
                       onChange={(e) => {
                         const newFaqs = [...selectedSection.data.faqs];
-                        newFaqs[idx] = { ...newFaqs[idx], question: e.target.value };
+                        newFaqs[idx] = { ...newFaqs[idx], q: e.target.value };
                         handleDataChange('faqs', newFaqs);
                       }}
                       className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
                     />
                     <textarea 
                       placeholder="Answer"
-                      value={faq.answer || ''}
+                      value={faq.a || ''}
                       onChange={(e) => {
                         const newFaqs = [...selectedSection.data.faqs];
-                        newFaqs[idx] = { ...newFaqs[idx], answer: e.target.value };
+                        newFaqs[idx] = { ...newFaqs[idx], a: e.target.value };
                         handleDataChange('faqs', newFaqs);
                       }}
                       className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[80px]"
@@ -423,6 +443,200 @@ export default function Sidebar() {
                     />
                   </div>
                 ))}
+              </div>
+            </>
+          )}
+
+          {selectedSection.type === 'rating-calculator' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Main Title (HTML)</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.title || ''}
+                  onChange={(e) => handleDataChange('title', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Description</label>
+                <textarea 
+                  value={selectedSection.data.description || ''}
+                  onChange={(e) => handleDataChange('description', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[100px]"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Calculator Title</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.calculatorTitle || ''}
+                  onChange={(e) => handleDataChange('calculatorTitle', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Feature Pills / Facts</label>
+                  <button 
+                    onClick={() => {
+                      const newPills = [...(selectedSection.data.pills || []), { num: '99%', text: 'New Fact' }];
+                      handleDataChange('pills', newPills);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Pill
+                  </button>
+                </div>
+                {(selectedSection.data.pills || []).map((pill: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button 
+                      onClick={() => {
+                        const newPills = selectedSection.data.pills.filter((_: any, i: number) => i !== idx);
+                        handleDataChange('pills', newPills);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <input 
+                      type="text"
+                      placeholder="Number/Stat (e.g. 98%)"
+                      value={pill.num || ''}
+                      onChange={(e) => {
+                        const newPills = [...selectedSection.data.pills];
+                        newPills[idx] = { ...newPills[idx], num: e.target.value };
+                        handleDataChange('pills', newPills);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                    />
+                    <textarea 
+                      placeholder="Fact Text"
+                      value={pill.text || ''}
+                      onChange={(e) => {
+                        const newPills = [...selectedSection.data.pills];
+                        newPills[idx] = { ...newPills[idx], text: e.target.value };
+                        handleDataChange('pills', newPills);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {selectedSection.type === 'rating-stats-bar' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Main Title (HTML)</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.title || ''}
+                  onChange={(e) => handleDataChange('title', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Stats Items</label>
+                  <button 
+                    onClick={() => {
+                      const newStats = [...(selectedSection.data.stats || []), { num: '100', suffix: '+', label: 'New Stat' }];
+                      handleDataChange('stats', newStats);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Stat
+                  </button>
+                </div>
+                {(selectedSection.data.stats || []).map((stat: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button 
+                      onClick={() => {
+                        const newStats = selectedSection.data.stats.filter((_: any, i: number) => i !== idx);
+                        handleDataChange('stats', newStats);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Number"
+                        value={stat.num || ''}
+                        onChange={(e) => {
+                          const newStats = [...selectedSection.data.stats];
+                          newStats[idx] = { ...newStats[idx], num: e.target.value };
+                          handleDataChange('stats', newStats);
+                        }}
+                        className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                      />
+                      <input 
+                        type="text"
+                        placeholder="Suffix"
+                        value={stat.suffix || ''}
+                        onChange={(e) => {
+                          const newStats = [...selectedSection.data.stats];
+                          newStats[idx] = { ...newStats[idx], suffix: e.target.value };
+                          handleDataChange('stats', newStats);
+                        }}
+                        className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                      />
+                    </div>
+                    <textarea 
+                      placeholder="Label"
+                      value={stat.label || ''}
+                      onChange={(e) => {
+                        const newStats = [...selectedSection.data.stats];
+                        newStats[idx] = { ...newStats[idx], label: e.target.value };
+                        handleDataChange('stats', newStats);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {selectedSection.type === 'rating-cta' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Main Title (HTML)</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.title || ''}
+                  onChange={(e) => handleDataChange('title', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Description</label>
+                <textarea 
+                  value={selectedSection.data.description || ''}
+                  onChange={(e) => handleDataChange('description', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Button Text</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.buttonText || ''}
+                  onChange={(e) => handleDataChange('buttonText', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Button Link</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.buttonLink || ''}
+                  onChange={(e) => handleDataChange('buttonLink', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
               </div>
             </>
           )}

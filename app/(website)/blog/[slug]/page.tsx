@@ -1,8 +1,6 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Wrapper from "@/components/ui/Wrapper";
-import HomeNavbar from "@/components/layout/HomeNavbar";
-import HomeFooter from "@/components/layout/HomeFooter";
 import { Calendar, User } from "lucide-react";
 import { Metadata } from "next";
 
@@ -36,10 +34,8 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
-      <HomeNavbar />
-
       {/* Blog Header / Hero */}
-      <div className="pt-32 pb-16">
+      <div className="pt-20 pb-16">
         <Wrapper>
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl">
@@ -130,7 +126,6 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
         </div>
       </Wrapper>
 
-      <HomeFooter />
     </div>
   );
 }
