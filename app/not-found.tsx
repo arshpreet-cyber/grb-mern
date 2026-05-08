@@ -1,20 +1,65 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ArrowLeft, Home, Compass, Ghost } from "lucide-react";
 
 export default function NotFound() {
   const [mounted, setMounted] = useState(false);
+  const mouseRef = useRef({ x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0, y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0 });
+  const cursorRef = useRef({ x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0, y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0 });
+  const requestRef = useRef<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+
+    const animate = () => {
+      // Lerp cursor position for smoothness
+      cursorRef.current.x += (mouseRef.current.x - cursorRef.current.x) * 0.2;
+      cursorRef.current.y += (mouseRef.current.y - cursorRef.current.y) * 0.2;
+
+      const cursorEl = document.getElementById("custom-cursor");
+      if (cursorEl) {
+        cursorEl.style.transform = `translate3d(${cursorRef.current.x}px, ${cursorRef.current.y}px, 0) translate(-50%, -50%)`;
+      }
+
+      requestRef.current = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    requestRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
   }, []);
 
   if (!mounted) return null;
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0c] flex items-center justify-center font-poppins">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0c] flex items-center justify-center font-poppins cursor-none">
+      {/* ── Radial Gradient Background ── */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(0,255,200,0.05),transparent_25%),_radial-gradient(circle_at_80%_30%,_rgba(0,153,255,0.05),transparent_25%),_radial-gradient(circle_at_50%_80%,_rgba(168,85,247,0.05),transparent_30%)]" />
+      </div>
+
+      {/* ── Custom Planet Cursor ── */}
+      <div 
+        id="custom-cursor"
+        className="fixed top-0 left-0 pointer-events-none z-[9999] will-change-transform"
+      >
+        <div className="relative">
+          {/* Planet */}
+          <div className="w-7 h-7 bg-gradient-to-br from-amber-400 to-orange-600 rounded-full shadow-[0_0_25px_rgba(245,158,11,0.5)]" />
+          {/* Ring */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-4 border-2 border-white/20 rounded-[100%] rotate-12" />
+        </div>
+      </div>
       {/* ── Background Elements ── */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-violet-600/10 blur-[120px]" />
@@ -48,8 +93,6 @@ export default function NotFound() {
           </div>
         </div>
 
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none" 
-             style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       </div>
 
       {/* ── Main Content ── */}
