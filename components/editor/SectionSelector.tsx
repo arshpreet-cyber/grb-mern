@@ -17,6 +17,7 @@ export default function SectionSelector({ onSelect, onClose }: SectionSelectorPr
     { type: 'custom-platform', label: 'Custom CTA', icon: <MessageSquare />, description: "Can't find platform banner" },
     { type: 'icon-grid', label: 'Feature Grid', icon: <Layout />, description: '6-item icon grid with why trust us text' },
     { type: 'faq-section', label: 'FAQ Accordion', icon: <Layout />, description: 'Frequently asked questions with CTA' },
+    { type: 'blog-section', label: 'Blog Section', icon: <MessageSquare />, description: 'Recent blog posts grid' },
     { type: 'image', label: 'Simple Image', icon: <ImageIcon />, description: 'A single full-width image' },
     { type: 'productbanner', label: 'Product Banner', icon: <ShoppingCart />, description: 'A customizable product banner' },
     { type: 'similar-products', label: 'Similar Products', icon: <ShoppingCart />, description: 'Showcase similar products in a grid' },

@@ -282,6 +282,60 @@ export default function Sidebar() {
             </>
           )}
 
+          {selectedSection.type === 'blog-section' && (
+            <>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Title</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.title || ''}
+                  onChange={(e) => handleDataChange('title', e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Insights & Perspectives"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Description</label>
+                <textarea 
+                  value={selectedSection.data.description || ''}
+                  onChange={(e) => handleDataChange('description', e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Number of Posts</label>
+                <input 
+                  type="number"
+                  min="1"
+                  max="12"
+                  value={selectedSection.data.limit || 3}
+                  onChange={(e) => handleDataChange('limit', parseInt(e.target.value))}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Button Text</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.buttonText || ''}
+                  onChange={(e) => handleDataChange('buttonText', e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="View All Blogs"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Button Link</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.buttonLink || ''}
+                  onChange={(e) => handleDataChange('buttonLink', e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="/blog"
+                />
+              </div>
+            </>
+          )}
+
           {selectedSection.type === 'custom-platform' && (
             <>
               <div className="space-y-2">
