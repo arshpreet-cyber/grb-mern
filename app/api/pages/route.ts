@@ -1,15 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const includeDrafts = req.nextUrl.searchParams.get("include") === "drafts";
+
+    const select: any = {
+      id: true, title: true, slug: true, status: true,
+      inSitemap: true, createdAt: true, updatedAt: true,
+    };
+
+    if (includeDrafts) {
+      select.sections = true;
+      select.draftSections = true;
+    }
+
     const pages = await prisma.page.findMany({
       orderBy: { createdAt: "desc" },
-      select: {
-        id: true, title: true, slug: true, status: true,
-        inSitemap: true, createdAt: true, updatedAt: true,
-        sections: true, draftSections: true,
-      },
+      select,
     });
     return NextResponse.json(pages);
   } catch {

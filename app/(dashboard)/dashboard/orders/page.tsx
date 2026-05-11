@@ -139,22 +139,22 @@ export default function DemoDashboard() {
   return (
     <div className="w-full mx-auto flex flex-col gap-6 ">
       <div>
-        <h1 className="text-[36px] font-[500] text-gray-900 mb-1 mt-[30px] tracking-tight">All Orders</h1>
-        <p className="text-[15px] text-gray-600 font-normal">Lorem Ipsum is simply dummy text of the printing</p>
+        <h1 className="text-[36px] font-[500] text-gray-900 dark:text-white mb-1 mt-[30px] tracking-tight">All Orders</h1>
+        <p className="text-[15px] text-gray-600 dark:text-slate-400 font-normal">Manage and track your entire order history.</p>
       </div>
 
       {/* Stat Cards */}
-      <div className="bg-[#FFFFFF] rounded-[20px] p-2 md:p-6 border border-gray-100 shadow-sm">
+      <div className="bg-[#FFFFFF] dark:bg-[#1a1f2c] rounded-[20px] p-2 md:p-6 border border-gray-100 dark:border-slate-800 shadow-sm transition-colors">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <div key={index} className={`${stat.bgColor} rounded-xl p-6 flex items-center justify-between transition-transform hover:-translate-y-1`}>
+              <div key={index} className={`${stat.bgColor} dark:bg-slate-800/50 rounded-xl p-6 flex items-center justify-between transition-all hover:-translate-y-1`}>
                 <div className="flex flex-col gap-1">
-                  <span className="text-3xl font-[500] text-gray-900">{stat.value}</span>
-                  <span className="text-[10px] font-[600] tracking-widest text-gray-500 uppercase">{stat.title}</span>
+                  <span className="text-3xl font-[500] text-gray-900 dark:text-white">{stat.value}</span>
+                  <span className="text-[10px] font-[600] tracking-widest text-gray-500 dark:text-slate-400 uppercase">{stat.title}</span>
                 </div>
-                <div className={`${stat.iconColor}`}><Icon size={50} strokeWidth={1.5} /></div>
+                <div className={`${stat.iconColor} dark:text-white/80`}><Icon size={50} strokeWidth={1.5} /></div>
               </div>
             );
           })}
@@ -162,8 +162,8 @@ export default function DemoDashboard() {
       </div>
 
       {/* Main Container */}
-      <div className="bg-white rounded-[20px] border border-gray-100 mt-1 overflow-hidden shadow-sm">
-        <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100">
+      <div className="bg-white dark:bg-[#1a1f2c] rounded-[20px] border border-gray-100 dark:border-slate-800 mt-1 overflow-hidden shadow-sm transition-colors">
+        <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 dark:border-slate-800">
           
           <div className="flex items-center gap-2">
             {TABS.map((tab) => (
@@ -171,7 +171,7 @@ export default function DemoDashboard() {
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
                 className={`px-4 py-1.5 text-[14px] font-medium transition-all rounded-[10px] ${
-                  activeTab === tab.value ? "bg-black text-white" : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                  activeTab === tab.value ? "bg-black dark:bg-white text-white dark:text-black" : "text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -180,10 +180,10 @@ export default function DemoDashboard() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50 whitespace-nowrap">
-              Short By <ChevronDown size={16} className="text-gray-400" />
+            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-[13px] text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-800 whitespace-nowrap transition-colors">
+              Sort By <ChevronDown size={16} className="text-gray-400" />
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-600 font-medium hover:bg-gray-50">
+            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-[13px] text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
               Filter <SlidersHorizontal size={14} />
             </button>
           </div>
@@ -193,31 +193,31 @@ export default function DemoDashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/50">
+              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                 {[
                   "# Order No", "Payment ID", "Amount", "Date", 
                   "Payment Method", "Status", "Payment Status", 
                   "Order Details", "Payment option", "Action"
                 ].map((h) => (
-                  <th key={h} className="px-5 py-4 text-[10px] font-[500] uppercase tracking-widest text-slate-400 whitespace-nowrap">
+                  <th key={h} className="px-5 py-4 text-[10px] font-[500] uppercase tracking-widest text-slate-400 dark:text-slate-500 whitespace-nowrap">
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
               {loading ? (
-                <tr><td colSpan={10} className="text-center py-12 text-gray-500">Loading orders...</td></tr>
+                <tr><td colSpan={10} className="text-center py-12 text-gray-500 dark:text-slate-400">Loading orders...</td></tr>
               ) : paginatedOrders.length > 0 ? (
                 paginatedOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-5 py-5 text-[13px] text-gray-800">{order.orderNumber}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-600">{order.paymentId || "N/A"}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-800">${order.amount.toFixed(2)}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-600">{new Date(order.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>
+                  <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                    <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-300 font-medium">{order.orderNumber}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400">{order.paymentId || "N/A"}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-200 font-bold">${order.amount.toFixed(2)}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 font-mono">{new Date(order.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>
                     <td className="px-5 py-5">
                       {order.paymentMethod ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-[400] text-amber-600">
+                        <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-[400] text-amber-600 dark:text-amber-400 whitespace-nowrap">
                           <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                           {order.paymentMethod}
                         </span>
@@ -225,21 +225,21 @@ export default function DemoDashboard() {
                     </td>
 
                   <td className="px-5 py-5">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${order.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600" : "border-emerald-200 bg-emerald-50 text-emerald-600"}`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] whitespace-nowrap ${order.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${order.status === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
                       {order.status}
                     </span>
                   </td>
 
                   <td className="px-5 py-5">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${order.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600" : "border-emerald-200 bg-emerald-50 text-emerald-600"}`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] whitespace-nowrap ${order.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${order.paymentStatus === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
                       {order.paymentStatus}
                     </span>
                   </td>
                   <td className="px-5 py-5">
                     {order.status === "Complete" && (
-                      <button className="rounded-[5px] bg-[#1E3A8A] px-3 py-1.5 text-[10px] font-[500] text-white shadow-sm hover:bg-blue-900 transition">
+                      <button className="rounded-[5px] bg-[#1E3A8A] dark:bg-blue-600 px-3 py-1.5 text-[10px] font-[500] text-white shadow-sm hover:bg-blue-900 dark:hover:bg-blue-500 transition-colors whitespace-nowrap">
                         Input Details
                       </button>
                     )}
@@ -247,12 +247,12 @@ export default function DemoDashboard() {
                     <td className="px-5 py-5">
                       {order.status !== "Complete" && (
                         <div className="flex flex-col gap-2">
-                        <select className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-slate-600 outline-none w-32">
+                        <select className="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300 outline-none w-32 transition-colors">
                             <option>Choose Methods</option>
                             <option>Credit Card</option>
                             <option>PayPal</option>
                           </select>
-                          <button className="rounded-[5px] bg-[#0084FF] px-3 py-1.5 text-[11px] font-[500] text-white transition w-32">Pay Now</button>
+                          <button className="rounded-[5px] bg-[#0084FF] px-3 py-1.5 text-[11px] font-[500] text-white transition-colors w-32">Pay Now</button>
                         </div>
                       )}
                     </td>
@@ -260,7 +260,7 @@ export default function DemoDashboard() {
                     <td className="relative px-5 py-5 text-center">
                       <button 
                         onClick={() => setOpenMenuId(openMenuId === order.id ? null : order.id)}
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
                       >
                         <MoreVertical size={16} />
                       </button>
@@ -269,16 +269,16 @@ export default function DemoDashboard() {
                       {openMenuId === order.id && (
                         <>
                           <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                          <div className="absolute right-4 top-14 z-[100] w-32 rounded-xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden">
-                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition-colors">
+                          <div className="absolute right-4 top-14 z-[100] w-32 rounded-xl bg-white dark:bg-[#1a1f2c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 dark:border-slate-800 overflow-hidden animate-in fade-in slide-in-from-top-1">
+                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition-colors">
                               <CheckCircle2 size={16} className="text-slate-400 group-hover:text-white" />
                               <span className="text-[12px] font-[400] group-hover:text-white">Live Status</span>
                             </div>
-                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition-colors">
+                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition-colors">
                               <FileText size={16} className="text-slate-400 group-hover:text-white" />
                               <span className="text-[12px] font-[400] group-hover:text-white">Invoices</span>
                             </div>
-                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition-colors">
+                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition-colors">
                               <Eye size={16} className="text-slate-400 group-hover:text-white" />
                               <span className="text-[12px] font-[400] group-hover:text-white">See More</span>
                             </div>
@@ -289,7 +289,7 @@ export default function DemoDashboard() {
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan={10} className="text-center py-12 text-gray-500">No orders found.</td></tr>
+                <tr><td colSpan={10} className="text-center py-12 text-gray-500 dark:text-slate-400">No orders found.</td></tr>
               )}
             </tbody>
           </table>
@@ -297,15 +297,15 @@ export default function DemoDashboard() {
 
         {/* Pagination Footer */}
         {orders.length > 0 && (
-          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100 bg-gray-50/30">
-            <p className="text-[14px] text-gray-600">
+          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100 dark:border-slate-800 bg-gray-50/30 dark:bg-slate-800/30 transition-colors">
+            <p className="text-[14px] text-gray-600 dark:text-slate-400">
               Showing {showingFrom} to {showingTo} of {orders.length} Entries
             </p>
             <div className="flex items-center gap-1">
               <button 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors"
+                className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors text-gray-600 dark:text-slate-400"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -315,7 +315,7 @@ export default function DemoDashboard() {
                   key={idx}
                   onClick={() => setCurrentPage(idx + 1)}
                   className={`w-7 h-7 rounded-full text-[13px] font-medium transition-colors ${
-                    currentPage === idx + 1 ? "bg-black text-white" : "text-gray-600 hover:bg-gray-200"
+                    currentPage === idx + 1 ? "bg-black dark:bg-white text-white dark:text-black shadow-sm" : "text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800"
                   }`}
                 >
                   {idx + 1}
@@ -325,7 +325,7 @@ export default function DemoDashboard() {
               <button 
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors"
+                className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors text-gray-600 dark:text-slate-400"
               >
                 <ChevronRight size={18} />
               </button>
@@ -336,14 +336,13 @@ export default function DemoDashboard() {
     </div>
   );
 }
-
 function StatusPill({ status }: { status: string }) {
   const isComplete = status === "Complete" || status === "Paid";
   const colorClasses = isComplete 
-    ? "border-[#4CAF50] text-[#4CAF50] bg-[#EBF7E5]" 
+    ? "border-[#4CAF50] text-[#4CAF50] bg-[#EBF7E5] dark:border-emerald-900/50 dark:text-emerald-400 dark:bg-emerald-900/20" 
     : status === "Cancelled" 
-      ? "border-[#F44336] text-[#F44336] bg-[#FBEBEB]" 
-      : "border-[#D98A2C] text-[#D98A2C] bg-[#FDF9E7]"; 
+      ? "border-[#F44336] text-[#F44336] bg-[#FBEBEB] dark:border-rose-900/50 dark:text-rose-400 dark:bg-rose-900/20" 
+      : "border-[#D98A2C] text-[#D98A2C] bg-[#FDF9E7] dark:border-amber-900/50 dark:text-amber-400 dark:bg-amber-900/20"; 
   
   const dotColor = isComplete 
     ? "bg-[#4CAF50]" 
@@ -352,7 +351,7 @@ function StatusPill({ status }: { status: string }) {
       : "bg-[#D98A2C]";
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-[12px] font-medium w-max ${colorClasses}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-[12px] font-medium w-max transition-colors ${colorClasses}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`}></span>
       {status}
     </span>

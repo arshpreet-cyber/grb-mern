@@ -27,6 +27,7 @@ import {
   Eye,
   TrendingUp,
   TrendingDown,
+  Loader2,
 } from "lucide-react";
 import DataTable, { Column, RowAction, StatusPill } from "@/components/ui/DataTable";
 
@@ -104,9 +105,17 @@ function StatCard({ title, value, change, bg, text, pillBg, isDown, href }: { ti
   return content;
 }
 
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 export default function AdminDashboard() {
   const { data: session } = useSession();
   
+  const [selectedMonth, setSelectedMonth] = useState(MONTHS[new Date().getMonth()]);
+  const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
+
   const [stats, setStats] = useState<Stats>({
     openTickets: 0, awaitingTickets: 0, closedTickets: 0,
     totalOrders: 0, pendingOrders: 0, completeOrders: 0,
@@ -185,8 +194,11 @@ export default function AdminDashboard() {
     ],
   };
 
+  const [loadingData, setLoadingData] = useState(false);
+
   useEffect(() => {
-    fetch("/api/dashboard/analytics")
+    setLoadingData(true);
+    fetch(`/api/dashboard/analytics?month=${encodeURIComponent(selectedMonth)}`)
       .then((r) => {
         if (!r.ok) throw new Error("API error");
         return r.json();
@@ -216,8 +228,9 @@ export default function AdminDashboard() {
         setRecentOrders(fallbackOrders);
         setRecentTickets(fallbackTickets);
         setCharts(fallbackCharts);
-      });
-  }, []);
+      })
+      .finally(() => setLoadingData(false));
+  }, [selectedMonth]);
 
   // Columns for Tickets
   const ticketColumns: Column<Ticket>[] = [
@@ -295,9 +308,18 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6 min-h-screen">
+      {/* Global Loading Overlay for Month Change */}
+      {loadingData && (
+        <div className="absolute inset-0 z-[100] bg-white/40 dark:bg-black/20 backdrop-blur-[1px] flex items-center justify-center rounded-[20px]">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 flex items-center gap-3">
+             <Loader2 className="h-5 w-5 text-violet-600 animate-spin" />
+             <span className="text-sm font-bold text-gray-700 dark:text-white">Updating {selectedMonth} Data...</span>
+          </div>
+        </div>
+      )}
       {/* Hello Banner */}
-      <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-r from-[#e9f9eb] via-[#f2fae5] to-[#fcf5d5] dark:from-[#0d1a11] dark:via-[#111f0a] dark:to-[#1f1a0a] px-8 py-8 shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-[#e5f5e8] dark:border-[#1a2f1a] transition-colors">
+      <div className="relative rounded-[20px] bg-gradient-to-r from-[#e9f9eb] via-[#f2fae5] to-[#fcf5d5] dark:from-[#0d1a11] dark:via-[#111f0a] dark:to-[#1f1a0a] px-8 py-8 shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-[#e5f5e8] dark:border-[#1a2f1a] transition-colors">
         <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-[40px] font-medium text-[#111827] dark:text-white tracking-tight">
@@ -307,10 +329,48 @@ export default function AdminDashboard() {
               Manage your business metrics and customer interactions in one place.
             </p>
           </div>
-          <div className="flex items-center gap-3 rounded-lg bg-[#111827] dark:bg-slate-900 px-5 py-3 text-white dark:text-white shadow-md cursor-pointer hover:bg-black dark:hover:bg-slate-800 transition shrink-0">
-            <CalendarDays className="h-4 w-4 text-gray-300 dark:text-white" />
-            <span className="text-[16px] font-regular">{new Date().toLocaleString('en-US', { month: 'long' })}</span>
-            <ChevronDown className="h-4 w-4 ml-2 text-gray-400 dark:text-white" />
+          <div className="relative">
+            <div 
+              onClick={() => setIsMonthDropdownOpen(!isMonthDropdownOpen)}
+              className="flex items-center gap-3 rounded-lg bg-[#111827] dark:bg-slate-900 px-5 py-3 text-white dark:text-white shadow-md cursor-pointer hover:bg-black dark:hover:bg-slate-800 transition shrink-0 border border-transparent dark:border-slate-800"
+            >
+              <CalendarDays className="h-4 w-4 text-gray-300 dark:text-white" />
+              <span className="text-[16px] font-regular">{selectedMonth}</span>
+              <ChevronDown className={`h-4 w-4 ml-2 text-gray-400 dark:text-white transition-transform ${isMonthDropdownOpen ? 'rotate-180' : ''}`} />
+            </div>
+
+            {/* Month Dropdown */}
+            {isMonthDropdownOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-10" 
+                  onClick={() => setIsMonthDropdownOpen(false)} 
+                />
+                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white dark:bg-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 dark:border-slate-800 p-3 z-20 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="grid grid-cols-3 gap-2">
+                    {MONTHS.map((month) => (
+                      <button
+                        key={month}
+                        onClick={() => {
+                          setSelectedMonth(month);
+                          setIsMonthDropdownOpen(false);
+                        }}
+                        className={`flex items-center justify-center rounded-xl py-3 text-[13px] font-semibold transition-all ${
+                          selectedMonth === month 
+                            ? "bg-[#111827] text-white dark:bg-violet-600 dark:text-white shadow-lg scale-105" 
+                            : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
+                        }`}
+                      >
+                        {month.slice(0, 3)}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-3 border-t border-gray-50 dark:border-slate-800 pt-2 text-center">
+                    <p className="text-[11px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Select Month • 2026</p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

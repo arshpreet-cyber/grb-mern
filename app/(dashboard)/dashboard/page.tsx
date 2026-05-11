@@ -62,25 +62,25 @@ const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden h-[194px] mt-2 rounded-2xl bg-gradient-to-r from-[#e3f8ea] via-[##D3F8FC] to-[#fdf4d3] px-8 py-8 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)]">
+      <div className="relative overflow-hidden h-[194px] mt-2 rounded-2xl bg-gradient-to-r from-[#e3f8ea] via-[#D3F8FC] to-[#fdf4d3] dark:from-[#1a2c26] dark:via-[#1a2c2c] dark:to-[#2c2a1a] px-8 py-8 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] transition-all">
             
-            {/* Decorative background curve to match the exact image */}
-            <div className="absolute -bottom-24 -right-10 h-64 w-[55%] rounded-[100%] bg-[#fef7dd] opacity-70 blur-xl pointer-events-none"></div>
-            <div className="absolute -bottom-10 -right-5 h-40 w-[40%] rounded-tl-full bg-gradient-to-br from-[#fcf4d4] to-transparent opacity-80 pointer-events-none"></div>
+            {/* Decorative background curve */}
+            <div className="absolute -bottom-24 -right-10 h-64 w-[55%] rounded-[100%] bg-[#fef7dd] dark:bg-[#2c2a1a]/50 opacity-70 blur-xl pointer-events-none"></div>
+            <div className="absolute -bottom-10 -right-5 h-40 w-[40%] rounded-tl-full bg-gradient-to-br from-[#fcf4d4] dark:from-[#2c2a1a] to-transparent opacity-80 pointer-events-none"></div>
 
             <div className="relative mt-4 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h1 className="text-[40px] font-medium text-black">Hello! {name}</h1>
-                <p className="mt-1.5 text-[18px] text-gray-800">
+                <h1 className="text-[40px] font-medium text-black dark:text-white transition-colors">Hello! {name}</h1>
+                <p className="mt-1.5 text-[18px] text-gray-800 dark:text-slate-300 transition-colors">
                   Manage your orders, track your reviews, and get support — all from your dashboard.
                 </p>
               </div>
               
               <Link 
                 href="/dashboard/support"
-                className="inline-flex items-center gap-2 rounded-xl bg-black px-5 h-[53px] w-[213px] py-2.5 text-[15px] text-white hover:bg-gray-800 transition-colors shrink-0"
+                className="inline-flex items-center gap-2 rounded-xl bg-black dark:bg-white px-5 h-[53px] w-[213px] py-2.5 text-[15px] text-white dark:text-black hover:bg-gray-800 dark:hover:bg-slate-200 transition-colors shrink-0"
               >
-                <PlusCircle size={18} strokeWidth={1.5} className="text-white" />
+                <PlusCircle size={18} strokeWidth={1.5} className="text-white dark:text-black" />
                 <span>Create New Ticket</span>
               </Link>
             </div>
@@ -89,19 +89,19 @@ const [openMenuId, setOpenMenuId] = useState<string | null>(null);
       {/* Stat Cards */}
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className={`${s.bg} rounded-[20px] p-6 h-[121px] flex flex-col justify-between`}>
+          <div key={s.label} className={`${s.bg} dark:bg-[#1a1f2c] rounded-[20px] p-6 h-[121px] flex flex-col justify-between border border-transparent dark:border-slate-800 transition-all`}>
             <div className="flex items-start justify-between">
               {/* Large Number */}
-              <p className="text-4xl font-[500] text-slate-900">{s.value}</p>
+              <p className="text-4xl font-[500] text-slate-900 dark:text-white transition-colors">{s.value}</p>
               
               {/* Top-Right Arrow Button */}
-              <div className="bg-white p-2 rounded-xl shadow-sm">
-                <ArrowUpRight className={`w-5 h-5 ${s.iconColor}`} />
+              <div className="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-sm">
+                <ArrowUpRight className={`w-5 h-5 ${s.iconColor} dark:text-white`} />
               </div>
             </div>
             
             {/* Bottom Label */}
-            <p className="mt-4 text-[15px] font-[500] text-slate-900 tracking-wide">
+            <p className="mt-4 text-[15px] font-[500] text-slate-900 dark:text-slate-400 tracking-wide transition-colors">
               {s.label}
             </p>
           </div>
@@ -109,10 +109,10 @@ const [openMenuId, setOpenMenuId] = useState<string | null>(null);
       </div>
 
       {/* Orders Table */}
-      <div className="rounded-2xl bg-white border border-slate-100 shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-          <h2 className="text-[25px] font-[500] text-slate-800">Recent Order Details</h2>
-          <Link href="/dashboard/orders" className="text-[15px] font-[500] text-slate-400 hover:text-slate-600 underline uppercase tracking-widest">
+      <div className="rounded-2xl bg-white dark:bg-[#1a1f2c] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="text-[25px] font-[500] text-slate-800 dark:text-white">Recent Order Details</h2>
+          <Link href="/dashboard/orders" className="text-[15px] font-[500] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 underline uppercase tracking-widest transition-colors">
             View All Orders
           </Link>
         </div>
@@ -120,42 +120,42 @@ const [openMenuId, setOpenMenuId] = useState<string | null>(null);
         <div className="overflow-x-auto">
           <table className="min-w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/50">
+              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                 {[
                   "# Order No", "Payment ID", "Amount", "Date", 
                   "Payment Method", "Status", "Payment Status", 
                   "Order Details", "Payment option", "Action"
                 ].map((h) => (
-                  <th key={h} className="px-5 py-4 text-[10px] font-[500] uppercase tracking-widest text-slate-400 whitespace-nowrap">
+                  <th key={h} className="px-5 py-4 text-[10px] font-[500] uppercase tracking-widest text-slate-400 dark:text-slate-500 whitespace-nowrap">
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {orders.map((o, i) => (
-                <tr key={i} className="hover:bg-slate-50 transition">
-                  <td className="text-[14px] px-5 py-5 font-[400]">{o.id}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400]">{o.paymentId}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400]">{o.amount}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400]">{o.date}</td>
+                <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300">{o.id}</td>
+                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300">{o.paymentId}</td>
+                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300">{o.amount}</td>
+                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300">{o.date}</td>
 
                 <td className="px-5 py-5">
-                  <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-[400] text-amber-600">
+                  <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-[400] text-amber-600 dark:text-amber-400">
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                     {o.method}
                   </span>
                 </td>
 
                   <td className="px-5 py-5">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${o.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600" : "border-emerald-200 bg-emerald-50 text-emerald-600"}`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${o.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${o.status === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
                       {o.status}
                     </span>
                   </td>
 
                   <td className="px-5 py-5">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${o.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600" : "border-emerald-200 bg-emerald-50 text-emerald-600"}`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${o.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${o.paymentStatus === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
                       {o.paymentStatus}
                     </span>
@@ -170,7 +170,7 @@ const [openMenuId, setOpenMenuId] = useState<string | null>(null);
                   <td className="px-5 py-5">
                     {o.status === "Pending" && (
                       <div className="flex flex-col gap-2">
-                        <select className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-slate-600 outline-none w-32">
+                        <select className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300 outline-none w-32">
                           <option>Credit Card</option>
                           <option>PayPal</option>
                         </select>
@@ -184,7 +184,7 @@ const [openMenuId, setOpenMenuId] = useState<string | null>(null);
                   <td className="relative px-5 py-5">
                     <button 
                       onClick={() => setOpenMenuId(openMenuId === o.id ? null : o.id)}
-                      className="text-slate-400 hover:text-slate-600 transition"
+                      className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition"
                     >
                       <MoreVertical size={18} />
                     </button>
@@ -192,26 +192,25 @@ const [openMenuId, setOpenMenuId] = useState<string | null>(null);
                     {/* Dropdown Menu */}
                     {openMenuId === o.id && (
                       <>
-                        {/* Click outside overlay - Increased z-index to 40 */}
+                        {/* Click outside overlay */}
                         <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
                         
-                        {/* Changed positioning to 'bottom-8 right-8' to open UPWARDS. */}
-                        <div className="absolute bottom-8 right-8 z-[9999] w-34 rounded-xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden">
+                        <div className="absolute bottom-8 right-8 z-[9999] w-34 rounded-xl bg-white dark:bg-[#1a1f2c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-slate-100 dark:border-slate-800 overflow-hidden">
                           
                         {/* Live Status */}
-                        <div className="group flex items-center gap-2 px-4 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                        <div className="group flex items-center gap-2 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition">
                           <CheckCircle2 size={16} className="text-slate-400 group-hover:text-white transition"/>
                           <span className="text-[12px] font-[400] group-hover:text-white transition">Live Status</span>
                         </div>
                                                 
                         {/* Invoices */}
-                        <div className="group flex items-center gap-2 px-4 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                        <div className="group flex items-center gap-2 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition">
                           <FileText size={16} className="text-slate-400 group-hover:text-white transition" />
                           <span className="text-[12px] font-[400] group-hover:text-white transition">Invoices</span>
                         </div>
                                                 
                         {/* See More */}
-                        <div className="group flex items-center gap-2 px-4 py-2.5 text-slate-700 hover:bg-[#54CE12] cursor-pointer transition">
+                        <div className="group flex items-center gap-2 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition">
                           <Eye size={16} className="text-slate-400 group-hover:text-white transition" />
                           <span className="text-[12px] font-[400] group-hover:text-white transition">See More</span>
                         </div>
