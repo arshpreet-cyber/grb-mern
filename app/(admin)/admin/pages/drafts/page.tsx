@@ -21,7 +21,7 @@ export default function DraftsPage() {
   const fetchPages = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/pages");
+      const res = await fetch("/api/pages?include=drafts");
       const data = await res.json();
       
       // Filter pages that have a draft different from live

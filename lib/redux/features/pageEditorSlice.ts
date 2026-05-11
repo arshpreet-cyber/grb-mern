@@ -27,6 +27,22 @@ export interface Section {
   settings: SectionSettings;
 }
 
+export interface PageMeta {
+  metaTitle: string;
+  metaDescription: string;
+  keywords: string;
+  canonicalLink: string;
+  robotsText: string;
+  inSitemap: boolean;
+  titleImage: string;
+  opengraphImage: string;
+  schemaCode: string;
+  headerScript: string;
+  bodyScript: string;
+  footerScript: string;
+  status: string;
+}
+
 export interface PageState {
   id: string;
   title: string;
@@ -35,27 +51,48 @@ export interface PageState {
   editMode: boolean;
   selectedSectionId: string | null;
   isSaving: boolean;
+  meta: PageMeta;
 }
+
+const initialMeta: PageMeta = {
+  metaTitle: '',
+  metaDescription: '',
+  keywords: '',
+  canonicalLink: '',
+  robotsText: 'index, follow',
+  inSitemap: true,
+  titleImage: '',
+  opengraphImage: '',
+  schemaCode: '',
+  headerScript: '',
+  bodyScript: '',
+  footerScript: '',
+  status: 'Draft',
+};
 
 const initialState: PageState = {
   id: '',
   title: '',
   slug: '',
   sections: [],
-  editMode: false,
+  editMode: true,
   selectedSectionId: null,
   isSaving: false,
+  meta: { ...initialMeta },
 };
 
 export const pageEditorSlice = createSlice({
   name: 'pageEditor',
   initialState,
   reducers: {
-    setPage: (state, action: PayloadAction<{ id: string; title: string; slug: string; sections: Section[] }>) => {
+    setPage: (state, action: PayloadAction<{ id: string; title: string; slug: string; sections: Section[]; meta?: Partial<PageMeta> }>) => {
       state.id = action.payload.id;
       state.title = action.payload.title;
       state.slug = action.payload.slug;
       state.sections = action.payload.sections;
+      if (action.payload.meta) {
+        state.meta = { ...initialMeta, ...action.payload.meta };
+      }
     },
     setEditMode: (state, action: PayloadAction<boolean>) => {
       state.editMode = action.payload;
@@ -108,6 +145,15 @@ export const pageEditorSlice = createSlice({
     setIsSaving: (state, action: PayloadAction<boolean>) => {
       state.isSaving = action.payload;
     },
+    updatePageMeta: (state, action: PayloadAction<Partial<PageMeta>>) => {
+      state.meta = { ...state.meta, ...action.payload };
+    },
+    setTitle: (state, action: PayloadAction<string>) => {
+      state.title = action.payload;
+    },
+    setSlug: (state, action: PayloadAction<string>) => {
+      state.slug = action.payload;
+    },
   },
 });
 
@@ -122,6 +168,9 @@ export const {
   deleteSection,
   reorderSections,
   setIsSaving,
+  updatePageMeta,
+  setTitle,
+  setSlug,
 } = pageEditorSlice.actions;
 
 export default pageEditorSlice.reducer;

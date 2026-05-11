@@ -25,13 +25,30 @@ export async function PUT(
   try {
     const { slug } = await params;
     const body = await request.json();
-    const { sections, title, publish, id } = body;
+    const { sections, title, publish, id, meta } = body;
     
     const updateData: any = {
       title: title || 'Untitled',
       draftSections: Array.isArray(sections) ? sections : [],
       updatedAt: new Date()
     };
+
+    // Persist SEO/meta fields if provided
+    if (meta) {
+      if (meta.metaTitle !== undefined) updateData.metaTitle = meta.metaTitle;
+      if (meta.metaDescription !== undefined) updateData.metaDescription = meta.metaDescription;
+      if (meta.keywords !== undefined) updateData.keywords = meta.keywords;
+      if (meta.canonicalLink !== undefined) updateData.canonicalLink = meta.canonicalLink;
+      if (meta.robotsText !== undefined) updateData.robotsText = meta.robotsText;
+      if (meta.inSitemap !== undefined) updateData.inSitemap = meta.inSitemap;
+      if (meta.titleImage !== undefined) updateData.titleImage = meta.titleImage;
+      if (meta.opengraphImage !== undefined) updateData.opengraphImage = meta.opengraphImage;
+      if (meta.schemaCode !== undefined) updateData.schemaCode = meta.schemaCode;
+      if (meta.headerScript !== undefined) updateData.headerScript = meta.headerScript;
+      if (meta.bodyScript !== undefined) updateData.bodyScript = meta.bodyScript;
+      if (meta.footerScript !== undefined) updateData.footerScript = meta.footerScript;
+      if (meta.status !== undefined) updateData.status = meta.status;
+    }
 
     if (publish) {
       console.log(`[API] PUBLISHING LIVE: ${slug}`);
@@ -50,10 +67,23 @@ export async function PUT(
         sections: publish ? updateData.sections : [],
         draftSections: updateData.draftSections,
         status: publish ? 'Published' : 'Draft',
+        metaTitle: updateData.metaTitle || '',
+        metaDescription: updateData.metaDescription || '',
+        keywords: updateData.keywords || '',
+        canonicalLink: updateData.canonicalLink || '',
+        robotsText: updateData.robotsText || 'index, follow',
+        inSitemap: updateData.inSitemap ?? true,
+        titleImage: updateData.titleImage || '',
+        opengraphImage: updateData.opengraphImage || '',
+        schemaCode: updateData.schemaCode || '',
+        headerScript: updateData.headerScript || '',
+        bodyScript: updateData.bodyScript || '',
+        footerScript: updateData.footerScript || '',
         createdAt: new Date(),
         updatedAt: new Date()
       }
     });
+
 
     // Only revalidate the public path if we are publishing live
     if (publish) {
