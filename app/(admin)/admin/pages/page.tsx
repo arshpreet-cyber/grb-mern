@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PageForm from "@/components/admin/page-builder/PageForm";
+import dynamic from "next/dynamic";
+import DataTable, { Column, StatusPill, RowAction } from "@/components/ui/DataTable";
+import { FileText, ExternalLink, Trash2, Edit3 } from "lucide-react";
+
+const EditorWrapper = dynamic(() => import("@/components/editor/EditorWrapper"), { ssr: false });
 
 type PageRow = {
   id: string;
@@ -13,12 +17,15 @@ type PageRow = {
   updatedAt: string;
 };
 
+function toSlug(str: string) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export default function AdminPagesPage() {
-  const [tab, setTab] = useState<"new" | "all">("all");
+  const [tab, setTab] = useState<"all" | "new">("all");
   const [pages, setPages] = useState<PageRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState<string | null>(null);
-  const [editId, setEditId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const fetchPages = async () => {
     setLoading(true);
@@ -35,208 +42,264 @@ export default function AdminPagesPage() {
 
   useEffect(() => { fetchPages(); }, []);
 
-  const deletePage = async (id: string) => {
-    if (!confirm("Delete this page?")) return;
-    setDeleting(id);
-    await fetch(`/api/pages/${id}`, { method: "DELETE" });
-    await fetchPages();
-    setDeleting(null);
+  const deletePage = async (page: PageRow) => {
+    if (!confirm(`Delete "${page.title}"?`)) return;
+    await fetch(`/api/pages/${page.id}`, { method: "DELETE" });
+    fetchPages();
   };
 
-  const handleCreated = () => {
-    fetchPages();
-    setTab("all");
-    setEditId(null);
-  };
+  /* ── Column definitions ── */
+  const columns: Column<PageRow>[] = [
+    {
+      key: "title",
+      header: "Page",
+      sortable: true,
+      render: (p) => (
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 shrink-0 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+            <FileText size={16} />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <span className="font-bold text-gray-900 dark:text-white text-[13px]">{p.title}</span>
+            <span className="text-[11px] text-gray-400 dark:text-white/50 font-mono">/{p.slug}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      render: (p) => (
+        <StatusPill
+          value={p.status}
+          colorMap={{
+            Published: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
+            Draft: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
+          }}
+        />
+      ),
+    },
+    {
+      key: "inSitemap",
+      header: "Sitemap",
+      render: (p) => (
+        <span className={`text-xs font-semibold ${p.inSitemap ? "text-emerald-600 dark:text-emerald-400" : "text-gray-400 dark:text-gray-600"}`}>
+          {p.inSitemap ? "✓ Yes" : "✗ No"}
+        </span>
+      ),
+    },
+    {
+      key: "updatedAt",
+      header: "Last Updated",
+      sortable: true,
+      render: (p) => (
+        <span className="text-gray-400 dark:text-white/50 text-[11px] font-mono whitespace-nowrap">
+          {new Date(p.updatedAt).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
+        </span>
+      ),
+    },
+  ];
+
+  /* ── Row actions ── */
+  const actions: RowAction<PageRow>[] = [
+    {
+      label: "Edit Page",
+      icon: <Edit3 size={14} />,
+      onClick: (p) => {
+        window.location.href = `/${p.slug === "home" ? "" : p.slug}?edit=true`;
+      },
+    },
+    {
+      label: "View Live",
+      icon: <ExternalLink size={14} />,
+      onClick: (p) => {
+        window.open(`/${p.slug === "home" ? "" : p.slug}`, "_blank");
+      },
+    },
+    {
+      label: "Delete",
+      icon: <Trash2 size={14} />,
+      onClick: deletePage,
+      className: "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
+    },
+  ];
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800">Pages</h1>
-          <p className="text-sm text-slate-500">Manage your website pages</p>
+      <div className="rounded-[20px] bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-6 shadow-sm flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+            <FileText size={20} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Pages</h1>
+            <p className="mt-0.5 text-sm text-gray-500 dark:text-white/60">Manage your website pages and SEO.</p>
+          </div>
         </div>
-        <button onClick={() => { setTab("new"); setEditId(null); }}
-          className="rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow transition hover:opacity-90">
-          + New Page
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="bg-gray-100 dark:bg-slate-800 px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700">
+            <span className="text-xs font-black text-gray-500 dark:text-white uppercase tracking-widest">{pages.length} Pages</span>
+          </div>
+          <button onClick={() => setTab("new")}
+            className="rounded-xl bg-violet-600 hover:bg-violet-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition">
+            + New Page
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 rounded-xl bg-slate-100 p-1 w-fit">
+      <div className="flex gap-1 rounded-xl bg-slate-100 dark:bg-slate-800 p-1 w-fit">
         {(["all", "new"] as const).map((t) => (
-          <button key={t} onClick={() => { setTab(t); setEditId(null); }}
-            className={`rounded-lg px-5 py-2 text-sm font-semibold transition ${tab === t && !editId ? "bg-white text-violet-700 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>
-            {t === "all" ? "All Pages" : "Add New Page"}
+          <button key={t} onClick={() => setTab(t)}
+            className={`rounded-lg px-5 py-2 text-sm font-semibold transition ${tab === t ? "bg-white dark:bg-slate-700 text-violet-700 dark:text-violet-400 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white"}`}>
+            {t === "all" ? "All Pages" : "Create New Page"}
           </button>
         ))}
-        {editId && (
-          <button className="rounded-lg px-5 py-2 text-sm font-semibold bg-white text-violet-700 shadow-sm">
-            Edit Page
-          </button>
-        )}
       </div>
 
       {/* Tab Content */}
-      {editId ? (
-        <EditPageTab pageId={editId} onSuccess={handleCreated} onCancel={() => setEditId(null)} />
-      ) : tab === "new" ? (
-        <div>
-          <div className="mb-6">
-            <h2 className="text-lg font-bold text-slate-800">Create New Page</h2>
-            <p className="text-sm text-slate-500">Fill in the details below to create a new page.</p>
-          </div>
-          <PageForm onSuccess={handleCreated} />
-        </div>
+      {tab === "new" ? (
+        <CreatePageTab onSuccess={fetchPages} />
       ) : (
-        <AllPagesTab
-          pages={pages}
-          loading={loading}
-          deleting={deleting}
-          onDelete={deletePage}
-          onEdit={(id) => { setEditId(id); }}
-          onRefresh={fetchPages}
-        />
-      )}
-    </div>
-  );
-}
-
-function AllPagesTab({
-  pages, loading, deleting, onDelete, onEdit, onRefresh,
-}: {
-  pages: PageRow[];
-  loading: boolean;
-  deleting: string | null;
-  onDelete: (id: string) => void;
-  onEdit: (id: string) => void;
-  onRefresh: () => void;
-}) {
-  const [search, setSearch] = useState("");
-  const filtered = pages.filter(
-    (p) => p.title.toLowerCase().includes(search.toLowerCase()) || p.slug.includes(search.toLowerCase())
-  );
-
-  return (
-    <div className="rounded-2xl bg-white border border-slate-100 shadow-sm overflow-hidden">
-      {/* Table Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-        <div className="relative w-64">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">⌕</span>
-          <input
-            value={search} onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search pages..."
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-8 pr-4 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition"
+        <div className="bg-white dark:bg-[#1a1f2c] rounded-[20px] border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
+          <DataTable
+            data={pages}
+            columns={columns}
+            loading={loading}
+            actions={actions}
+            searchable
+            searchPlaceholder="Search by title or slug..."
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchFields={["title", "slug"]}
+            pageSize={10}
+            emptyText="No pages found. Create your first page!"
           />
         </div>
-        <button onClick={onRefresh} className="text-xs text-slate-400 hover:text-slate-600 transition">↺ Refresh</button>
-      </div>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="py-20 text-center">
-          <div className="text-4xl mb-3">📄</div>
-          <p className="text-slate-500 font-medium">No pages found</p>
-          <p className="text-sm text-slate-400 mt-1">Create your first page using the &quot;Add New Page&quot; tab</p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-100 text-sm">
-            <thead className="bg-slate-50">
-              <tr>
-                {["Title", "Slug", "Status", "Sitemap", "Last Updated", "Actions"].map((h) => (
-                  <th key={h} className="px-5 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-slate-400">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50 bg-white">
-              {filtered.map((page) => (
-                <tr key={page.id} className="hover:bg-slate-50 transition">
-                  <td className="px-5 py-4">
-                    <p className="font-semibold text-slate-800">{page.title}</p>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className="text-xs text-slate-500 font-mono bg-slate-100 px-2 py-1 rounded-lg">/{page.slug}</span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className={`rounded-full px-3 py-1 text-[10px] font-bold ${page.status === "Published" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
-                      {page.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className={`text-xs font-semibold ${page.inSitemap ? "text-emerald-600" : "text-slate-400"}`}>
-                      {page.inSitemap ? "✓ Yes" : "✗ No"}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-xs text-slate-400">
-                    {new Date(page.updatedAt).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => onEdit(page.id)}
-                        className="rounded-lg bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 transition">
-                        ✏ Edit
-                      </button>
-                      <a href={`https://grb-mern-gilt.vercel.app/${page.slug}`} target="_blank" rel="noreferrer"
-                        className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
-                        👁 View
-                      </a>
-                      <button onClick={() => onDelete(page.id)} disabled={deleting === page.id}
-                        className="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 transition disabled:opacity-50">
-                        {deleting === page.id ? "..." : "🗑 Delete"}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Footer */}
-      {!loading && filtered.length > 0 && (
-        <div className="px-6 py-3 border-t border-slate-100 bg-slate-50 text-xs text-slate-400">
-          Showing {filtered.length} of {pages.length} pages
-        </div>
       )}
     </div>
   );
 }
 
-function EditPageTab({ pageId, onSuccess, onCancel }: { pageId: string; onSuccess: () => void; onCancel: () => void }) {
-  const [initial, setInitial] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+/* ────────────────────────────────────────────────────────────────────
+ *  CREATE NEW PAGE TAB
+ * ──────────────────────────────────────────────────────────────────── */
+function CreatePageTab({ onSuccess }: { onSuccess: () => void }) {
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [createdPage, setCreatedPage] = useState<any>(null);
 
-  useEffect(() => {
-    fetch(`/api/pages/${pageId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setInitial({ ...data, sections: Array.isArray(data.sections) ? data.sections : [] });
-        setLoading(false);
+  const handleTitleChange = (val: string) => {
+    setTitle(val);
+    setSlug(toSlug(val));
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !slug.trim()) {
+      setError("Title and slug are required.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/pages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title, slug,
+          status: "Draft",
+          metaTitle: title,
+          sections: [],
+          draftSections: [],
+        }),
       });
-  }, [pageId]);
 
-  if (loading) return (
-    <div className="flex items-center justify-center py-20">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
-    </div>
-  );
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to create page");
+        return;
+      }
+
+      onSuccess();
+      setCreatedPage(data);
+    } catch {
+      setError("Something went wrong");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (createdPage) {
+    return (
+      <div className="fixed inset-0 z-[200] bg-[#F4F4F4]">
+        <EditorWrapper initialPage={createdPage} />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800">Edit Page</h2>
-          <p className="text-sm text-slate-500">Update the page details below.</p>
-        </div>
-        <button onClick={onCancel} className="text-sm text-slate-500 hover:text-slate-700 transition">← Back to All Pages</button>
+    <div className="max-w-xl">
+      <div className="mb-6">
+        <h2 className="text-lg font-bold text-slate-800 dark:text-white">Create New Page</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Enter a title and the full editor will open right here.
+        </p>
       </div>
-      <PageForm initial={initial} pageId={pageId} onSuccess={onSuccess} />
+
+      {error && (
+        <div className="mb-6 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
+          <span>⚠</span> {error}
+        </div>
+      )}
+
+      <form onSubmit={handleCreate} className="space-y-6">
+        <div className="rounded-2xl bg-white dark:bg-[#1a1f2c] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-5 transition-colors">
+          <div>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">Page Title *</label>
+            <input
+              type="text" value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              placeholder="e.g. Buy Google Reviews"
+              required autoFocus
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-sm text-slate-800 dark:text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 transition"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">URL Slug *</label>
+            <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 overflow-hidden">
+              <span className="px-4 py-3 text-xs text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 whitespace-nowrap">/</span>
+              <input
+                type="text" value={slug}
+                onChange={(e) => setSlug(toSlug(e.target.value))}
+                placeholder="page-slug" required
+                className="flex-1 px-4 py-3 text-sm text-slate-800 dark:text-white bg-transparent outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" disabled={saving}
+          className="rounded-xl bg-violet-600 hover:bg-violet-700 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2">
+          {saving ? (
+            <span className="flex items-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              Creating...
+            </span>
+          ) : (
+            <>
+              Create &amp; Open Editor
+              <span className="text-lg">→</span>
+            </>
+          )}
+        </button>
+      </form>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import {
   addSection,
   setIsSaving
 } from '@/lib/redux/features/pageEditorSlice';
+import PageSettingsPanel from './PageSettingsPanel';
 import Sidebar from './Sidebar';
 import PageRenderer from '../sections/PageRenderer';
 import EditableSection from './EditableSection';
@@ -26,7 +27,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Plus, Save, Eye, EyeOff, Loader2, ExternalLink, Smartphone, Monitor, Laptop, PanelRightClose, PanelRight } from 'lucide-react';
+import { Plus, Save, Eye, EyeOff, Loader2, ExternalLink, Smartphone, Monitor, Laptop, PanelRightClose, PanelRight, Settings } from 'lucide-react';
 
 interface EditorWrapperProps {
   initialPage: any;
@@ -34,10 +35,11 @@ interface EditorWrapperProps {
 
 export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
   const dispatch = useAppDispatch();
-  const { sections, editMode, isSaving, title, slug, id } = useAppSelector((state) => state.pageEditor);
+  const { sections, editMode, isSaving, title, slug, id, meta } = useAppSelector((state) => state.pageEditor);
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'tablet'>('desktop');
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (initialPage) {
@@ -50,6 +52,21 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
         title: initialPage.title,
         slug: initialPage.slug,
         sections: editorSections || [],
+        meta: {
+          metaTitle: initialPage.metaTitle || '',
+          metaDescription: initialPage.metaDescription || '',
+          keywords: initialPage.keywords || '',
+          canonicalLink: initialPage.canonicalLink || '',
+          robotsText: initialPage.robotsText || 'index, follow',
+          inSitemap: initialPage.inSitemap ?? true,
+          titleImage: initialPage.titleImage || '',
+          opengraphImage: initialPage.opengraphImage || '',
+          schemaCode: initialPage.schemaCode || '',
+          headerScript: initialPage.headerScript || '',
+          bodyScript: initialPage.bodyScript || '',
+          footerScript: initialPage.footerScript || '',
+          status: initialPage.status || 'Draft',
+        },
       }));
     }
   }, [initialPage, dispatch]);
@@ -84,7 +101,7 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
       const response = await fetch(`/api/page/${slug}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, sections: serializeData(sections), title, publish }),
+        body: JSON.stringify({ id, sections: serializeData(sections), title, publish, meta }),
       });
       if (!response.ok) {
         let errorMessage = 'Failed to save';
@@ -200,6 +217,14 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
             <div className="h-10 w-px bg-black/5 mx-1" />
 
             <button 
+              onClick={() => setIsSettingsOpen(true)}
+              className="p-3 text-black/30 hover:text-[#fc0] hover:bg-black/5 rounded-2xl transition-all"
+              title="Page Settings & SEO"
+            >
+              <Settings size={20} />
+            </button>
+
+            <button 
               onClick={() => window.open(`/${slug === 'home' ? '' : slug}`, '_blank')}
               className="p-3 text-black/30 hover:text-[#fc0] hover:bg-black/5 rounded-2xl transition-all"
               title="Open Live Site"
@@ -299,8 +324,12 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
         />
       )}
 
-      {/* Right Sidebar - Premium Customization */}
-      {editMode && isSidebarVisible && (
+      {isSettingsOpen && (
+        <PageSettingsPanel onClose={() => setIsSettingsOpen(false)} />
+      )}
+
+      {/* Right Sidebar - Always accessible for Page Settings */}
+      {isSidebarVisible && (
         <div className="w-[450px] shrink-0 h-full border-l border-[#1a1a1a]/5 bg-white shadow-2xl z-[100] animate-in slide-in-from-right duration-300">
           <Sidebar />
         </div>
