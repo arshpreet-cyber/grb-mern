@@ -141,6 +141,58 @@ const MenuBar = ({
           title="Highlight" 
           disabled={isCodeMode}
         />
+
+        {/* Text Color */}
+        <div className="relative flex items-center" title="Text Color">
+          <label className="p-2 rounded-lg hover:bg-slate-100 cursor-pointer flex items-center gap-1 text-slate-600">
+            <Palette size={16} />
+            <input
+              type="color"
+              className="w-0 h-0 opacity-0 absolute"
+              onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+              title="Text Color"
+            />
+            <span
+              className="w-3 h-1.5 rounded-sm block"
+              style={{ backgroundColor: editor.getAttributes('textStyle').color || '#000000' }}
+            />
+          </label>
+        </div>
+
+        {/* Font Size */}
+        <select
+          className="text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-slate-600 bg-white hover:bg-slate-50 focus:outline-none"
+          title="Font Size"
+          onChange={(e) => {
+            if (e.target.value) {
+              editor.chain().focus().setMark('textStyle', { fontSize: e.target.value }).run();
+            }
+          }}
+          defaultValue=""
+        >
+          <option value="" disabled>Size</option>
+          {['12px','14px','16px','18px','20px','24px','28px','32px','36px','48px','64px'].map(s => (
+            <option key={s} value={s}>{s.replace('px','')}</option>
+          ))}
+        </select>
+
+        {/* Link */}
+        <ToolbarButton
+          onClick={() => {
+            const url = window.prompt('Enter URL:', editor.getAttributes('link').href || 'https://');
+            if (url === null) return;
+            if (url === '') {
+              editor.chain().focus().unsetLink().run();
+            } else {
+              editor.chain().focus().setLink({ href: url, target: '_blank' }).run();
+            }
+          }}
+          isActive={editor.isActive('link')}
+          icon={<LinkIcon size={16} />}
+          title="Insert / Edit Link"
+          disabled={isCodeMode}
+        />
+
         <ToolbarButton 
           onClick={() => setIsCodeMode(!isCodeMode)} 
           isActive={isCodeMode}
@@ -171,7 +223,18 @@ export default function RichTextEditor({ content, onChange, placeholder = "Start
       Underline,
       Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-blue-600 underline' } }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      TextStyle,
+      TextStyle.extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            fontSize: {
+              default: null,
+              parseHTML: (el) => el.style.fontSize || null,
+              renderHTML: (attrs) => attrs.fontSize ? { style: `font-size: ${attrs.fontSize}` } : {},
+            },
+          };
+        },
+      }),
       Color,
       Highlight.configure({ multicolor: true }),
       Placeholder.configure({ placeholder }),
