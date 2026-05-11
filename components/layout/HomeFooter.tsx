@@ -162,7 +162,7 @@ export default function HomeFooter() {
                 {[
                   { label: "Help", href: "/help" },
                   { label: "Login / Signup", href: "/login" },
-                  { label: "Contact", href: "/contact" },
+                   { label: "Contact", href: "/contact-us" }, 
                   { label: "Privacy Policy", href: "/privacy-policy" },
                   { label: "Terms & Conditions", href: "/terms-and-conditions" },
                 ].map((item) => (

@@ -205,7 +205,7 @@ export default function HomeNavbar() {
                       </div>
                       <p className="text-[13px] text-black m-0">
                         (If we don&apos;t pick up,{" "}
-                        <Link href="/contact/" className="text-black underline">drop enquiry</Link>.)
+                        <Link href="/contact-us" className="text-black underline">drop enquiry</Link>.)
                       </p>
                     </div>
                   </div>
