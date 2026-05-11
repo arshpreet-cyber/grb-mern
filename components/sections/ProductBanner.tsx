@@ -130,7 +130,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               </div>
             </div>
 
-            <a href="#" className="text-red-500 text-sm underline">View Terms & Conditions</a>
+            <a href="/terms-and-conditions" className="text-red-500 text-sm underline">View Terms & Conditions</a>
           </div>
 
           {/* RIGHT IMAGE */}
@@ -138,7 +138,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             <img
               src={resolvedImage || "https://getreviews.buzz/storage/app/blog/0539654001776770835_0702272001776065346_left-img.png"}
               alt="preview"
-              className="w-full max-w-[620px] object-contain"
+              className="w-full max-w-[420px] object-contain"
             />
           </div>
 

@@ -9,7 +9,7 @@ export default function TextSection({ data = {}, settings = {} as any }: Section
   const styles: React.CSSProperties = {
     padding: settings.padding || '4rem 0',
     margin: settings.margin || '0',
-    backgroundColor: settings.backgroundColor || '#f9fafb',
+    backgroundColor: settings.backgroundColor || '#fff',
     color: settings.contentColor || 'inherit',
     fontSize: settings.contentSize || 'inherit',
     fontWeight: settings.contentWeight || 'inherit',

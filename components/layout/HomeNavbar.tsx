@@ -8,7 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import Wrapper from "@/components/ui/Wrapper";
 
 const buyReviewsLinks = [
-  { href: "/google-reviews/", label: "Google", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
+  { href: "/buy-google-reviews/", label: "Google", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
   { href: "/buy-google-local-guide-reviews/", label: "Google Local Guide", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
   { href: "/buy-trustpilot-reviews/", label: "TrustPilot", img: "https://www.google.com/s2/favicons?domain=trustpilot.com&sz=64" },
   { href: "/buy-glassdoor-reviews/", label: "Glassdoor", img: "https://www.google.com/s2/favicons?domain=glassdoor.com&sz=64" },
