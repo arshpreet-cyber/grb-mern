@@ -19,7 +19,7 @@ export default function TextSection({ data = {}, settings = {} as any }: Section
 
   return (
     <section style={styles}>
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-[1300] mx-auto px-4">
         <div className="prose prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: content }} />
       </div>
     </section>
