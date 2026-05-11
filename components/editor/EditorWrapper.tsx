@@ -100,15 +100,17 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
       const pageSlug = slug || initialPage.slug;
       const pageId = id || initialPage.id;
       console.log(`Updating page: ${pageSlug}`, { title, publish, sectionCount: sections?.length });
-      const response = await fetch(`/api/page/${pageSlug}`, {
+      const response = await fetch(`/api/page/${encodeURIComponent(pageSlug)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, sections: serializeData(sections), title, publish, meta }),
       });
       if (!response.ok) {
         let errorMessage = 'Failed to save';
+        let responseText = '';
         try {
-          const errorData = await response.json();
+          responseText = await response.text();
+          const errorData = JSON.parse(responseText);
           errorMessage = errorData.code 
             ? `Database Error [${errorData.code}]: ${errorData.details || errorMessage}`
             : (errorData.details || errorData.error || errorMessage);
@@ -117,7 +119,7 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
             console.error('Prisma Meta:', errorData.meta);
           }
         } catch (e) {
-          errorMessage = `Server Error: ${response.statusText}`;
+          errorMessage = `Server Error: ${response.status} ${response.statusText} for slug '${pageSlug}' id '${pageId}'. Response: ${responseText.substring(0, 100)}`;
         }
         throw new Error(errorMessage);
       }
