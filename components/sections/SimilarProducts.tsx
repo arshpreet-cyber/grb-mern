@@ -1,17 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import products from "@/lib/constants/products";
 import { ProductCard } from "@/components/home/BuyReviewsSection";
 import { SectionProps } from "@/types/section";
 
 export default function YouMayAlsoLike({ data = {} }: SectionProps) {
-  const { excludeIds = [], category = "google" } = data;
+  const { excludeIds = [] } = data;
+  
+  // Identify if we are currently on a Google-related product
+  const isGoogleCategory = useMemo(() => {
+    return excludeIds.some((id: string) => id.toLowerCase().includes('google'));
+  }, [excludeIds]);
+
   const [selection, setSelection] = useState<{ productId: string; mode: "onetime" | "monthly" } | null>(null);
 
-  const filteredProducts = products
-    .filter((item) => item.id.startsWith(category) && !excludeIds.includes(item.id))
-    .slice(0, 4);
+  const filteredProducts = useMemo(() => {
+    // 1. If it's a Google product, find other Google products first
+    if (isGoogleCategory) {
+      const googleProducts = products.filter(
+        (item) => item.id.toLowerCase().includes('google') && !excludeIds.includes(item.id)
+      );
+      
+      // If we found Google alternatives, show them (up to 4)
+      if (googleProducts.length > 0) {
+        return googleProducts.slice(0, 4);
+      }
+    }
+
+    // 2. For all other products (or if no Google alternatives found), 
+    // show a random selection excluding current products
+    return products
+      .filter((item) => !excludeIds.includes(item.id))
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 4);
+      
+  }, [excludeIds, isGoogleCategory]);
 
   return (
     <section className="bg-[#fff] py-12 lg:py-16">
