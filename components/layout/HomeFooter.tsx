@@ -58,7 +58,7 @@ export default function HomeFooter() {
             {/* COLUMN 1 */}
             <div>
               <img
-                src="https://getreviews.buzz/storage/app/blog/QyrcYCNZhxKJsN5lOpoiVonzJ21Uk1N1iXAkCkQk.png"
+                src="/uploads/media/1778825516692-e449b40f-8cea-4a36-bfc7-28122f585ab2-logo-black-bg.png"
                 alt="logo"
                 className="w-[180px] mb-6"
               />
@@ -131,14 +131,14 @@ export default function HomeFooter() {
 
               <ul className="space-y-4 text-[#bdbdbd] text-[14px]">
                 {[
-                  { label: "Google Reviews", href: "/google-reviews" },
-                  { label: "Google Local Guide", href: "/google-local-guide" },
-                  { label: "TrustPilot", href: "/trustpilot-reviews" },
-                  { label: "Glassdoor Reviews", href: "/glassdoor-reviews" },
-                  { label: "Facebook Reviews", href: "/facebook-reviews" },
-                  { label: "Thumbtack Reviews", href: "/thumbtack-reviews" },
-                  { label: "BBB Reviews", href: "/bbb-reviews" },
-                  { label: "Indeed Reviews", href: "/indeed-reviews" },
+                  { label: "Google Reviews", href: "/buy-google-reviews" },
+                  { label: "Google Local Guide", href: "/buy-google-local-guide" },
+                  { label: "TrustPilot", href: "/buy-trustpilot-reviews" },
+                  { label: "Glassdoor Reviews", href: "/buy-glassdoor-reviews" },
+                  { label: "Facebook Reviews", href: "/buy-facebook-reviews" },
+                  { label: "Thumbtack Reviews", href: "/buy-thumbtack-reviews" },
+                  { label: "BBB Reviews", href: "/buy-bbb-reviews" },
+                  { label: "Indeed Reviews", href: "/buy-indeed-reviews" },
                 ].map((item) => (
                   <li key={item.label}>
                     <Link
@@ -228,7 +228,7 @@ export default function HomeFooter() {
             </p>
 
             <img
-              src="https://getreviews.buzz/storage/app/blog/PChHQtiucEdaqTAPJyXwHt71ceVP1qzyS5uu5jK9.png"
+              src="/uploads/media/1778825621435-4d459837-eaab-485a-b769-45734fa0b63f-payments.png"
               alt="payments"
             />
           </div>
