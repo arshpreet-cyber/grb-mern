@@ -31,72 +31,138 @@ export async function sendEmailNotification(options: {
   });
 }
 
+function emailWrapper(content: string) {
+  return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:30px 0">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+      <!-- Logo -->
+      <tr>
+        <td align="center" style="padding:28px 32px 20px;background:#ffffff;border-bottom:1px solid #f0f0f0">
+          <table cellpadding="0" cellspacing="0">
+            <tr>
+              <td align="center">
+                <div style="font-size:22px;color:#f5a623;letter-spacing:2px">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
+                <div style="font-size:26px;font-weight:bold;color:#222;margin-top:4px;letter-spacing:-0.5px">Get <span style="color:#f5a623">Reviews</span></div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <!-- Content -->
+      <tr><td style="padding:28px 32px">${content}</td></tr>
+      <!-- Footer -->
+      <tr>
+        <td style="padding:20px 32px;background:#f9f9f9;border-top:1px solid #eeeeee;text-align:center">
+          <p style="margin:0 0 10px;font-size:12px;color:#999">
+            <a href="#" style="color:#999;text-decoration:none">PRIVACY STATEMENT</a> &nbsp;|&nbsp;
+            <a href="#" style="color:#999;text-decoration:none">TERMS OF SERVICE</a> &nbsp;|&nbsp;
+            <a href="#" style="color:#999;text-decoration:none">ABOUT</a>
+          </p>
+          <p style="margin:0 0 12px;font-size:11px;color:#bbb">©${new Date().getFullYear()} GET REVIEWS BUZZ. ALL RIGHTS RESERVED.</p>
+          <table cellpadding="0" cellspacing="0" align="center"><tr>
+            <td style="padding:0 4px"><a href="https://facebook.com" style="display:inline-block;width:28px;height:28px;background:#1877f2;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">f</a></td>
+            <td style="padding:0 4px"><a href="https://twitter.com" style="display:inline-block;width:28px;height:28px;background:#000;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">𝕏</a></td>
+            <td style="padding:0 4px"><a href="https://instagram.com" style="display:inline-block;width:28px;height:28px;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:11px">&#9679;</a></td>
+            <td style="padding:0 4px"><a href="https://wa.me" style="display:inline-block;width:28px;height:28px;background:#25d366;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px">&#128222;</a></td>
+          </tr></table>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+}
+
+function orderTable(items: Array<{ platform: string; qty: number; pricePerUnit: number }>) {
+  const rows = items.map((i) => `
+    <tr>
+      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:14px">${i.platform} Reviews</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:14px">${i.qty}</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:14px">$${i.pricePerUnit.toFixed(2)}</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:right;font-size:14px">$${(i.pricePerUnit * i.qty).toFixed(2)}</td>
+    </tr>`).join("");
+
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin:16px 0">
+    <thead>
+      <tr style="background:#f8f8f8">
+        <th style="padding:10px 14px;text-align:left;font-size:13px;color:#555;font-weight:600;border-bottom:1px solid #e8e8e8">Product Name</th>
+        <th style="padding:10px 14px;text-align:center;font-size:13px;color:#555;font-weight:600;border-bottom:1px solid #e8e8e8">Quantity</th>
+        <th style="padding:10px 14px;text-align:center;font-size:13px;color:#555;font-weight:600;border-bottom:1px solid #e8e8e8">Amount Per Item</th>
+        <th style="padding:10px 14px;text-align:right;font-size:13px;color:#555;font-weight:600;border-bottom:1px solid #e8e8e8">Amount</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function paymentDetails(total: number, amountPaid: number) {
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin:16px 0">
+    <thead>
+      <tr><th colspan="2" style="padding:10px 14px;text-align:center;font-size:15px;color:#1a6fe0;font-weight:700;border-bottom:1px solid #e8e8e8;background:#f8fbff">Payment Details</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:10px 14px;font-size:14px;color:#555;border-bottom:1px solid #f0f0f0">Total:</td>
+        <td style="padding:10px 14px;font-size:14px;text-align:right;font-weight:600;border-bottom:1px solid #f0f0f0">$${total.toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 14px;font-size:14px;color:#555">Amount Paid :</td>
+        <td style="padding:10px 14px;font-size:14px;text-align:right;font-weight:600">${amountPaid > 0 ? `$${amountPaid.toFixed(2)}` : "0"}</td>
+      </tr>
+    </tbody>
+  </table>`;
+}
+
 export function buildOrderCreatedEmail(payload: {
   name: string;
+  email?: string;
   orderNumber: string;
   items: Array<{ platform: string; qty: number; pricePerUnit: number }>;
   total: number;
 }) {
-  const rows = payload.items.map(
-    (i) => `<tr>
-      <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0">${i.platform}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;text-align:center">${i.qty}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;text-align:right">$${(i.pricePerUnit * i.qty).toFixed(2)}</td>
-    </tr>`
-  ).join("");
-
+  const content = `
+    <p style="margin:0 0 14px;font-size:15px;color:#333">This order has been successfully generated and ready to pay.</p>
+    <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
+    <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:4px">
+      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+    </table>
+    ${orderTable(payload.items)}
+    ${paymentDetails(payload.total, 0)}
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
+  `;
   return {
-    subject: `Order Received #${payload.orderNumber} – GetReviews`,
-    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#333">
-      <div style="background:#fcd535;padding:24px 32px">
-        <h1 style="margin:0;font-size:22px;color:#111">Order Received</h1>
-      </div>
-      <div style="padding:28px 32px">
-        <p>Hi ${payload.name},</p>
-        <p>Thank you for your order! We've received it and will begin processing once your payment is confirmed.</p>
-        <p><strong>Order #${payload.orderNumber}</strong></p>
-        <table style="width:100%;border-collapse:collapse;margin:16px 0">
-          <thead>
-            <tr style="background:#f8f8f8">
-              <th style="padding:8px 12px;text-align:left">Item</th>
-              <th style="padding:8px 12px;text-align:center">Qty</th>
-              <th style="padding:8px 12px;text-align:right">Amount</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2" style="padding:10px 12px;font-weight:bold;text-align:right">Total</td>
-              <td style="padding:10px 12px;font-weight:bold;text-align:right;color:#28a745">$${payload.total.toFixed(2)}</td>
-            </tr>
-          </tfoot>
-        </table>
-        <p style="color:#666;font-size:13px">If you have any questions, reply to this email or contact our support team.</p>
-        <p>Thanks,<br><strong>GetReviews Team</strong></p>
-      </div>
-    </div>`,
+    subject: "New order has been generated!",
+    html: emailWrapper(content),
   };
 }
 
 export function buildOrderPaidEmail(payload: {
   name: string;
+  email?: string;
   orderNumber: string;
+  items?: Array<{ platform: string; qty: number; pricePerUnit: number }>;
   total: number;
 }) {
+  const content = `
+    <p style="margin:0 0 14px;font-size:15px;color:#333">New order has been placed successfully.</p>
+    <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
+    <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:4px">
+      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+    </table>
+    ${payload.items ? orderTable(payload.items) : ""}
+    ${paymentDetails(payload.total, payload.total)}
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
+  `;
   return {
-    subject: `Payment Confirmed #${payload.orderNumber} – GetReviews`,
-    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#333">
-      <div style="background:#28a745;padding:24px 32px">
-        <h1 style="margin:0;font-size:22px;color:#fff">Payment Confirmed</h1>
-      </div>
-      <div style="padding:28px 32px">
-        <p>Hi ${payload.name},</p>
-        <p>Great news! Your payment for order <strong>#${payload.orderNumber}</strong> has been confirmed.</p>
-        <p style="font-size:22px;font-weight:bold;color:#28a745">$${payload.total.toFixed(2)} received</p>
-        <p>Our team is now processing your order and will get started right away. You can track your order status from your dashboard.</p>
-        <p>Thanks,<br><strong>GetReviews Team</strong></p>
-      </div>
-    </div>`,
+    subject: "New order has been placed successfully!",
+    html: emailWrapper(content),
   };
 }
 

@@ -9,7 +9,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const order = await prisma.order.findUnique({ where: { id: order_id } });
+  const order = await prisma.order.findUnique({
+    where: { id: order_id },
+    include: { orderDetails: true },
+  });
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
@@ -26,8 +29,14 @@ export async function POST(req: NextRequest) {
   // Send payment confirmed email silently
   if (order.email) {
     const emailContent = buildOrderPaidEmail({
-      name: order.firstName ?? "Customer",
+      name: `${order.firstName ?? ""} ${order.lastName ?? ""}`.trim() || "Customer",
+      email: order.email ?? "",
       orderNumber: order.orderNumber ?? order_id,
+      items: order.orderDetails.map((d) => ({
+        platform: d.platform ?? d.itemName ?? "",
+        qty: d.quantity ?? 1,
+        pricePerUnit: d.amount ?? 0,
+      })),
       total: order.amount ?? 0,
     });
     sendEmailNotification({

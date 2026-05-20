@@ -114,7 +114,8 @@ export async function POST(req: NextRequest) {
     // Send order confirmation email silently
     if (user?.email) {
       const emailContent = buildOrderCreatedEmail({
-        name: user.name?.split(" ")[0] ?? "Customer",
+        name: user.name ?? "Customer",
+        email: user.email,
         orderNumber,
         items: items.map((item: any) => ({
           platform: item.platform,
