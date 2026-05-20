@@ -42,16 +42,16 @@ model User {
 }
 
 model Order {
-  id                  String    @id @default(cuid())
-  orderNumber         String?   @unique
+  id                  String        @id @default(cuid())
+  orderNumber         String?       @unique
   userId              String?
   amount              Float?
-  paymentMethod       String?   @default("1")
-  status              String    @default("1")
-  paymentStatus       String?   @default("1")
-  date                DateTime  @default(now())
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  paymentMethod       String?       @default("1")
+  status              String        @default("1")
+  paymentStatus       String?       @default("1")
+  date                DateTime      @default(now())
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
   billingCity         String?
   billingCountry      String?
   billingStreet       String?
@@ -62,14 +62,14 @@ model Order {
   couponId            String?
   currency            String?
   deletedAt           DateTime?
-  detailsFilled       Boolean   @default(false)
+  detailsFilled       Boolean       @default(false)
   detailsFilledAt     DateTime?
   duedate             DateTime?
   email               String?
   firstName           String?
-  isOrderApi          Int       @default(1)
+  isOrderApi          Int           @default(1)
   isRecurring         Int?
-  isRenewal           Boolean   @default(false)
+  isRenewal           Boolean       @default(false)
   itemId              String?
   itemName            String?
   lastName            String?
@@ -84,7 +84,25 @@ model Order {
   subscriptionId      String?
   symbol              String?
   workStatus          Int?
-  user                User?     @relation(fields: [userId], references: [id])
+  payUrl              String?
+  tokenCode           String?
+  user                User?         @relation(fields: [userId], references: [id])
+  orderDetails        OrderDetail[]
+}
+
+model OrderDetail {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  itemName  String?
+  itemId    String?
+  quantity  Int?
+  amount    Float?
+  platform  String?
+  type      String?  // one-time or subscribe
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Ticket {

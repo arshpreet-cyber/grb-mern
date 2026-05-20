@@ -21,7 +21,7 @@ export default function BlogCard({ data }: BlogCardProps) {
       <Link href={`/blog/${data.slug}`} className="group block bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
         <div className="relative aspect-[16/9] overflow-hidden bg-gray-50">
           {data.media ? (
-            <img 
+            <img
               src={data.media} 
               alt={data.title} 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

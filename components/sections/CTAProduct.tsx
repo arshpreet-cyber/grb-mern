@@ -11,7 +11,7 @@ const defaultIcons = [
   { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "top-16 left-1/4" },
   { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "top-12 right-1/4" },
   { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "top-10 right-10" },
-  { src: "http://localhost:3000/uploads/media/1777957627129-d57e7019-a38b-452b-b43d-fe9b0949ebfc-Group-912.svg", className: "top-100 left-10" },
+  { src: "/uploads/media/1777957627129-d57e7019-a38b-452b-b43d-fe9b0949ebfc-Group-912.svg", className: "top-100 left-10" },
   { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "bottom-16 left-1/4" },
   { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "bottom-16 right-1/4" },
   { src: "/uploads/media/1777957032643-47e55815-249d-49f2-bdd8-b0b0cfb22ca7-Group-926.svg", className: "bottom-10 right-10" },
