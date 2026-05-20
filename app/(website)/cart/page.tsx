@@ -221,23 +221,21 @@ export default function CartPage() {
 
                     <div className="space-y-[10px]">
 
-                      {/* Zoho */}
+                      {/* Pay with Debit/Credit Card */}
                       <button
                         onClick={() => handlePayment("zoho")}
                         disabled={!!loading}
-                        className="w-full flex items-center justify-center gap-2.5 bg-[#E42527] text-white text-[14px] font-semibold py-3 px-4 rounded-[50px] hover:bg-[#c41f21] transition-all disabled:opacity-60 cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2.5 bg-black text-white text-[14px] font-semibold py-[13px] px-4 rounded-[50px] hover:bg-[#222] transition-all disabled:opacity-60 cursor-pointer"
                       >
-                        {loading === "zoho" ? "Redirecting..." : (
-                          <>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-                            </svg>
-                            <span>Pay with Zoho</span>
-                            <svg viewBox="0 0 60 20" height="14" fill="white" className="ml-auto opacity-90">
-                              <text x="0" y="16" fontSize="16" fontWeight="bold" fontFamily="Arial">zoho</text>
-                            </svg>
-                          </>
-                        )}
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                          <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        <span>Pay with Debit / Credit Card</span>
+                        <span className="flex items-center gap-1 ml-auto">
+                          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/visa.svg" alt="Visa" className="h-[13px] object-contain brightness-0 invert opacity-80" />
+                          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg" alt="Mastercard" className="h-[15px] object-contain brightness-0 invert opacity-80" />
+                        </span>
                       </button>
 
 
