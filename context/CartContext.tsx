@@ -49,11 +49,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("grb_cart", JSON.stringify(items));
   }, [hasHydrated, items]);
 
+  const MIN_QTY = 5;
+
   const addItem = (item: Omit<CartItem, "qty">) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) return prev.map((i) => i.id === item.id ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { ...item, qty: 1 }];
+      return [...prev, { ...item, qty: MIN_QTY }];
     });
     setIsOpen(true);
   };
@@ -61,7 +63,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeItem = (id: string) => setItems((p) => p.filter((i) => i.id !== id));
 
   const updateQty = (id: string, qty: number) => {
-    if (qty < 1) return removeItem(id);
+    if (qty < MIN_QTY) {
+      alert(`Minimum quantity is ${MIN_QTY}.`);
+      return;
+    }
     setItems((p) => p.map((i) => i.id === id ? { ...i, qty } : i));
   };
 
@@ -71,7 +76,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const toggleCart = () => setIsOpen((prev) => !prev);
 
   const total = items.reduce((sum, i) => sum + i.pricePerUnit * i.qty, 0);
-  const count = items.reduce((sum, i) => sum + i.qty, 0);
+  const count = items.length;
 
   return (
     <CartContext.Provider value={{ items, addItem, removeItem, updateQty, clearCart, isOpen, openCart, closeCart, toggleCart, total, count }}>

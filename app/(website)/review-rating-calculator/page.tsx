@@ -1,6 +1,7 @@
 import React from 'react';
 import PageRenderer from "@/components/sections/PageRenderer";
 import EditorWrapper from "@/components/editor/EditorWrapper";
+import PageScripts from "@/components/layout/PageScripts";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
 
@@ -134,18 +135,10 @@ export default async function ReviewRatingCalculatorPage({
 
   return (
     <>
-      {page?.headerScript && (
-        <div dangerouslySetInnerHTML={{ __html: page.headerScript }} />
-      )}
+      <PageScripts headerScript={page?.headerScript} bodyScript={page?.bodyScript} footerScript={page?.footerScript} />
       <div className="min-h-screen bg-white text-slate-900">
         <PageRenderer sections={sections.filter((s: any) => s.settings?.visibility !== false)} />
       </div>
-      {page?.bodyScript && (
-        <div dangerouslySetInnerHTML={{ __html: page.bodyScript }} />
-      )}
-      {page?.footerScript && (
-        <div dangerouslySetInnerHTML={{ __html: page.footerScript }} />
-      )}
     </>
   );
 }

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import EditorWrapper from "@/components/editor/EditorWrapper";
 import PageRenderer from "@/components/sections/PageRenderer";
-import HeroBanner from "@/components/home/HeroBanner";
+import PageScripts from "@/components/layout/PageScripts";
 import { BuyReviewsSection } from "@/components/home/BuyReviewsSection";
 import CustomPlatform from "@/components/home/CustomPlatform";
 import StatsBar from "@/components/home/StatsBar";
@@ -60,12 +60,10 @@ export default async function HomePage({
   if (sectionsToRender && sectionsToRender.length > 0) {
     return (
       <>
-        {page?.headerScript && <div dangerouslySetInnerHTML={{ __html: page.headerScript }} />}
+        <PageScripts headerScript={page?.headerScript} bodyScript={page?.bodyScript} footerScript={page?.footerScript} />
         <div className="min-h-screen bg-white text-slate-900 font-sans">
           <PageRenderer sections={sectionsToRender.filter((s: any) => s.settings?.visibility !== false)} />
         </div>
-        {page?.bodyScript && <div dangerouslySetInnerHTML={{ __html: page.bodyScript }} />}
-        {page?.footerScript && <div dangerouslySetInnerHTML={{ __html: page.footerScript }} />}
       </>
     );
   }

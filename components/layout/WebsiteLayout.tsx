@@ -4,7 +4,7 @@ import HomeNavbar from "@/components/layout/HomeNavbar";
 import HomeFooter from "@/components/layout/HomeFooter";
 import SideCart from "@/components/cart/SideCart";
 import AdminToolbar from "@/components/admin/AdminToolbar";
-
+import AuthModal from "@/components/layout/AuthModal";
 import { useSearchParams } from "next/navigation";
 
 export default function WebsiteLayout({
@@ -28,6 +28,7 @@ export default function WebsiteLayout({
       <AdminToolbar />
       <HomeNavbar />
       <SideCart />
+      <AuthModal />
       <main className="flex-grow">{children}</main>
       <HomeFooter />
     </div>

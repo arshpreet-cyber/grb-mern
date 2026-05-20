@@ -6,10 +6,36 @@ import Wrapper from "@/components/ui/Wrapper";
 import { X, Info, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import products from "@/lib/constants/products";
+import { useState } from "react";
 
 export default function CartPage() {
   const { items, removeItem, updateQty, clearCart, total } = useCart();
   const router = useRouter();
+  const [loading, setLoading] = useState<"card" | "paypal" | "razorpay" | "zoho" | null>(null);
+
+  async function handlePayment(method: "card" | "paypal" | "razorpay" | "zoho") {
+    setLoading(method);
+    try {
+      const res = await fetch("/api/orders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items, paymentMethod: method }),
+      });
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Server error — please try again.");
+      }
+      if (!res.ok) throw new Error(data?.error ?? "Failed to create order");
+      clearCart();
+      window.location.href = data.payUrl;
+    } catch (err: any) {
+      alert(err.message ?? "Something went wrong. Please try again.");
+    } finally {
+      setLoading(null);
+    }
+  }
 
   // Pick 3 random similar products
   const randomProducts = products
@@ -185,20 +211,85 @@ export default function CartPage() {
                       <span className="text-[24px] font-bold text-black">${total.toFixed(2)}</span>
                     </div>
 
-                    <div className="space-y-[15px]">
-                      <button className="pay-submit-btn w-full bg-black text-white text-[17px] font-medium py-[7px] rounded-[50px] border-none cursor-pointer transition-all duration-[0.9s] hover:bg-[#9A9A9A]">
-                        Pay by Card
-                      </button>
-                      <button className="pay-submit-btn w-full bg-black text-white text-[17px] font-medium py-[7px] rounded-[50px] border-none cursor-pointer transition-all duration-[0.9s] hover:bg-[#9A9A9A]">
-                        PayPal
-                      </button>
-                    </div>
+                    <div className="space-y-[10px]">
 
-                    {/* Payment Icons */}
-                    <div className="payment-icons-row flex justify-center gap-2.5 mt-5 mb-5">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" alt="Visa" className="h-[20px] object-contain grayscale opacity-50" />
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-[20px] object-contain grayscale opacity-50" />
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-[20px] object-contain grayscale opacity-50" />
+                      {/* Pay by Credit/Debit Card */}
+                      <button
+                        onClick={() => handlePayment("card")}
+                        disabled={!!loading}
+                        className="w-full flex items-center justify-center gap-2.5 bg-black text-white text-[14px] font-semibold py-[12px] px-4 rounded-[50px] hover:bg-[#222] transition-all disabled:opacity-60 cursor-pointer"
+                      >
+                        {loading === "card" ? "Redirecting..." : (
+                          <>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                              <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
+                            <span>Pay by Credit / Debit</span>
+                            <span className="flex items-center gap-1 ml-auto">
+                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/visa.svg" alt="Visa" className="h-[13px] object-contain brightness-0 invert opacity-80" />
+                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg" alt="Mastercard" className="h-[15px] object-contain brightness-0 invert opacity-80" />
+                            </span>
+                          </>
+                        )}
+                      </button>
+
+                      {/* PayPal */}
+                      <button
+                        onClick={() => handlePayment("paypal")}
+                        disabled={!!loading}
+                        className="w-full flex items-center justify-center gap-2.5 bg-[#FFC439] text-[#003087] text-[14px] font-bold py-[12px] px-4 rounded-[50px] hover:bg-[#f0b429] transition-all disabled:opacity-60 cursor-pointer"
+                      >
+                        {loading === "paypal" ? "Redirecting..." : (
+                          <>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#003087">
+                              <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
+                            </svg>
+                            <span>Pay with PayPal</span>
+                            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/paypal.svg" alt="PayPal" className="h-[14px] object-contain brightness-0 invert ml-auto" />
+                          </>
+                        )}
+                      </button>
+
+                      {/* Razorpay */}
+                      <button
+                        onClick={() => handlePayment("razorpay")}
+                        disabled={!!loading}
+                        className="w-full flex items-center justify-center gap-2.5 bg-[#2D81F7] text-white text-[14px] font-semibold py-[12px] px-4 rounded-[50px] hover:bg-[#1a6fe0] transition-all disabled:opacity-60 cursor-pointer"
+                      >
+                        {loading === "razorpay" ? "Redirecting..." : (
+                          <>
+                            <svg width="16" height="18" viewBox="0 0 24 28" fill="white">
+                              <path d="M13.5 0L0 16h9L7.5 28 24 12h-9z"/>
+                            </svg>
+                            <span>Pay with Razorpay</span>
+                            <svg viewBox="0 0 120 28" height="14" fill="white" className="ml-auto opacity-90">
+                              <text x="0" y="22" fontSize="22" fontWeight="bold" fontFamily="Arial">razorpay</text>
+                            </svg>
+                          </>
+                        )}
+                      </button>
+
+                      {/* Zoho */}
+                      <button
+                        onClick={() => handlePayment("zoho")}
+                        disabled={!!loading}
+                        className="w-full flex items-center justify-center gap-2.5 bg-[#E42527] text-white text-[14px] font-semibold py-3 px-4 rounded-[50px] hover:bg-[#c41f21] transition-all disabled:opacity-60 cursor-pointer"
+                      >
+                        {loading === "zoho" ? "Redirecting..." : (
+                          <>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                            </svg>
+                            <span>Pay with Zoho</span>
+                            <svg viewBox="0 0 60 20" height="14" fill="white" className="ml-auto opacity-90">
+                              <text x="0" y="16" fontSize="16" fontWeight="bold" fontFamily="Arial">zoho</text>
+                            </svg>
+                          </>
+                        )}
+                      </button>
+
+
                     </div>
 
                     <p className="text-center text-[14px] text-[#515151] mt-[10px]">*You will input your order details on the next page</p>
