@@ -29,7 +29,6 @@ export default function CartPage() {
         throw new Error("Server error — please try again.");
       }
       if (!res.ok) throw new Error(data?.error ?? "Failed to create order");
-      clearCart();
       window.location.href = data.payUrl;
     } catch (err: any) {
       alert(err.message ?? "Something went wrong. Please try again.");
@@ -57,18 +56,6 @@ export default function CartPage() {
     { number: 2, label: "order details", active: false },
     { number: 3, label: "order placed", active: false },
   ];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white font-['Poppins'] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#fcd535] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[16px] font-semibold text-[#333]">Redirecting to payment...</p>
-          <p className="text-[13px] text-[#888] mt-1">Please do not close this window.</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-white font-['Poppins']">
