@@ -70,11 +70,35 @@ export default async function HomePage({
     );
   }
 
-  // Static Fallback (only if DB is empty)
+  // =========================================================================
+  // Static Fallback Data Mappings (Satisfies strict TypeScript SectionProps)
+  // =========================================================================
+  const fallbackHeroProps = {
+    id: "default-hero",
+    settings: { padding: "0px", margin: "0px", backgroundColor: "transparent" },
+    data: {
+      staticTitle1: "Turn Reputation into",
+      staticTitleBold: "Revenue",
+      staticTitle2: "with",
+      typingServices: [
+        "Hotel Reviews",
+        "Health Services Reviews",
+        "Plumbing Services Reviews",
+        "Real Estate Reviews",
+        "Legal Services Reviews",
+        "Authentic Reviews",
+      ],
+      description: "Elevate your brand with reviews that actually convert."
+    }
+  };
+
   const { visibilitySection } = HOME_PAGE_DATA;
+
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
-      <HeroBanner />
+      {/* Spread the properties safely to pass the required types */}
+      <HeroBanner {...fallbackHeroProps} />
+      
       <BuyReviewsSection />
       <CustomPlatform />
       <StatsBar />
