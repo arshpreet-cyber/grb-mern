@@ -204,46 +204,47 @@ enum ProductStatus {
 
 model Product {
   id                Int            @id @default(autoincrement())
-  userId            String?
-  formId            Int?
-  isAged            YesNo          @default(NO)
-  isZohoItem        YesNo?
-  isFreeProduct     Int?
-  zohoItemId        String?
-  bannerTitle       String?
-  title             String?
+  userId            String?        @map("userId")
+  formId            Int?           @map("formId")
+  isAged            YesNo          @default(NO) @map("isAged")
+  isZohoItem        YesNo?         @map("isZohoItem")
+  isFreeProduct     Int?           @map("isFreeProduct")
+  zohoItemId        String?        @map("zohoItemId")
+  bannerTitle       String?        @map("bannerTitle")
+  title             String?        // No @map needed (Unquoted lower-case in Postgres)
   content           String?        @db.Text
-  categoryId        String?
-  subcategoryId     String?
-  accountTag        String?        @db.VarChar(30)
-  stock             String?
-  replacementPolicy String?
-  minimumQuantity   Int            @default(1)
-  seeDetailLink     String?
-  isMultiplePrice   Int?
-  price             String?
-  dropdownPrice     String?        @db.Text
-  isMonthly         Int?
-  colorCode         String?
-  slug              String?
-  keywords          String?
-  metaDescription   String?        @db.Text
-  metaTitle         String?        @db.Text
-  canonicalLink     String?        @db.Text
-  media             String?
-  allowMultiple     YesNo?
-  paymentType       PaymentType?
-  productType       ProductType?
-  catType           CatType?
-  formAttached      String?        @db.VarChar(30)
-  priority          Int?           @default(1000)
-  status            ProductStatus?
-  platformRange     Int?
-  createdAt         DateTime?      @default(now())
-  updatedAt         DateTime?      @updatedAt
-  deletedAt         DateTime?
-}
+  categoryId        String?        @map("categoryId")
+  subcategoryId     String?        @map("subcategoryId")
+  accountTag        String?        @db.VarChar(30) @map("accountTag")
+  stock             String?        // No @map needed
+  replacementPolicy String?        @map("replacementPolicy")
+  minimumQuantity   Int            @default(1) @map("minimumQuantity")
+  seeDetailLink     String?        @map("seeDetailLink")
+  isMultiplePrice   Int?           @map("isMultiplePrice")
+  price             String?        // No @map needed
+  dropdownPrice     String?        @db.Text @map("dropdownPrice")
+  isMonthly         Int?           @map("isMonthly")
+  colorCode         String?        @map("colorCode")
+  slug              String?        // No @map needed
+  keywords          String?        // No @map needed
+  metaDescription   String?        @db.Text @map("metaDescription")
+  metaTitle         String?        @db.Text @map("metaTitle")
+  canonicalLink     String?        @db.Text @map("canonicalLink")
+  media             String?        // No @map needed
+  allowMultiple     YesNo?         @map("allowMultiple")
+  paymentType       PaymentType?   @map("paymentType")
+  productType       ProductType?   @map("productType")
+  catType           CatType?       @map("catType")
+  formAttached      String?        @db.VarChar(30) @map("formAttached")
+  priority          Int?           @default(1000) // No @map needed
+  status            ProductStatus? // No @map needed
+  platformRange     Int?           @map("platformRange")
+  createdAt         DateTime?      @default(now()) @map("createdAt")
+  updatedAt         DateTime?      @updatedAt @map("updatedAt")
+  deletedAt         DateTime?      @map("deletedAt")
 
+  @@map("Product") // Maps the model to the strict case-sensitive "Product" table
+}
 // 1-blog, 2-banner, 3-category, 4-testimonial, 5-employees/users, 6-pages, 7-portfolio, 8-services, 9-logo
 enum AttachmentType {
   BLOG
@@ -311,4 +312,4 @@ model Blog {
   deleted_at       DateTime?
 }
 
-
+
