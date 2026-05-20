@@ -6,6 +6,7 @@ import Wrapper from "@/components/ui/Wrapper";
 import { X, Info, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import products from "@/lib/constants/products";
+import SimilarProducts from "@/components/sections/SimilarProducts";
 import { useState } from "react";
 
 export default function CartPage() {
@@ -36,6 +37,14 @@ export default function CartPage() {
       setLoading(null);
     }
   }
+
+  const componentProps = {
+    id: "cart-cross-sell",
+    settings: {},
+    data: {
+      excludeIds: items.map((item) => String(item.id))
+    }
+  };
 
   // Pick 3 random similar products
   const randomProducts = products
@@ -308,6 +317,7 @@ export default function CartPage() {
                   </div>
                 </div>
               </div>
+              <SimilarProducts {...componentProps} />
             </div>
           )}
         </Wrapper>
