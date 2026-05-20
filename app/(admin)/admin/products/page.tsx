@@ -4,31 +4,40 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
-import { ShoppingBag, Plus, Edit2, Trash2, Package, Search, Image as ImageIcon, Upload, X } from "lucide-react";
+import { ShoppingBag, Plus, Edit2, Trash2, Package, Image as ImageIcon, Upload, X, Award } from "lucide-react";
 
 type Product = {
-  id: number;
-  title: string | null;
-  catType: string | null;
+  id: string;          
+  platform: string;    // mapped from database 'title'
+  image: string | null;// mapped from database 'media'
+  oneTimePrice: number;
+  subscribePrice: number;
+  minimumQuantity: number;
   status: string | null;
-  price: string | null;
   priority: number | null;
   stock: string | null;
-  media: string | null;
-  minimumQuantity: number | null;
-  createdAt: string | null;
+  catType: string | null;
 };
 
 const CAT_OPTIONS = ["REVIEWS", "SEO", "SMM", "ACCOUNTS", "GBP"];
 const STATUS_OPTIONS = ["PUBLISH", "DRAFT", "UNUSED"];
 
-const EMPTY_FORM = { title: "", catType: "REVIEWS", status: "DRAFT", price: "", priority: 1000, stock: "", media: "", minimumQuantity: 1 };
+const EMPTY_FORM = { 
+  title: "", 
+  catType: "REVIEWS", 
+  status: "DRAFT", 
+  price: "", 
+  priority: 1000, 
+  stock: "In Stock", 
+  media: "", 
+  minimumQuantity: 1 
+};
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<string | null>(null); 
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
@@ -36,18 +45,33 @@ export default function AdminProductsPage() {
 
   const fetchProducts = async () => {
     setLoading(true);
-    const res = await fetch("/api/products");
-    const data = await res.json();
-    setProducts(Array.isArray(data) ? data : []);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setProducts(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Dashboard failed to grab catalog:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchProducts(); }, []);
 
   const openAdd = () => { setEditId(null); setForm(EMPTY_FORM); setShowModal(true); };
+  
   const openEdit = (p: Product) => {
     setEditId(p.id);
-    setForm({ title: p.title ?? "", catType: p.catType ?? "REVIEWS", status: p.status ?? "DRAFT", price: p.price ?? "", priority: p.priority ?? 1000, stock: p.stock ?? "", media: p.media ?? "", minimumQuantity: p.minimumQuantity ?? 1 });
+    setForm({ 
+      title: p.platform ?? "", 
+      catType: p.catType ?? "REVIEWS", 
+      status: p.status ?? "DRAFT", 
+      price: p.oneTimePrice?.toString() ?? "", 
+      priority: p.priority ?? 1000, 
+      stock: p.stock ?? "", 
+      media: p.image ?? "", 
+      minimumQuantity: p.minimumQuantity ?? 1 
+    });
     setShowModal(true);
   };
 
@@ -57,25 +81,43 @@ export default function AdminProductsPage() {
     setUploading(true);
     const fd = new FormData();
     fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    if (data.url) setForm(f => ({ ...f, media: data.url }));
-    setUploading(false);
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.url) setForm(f => ({ ...f, media: data.url }));
+    } catch (err) {
+      console.error("Image upload pipeline crash:", err);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async () => {
     setSaving(true);
-    if (editId) {
-      await fetch(`/api/products/${editId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-    } else {
-      await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    try {
+      if (editId) {
+        await fetch(`/api/products/${editId}`, { 
+          method: "PUT", 
+          headers: { "Content-Type": "application/json" }, 
+          body: JSON.stringify(form) 
+        });
+      } else {
+        await fetch("/api/products", { 
+          method: "POST", 
+          headers: { "Content-Type": "application/json" }, 
+          body: JSON.stringify(form) 
+        });
+      }
+      setShowModal(false);
+      fetchProducts();
+    } catch (err) {
+      console.error("Form transmission fault:", err);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    setShowModal(false);
-    fetchProducts();
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Delete this product?")) return;
     await fetch(`/api/products/${id}`, { method: "DELETE" });
     fetchProducts();
@@ -83,30 +125,42 @@ export default function AdminProductsPage() {
 
   const columns: Column<Product>[] = [
     {
-      key: "title",
+      key: "platform", 
       header: "Product Info",
-      render: (p) => (
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 shrink-0 rounded-lg overflow-hidden border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
-            {p.media ? (
-              <img src={p.media} alt={p.title ?? ""} className="h-full w-full object-cover" />
-            ) : (
-              <ImageIcon className="text-gray-300 h-5 w-5" />
-            )}
+      render: (p) => {
+        // Check if the product title contains 'google' (case-insensitive)
+        const isGoogleProduct = p.platform?.toLowerCase().includes("google");
+
+        return (
+          <div className="flex items-center gap-3">
+            {/* Image fetched safely from the media column fallback configuration */}
+            <div className="h-10 w-10 shrink-0 rounded-lg overflow-hidden border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
+              {p.image ? (
+                <img src={p.image} alt={p.platform ?? ""} className="h-full w-full object-cover" />
+              ) : (
+                <ImageIcon className="text-gray-300 h-5 w-5" />
+              )}
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-bold text-gray-900 dark:text-white text-[13px]">
+                {p.platform ?? "—"}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-gray-400 dark:text-white/50">
+                  {p.catType ?? "—"}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-bold text-gray-900 dark:text-white text-[13px]">{p.title ?? "—"}</span>
-            <span className="text-[11px] text-gray-400 dark:text-white/50">{p.catType ?? "—"}</span>
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
-      key: "price",
+      key: "oneTimePrice", 
       header: "Price",
       render: (p) => (
         <span className="font-bold text-gray-900 dark:text-white text-[14px]">
-          {p.price ? `$${p.price}` : "—"}
+          {p.oneTimePrice ? `$${p.oneTimePrice}` : "—"}
         </span>
       ),
     },
