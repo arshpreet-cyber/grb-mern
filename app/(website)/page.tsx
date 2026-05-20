@@ -12,6 +12,7 @@ import SectionWithLeftImage from "@/components/home/SectionWithLeftImage";
 import HomeBlogSection from "@/components/home/HomeBlogSection";
 import FaqSection from "@/components/home/FaqSection";
 import { HOME_PAGE_DATA } from "@/lib/constants/pageData";
+import HeroBanner from "@/components/home/HeroBanner";
 
 export const dynamic = 'force-dynamic';
 
