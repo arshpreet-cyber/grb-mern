@@ -8,28 +8,27 @@ import { useState, useEffect, useRef } from "react";
 import Wrapper from "@/components/ui/Wrapper";
 
 const buyReviewsLinks = [
-  { href: "/buy-google-reviews/", label: "Google", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
-  { href: "/buy-google-local-guide-reviews/", label: "Google Local Guide", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
-  { href: "/buy-trustpilot-reviews/", label: "TrustPilot", img: "https://www.google.com/s2/favicons?domain=trustpilot.com&sz=64" },
-  { href: "/buy-glassdoor-reviews/", label: "Glassdoor", img: "https://www.google.com/s2/favicons?domain=glassdoor.com&sz=64" },
-  { href: "/buy-facebook-reviews/", label: "Facebook", img: "https://www.google.com/s2/favicons?domain=facebook.com&sz=64" },
-  { href: "/buy-google-gps-reviews/", label: "Google GPS", img: "https://www.google.com/s2/favicons?domain=maps.google.com&sz=64" },
-  { href: "/buy-thumbtack-reviews/", label: "Thumbtack", img: "https://www.google.com/s2/favicons?domain=thumbtack.com&sz=64" },
-  { href: "/buy-zillow-reviews/", label: "Zillow", img: "https://www.google.com/s2/favicons?domain=zillow.com&sz=64" },
-  { href: "/buy-google-lsa-reviews/", label: "Google LSA", img: "https://www.google.com/s2/favicons?domain=google.com&sz=64" },
-  { href: "/buy-trustpilot-verified-reviews/", label: "TrustPilot Verified", img: "https://www.google.com/s2/favicons?domain=trustpilot.com&sz=64" },
-  { href: "/buy-houzz-reviews/", label: "Houzz", img: "https://www.google.com/s2/favicons?domain=houzz.com&sz=64" },
-  { href: "/buy-home-advisor-reviews/", label: "Home Advisor", img: "https://www.google.com/s2/favicons?domain=homeadvisor.com&sz=64" },
-  { href: "/buy-bbb-reviews/", label: "BBB", img: "https://www.google.com/s2/favicons?domain=bbb.org&sz=64" },
-  { href: "/buy-indeed-reviews/", label: "Indeed", img: "https://www.google.com/s2/favicons?domain=indeed.com&sz=64" },
-  { href: "/buy-google-play-store-reviews-ratings/", label: "Google Playstore", img: "https://www.google.com/s2/favicons?domain=play.google.com&sz=64" },
-  { href: "/buy-homestars-reviews/", label: "Home Star", img: "https://www.google.com/s2/favicons?domain=homestars.com&sz=64" },
-  { href: "/buy-product-reviews/", label: "Product Reviews", img: "https://www.google.com/s2/favicons?domain=amazon.com&sz=64" },
-  { href: "/buy-booking-com-reviews/", label: "Booking", img: "https://www.google.com/s2/favicons?domain=booking.com&sz=64" },
-  { href: "/buy-weddingwire-reviews/", label: "WeddingWire", img: "https://www.google.com/s2/favicons?domain=weddingwire.com&sz=64" },
-  { href: "/buy-avvo-reviews/", label: "Avvo", img: "https://www.google.com/s2/favicons?domain=avvo.com&sz=64" },
+  { id: 1, href: "/buy-google-reviews/", label: "Google", bg: "#FFFAEB" },
+  { id: 2, href: "/buy-google-local-guide-reviews/", label: "Google Local Guide", bg: "#E875331A" },
+  { id: 3, href: "/buy-trustpilot-reviews/", label: "TrustPilot", bg: "#E7F7EC99" },
+  { id: 4, href: "/buy-glassdoor-reviews/", label: "Glassdoor", bg: "#F1FAF4" },
+  { id: 5, href: "/buy-facebook-reviews/", label: "Facebook", bg: "#D5E7FF99" },
+  { id: 6, href: "/buy-google-gps-reviews/", label: "Google GPS", bg: "#FFE8E657" },
+  { id: 7, href: "/buy-thumbtack-reviews/", label: "Thumbtack", bg: "#EAF9FF" },
+  { id: 8, href: "/buy-zillow-reviews/", label: "Zillow", bg: "#F4F8FF" },
+  { id: 9, href: "/buy-google-lsa-reviews/", label: "Google LSA", bg: "#EAF6EE" },
+  { id: 10, href: "/buy-trustpilot-verified-reviews/", label: "TrustPilot Verified", bg: "#E7F7EC99" },
+  { id: 11, href: "/buy-houzz-reviews/", label: "Houzz", bg: "#F3FFED" },
+  { id: 12, href: "/buy-home-advisor-reviews/", label: "Home Advisor", bg: "#FFF7EA" },
+  { id: 13, href: "/buy-bbb-reviews/", label: "BBB", bg: "#E4F7FF99" },
+  { id: 14, href: "/buy-indeed-reviews/", label: "Indeed", bg: "#EFF4FF" },
+  { id: 15, href: "/buy-google-play-store-reviews-ratings/", label: "Google Playstore", bg: "#EFFCFF" },
+  { id: 16, href: "/buy-homestars-reviews/", label: "Home Star", bg: "#F0FAFF" },
+  { id: 17, href: "/buy-product-reviews/", label: "Product Reviews", bg: "#F6FFE8" },
+  { id: 18, href: "/buy-booking-com-reviews/", label: "Booking", bg: "#C8DFFF33" },
+  { id: 19, href: "/buy-weddingwire-reviews/", label: "WeddingWire", bg: "#13B3BA17" },
+  { id: 20, href: "/buy-avvo-reviews/", label: "Avvo", bg: "#EBF6FF" },
 ];
-
 export default function HomeNavbar() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
@@ -120,22 +119,22 @@ export default function HomeNavbar() {
                   style={{ top: `${headerHeight}px` }}
                 ><Wrapper>
                     <div className="mx-auto w-full px-10 pt-8 pb-5">
-                      <div className="grid grid-cols-5 gap-3">
+
+                     <div className="grid grid-cols-5 gap-3">
                         {buyReviewsLinks.map((item) => (
                           <Link
                             key={item.href}
                             href={item.href}
-                            className="flex items-center gap-2 p-2.5 rounded-[9px] hover:bg-[#FFF6A8] transition-colors group/item"
+                            style={{ backgroundColor: item.bg }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = "#fff6a8";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = item.bg;
+                            }}
+                            className="flex items-center gap-2 p-2.5 rounded-[9px] transition-all duration-300"
                           >
-                            <img
-                              src={item.img}
-                              alt={item.label}
-                              width={40}
-                              height={40}
-                              className="h-10 w-10 shrink-0 rounded border border-[#ffcc00] bg-white p-1.5"
-                              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                            />
-                            <span className="text-base text-[#212121] group-hover/item:text-[#212121]">
+                            <span className="text-base text-[#212121]">
                               {item.label}
                             </span>
                           </Link>

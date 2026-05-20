@@ -6,6 +6,7 @@ import Wrapper from "@/components/ui/Wrapper";
 import { X, Info, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import products from "@/lib/constants/products";
+import SimilarProducts from "@/components/sections/SimilarProducts"
 
 export default function CartPage() {
   const { items, removeItem, updateQty, clearCart, total } = useCart();
@@ -22,6 +23,8 @@ export default function CartPage() {
     { number: 2, label: "order details", active: false },
     { number: 3, label: "order placed", active: false },
   ];
+
+  const SafeSimilarProducts = SimilarProducts as React.ComponentType<any>;
 
   return (
     <div className="min-h-screen bg-white font-['Poppins']">
@@ -205,6 +208,7 @@ export default function CartPage() {
                   </div>
                 </div>
               </div>
+              <SafeSimilarProducts/>
             </div>
           )}
         </Wrapper>
