@@ -38,5 +38,6 @@ export async function POST(req: NextRequest) {
     }).catch((err) => console.error("[Payment Email]", err.message));
   }
 
-  return NextResponse.json({ success: true });
+  const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL}/order/${order_id}/details`;
+  return NextResponse.json({ success: true, redirectUrl });
 }
