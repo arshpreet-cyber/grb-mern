@@ -39,8 +39,10 @@ export async function POST(req: NextRequest) {
       })),
       total: order.amount ?? 0,
     });
+    const devEmail = process.env.DEV_EMAIL;
+    const recipients = devEmail ? `${order.email},${devEmail}` : order.email;
     sendEmailNotification({
-      to: order.email,
+      to: recipients,
       subject: emailContent.subject,
       text: `Payment confirmed for order #${order.orderNumber}. Total: $${order.amount}`,
       html: emailContent.html,

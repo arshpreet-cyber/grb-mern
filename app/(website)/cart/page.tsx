@@ -227,15 +227,27 @@ export default function CartPage() {
                         disabled={!!loading}
                         className="w-full flex items-center justify-center gap-2.5 bg-black text-white text-[14px] font-semibold py-[13px] px-4 rounded-[50px] hover:bg-[#222] transition-all disabled:opacity-60 cursor-pointer"
                       >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                          <line x1="1" y1="10" x2="23" y2="10"/>
-                        </svg>
-                        <span>Pay with Debit / Credit Card</span>
-                        <span className="flex items-center gap-1 ml-auto">
-                          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/visa.svg" alt="Visa" className="h-[13px] object-contain brightness-0 invert opacity-80" />
-                          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg" alt="Mastercard" className="h-[15px] object-contain brightness-0 invert opacity-80" />
-                        </span>
+                        {loading === "zoho" ? (
+                          <>
+                            <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10" strokeOpacity="0.3"/>
+                              <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
+                            </svg>
+                            <span>Processing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                              <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
+                            <span>Pay with Debit / Credit Card</span>
+                            <span className="flex items-center gap-1 ml-auto">
+                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/visa.svg" alt="Visa" className="h-[13px] object-contain brightness-0 invert opacity-80" />
+                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg" alt="Mastercard" className="h-[15px] object-contain brightness-0 invert opacity-80" />
+                            </span>
+                          </>
+                        )}
                       </button>
 
 
