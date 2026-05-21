@@ -45,7 +45,7 @@ function emailWrapper(content: string) {
             <tr>
               <td align="center">
                 <div style="font-size:22px;color:#f5a623;letter-spacing:2px">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
-                <div style="font-size:26px;font-weight:bold;color:#222;margin-top:4px;letter-spacing:-0.5px">Get <span style="color:#f5a623">Reviews</span></div>
+                <div style="font-size:26px;font-weight:bold;color:#222;margin-top:4px;letter-spacing:-0.5px">Get <span style="color:#f5a623">Reviews</span> Buzz</div>
               </td>
             </tr>
           </table>
