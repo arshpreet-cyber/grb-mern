@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { Send, Wifi, WifiOff, RefreshCw, Headset, ShieldCheck, User, AlertCircle, Loader2 } from "lucide-react";
+import { Send, RefreshCw, ShieldCheck, User, AlertCircle, Loader2, Tag, Clock, CheckCircle2, XCircle } from "lucide-react";
 
 export type TicketMessage = {
   id: number;
@@ -21,8 +21,10 @@ type Props = {
   isAdmin?: boolean;
 };
 
-function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+function formatDateTime(dateStr: string) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) +
+    " at " + d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 }
 
 function formatDate(dateStr: string) {
@@ -32,23 +34,7 @@ function formatDate(dateStr: string) {
   yesterday.setDate(yesterday.getDate() - 1);
   if (d.toDateString() === today.toDateString()) return "Today";
   if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
-  return d.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" });
-}
-
-/** Customer avatar = gray, Agent avatar = yellow */
-function Avatar({ isAgent }: { isAgent: boolean }) {
-  return (
-    <div
-      className={`h-9 w-9 shrink-0 rounded-full flex items-center justify-center font-bold shadow-sm ${
-        isAgent
-          ? "text-[#111]"
-          : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-300"
-      }`}
-      style={isAgent ? { background: "#ffcc00" } : {}}
-    >
-      {isAgent ? <ShieldCheck size={16} /> : <User size={16} />}
-    </div>
-  );
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function groupByDate(messages: TicketMessage[]) {
@@ -66,6 +52,20 @@ function groupByDate(messages: TicketMessage[]) {
   return groups;
 }
 
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { color: string; icon: React.ReactNode }> = {
+    "Open":    { color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: <CheckCircle2 size={12} /> },
+    "Closed":  { color: "bg-gray-100 text-gray-500 border-gray-200", icon: <XCircle size={12} /> },
+    "Pending": { color: "bg-amber-100 text-amber-700 border-amber-200", icon: <Clock size={12} /> },
+  };
+  const s = map[status] ?? map["Pending"];
+  return (
+    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border ${s.color}`}>
+      {s.icon}{status}
+    </span>
+  );
+}
+
 export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }: Props) {
   const { data: session } = useSession();
   const [ticket, setTicket] = useState<any>(null);
@@ -75,18 +75,16 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   const [sending, setSending] = useState(false);
   const [connected, setConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const sessionUserId = session?.user?.id;
 
-  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  useEffect(() => { scrollToBottom(); }, [messages, ticket]);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-  // Auto-grow textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px";
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + "px";
     }
   }, [draft]);
 
@@ -96,7 +94,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     const socket = io({ transports: ["websocket", "polling"], reconnectionAttempts: 5 });
     socketRef.current = socket;
     socket.on("connect", () => { setConnected(true); setError(null); socket.emit("join-ticket", ticketId); });
-    socket.on("connect_error", () => { setConnected(false); setError("Unable to connect. Retrying..."); });
+    socket.on("connect_error", () => { setConnected(false); setError("Unable to connect to support server. Retrying..."); });
     socket.on("ticket-history", (h: TicketMessage[]) => setMessages(h));
     socket.on("ticket-message", (m: TicketMessage) => setMessages(prev => prev.some(p => p.id === m.id) ? prev : [...prev, m]));
     socket.on("ticket-error", ({ message }: { message: string }) => setError(message));
@@ -111,17 +109,24 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
 
   const handleSend = async () => {
     if (!draft.trim() || !sessionUserId) return;
-    setSending(true); setError(null);
+    setSending(true);
+    setError(null);
     try {
-      if (!socketRef.current?.connected) throw new Error("Disconnected. Please refresh.");
-      socketRef.current.emit("send-ticket-message", { ticketId, content: draft.trim(), agentId: sessionUserId, direction: isAdmin ? "2" : "1" });
+      if (!socketRef.current?.connected) throw new Error("Not connected. Please reconnect.");
+      socketRef.current.emit("send-ticket-message", {
+        ticketId,
+        content: draft.trim(),
+        agentId: sessionUserId,
+        direction: isAdmin ? "2" : "1",
+      });
       setDraft("");
     } catch (err: any) {
       setError(err.message || "Failed to send.");
-    } finally { setSending(false); }
+    } finally {
+      setSending(false);
+    }
   };
 
-  // Filter duplicate of original query
   const filteredMessages = messages.filter(m =>
     !(ticket?.query && m.content?.trim().toLowerCase() === ticket.query.trim().toLowerCase())
   );
@@ -130,238 +135,175 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   const customerName = ticket?.user?.name || ticket?.userName || "Customer";
 
   return (
-    <div className="flex h-[80vh] flex-col overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f1117] shadow-2xl">
-
-      {/* ── Header ── */}
-      <div className="flex items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#13161f] px-6 py-4">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div
-              className="flex h-12 w-12 items-center justify-center rounded-2xl text-[#111] shadow-lg"
-              style={{ background: "#ffcc00", boxShadow: "0 8px 24px rgba(255,204,0,0.35)" }}
-            >
-              <Headset size={22} />
+    <div className="space-y-4">
+      {/* Ticket Header Card */}
+      <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 shrink-0">
+              <Tag size={18} />
             </div>
-            {connected && (
-              <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-[#13161f]" />
-              </span>
-            )}
-          </div>
-          <div>
-            <h2 className="text-[15px] font-bold text-slate-900 dark:text-white leading-tight">
-              {customerName}
-            </h2>
-            <div className="mt-0.5 flex items-center gap-1.5 text-[11px] font-semibold">
-              {connected ? (
-                <><Wifi size={11} className="text-emerald-500" /><span className="text-emerald-500">Live</span></>
-              ) : (
-                <><WifiOff size={11} className="text-rose-500" /><span className="text-rose-500">Disconnected</span></>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-bold font-mono text-gray-400 dark:text-slate-500">#{ticketId}</span>
+                {ticket?.status && <StatusBadge status={ticket.status} />}
+                {!connected && (
+                  <button
+                    onClick={connectSocket}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-900/20 px-2.5 py-1 rounded-full border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition-colors"
+                  >
+                    <RefreshCw size={10} className="animate-spin" /> Reconnect
+                  </button>
+                )}
+              </div>
+              <h2 className="text-base font-bold text-gray-900 dark:text-white mt-1">
+                {ticket?.subject ?? ticketSubject ?? "Support Ticket"}
+              </h2>
+              {ticket?.createdAt && (
+                <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                  <Clock size={11} /> Opened {formatDateTime(ticket.createdAt)}
+                </p>
               )}
-              <span className="text-slate-300 dark:text-slate-600">•</span>
-              <span className="text-slate-400 dark:text-slate-500">{isAdmin ? "Admin View" : "User Support"}</span>
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Full ticket ID */}
-          <span
-            className="inline-flex items-center rounded-lg px-2.5 py-1 text-[10px] font-black tracking-wider border font-mono"
-            style={{ background: "rgba(255,204,0,0.12)", color: "#b38a00", borderColor: "rgba(255,204,0,0.3)" }}
-          >
-            #{ticketId}
-          </span>
-          {!connected && (
-            <button
-              onClick={connectSocket}
-              className="flex items-center gap-1.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 px-3 py-1.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-all border border-rose-100 dark:border-rose-900/40"
-            >
-              <RefreshCw size={11} className="animate-spin" />
-              Reconnect
-            </button>
+          {ticket?.user && (
+            <div className="text-right text-xs text-gray-500 dark:text-slate-400">
+              <div className="font-semibold text-gray-700 dark:text-slate-300">{customerName}</div>
+              <div>{ticket.user.email}</div>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ── Messages ── */}
-      <div className="flex-1 overflow-y-auto bg-slate-50/60 dark:bg-[#0f1117] px-4 py-6 space-y-3 scroll-smooth">
-
-        {/* Original ticket query */}
-        {ticket?.query && (
-          <div className={`flex items-end gap-2.5 mb-4 ${!isAdmin ? 'justify-end' : ''}`}>
-            {isAdmin && <Avatar isAgent={false} />}
-            <div className={`max-w-[70%] flex flex-col ${!isAdmin ? 'items-end' : 'items-start'}`}>
-              <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#b38a00" }}>
-                {!isAdmin ? "You" : customerName}
-              </span>
-              <div
-                className={`rounded-2xl ${!isAdmin ? 'rounded-br-sm' : 'rounded-bl-sm'} px-4 py-3 text-sm leading-relaxed text-[#111] font-medium`}
-                style={{ background: "#ffcc00", boxShadow: "0 4px 16px rgba(255,204,0,0.25)" }}
-              >
-                {ticket.query}
-              </div>
-              <p className="mt-1 px-1 text-[10px] font-medium text-slate-400 dark:text-slate-600 flex items-center gap-1">
-                {formatTime(ticket.createdAt)}
-                <span className="opacity-50">·</span>
-                <span className="font-semibold" style={{ color: "#b38a00" }}>Original Request</span>
-              </p>
-            </div>
-            {!isAdmin && <Avatar isAgent={false} />}
-          </div>
-        )}
-
-        {/* Grouped messages */}
-        {grouped.map(({ date, messages: dayMessages }) => (
-          <div key={date} className="space-y-1.5">
-            {/* Date divider */}
-            <div className="flex items-center gap-3 py-2">
-              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-              <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-600">{date}</span>
-              <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-            </div>
-
-            {dayMessages.map((message, idx) => {
-              // direction "2" = Agent/Admin, direction "1" = Customer
-              const isAgentMsg = String(message.direction) === "2";
-              const isMine = isAdmin ? isAgentMsg : !isAgentMsg;
-
-              const isSameDir = (m: TicketMessage) => String(m.direction) === String(message.direction);
-              const isFirst = idx === 0 || !isSameDir(dayMessages[idx - 1]);
-              const isLast  = idx === dayMessages.length - 1 || !isSameDir(dayMessages[idx + 1]);
-
-              // Bubble corner rounding
-              const corners = (() => {
-                if (isFirst && isLast) return "rounded-2xl";
-                if (!isMine) {
-                  // OTHER PERSON message: flat corners on left side
-                  if (isFirst) return "rounded-2xl rounded-bl-sm";
-                  if (isLast)  return "rounded-2xl rounded-tl-sm rounded-bl-sm";
-                  return "rounded-r-2xl rounded-l-sm";
-                } else {
-                  // MY message: flat corners on right side
-                  if (isFirst) return "rounded-2xl rounded-br-sm";
-                  if (isLast)  return "rounded-2xl rounded-tr-sm rounded-br-sm";
-                  return "rounded-l-2xl rounded-r-sm";
-                }
-              })();
-
-              const bubbleClasses = !isAgentMsg 
-                ? `${corners} px-4 py-2.5 text-sm leading-relaxed font-medium text-[#111]`
-                : `${corners} px-4 py-2.5 text-sm leading-relaxed bg-white dark:bg-[#1c1f2e] text-slate-800 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700/50 shadow-sm`;
-
-              const bubbleStyle = !isAgentMsg 
-                ? { background: "#ffcc00", boxShadow: "0 3px 12px rgba(255,204,0,0.2)" } 
-                : {};
-
-              if (!isMine) {
-                // ── OTHER PERSON message: Avatar LEFT, Bubble RIGHT-of-avatar, row left-aligned ──
-                return (
-                  <div key={message.id} className="flex items-end gap-2.5">
-                    <div className="w-9 shrink-0 flex justify-center">
-                      {isLast && <Avatar isAgent={isAgentMsg} />}
-                    </div>
-                    <div className="max-w-[68%] flex flex-col items-start">
-                      {isFirst && (
-                        <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider" style={isAgentMsg ? { color: "#94a3b8" } : { color: "#b38a00" }}>
-                          {isAgentMsg ? "Support Agent" : customerName}
-                        </span>
-                      )}
-                      <div className={bubbleClasses} style={bubbleStyle}>
-                        <p className="whitespace-pre-wrap">{message.content}</p>
-                      </div>
-                      {isLast && (
-                        <p className="mt-1 px-1 text-[10px] font-medium text-slate-400 dark:text-slate-600">
-                          {formatTime(message.createdAt)}
-                          {isAgentMsg && <span className="ml-1 font-semibold" style={{ color: "#b38a00" }}>· Agent</span>}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                );
-              } else {
-                // ── MY message: Bubble LEFT-of-avatar, Avatar RIGHT, row right-aligned ──
-                return (
-                  <div key={message.id} className="flex items-end gap-2.5 justify-end">
-                    <div className="max-w-[68%] flex flex-col items-end">
-                      {isFirst && (
-                        <span className="mb-1 px-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                          {isAgentMsg ? "You (Agent)" : "You"}
-                        </span>
-                      )}
-                      <div className={bubbleClasses} style={bubbleStyle}>
-                        <p className="whitespace-pre-wrap">{message.content}</p>
-                      </div>
-                      {isLast && (
-                        <p className="mt-1 px-1 text-[10px] font-medium text-slate-400 dark:text-slate-600">
-                          {formatTime(message.createdAt)}
-                        </p>
-                      )}
-                    </div>
-                    <div className="w-9 shrink-0 flex justify-center">
-                      {isLast && <Avatar isAgent={isAgentMsg} />}
-                    </div>
-                  </div>
-                );
-              }
-            })}
-          </div>
-        ))}
-
-        {/* Empty state */}
-        {!ticket && filteredMessages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full gap-3 pt-20">
-            <div className="h-16 w-16 rounded-3xl flex items-center justify-center" style={{ background: "rgba(255,204,0,0.12)" }}>
-              <Headset size={28} style={{ color: "#ffcc00" }} />
-            </div>
-            <p className="text-sm font-semibold text-slate-400 dark:text-slate-500">No messages yet</p>
-            <p className="text-xs text-slate-300 dark:text-slate-600">Start the conversation below</p>
-          </div>
-        )}
-
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* ── Input ── */}
-      <div className="border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-[#13161f] px-5 pt-4 pb-5">
-        {error && (
-          <div className="mb-3 flex items-center gap-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 px-4 py-2.5 text-xs font-semibold text-rose-600 dark:text-rose-400 ring-1 ring-rose-100 dark:ring-rose-900/40">
-            <AlertCircle size={14} className="shrink-0" />
-            {error}
-          </div>
-        )}
-
-        <div className="flex items-end gap-3">
-          <div
-            className="relative flex-1 rounded-2xl bg-slate-50 dark:bg-[#1c1f2e] ring-1 ring-slate-200 dark:ring-slate-700/50 overflow-hidden transition-all duration-200"
-            onFocusCapture={e => { (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 2px #ffcc00"; }}
-            onBlurCapture={e => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
-          >
-            <textarea
-              ref={textareaRef}
-              value={draft}
-              onChange={e => setDraft(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-              placeholder="Type a message..."
-              rows={1}
-              className="w-full resize-none bg-transparent py-3.5 pl-4 pr-4 text-sm text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-600 outline-none min-h-[48px] max-h-[120px]"
-            />
-          </div>
-
-          <button
-            onClick={handleSend}
-            disabled={!draft.trim() || !connected || sending}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-[#111] font-black shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:shadow-none disabled:scale-100"
-            style={{ background: "#ffcc00", boxShadow: draft.trim() ? "0 8px 20px rgba(255,204,0,0.4)" : "none" }}
-          >
-            {sending ? <Loader2 size={18} className="animate-spin" /> : <Send size={17} />}
-          </button>
+      {/* Thread */}
+      <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div className="border-b border-gray-100 dark:border-slate-800 px-5 py-3 bg-gray-50 dark:bg-slate-900/50">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Conversation Thread</h3>
         </div>
 
-        <p className="mt-2.5 text-center text-[10px] font-medium text-slate-300 dark:text-slate-700">
-          Press <kbd className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 font-mono text-[9px] text-slate-500 dark:text-slate-400">Enter</kbd> to send &nbsp;·&nbsp; <kbd className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 font-mono text-[9px] text-slate-500 dark:text-slate-400">Shift+Enter</kbd> for new line
-        </p>
+        <div className="divide-y divide-gray-50 dark:divide-slate-800/60 max-h-130 overflow-y-auto">
+          {/* Original query */}
+          {ticket?.query && (
+            <div className="px-5 py-5">
+              <div className="flex items-start gap-3 mb-2">
+                <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0">
+                  <User size={14} className="text-gray-500 dark:text-slate-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <span className="font-bold text-sm text-gray-900 dark:text-white">{customerName}</span>
+                    <span className="text-[10px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wide">Customer</span>
+                    <span className="text-xs text-gray-400">{formatDateTime(ticket.createdAt)}</span>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                    {ticket.query}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Message groups */}
+          {grouped.map(({ date, messages: dayMessages }) => (
+            <div key={date}>
+              {/* Date separator */}
+              <div className="flex items-center gap-3 px-5 py-2 bg-gray-50/50 dark:bg-slate-900/30">
+                <div className="flex-1 h-px bg-gray-100 dark:bg-slate-800" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-slate-500 shrink-0">{date}</span>
+                <div className="flex-1 h-px bg-gray-100 dark:bg-slate-800" />
+              </div>
+
+              {dayMessages.map((msg) => {
+                const isAgent = String(msg.direction) === "2";
+                return (
+                  <div key={msg.id} className={`px-5 py-4 ${isAgent ? "bg-violet-50/30 dark:bg-violet-900/5" : ""}`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${
+                        isAgent
+                          ? "bg-violet-100 dark:bg-violet-900/40 text-violet-600"
+                          : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400"
+                      }`}>
+                        {isAgent ? <ShieldCheck size={14} /> : <User size={14} />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span className="font-bold text-sm text-gray-900 dark:text-white">
+                            {isAgent ? "Support Agent" : customerName}
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide ${
+                            isAgent
+                              ? "bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400"
+                              : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400"
+                          }`}>
+                            {isAgent ? "Staff" : "Customer"}
+                          </span>
+                          <span className="text-xs text-gray-400">{formatDateTime(msg.createdAt)}</span>
+                        </div>
+                        <div className={`rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap ${
+                          isAgent
+                            ? "bg-white dark:bg-[#1c1f2e] text-gray-700 dark:text-slate-300 border border-violet-100 dark:border-violet-900/30"
+                            : "bg-gray-50 dark:bg-slate-800/50 text-gray-700 dark:text-slate-300"
+                        }`}>
+                          {msg.content}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+
+          {/* Empty state */}
+          {!ticket?.query && filteredMessages.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 gap-2">
+              <div className="h-12 w-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
+                <Tag size={20} className="text-gray-400" />
+              </div>
+              <p className="text-sm font-semibold text-gray-400">No messages yet</p>
+            </div>
+          )}
+
+          <div ref={bottomRef} />
+        </div>
+
+        {/* Reply Box */}
+        <div className="border-t border-gray-100 dark:border-slate-800 p-5 bg-gray-50/50 dark:bg-slate-900/30">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-3">
+            {isAdmin ? "Reply to Customer" : "Add Reply"}
+          </h4>
+
+          {error && (
+            <div className="mb-3 flex items-center gap-2 rounded-xl bg-rose-50 dark:bg-rose-900/20 px-4 py-2.5 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40">
+              <AlertCircle size={13} className="shrink-0" />
+              {error}
+            </div>
+          )}
+
+          <textarea
+            ref={textareaRef}
+            value={draft}
+            onChange={e => setDraft(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter" && e.ctrlKey) { e.preventDefault(); handleSend(); } }}
+            placeholder={isAdmin ? "Type your response to the customer..." : "Type your reply..."}
+            rows={4}
+            className="w-full resize-none rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-[#1c1f2e] text-sm text-gray-900 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-600 px-4 py-3 outline-none focus:border-violet-400 dark:focus:border-violet-500 transition-colors min-h-25 max-h-50"
+          />
+
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-[11px] text-gray-400 dark:text-slate-600">
+              Press <kbd className="rounded bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-gray-500">Ctrl+Enter</kbd> to send
+            </p>
+            <button
+              onClick={handleSend}
+              disabled={!draft.trim() || !connected || sending}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {sending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+              {sending ? "Sending..." : "Send Reply"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

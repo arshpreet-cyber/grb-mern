@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { ClipboardList, Eye, Trash2, Mail, Search } from "lucide-react";
 
 type Order = {
@@ -55,7 +56,7 @@ const PM_MAP: Record<string, { label: string; color: string }> = {
   "2": { label: "Stripe",   color: "bg-indigo-600 text-white" },
   "3": { label: "Razorpay", color: "bg-blue-500 text-white" },
   "4": { label: "PayPal",   color: "bg-blue-700 text-white" },
-  "5": { label: "Zoho",     color: "bg-red-600 text-white" },
+  "5": { label: "Card",     color: "bg-gray-800 text-white" },
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -233,7 +234,9 @@ export default function AdminOrdersPage() {
                   <tr key={o.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                     {/* Order No */}
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="font-bold text-gray-900 dark:text-white font-mono text-[12px]">{o.orderNumber ?? "—"}</div>
+                      <Link href={`/admin/orders/${o.id}`} className="font-bold text-violet-600 dark:text-violet-400 hover:underline font-mono text-[12px]">
+                        {o.orderNumber ?? o.id}
+                      </Link>
                       {o.paymentMethod && (
                         <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${pm.color}`}>{pm.label}</span>
                       )}
