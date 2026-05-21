@@ -237,9 +237,6 @@ export default function AdminOrdersPage() {
                       <Link href={`/admin/orders/${o.id}`} className="font-bold text-violet-600 dark:text-violet-400 hover:underline font-mono text-[12px]">
                         {o.orderNumber ?? o.id}
                       </Link>
-                      {o.paymentMethod && (
-                        <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${pm.color}`}>{pm.label}</span>
-                      )}
                     </td>
                     {/* User */}
                     <td className="px-4 py-3">
