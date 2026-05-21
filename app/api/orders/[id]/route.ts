@@ -37,7 +37,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           orderNumber: order.orderNumber ?? order.id,
           status: body.status,
         });
-        sendEmailNotification({ to: email, subject, text: `Your order #${order.orderNumber ?? order.id} status has changed to ${body.status}.`, html }).catch(() => {});
+        sendEmailNotification({
+          to: email,
+          subject,
+          text: `Your order #${order.orderNumber ?? order.id} status has changed.`,
+          html,
+        }).catch((err) => console.error("[status-email]", err.message));
+      } else {
+        console.warn("[status-email] No email found for order", id);
       }
     }
 
