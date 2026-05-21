@@ -166,6 +166,48 @@ export function buildOrderPaidEmail(payload: {
   };
 }
 
+export function buildUnpaidReminderEmail(payload: {
+  name: string;
+  email?: string;
+  orderNumber: string;
+  items: Array<{ platform: string; qty: number; pricePerUnit: number }>;
+  total: number;
+  payUrl: string | null;
+}) {
+  const payButtons = payload.payUrl
+    ? `
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin:16px 0">
+      <tr><td colspan="4" style="padding:10px 14px"><p style="font-size:15px;margin:0;line-height:28px;padding:5px 0;color:#000">To complete the payment please click the button below.</p></td></tr>
+      <tr>
+        <td style="padding:12px 14px">
+          <a href="${payload.payUrl}"
+             style="padding:14px 20px;background:#000;border-radius:5px;display:inline-block;color:#fff;text-decoration:none;font-size:14px;font-weight:600">
+            💳 Pay with Debit / Credit Card
+          </a>
+        </td>
+      </tr>
+    </table>`
+    : "";
+
+  const content = `
+    <p style="margin:0 0 14px;font-size:15px;color:#333">There is an order in your account that is unpaid. Have you experienced any issues while making your payment? Not to worry!</p>
+    <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
+    <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:4px">
+      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+    </table>
+    ${orderTable(payload.items)}
+    ${paymentDetails(payload.total, 0)}
+    ${payButtons}
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
+  `;
+  return {
+    subject: `Your order #${payload.orderNumber} is unpaid — complete your payment`,
+    html: emailWrapper(content),
+  };
+}
+
 export function buildTicketCreatedEmail(payload: {
   name?: string | null;
   ticketNumber: string;

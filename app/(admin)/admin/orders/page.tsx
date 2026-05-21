@@ -3,7 +3,8 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
-import { ClipboardList, Eye, Trash2, Mail, FileText, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ClipboardList, Eye, Trash2, Mail, Search } from "lucide-react";
 
 type Order = {
   id: string;
@@ -99,11 +100,13 @@ function StatusDropdown({
 }
 
 export default function AdminOrdersPage() {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
 
   const fetchOrders = async (filter: string, q = "") => {
     setLoading(true);
@@ -143,6 +146,21 @@ export default function AdminOrdersPage() {
     if (!confirm("Delete this order?")) return;
     await fetch(`/api/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ deletedAt: new Date().toISOString() }) });
     setOrders(prev => prev.filter(o => o.id !== id));
+  };
+
+  const handleSendUnpaidEmail = async (id: string) => {
+    setSendingEmail(id);
+    try {
+      const res = await fetch(`/api/orders/${id}/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "unpaid" }),
+      });
+      if (res.ok) alert("Unpaid reminder email sent.");
+      else alert("Failed to send email.");
+    } finally {
+      setSendingEmail(null);
+    }
   };
 
   return (
@@ -267,17 +285,19 @@ export default function AdminOrdersPage() {
                     {/* Action */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
-                        <button title="View" className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                        <button title="View" onClick={() => router.push(`/admin/orders/${o.id}`)} className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
                           <Eye size={15} />
                         </button>
                         <button title="Delete" onClick={() => handleDelete(o.id)} className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                           <Trash2 size={15} />
                         </button>
-                        <button title="Email" className="p-1.5 rounded-lg text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors">
+                        <button
+                          title="Send unpaid reminder"
+                          onClick={() => handleSendUnpaidEmail(o.id)}
+                          disabled={sendingEmail === o.id}
+                          className="p-1.5 rounded-lg text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-40"
+                        >
                           <Mail size={15} />
-                        </button>
-                        <button title="Notes" className="px-2 py-1 rounded-lg text-[10px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors flex items-center gap-1">
-                          <FileText size={11} /> Notes
                         </button>
                       </div>
                     </td>
