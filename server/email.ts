@@ -208,6 +208,43 @@ export function buildUnpaidReminderEmail(payload: {
   };
 }
 
+const STATUS_LABELS: Record<string, { label: string; color: string; message: string }> = {
+  "1": { label: "Pending",    color: "#f59e0b", message: "Your order has been received and is pending review." },
+  "2": { label: "Processing", color: "#3b82f6", message: "Great news! We are currently processing your order." },
+  "3": { label: "Complete",   color: "#10b981", message: "Your order has been completed successfully. Thank you for choosing Get Reviews Buzz!" },
+  "4": { label: "On Hold",    color: "#f97316", message: "Your order has been placed on hold. Our team will reach out to you shortly." },
+  "5": { label: "Cancelled",  color: "#ef4444", message: "Your order has been cancelled. Please contact us if you have any questions." },
+  "6": { label: "Refund",     color: "#8b5cf6", message: "A refund has been initiated for your order. Please allow 5–7 business days for it to reflect." },
+};
+
+export function buildOrderStatusEmail(payload: {
+  name: string;
+  email?: string;
+  orderNumber: string;
+  status: string;
+}) {
+  const s = STATUS_LABELS[payload.status] ?? { label: payload.status, color: "#6b7280", message: "Your order status has been updated." };
+  const content = `
+    <p style="margin:0 0 14px;font-size:15px;color:#333">Hi <strong>${payload.name}</strong>,</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#333">${s.message}</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:20px">
+      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+      <tr>
+        <td style="padding:16px 14px;text-align:center">
+          <span style="display:inline-block;padding:8px 24px;background:${s.color};color:#fff;border-radius:20px;font-size:15px;font-weight:700;letter-spacing:0.5px">${s.label}</span>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 4px;font-size:14px;color:#444">If you have any questions, feel free to reply to this email or contact our support team.</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
+  `;
+  return {
+    subject: `Your order #${payload.orderNumber} status is now: ${s.label}`,
+    html: emailWrapper(content),
+  };
+}
+
 export function buildTicketCreatedEmail(payload: {
   name?: string | null;
   ticketNumber: string;
