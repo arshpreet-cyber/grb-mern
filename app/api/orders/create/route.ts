@@ -65,6 +65,29 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Send order confirmation email immediately after order is saved
+    if (user?.email) {
+      const emailContent = buildOrderCreatedEmail({
+        name: user.name ?? "Customer",
+        email: user.email,
+        orderNumber,
+        items: items.map((item: any) => ({
+          platform: item.platform,
+          qty: item.qty,
+          pricePerUnit: item.pricePerUnit,
+        })),
+        total: Math.round(total * 100) / 100,
+      });
+      const devEmail = process.env.DEV_EMAIL;
+      const recipients = devEmail ? `${user.email},${devEmail}` : user.email;
+      sendEmailNotification({
+        to: recipients,
+        subject: emailContent.subject,
+        text: `Order #${orderNumber} received. Total: $${total.toFixed(2)}`,
+        html: emailContent.html,
+      }).catch((err) => console.error("[Order Email]", err.message));
+    }
+
     let payUrl = "";
     if (paymentMethod === "paypal") {
       payUrl = `${process.env.PAYPAL_PAYMENT_URL}?orderno=${order.id}`;
@@ -97,31 +120,6 @@ export async function POST(req: NextRequest) {
       where: { id: order.id },
       data: { payUrl },
     });
-
-    // Send order confirmation email immediately after order is created
-    if (user?.email) {
-      const emailContent = buildOrderCreatedEmail({
-        name: user.name ?? "Customer",
-        email: user.email,
-        orderNumber,
-        items: items.map((item: any) => ({
-          platform: item.platform,
-          qty: item.qty,
-          pricePerUnit: item.pricePerUnit,
-        })),
-        total: Math.round(total * 100) / 100,
-      });
-
-      const devEmail = process.env.DEV_EMAIL;
-      const recipients = devEmail ? `${user.email},${devEmail}` : user.email;
-
-      sendEmailNotification({
-        to: recipients,
-        subject: emailContent.subject,
-        text: `Order #${orderNumber} received. Total: $${total.toFixed(2)}`,
-        html: emailContent.html,
-      }).catch((err) => console.error("[Order Email]", err.message));
-    }
 
     // For non-Zoho payments, create Zoho Books invoice silently in background
     if (paymentMethod !== "zoho") createZohoInvoice({
