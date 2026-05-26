@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation"; // Added Next.js routing engine
 
 // --- Types ---
 interface Subscription {
-  id: string; // Used for the React key
+  id: string; // Used for routing and React keys
   orderNo: string;
   paymentId: string;
   amount: string;
@@ -16,15 +17,14 @@ interface Subscription {
 
 export default function DemoDashboard() {
   const { data: session } = useSession();
+  const router = useRouter(); // Core router instance initialization
   
   // --- State ---
   const [activeSubscriptions, setActiveSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
 
   // --- Data Fetching ---
   useEffect(() => {
-    // Replace '/api/subscriptions' with your actual database API route
     fetch("/api/subscriptions?userId=" + session?.user?.id)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch subscriptions");
@@ -63,7 +63,7 @@ export default function DemoDashboard() {
       </div>
 
       {/* LEFT COLUMN: Active Plan Details */}
-      <div className="bg-white rounded-[20px] border border-gray-100 shadow-sm overflow-hidden flex flex-col ">
+      <div className="bg-white rounded-[20px] border border-gray-100 shadow-sm overflow-hidden flex flex-col">
         <div className="p-6 pb-5">
           <h2 className="text-[18px] font-semibold text-gray-900">Active Plan Details</h2>
           <p className="text-[14px] text-gray-500 mt-1">Details of your currently active plan.</p>
@@ -101,9 +101,9 @@ export default function DemoDashboard() {
                     <td className="px-5 py-5 text-[14px] text-center">
                       <div className="flex items-center justify-center">
                         <button 
-                          onClick={() => setSelectedSubscription(sub)}
+                          onClick={() => router.push(`/admin/orders/${sub.id}`)}
                           className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
-                          title="View Details"
+                          title="View Details Fullscreen"
                         >
                           <svg 
                             xmlns="http://www.w3.org/2000/svg" 
@@ -132,80 +132,6 @@ export default function DemoDashboard() {
           </table>
         </div>
       </div>
-
-      {/* --- Detail Table Modal --- */}
-      {selectedSubscription && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity animate-fadeIn">
-          {/* Modal Card Box */}
-          <div className="bg-white rounded-[24px] shadow-xl border border-gray-100 max-w-xl w-full overflow-hidden transform scale-100 transition-transform">
-            
-            {/* Modal Header */}
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <div>
-                <h3 className="text-[18px] font-semibold text-gray-900">
-                  Subscription Breakdowns
-                </h3>
-                <p className="text-[13px] text-gray-500 mt-0.5">
-                  Full reference sheet for {selectedSubscription.orderNo}
-                </p>
-              </div>
-              <button 
-                onClick={() => setSelectedSubscription(null)}
-                className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Modal Content - Detailed Table View */}
-            <div className="p-6">
-              <div className="border border-gray-100 rounded-xl overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                  <tbody>
-                    <tr className="border-b border-gray-100 bg-gray-50/30">
-                      <td className="px-4 py-3.5 text-[13px] font-medium text-gray-500 w-1/3">Order Number</td>
-                      <td className="px-4 py-3.5 text-[14px] font-semibold text-gray-900">{selectedSubscription.orderNo}</td>
-                    </tr>
-                    <tr className="border-b border-gray-100">
-                      <td className="px-4 py-3.5 text-[13px] font-medium text-gray-500">Payment ID</td>
-                      <td className="px-4 py-3.5 text-[14px] font-mono text-gray-700 select-all">{selectedSubscription.paymentId}</td>
-                    </tr>
-                    <tr className="border-b border-gray-100 bg-gray-50/30">
-                      <td className="px-4 py-3.5 text-[13px] font-medium text-gray-500">Amount Paid</td>
-                      <td className="px-4 py-3.5 text-[14px] font-semibold text-green-600">{selectedSubscription.amount}</td>
-                    </tr>
-                    <tr className="border-b border-gray-100">
-                      <td className="px-4 py-3.5 text-[13px] font-medium text-gray-500">Order Timestamp</td>
-                      <td className="px-4 py-3.5 text-[14px] text-gray-700">{selectedSubscription.orderDate}</td>
-                    </tr>
-                    <tr className="border-b border-gray-100 bg-gray-50/30">
-                      <td className="px-4 py-3.5 text-[13px] font-medium text-gray-500">Next Renewal Date</td>
-                      <td className="px-4 py-3.5 text-[14px] font-medium text-amber-600">{selectedSubscription.renewalDate}</td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-3.5 text-[13px] font-medium text-gray-500">Plan Duration</td>
-                      <td className="px-4 py-3.5 text-[14px] text-gray-700">{selectedSubscription.duration}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex justify-end">
-              <button 
-                onClick={() => setSelectedSubscription(null)}
-                className="px-5 py-2 text-[14px] font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
-              >
-                Close View
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
     </div>
   );
 }

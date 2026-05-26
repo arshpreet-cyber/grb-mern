@@ -33,7 +33,7 @@ type Order = {
   notes: string | null;
   payUrl: string | null;
   detailsFilled: boolean;
-  orderDetails: OrderDetail[];
+  orderDetails?: OrderDetail[]; // Defensively set to optional
   user?: { name: string | null; email: string } | null;
 };
 
@@ -44,7 +44,7 @@ const PAYMENT_LABELS: Record<string, string> = {
   "1": "Unpaid", "2": "Paid", "3": "Unconfirmed", "4": "Cancelled",
 };
 const PM_LABELS: Record<string, string> = {
-  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Zoho",
+  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Card",
 };
 
 export default function AdminOrderDetailPage() {
@@ -54,10 +54,26 @@ export default function AdminOrderDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/admin/orders/${id}`)
-      .then(r => r.json())
-      .then(d => { setOrder(d); setLoading(false); })
-      .catch(() => setLoading(false));
+    if (!id) return;
+    
+    fetch(`/api/orders/${id}`)
+      .then(async (r) => {
+        if (!r.ok) throw new Error("Fetch failed");
+        return r.json();
+      })
+      .then((d) => { 
+        if (d && !d.error) {
+          setOrder(d);
+        } else {
+          setOrder(null);
+        }
+        setLoading(false); 
+      })
+      .catch((err) => {
+        console.error("Error fetching order detail safely:", err);
+        setOrder(null);
+        setLoading(false);
+      });
   }, [id]);
 
   if (loading) {
@@ -66,6 +82,7 @@ export default function AdminOrderDetailPage() {
     );
   }
 
+  // Defensively match any structure variants or error keys passed by API middleware
   if (!order || (order as any).error) {
     return (
       <div className="flex items-center justify-center py-24 text-gray-400">Order not found.</div>
@@ -75,9 +92,13 @@ export default function AdminOrderDetailPage() {
   const customerName = order.firstName
     ? `${order.firstName} ${order.lastName ?? ""}`.trim()
     : (order.user?.name ?? "—");
+    
   const customerEmail = order.email ?? order.user?.email ?? "—";
   const sym = order.symbol ?? "$";
-  const subtotal = order.orderDetails.reduce((s, d) => s + (d.amount ?? 0) * (d.quantity ?? 0), 0);
+  
+  // Safe Array fallback preventing crashing on orders that do not contain line items yet
+  const itemsList = Array.isArray(order.orderDetails) ? order.orderDetails : [];
+  const subtotal = itemsList.reduce((s, d) => s + (d.amount ?? 0) * (d.quantity ?? 0), 0);
 
   return (
     <div className="space-y-5 max-w-4xl">
@@ -97,9 +118,9 @@ export default function AdminOrderDetailPage() {
             Order {order.orderNumber ?? order.id}
           </h1>
           <p className="text-xs text-gray-500">
-            {new Date(order.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+            {order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
             {" · "}
-            {new Date(order.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+            {order.createdAt ? new Date(order.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "—"}
           </p>
         </div>
         <div className="ml-auto flex gap-2 flex-wrap">
@@ -186,15 +207,17 @@ export default function AdminOrderDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {order.orderDetails.length === 0 ? (
-                  <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No items</td></tr>
-                ) : order.orderDetails.map(d => (
+                {itemsList.length === 0 ? (
+                  <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No items available for this order</td></tr>
+                ) : itemsList.map(d => (
                   <tr key={d.id} className="border-b border-gray-50 dark:border-slate-800">
                     <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
                       {d.platform ?? d.itemName ?? "—"} Reviews
                     </td>
                     <td className="px-4 py-3 text-gray-600 dark:text-slate-400">{d.quantity ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-slate-400">{sym}{d.amount?.toFixed(2) ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-slate-400">
+                      {d.amount != null ? `${sym}${d.amount.toFixed(2)}` : "—"}
+                    </td>
                     <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">
                       {d.amount != null && d.quantity != null ? `${sym}${(d.amount * d.quantity).toFixed(2)}` : "—"}
                     </td>
@@ -218,7 +241,9 @@ export default function AdminOrderDetailPage() {
               </div>
               <div className="flex justify-between border-t border-gray-100 dark:border-slate-800 pt-1 mt-1">
                 <dt className="font-bold text-gray-700 dark:text-slate-300">Amount</dt>
-                <dd className="font-bold text-gray-900 dark:text-white">{order.amount != null ? `${sym}${order.amount.toFixed(2)}` : "—"}</dd>
+                <dd className="font-bold text-gray-900 dark:text-white">
+                  {order.amount != null ? `${sym}${Number(order.amount).toFixed(2)}` : "—"}
+                </dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-500">Payment Status</dt>

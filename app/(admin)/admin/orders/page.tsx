@@ -285,12 +285,23 @@ export default function AdminOrdersPage() {
                     {/* Action */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
-                        <button title="View" onClick={() => router.push(`/admin/orders/${o.id}`)} className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                        {/* Converted button to Link for seamless, reliable client-side navigation */}
+                        <Link 
+                          href={`/admin/orders/${o.id}`}
+                          title="View" 
+                          className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors inline-block"
+                        >
                           <Eye size={15} />
-                        </button>
-                        <button title="Delete" onClick={() => handleDelete(o.id)} className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                        </Link>
+
+                        <button 
+                          title="Delete" 
+                          onClick={() => handleDelete(o.id)} 
+                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        >
                           <Trash2 size={15} />
                         </button>
+                        
                         <button
                           title="Send unpaid reminder"
                           onClick={() => handleSendUnpaidEmail(o.id)}

@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import {
   ShoppingBag, BadgeCheck, History, BadgeX,
-  ChevronDown, Filter, MoreVertical, ChevronLeft, ChevronRight,
-  CheckCircle2, FileText, Eye, SlidersHorizontal
+  ChevronDown, ChevronLeft, ChevronRight,
+  Eye, SlidersHorizontal
 } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
+import { useRouter } from "next/navigation"; 
 
 // --- Types ---
 interface Order {
@@ -46,13 +47,14 @@ const STATIC_ORDERS: Order[] = [
 ];
 
 export default function DemoDashboard() {
+  const router = useRouter();
+
   // --- State ---
   const [allOrders, setAllOrders] = useState<Order[]>([]); // Source of truth from DB
   const [orders, setOrders] = useState<Order[]>([]); // Filtered state for UI
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -78,13 +80,11 @@ export default function DemoDashboard() {
           setAllOrders(mappedOrders);
           setOrders(mappedOrders);
         } else {
-          // Fallback to static data if API returns empty/invalid
           setAllOrders(STATIC_ORDERS);
           setOrders(STATIC_ORDERS);
         }
       })
       .catch(() => {
-        // Fallback on error
         setAllOrders(STATIC_ORDERS);
         setOrders(STATIC_ORDERS);
       })
@@ -93,10 +93,9 @@ export default function DemoDashboard() {
 
   // --- Filtering Logic ---
   useEffect(() => {
-    // If initially loading, skip the filter delay
     if (allOrders.length === 0) return;
 
-    setCurrentPage(1); // Reset page on filter/search
+    setCurrentPage(1); 
     
     const delay = setTimeout(() => {
       let filtered = [...allOrders];
@@ -200,7 +199,7 @@ export default function DemoDashboard() {
                   "Payment Method", "Status", "Payment Status", 
                   "Order Details", "Payment option", "Action"
                 ].map((h) => (
-                  <th key={h} className="px-5 py-4 text-[10px] font-[500] uppercase tracking-widest text-slate-400 dark:text-slate-500 whitespace-nowrap">
+                  <th key={h} className="px-5 py-4 text-[10px] font-[500] uppercase tracking-widest text-slate-400 dark:text-slate-500 whitespace-nowrap text-center last:text-center">
                     {h}
                   </th>
                 ))}
@@ -212,11 +211,11 @@ export default function DemoDashboard() {
               ) : paginatedOrders.length > 0 ? (
                 paginatedOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-300 font-medium">{order.orderNumber}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400">{order.paymentId || "N/A"}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-200 font-bold">${order.amount.toFixed(2)}</td>
-                    <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 font-mono">{new Date(order.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>
-                    <td className="px-5 py-5">
+                    <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-300 font-medium text-center">{order.orderNumber}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 text-center">{order.paymentId || "N/A"}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-200 font-bold text-center">${order.amount.toFixed(2)}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 font-mono text-center">{new Date(order.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>
+                    <td className="px-5 py-5 text-center">
                       {order.paymentMethod ? (
                         <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-[400] text-amber-600 dark:text-amber-400 whitespace-nowrap">
                           <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
@@ -225,30 +224,30 @@ export default function DemoDashboard() {
                       ) : null}
                     </td>
 
-                  <td className="px-5 py-5">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] whitespace-nowrap ${order.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${order.status === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
-                      {order.status}
-                    </span>
-                  </td>
+                    <td className="px-5 py-5 text-center">
+                      <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] whitespace-nowrap ${order.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${order.status === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
+                        {order.status}
+                      </span>
+                    </td>
 
-                  <td className="px-5 py-5">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] whitespace-nowrap ${order.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${order.paymentStatus === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
-                      {order.paymentStatus}
-                    </span>
-                  </td>
-                  <td className="px-5 py-5">
-                    {order.status === "Complete" && (
-                      <button className="rounded-[5px] bg-[#1E3A8A] dark:bg-blue-600 px-3 py-1.5 text-[10px] font-[500] text-white shadow-sm hover:bg-blue-900 dark:hover:bg-blue-500 transition-colors whitespace-nowrap">
-                        Input Details
-                      </button>
-                    )}
-                  </td>
-                    <td className="px-5 py-5">
+                    <td className="px-5 py-5 text-center">
+                      <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] whitespace-nowrap ${order.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${order.paymentStatus === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
+                        {order.paymentStatus}
+                      </span>
+                    </td>
+                    <td className="px-5 py-5 text-center">
+                      {order.status === "Complete" && (
+                        <button className="rounded-[5px] bg-[#1E3A8A] dark:bg-blue-600 px-3 py-1.5 text-[10px] font-[500] text-white shadow-sm hover:bg-blue-900 dark:hover:bg-blue-500 transition-colors whitespace-nowrap">
+                          Input Details
+                        </button>
+                      )}
+                    </td>
+                    <td className="px-5 py-5 text-center">
                       {order.status !== "Complete" && (
-                        <div className="flex flex-col gap-2">
-                        <select className="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300 outline-none w-32 transition-colors">
+                        <div className="flex flex-col gap-2 items-center">
+                          <select className="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300 outline-none w-32 transition-colors">
                             <option>Choose Methods</option>
                             <option>Credit Card</option>
                             <option>PayPal</option>
@@ -257,35 +256,16 @@ export default function DemoDashboard() {
                         </div>
                       )}
                     </td>
-                    {/* Action Column with Dropdown */}
-                    <td className="relative px-5 py-5 text-center">
+                    
+                    {/* Updated Action Column with Single Click Eye Button */}
+                    <td className="px-5 py-5 text-center">
                       <button 
-                        onClick={() => setOpenMenuId(openMenuId === order.id ? null : order.id)}
-                        className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
+                        onClick={() => router.push(`/admin/orders/${order.id}`)}
+                        className="p-2 rounded-lg text-gray-400 dark:text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all duration-200 inline-flex items-center justify-center"
+                        title="See More Details"
                       >
-                        <MoreVertical size={16} />
+                        <Eye size={18} />
                       </button>
-
-                      {/* Dropdown Menu */}
-                      {openMenuId === order.id && (
-                        <>
-                          <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                          <div className="absolute right-4 top-14 z-[100] w-32 rounded-xl bg-white dark:bg-[#1a1f2c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 dark:border-slate-800 overflow-hidden animate-in fade-in slide-in-from-top-1">
-                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition-colors">
-                              <CheckCircle2 size={16} className="text-slate-400 group-hover:text-white" />
-                              <span className="text-[12px] font-[400] group-hover:text-white">Live Status</span>
-                            </div>
-                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition-colors">
-                              <FileText size={16} className="text-slate-400 group-hover:text-white" />
-                              <span className="text-[12px] font-[400] group-hover:text-white">Invoices</span>
-                            </div>
-                            <div className="group flex items-center gap-2 px-3 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-[#54CE12] cursor-pointer transition-colors">
-                              <Eye size={16} className="text-slate-400 group-hover:text-white" />
-                              <span className="text-[12px] font-[400] group-hover:text-white">See More</span>
-                            </div>
-                          </div>
-                        </>
-                      )}
                     </td>
                   </tr>
                 ))
@@ -337,6 +317,7 @@ export default function DemoDashboard() {
     </div>
   );
 }
+
 function StatusPill({ status }: { status: string }) {
   const isComplete = status === "Complete" || status === "Paid";
   const colorClasses = isComplete 

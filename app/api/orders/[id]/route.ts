@@ -4,13 +4,17 @@ import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/prisma";
 import { sendEmailNotification, buildOrderStatusEmail } from "@/server/email";
 
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } | any }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { id } = await params;
+    
+    // Safely handles both Next.js Promise parameters or normal params objects
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
+    
     const body = await req.json();
     const allowed = ["status", "paymentStatus", "completedOn", "workStatus", "deletedAt"];
     const data: any = {};
@@ -54,22 +58,36 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 }
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } | any }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
 
+    // Fetch the order along with its relations
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { orderDetails: true },
+      include: { 
+        orderDetails: true,
+        user: { select: { name: true, email: true } } 
+      },
     });
 
-    if (!order || order.userId !== session.user.id) {
+    if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    // 🛡️ SECURITY SAFEGUARD FIX:
+    // If user is NOT an Admin, enforce they can ONLY view their own profile orders.
+    // (Note: Adjust 'session.user.role' depending on your next-auth setup variable)
+    const isAdmin = (session.user as any).role === "ADMIN" || (session.user as any).role === "admin";
+    
+    if (!isAdmin && order.userId !== session.user.id) {
+      return NextResponse.json({ error: "Unauthorized access to order" }, { status: 403 });
     }
 
     return NextResponse.json(order);
