@@ -79,7 +79,7 @@ function emailWrapper(content: string) {
 function orderTable(items: Array<{ platform: string; qty: number; pricePerUnit: number }>) {
   const rows = items.map((i) => `
     <tr>
-      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:14px">${i.platform} Reviews</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:14px">${i.platform}</td>
       <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:14px">${i.qty}</td>
       <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:14px">$${i.pricePerUnit.toFixed(2)}</td>
       <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:right;font-size:14px">$${(i.pricePerUnit * i.qty).toFixed(2)}</td>
