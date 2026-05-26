@@ -126,9 +126,9 @@ export function buildOrderCreatedEmail(payload: {
   const content = `
     <p style="margin:0 0 14px;font-size:15px;color:#333">This order has been successfully generated and ready to pay.</p>
     <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
-    <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
+    <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:4px">
-      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+    <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
     </table>
     ${orderTable(payload.items)}
     ${paymentDetails(payload.total, 0)}
@@ -145,7 +145,7 @@ export function buildOrderPaidEmail(payload: {
   name: string;
   email?: string;
   orderNumber: string;
-  items?: Array<{ platform: string; qty: number; pricePerUnit: number }>;
+  items?: Array<{ platform: string; qty: number; pricePerUnit: number }>
   total: number;
 }) {
   const content = `
