@@ -306,6 +306,14 @@ export default function CartPage() {
     }
   }
 
+  useEffect(() => {
+    if (!session && status !== "loading") {
+      const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") router.push("/"); };
+      document.addEventListener("keydown", onKey);
+      return () => document.removeEventListener("keydown", onKey);
+    }
+  }, [session, status, router]);
+
   if (status === "loading") return null;
   const isGuest = !session;
 
@@ -332,8 +340,10 @@ export default function CartPage() {
   return (
     <div className="relative min-h-screen bg-white font-['Poppins']">
       {isGuest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm">
-          <AuthGate />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm" onClick={() => router.push("/")}>
+          <div onClick={e => e.stopPropagation()}>
+            <AuthGate />
+          </div>
         </div>
       )}
       <div className="bg-[#f7f7f7] py-[50px] md:pb-[60px]">
