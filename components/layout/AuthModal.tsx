@@ -71,16 +71,61 @@ function LoginForm({ onSwitch }: { onSwitch: () => void }) {
   );
 }
 
+type Step = "form" | "phone-otp" | "email-otp";
+
+function OtpInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const inputs = Array.from({ length: 6 });
+  const refs = Array.from({ length: 6 }, () => useRef<HTMLInputElement>(null));
+
+  const handleChange = (i: number, v: string) => {
+    if (!/^\d*$/.test(v)) return;
+    const digits = value.split("");
+    digits[i] = v.slice(-1);
+    const next = digits.join("").padEnd(6, "").slice(0, 6);
+    onChange(next.trimEnd());
+    if (v && i < 5) refs[i + 1].current?.focus();
+  };
+
+  const handleKeyDown = (i: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !value[i] && i > 0) refs[i - 1].current?.focus();
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pasted) { onChange(pasted); refs[Math.min(pasted.length, 5)].current?.focus(); }
+    e.preventDefault();
+  };
+
+  return (
+    <div className="flex gap-2 justify-center">
+      {inputs.map((_, i) => (
+        <input key={i} ref={refs[i]} type="text" inputMode="numeric" maxLength={1}
+          value={value[i] ?? ""}
+          onChange={(e) => handleChange(i, e.target.value)}
+          onKeyDown={(e) => handleKeyDown(i, e)}
+          onPaste={handlePaste}
+          className="w-11 h-12 text-center text-lg font-bold rounded-md border border-gray-200 bg-[#F4F7FF] outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
+      ))}
+    </div>
+  );
+}
+
 function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
+  const router = useRouter();
+  const [step, setStep] = useState<Step>("form");
   const [form, setForm] = useState({ name: "", username: "", phone: "", password: "" });
-  const [countryCode, setCountryCode] = useState("+1");
+  const [countryCode, setCountryCode] = useState("+91");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [phoneOtp, setPhoneOtp] = useState("");
+  const [emailOtp, setEmailOtp] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const fullPhone = `${countryCode}${form.phone}`;
   const selectedCountry = countryCodes.find((c) => c.code === countryCode) || countryCodes[0];
   const filtered = countryCodes.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()) || c.code.includes(search));
 
@@ -92,26 +137,167 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  useEffect(() => {
+    if (resendTimer <= 0) return;
+    const t = setTimeout(() => setResendTimer((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendTimer]);
+
   const setField = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Step 1: submit form → send phone OTP
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (form.password.length < 8) { setError("Password must be at least 8 characters."); return; }
+    if (!form.phone) { setError("Phone number is required."); return; }
     setIsLoading(true);
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/twilio/send-phone-otp", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: form.name, email: form.username, password: form.password, phone: form.phone ? `${countryCode}${form.phone}` : null }),
+        body: JSON.stringify({ phone: fullPhone }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Registration failed."); setIsLoading(false); }
-      else { onSwitch(); }
-    } catch { setError("Something went wrong. Please try again."); setIsLoading(false); }
+      if (!res.ok) { setError(data.error || "Failed to send OTP."); setIsLoading(false); return; }
+      setStep("phone-otp");
+      setResendTimer(60);
+    } catch { setError("Something went wrong."); }
+    setIsLoading(false);
   };
 
+  // Step 2: verify phone OTP → send email OTP
+  const handlePhoneOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (phoneOtp.length !== 6) { setError("Enter the 6-digit code."); return; }
+    setError("");
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/twilio/verify-phone-otp", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: fullPhone, code: phoneOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Invalid OTP."); setIsLoading(false); return; }
+
+      // Send email OTP
+      const eRes = await fetch("/api/twilio/send-email-otp", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.username }),
+      });
+      const eData = await eRes.json();
+      if (!eRes.ok) { setError(eData.error || "Failed to send email OTP."); setIsLoading(false); return; }
+      setStep("email-otp");
+      setResendTimer(60);
+    } catch { setError("Something went wrong."); }
+    setIsLoading(false);
+  };
+
+  // Step 3: verify email OTP → create account → sign in
+  const handleEmailOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailOtp.length !== 6) { setError("Enter the 6-digit code."); return; }
+    setError("");
+    setIsLoading(true);
+    try {
+      // Verify email OTP
+      const vRes = await fetch("/api/twilio/verify-email-otp", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.username, code: emailOtp }),
+      });
+      const vData = await vRes.json();
+      if (!vRes.ok) { setError(vData.error || "Invalid code."); setIsLoading(false); return; }
+
+      // Create account
+      const rRes = await fetch("/api/register", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: form.name, email: form.username, password: form.password, phone: fullPhone }),
+      });
+      const rData = await rRes.json();
+      if (!rRes.ok) { setError(rData.error || "Registration failed."); setIsLoading(false); return; }
+
+      // Auto sign in
+      const { signIn } = await import("next-auth/react");
+      const res = await signIn("credentials", { email: form.username, password: form.password, redirect: false });
+      if (res?.error) { setError("Account created. Please log in."); setIsLoading(false); onSwitch(); return; }
+      router.replace("/");
+    } catch { setError("Something went wrong."); }
+    setIsLoading(false);
+  };
+
+  const handleResend = async () => {
+    if (resendTimer > 0) return;
+    setError("");
+    setIsLoading(true);
+    try {
+      const endpoint = step === "phone-otp" ? "/api/twilio/send-phone-otp" : "/api/twilio/send-email-otp";
+      const body = step === "phone-otp" ? { phone: fullPhone } : { email: form.username };
+      const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (res.ok) setResendTimer(60);
+      else { const d = await res.json(); setError(d.error || "Failed to resend."); }
+    } catch { setError("Failed to resend."); }
+    setIsLoading(false);
+  };
+
+  // ── Phone OTP step ──
+  if (step === "phone-otp") {
+    return (
+      <form onSubmit={handlePhoneOtp} className="space-y-5">
+        <div className="text-center">
+          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-yellow-50 flex items-center justify-center">
+            <svg className="w-7 h-7 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 8.25h3m-3 3h3m-3 3h3" /></svg>
+          </div>
+          <h3 className="text-[16px] font-bold text-gray-900">Verify your phone</h3>
+          <p className="text-[13px] text-gray-500 mt-1">Enter the 6-digit code sent to <span className="font-semibold text-gray-700">{fullPhone}</span></p>
+        </div>
+        {error && <div className="flex items-center gap-2.5 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {error}</div>}
+        <OtpInput value={phoneOtp} onChange={setPhoneOtp} />
+        <button type="submit" disabled={isLoading || phoneOtp.length !== 6}
+          className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
+          {isLoading ? "Verifying..." : "Verify Phone"}
+        </button>
+        <p className="text-center text-[13px] text-gray-500">
+          Didn&apos;t receive it?{" "}
+          {resendTimer > 0
+            ? <span className="text-gray-400">Resend in {resendTimer}s</span>
+            : <button type="button" onClick={handleResend} className="font-bold text-black underline">Resend</button>}
+        </p>
+        <p className="text-center text-[13px] text-gray-500">
+          <button type="button" onClick={() => { setStep("form"); setPhoneOtp(""); setError(""); }} className="underline text-gray-500">← Back</button>
+        </p>
+      </form>
+    );
+  }
+
+  // ── Email OTP step ──
+  if (step === "email-otp") {
+    return (
+      <form onSubmit={handleEmailOtp} className="space-y-5">
+        <div className="text-center">
+          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-yellow-50 flex items-center justify-center">
+            <svg className="w-7 h-7 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
+          </div>
+          <h3 className="text-[16px] font-bold text-gray-900">Verify your email</h3>
+          <p className="text-[13px] text-gray-500 mt-1">Enter the 6-digit code sent to <span className="font-semibold text-gray-700">{form.username}</span></p>
+        </div>
+        {error && <div className="flex items-center gap-2.5 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {error}</div>}
+        <OtpInput value={emailOtp} onChange={setEmailOtp} />
+        <button type="submit" disabled={isLoading || emailOtp.length !== 6}
+          className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
+          {isLoading ? "Verifying..." : "Verify Email & Create Account"}
+        </button>
+        <p className="text-center text-[13px] text-gray-500">
+          Didn&apos;t receive it?{" "}
+          {resendTimer > 0
+            ? <span className="text-gray-400">Resend in {resendTimer}s</span>
+            : <button type="button" onClick={handleResend} className="font-bold text-black underline">Resend</button>}
+        </p>
+      </form>
+    );
+  }
+
+  // ── Registration form (step 1) ──
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleFormSubmit} className="space-y-4">
       {error && <div className="flex items-center gap-2.5 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {error}</div>}
       <div className="space-y-3">
         <input type="text" required value={form.name} onChange={setField("name")} placeholder="Full Name"
@@ -148,7 +334,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
               </div>
             )}
           </div>
-          <input type="tel" value={form.phone} onChange={setField("phone")} placeholder="Phone Number"
+          <input type="tel" required value={form.phone} onChange={setField("phone")} placeholder="Phone Number"
             className="flex-1 rounded-md border border-gray-200 bg-[#F4F7FF] px-4 py-3 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
         </div>
         <div className="relative">
@@ -164,7 +350,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       </div>
       <button type="submit" disabled={isLoading}
         className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
-        {isLoading ? "Signing up..." : "Sign Up"}
+        {isLoading ? "Sending OTP..." : "Continue"}
       </button>
       <div className="flex items-center gap-4 my-4"><div className="flex-1 h-px bg-gray-200" /><span className="text-xs text-gray-400">Or</span><div className="flex-1 h-px bg-gray-200" /></div>
       <button type="button" className="w-full flex items-center justify-center gap-3 rounded-md border border-gray-200 bg-white py-2.5 text-[15px] font-medium text-gray-700 hover:bg-gray-50 transition">
