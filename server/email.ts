@@ -31,6 +31,9 @@ export async function sendEmailNotification(options: {
   });
 }
 
+const SITE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://getreviews.buzz";
+const LOGO_URL = "https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png";
+
 function emailWrapper(content: string) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -38,17 +41,12 @@ function emailWrapper(content: string) {
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:30px 0">
   <tr><td align="center">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
-      <!-- Logo -->
+      <!-- Header / Logo -->
       <tr>
-        <td align="center" style="padding:28px 32px 20px;background:#ffffff;border-bottom:1px solid #f0f0f0">
-          <table cellpadding="0" cellspacing="0">
-            <tr>
-              <td align="center">
-                <div style="font-size:22px;color:#f5a623;letter-spacing:2px">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
-                <div style="font-size:26px;font-weight:bold;color:#222;margin-top:4px;letter-spacing:-0.5px">Get <span style="color:#f5a623">Reviews</span> Buzz</div>
-              </td>
-            </tr>
-          </table>
+        <td align="center" style="padding:20px 32px;background:#e3e3e3">
+          <a href="${SITE_URL}" style="display:inline-block;text-decoration:none">
+            <img src="${LOGO_URL}" alt="Get Reviews Buzz" style="max-width:180px;height:auto;display:block" />
+          </a>
         </td>
       </tr>
       <!-- Content -->
@@ -57,16 +55,16 @@ function emailWrapper(content: string) {
       <tr>
         <td style="padding:20px 32px;background:#f9f9f9;border-top:1px solid #eeeeee;text-align:center">
           <p style="margin:0 0 10px;font-size:12px;color:#999">
-            <a href="#" style="color:#999;text-decoration:none">PRIVACY STATEMENT</a> &nbsp;|&nbsp;
-            <a href="#" style="color:#999;text-decoration:none">TERMS OF SERVICE</a> &nbsp;|&nbsp;
-            <a href="#" style="color:#999;text-decoration:none">ABOUT</a>
+            <a href="${SITE_URL}/privacy-policy" style="color:#999;text-decoration:none">Privacy Statement</a> &nbsp;|&nbsp;
+            <a href="${SITE_URL}/terms-conditions" style="color:#999;text-decoration:none">Terms of Service</a> &nbsp;|&nbsp;
+            <a href="${SITE_URL}/about-us" style="color:#999;text-decoration:none">About</a>
           </p>
-          <p style="margin:0 0 12px;font-size:11px;color:#bbb">©${new Date().getFullYear()} GET REVIEWS BUZZ. ALL RIGHTS RESERVED.</p>
+          <p style="margin:0 0 12px;font-size:11px;color:#bbb">&copy;${new Date().getFullYear()} GET REVIEWS BUZZ. All Rights Reserved.</p>
           <table cellpadding="0" cellspacing="0" align="center"><tr>
-            <td style="padding:0 4px"><a href="https://facebook.com" style="display:inline-block;width:28px;height:28px;background:#1877f2;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">f</a></td>
-            <td style="padding:0 4px"><a href="https://twitter.com" style="display:inline-block;width:28px;height:28px;background:#000;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">𝕏</a></td>
-            <td style="padding:0 4px"><a href="https://instagram.com" style="display:inline-block;width:28px;height:28px;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:11px">&#9679;</a></td>
-            <td style="padding:0 4px"><a href="https://wa.me" style="display:inline-block;width:28px;height:28px;background:#25d366;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px">&#128222;</a></td>
+            <td style="padding:0 5px"><a href="https://www.facebook.com/getreviews.buzz" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/20/733/733547.png" alt="Facebook" width="20" height="20" style="display:block" /></a></td>
+            <td style="padding:0 5px"><a href="https://x.com/GetReviewsBuzz" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/20/5969/5969020.png" alt="Twitter" width="20" height="20" style="display:block" /></a></td>
+            <td style="padding:0 5px"><a href="https://www.instagram.com/getreviews.buzz/" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/20/2111/2111463.png" alt="Instagram" width="20" height="20" style="display:block" /></a></td>
+            <td style="padding:0 5px"><a href="https://www.pinterest.com/getreviewsbuzz/" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/20/733/733585.png" alt="Pinterest" width="20" height="20" style="display:block" /></a></td>
           </tr></table>
         </td>
       </tr>
