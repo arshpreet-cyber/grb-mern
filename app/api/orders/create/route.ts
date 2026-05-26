@@ -98,20 +98,7 @@ export async function POST(req: NextRequest) {
       data: { payUrl },
     });
 
-    // For non-Zoho payments, create Zoho Books invoice silently in background
-    if (paymentMethod !== "zoho") createZohoInvoice({
-      email: user?.email ?? "",
-      name: user?.name ?? "",
-      orderNumber,
-      items: items.map((item: any) => ({
-        platform: item.platform,
-        pricePerUnit: item.pricePerUnit,
-        qty: item.qty,
-        type: item.type,
-      })),
-    }).catch((err) => console.error("[Zoho Invoice]", err.message));
-
-    // Send order confirmation email silently
+    // Send order confirmation email immediately after order is created
     if (user?.email) {
       const emailContent = buildOrderCreatedEmail({
         name: user.name ?? "Customer",
@@ -135,6 +122,19 @@ export async function POST(req: NextRequest) {
         html: emailContent.html,
       }).catch((err) => console.error("[Order Email]", err.message));
     }
+
+    // For non-Zoho payments, create Zoho Books invoice silently in background
+    if (paymentMethod !== "zoho") createZohoInvoice({
+      email: user?.email ?? "",
+      name: user?.name ?? "",
+      orderNumber,
+      items: items.map((item: any) => ({
+        platform: item.platform,
+        pricePerUnit: item.pricePerUnit,
+        qty: item.qty,
+        type: item.type,
+      })),
+    }).catch((err) => console.error("[Zoho Invoice]", err.message));
 
     return NextResponse.json({ payUrl, orderId: order.id });
   } catch (err: any) {
