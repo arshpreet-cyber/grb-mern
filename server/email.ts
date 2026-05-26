@@ -39,31 +39,31 @@ function emailWrapper(content: string) {
 <body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:30px 0">
   <tr><td align="center">
-    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
-      <!-- Header / Logo -->
+    <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border:1px solid #e0e0e0;border-radius:4px;overflow:hidden">
+      <!-- Logo -->
       <tr>
-        <td align="center" style="padding:20px 32px;background:#e3e3e3">
+        <td align="center" style="padding:24px 32px 16px;background:#ffffff;border-bottom:1px solid #eeeeee">
           <a href="${SITE_URL}" style="display:inline-block;text-decoration:none">
-            <img src="${SITE_URL}/icons/logo.png" alt="Get Reviews Buzz" width="234" height="87" style="display:block;max-width:234px;height:auto" />
+            <img src="${SITE_URL}/icons/logo.png" alt="Get Reviews Buzz" width="180" height="67" style="display:block;max-width:180px;height:auto" />
           </a>
         </td>
       </tr>
       <!-- Content -->
-      <tr><td style="padding:28px 32px">${content}</td></tr>
+      <tr><td style="padding:24px 32px">${content}</td></tr>
       <!-- Footer -->
       <tr>
-        <td style="padding:20px 32px;background:#f9f9f9;border-top:1px solid #eeeeee;text-align:center">
-          <p style="margin:0 0 10px;font-size:12px;color:#999">
-            <a href="${SITE_URL}/privacy-policy" style="color:#999;text-decoration:none">Privacy Statement</a> &nbsp;|&nbsp;
-            <a href="${SITE_URL}/terms-conditions" style="color:#999;text-decoration:none">Terms of Service</a> &nbsp;|&nbsp;
-            <a href="${SITE_URL}/about-us" style="color:#999;text-decoration:none">About</a>
+        <td style="padding:16px 32px;background:#fafafa;border-top:1px solid #eeeeee;text-align:center">
+          <p style="margin:0 0 8px;font-size:11px;color:#aaa">
+            <a href="${SITE_URL}/privacy-policy" style="color:#aaa;text-decoration:none">Privacy Statement</a> &nbsp;|&nbsp;
+            <a href="${SITE_URL}/terms-conditions" style="color:#aaa;text-decoration:none">Terms of Service</a> &nbsp;|&nbsp;
+            <a href="${SITE_URL}/about-us" style="color:#aaa;text-decoration:none">About</a>
           </p>
-          <p style="margin:0 0 12px;font-size:11px;color:#bbb">&copy;${new Date().getFullYear()} GET REVIEWS BUZZ. All Rights Reserved.</p>
+          <p style="margin:0 0 10px;font-size:10px;color:#ccc">&copy;${new Date().getFullYear()} GET REVIEWS BUZZ. All Rights Reserved.</p>
           <table cellpadding="0" cellspacing="0" align="center"><tr>
-            <td style="padding:0 5px"><a href="https://www.facebook.com/getreviews.buzz" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-facebook.png" alt="Facebook" width="20" height="20" style="display:block" /></a></td>
-            <td style="padding:0 5px"><a href="https://x.com/GetReviewsBuzz" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-twitter.png" alt="Twitter" width="20" height="20" style="display:block" /></a></td>
-            <td style="padding:0 5px"><a href="https://www.instagram.com/getreviews.buzz/" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-instagram.png" alt="Instagram" width="20" height="20" style="display:block" /></a></td>
-            <td style="padding:0 5px"><a href="https://www.pinterest.com/getreviewsbuzz/" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-pinterest.png" alt="Pinterest" width="20" height="20" style="display:block" /></a></td>
+            <td style="padding:0 4px"><a href="https://www.facebook.com/getreviews.buzz" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-facebook.png" alt="Facebook" width="18" height="18" style="display:block" /></a></td>
+            <td style="padding:0 4px"><a href="https://x.com/GetReviewsBuzz" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-twitter.png" alt="Twitter" width="18" height="18" style="display:block" /></a></td>
+            <td style="padding:0 4px"><a href="https://www.instagram.com/getreviews.buzz/" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-instagram.png" alt="Instagram" width="18" height="18" style="display:block" /></a></td>
+            <td style="padding:0 4px"><a href="https://www.pinterest.com/getreviewsbuzz/" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-pinterest.png" alt="Pinterest" width="18" height="18" style="display:block" /></a></td>
           </tr></table>
         </td>
       </tr>
