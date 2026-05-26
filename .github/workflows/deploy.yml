@@ -5,19 +5,14 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set git identity to org account
-        run: |
-          git config user.email "development@adaired.com"
-          git config user.name "Adaired-Digital-Media"
-          git commit --allow-empty -m "deploy"
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
