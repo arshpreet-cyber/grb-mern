@@ -157,7 +157,7 @@ function AuthGate() {
   const errBox = (msg: string) => msg ? <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {msg}</div> : null;
 
   return (
-    <div className="w-full max-w-[420px] min-h-145 rounded-2xl bg-white shadow-2xl px-8 py-8 max-h-[90vh] overflow-y-auto flex flex-col">
+    <div className="w-full max-w-[420px] rounded-2xl bg-white shadow-2xl px-8 py-8 max-h-[90vh] overflow-y-auto flex flex-col" style={{ minHeight: 580 }}>
       {logo}
 
       {/* OTP steps don't show main tabs */}
@@ -165,7 +165,7 @@ function AuthGate() {
 
       {/* ── LOGIN ── */}
       {tab === "login" && (
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4 flex flex-col flex-1">
           <p className="text-[13px] text-gray-500 text-center -mt-2 mb-2">Sign in to complete your order.</p>
           {errBox(loginError)}
           <input type="email" required value={loginForm.email} onChange={e => setLoginForm(p => ({ ...p, email: e.target.value }))} placeholder="Email Address"
@@ -175,6 +175,7 @@ function AuthGate() {
               className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 pl-4 pr-12 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
             <button type="button" onClick={() => setShowLoginPw(!showLoginPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">{showLoginPw ? EYE_OFF : EYE_OPEN}</button>
           </div>
+          <div className="flex-1" />
           <button type="submit" disabled={loginLoading} className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
             {loginLoading ? "Signing in..." : "Log In"}
           </button>
