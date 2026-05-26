@@ -32,7 +32,6 @@ export async function sendEmailNotification(options: {
 }
 
 const SITE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://getreviews.buzz";
-const LOGO_URL = "https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png";
 
 function emailWrapper(content: string) {
   return `<!DOCTYPE html>
@@ -45,7 +44,7 @@ function emailWrapper(content: string) {
       <tr>
         <td align="center" style="padding:20px 32px;background:#e3e3e3">
           <a href="${SITE_URL}" style="display:inline-block;text-decoration:none">
-            <img src="${LOGO_URL}" alt="Get Reviews Buzz" style="max-width:180px;height:auto;display:block" />
+            <img src="${SITE_URL}/icons/logo.png" alt="Get Reviews Buzz" width="234" height="87" style="display:block;max-width:234px;height:auto" />
           </a>
         </td>
       </tr>
@@ -61,10 +60,10 @@ function emailWrapper(content: string) {
           </p>
           <p style="margin:0 0 12px;font-size:11px;color:#bbb">&copy;${new Date().getFullYear()} GET REVIEWS BUZZ. All Rights Reserved.</p>
           <table cellpadding="0" cellspacing="0" align="center"><tr>
-            <td style="padding:0 5px"><a href="https://www.facebook.com/getreviews.buzz" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/20/733/733547.png" alt="Facebook" width="20" height="20" style="display:block" /></a></td>
-            <td style="padding:0 5px"><a href="https://x.com/GetReviewsBuzz" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/20/5969/5969020.png" alt="Twitter" width="20" height="20" style="display:block" /></a></td>
-            <td style="padding:0 5px"><a href="https://www.instagram.com/getreviews.buzz/" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/20/2111/2111463.png" alt="Instagram" width="20" height="20" style="display:block" /></a></td>
-            <td style="padding:0 5px"><a href="https://www.pinterest.com/getreviewsbuzz/" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/20/733/733585.png" alt="Pinterest" width="20" height="20" style="display:block" /></a></td>
+            <td style="padding:0 5px"><a href="https://www.facebook.com/getreviews.buzz" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-facebook.png" alt="Facebook" width="20" height="20" style="display:block" /></a></td>
+            <td style="padding:0 5px"><a href="https://x.com/GetReviewsBuzz" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-twitter.png" alt="Twitter" width="20" height="20" style="display:block" /></a></td>
+            <td style="padding:0 5px"><a href="https://www.instagram.com/getreviews.buzz/" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-instagram.png" alt="Instagram" width="20" height="20" style="display:block" /></a></td>
+            <td style="padding:0 5px"><a href="https://www.pinterest.com/getreviewsbuzz/" style="display:inline-block;text-decoration:none"><img src="${SITE_URL}/icons/social-pinterest.png" alt="Pinterest" width="20" height="20" style="display:block" /></a></td>
           </tr></table>
         </td>
       </tr>
