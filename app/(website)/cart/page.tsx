@@ -157,7 +157,7 @@ function AuthGate() {
   const errBox = (msg: string) => msg ? <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {msg}</div> : null;
 
   return (
-    <div className="w-full max-w-[420px] rounded-2xl bg-white shadow-2xl px-8 py-8 max-h-[90vh] overflow-y-auto">
+    <div className="w-full max-w-[420px] min-h-145 rounded-2xl bg-white shadow-2xl px-8 py-8 max-h-[90vh] overflow-y-auto flex flex-col">
       {logo}
 
       {/* OTP steps don't show main tabs */}
