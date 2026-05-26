@@ -44,14 +44,13 @@ function orgUrl(path: string) {
 async function createOrderContact(
   token: string,
   email: string,
-  name: string,
-  orderNumber: string
+  name: string
 ): Promise<string> {
   const createRes = await fetch(orgUrl("/contacts"), {
     method: "POST",
     headers: authHeader(token),
     body: JSON.stringify({
-      contact_name: `${name || email} (#${orderNumber})`,
+      contact_name: name || email,
       email,
     }),
   });
@@ -75,7 +74,7 @@ export async function createZohoInvoice(params: {
   returnPaymentUrl?: boolean;
 }): Promise<string | void> {
   const token = await getAccessToken();
-  const contactId = await createOrderContact(token, params.email, params.name, params.orderNumber);
+  const contactId = await createOrderContact(token, params.email, params.name);
 
   const lineItems = params.items.map((item) => ({
     name: invoiceItemName(item.platform),
