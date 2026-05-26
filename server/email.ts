@@ -34,42 +34,46 @@ export async function sendEmailNotification(options: {
 function emailWrapper(content: string) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:30px 0">
+<body style="margin:0;padding:0;background:#fdfdfd;font-family:Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#fdfdfd;padding:20px 0">
   <tr><td align="center">
-    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
-      <!-- Logo -->
+    <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#ffffff;border:1px solid #dcdcdc;overflow:hidden">
+      
       <tr>
-        <td align="center" style="padding:28px 32px 20px;background:#ffffff;border-bottom:1px solid #f0f0f0">
+        <td align="center" style="padding:22px 20px;background:#ebebeb;border-bottom:1px solid #dcdcdc">
           <table cellpadding="0" cellspacing="0">
             <tr>
               <td align="center">
-                <div style="font-size:22px;color:#f5a623;letter-spacing:2px">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
-                <div style="font-size:26px;font-weight:bold;color:#222;margin-top:4px;letter-spacing:-0.5px">Get <span style="color:#f5a623">Reviews</span> Buzz</div>
+                <div style="font-size:16px;color:#f5a623;line-height:1;margin-bottom:2px">★ ★ ★ ★</div>
+                <div style="font-size:24px;font-weight:bold;color:#333333;font-style:italic;font-family:'Georgia',serif">
+                  Get <span style="color:#222222;font-style:normal;font-weight:900">Reviews</span>
+                </div>
               </td>
             </tr>
           </table>
         </td>
       </tr>
-      <!-- Content -->
-      <tr><td style="padding:28px 32px">${content}</td></tr>
-      <!-- Footer -->
+
+      <tr><td style="padding:30px 25px;background:#ffffff">${content}</td></tr>
+      
       <tr>
-        <td style="padding:20px 32px;background:#f9f9f9;border-top:1px solid #eeeeee;text-align:center">
-          <p style="margin:0 0 10px;font-size:12px;color:#999">
-            <a href="#" style="color:#999;text-decoration:none">PRIVACY STATEMENT</a> &nbsp;|&nbsp;
-            <a href="#" style="color:#999;text-decoration:none">TERMS OF SERVICE</a> &nbsp;|&nbsp;
-            <a href="#" style="color:#999;text-decoration:none">ABOUT</a>
+        <td style="padding:0 25px 35px;background:#ffffff;text-align:center;font-family:Arial,sans-serif">
+          <p style="margin:0 0 8px;font-size:10px;color:#888888;letter-spacing:0.5px">
+            <a href="#" style="color:#888888;text-decoration:none">PRIVACY STATEMENT</a> | 
+            <a href="#" style="color:#888888;text-decoration:none">TERMS OF SERVICE</a> | 
+            <a href="#" style="color:#888888;text-decoration:none">ABOUT</a>
           </p>
-          <p style="margin:0 0 12px;font-size:11px;color:#bbb">©${new Date().getFullYear()} GET REVIEWS BUZZ. ALL RIGHTS RESERVED.</p>
+          <p style="margin:0 0 16px;font-size:10px;color:#aaaaaa;letter-spacing:0.2px">©2026 GET REVIEWS BUZZ. ALL RIGHTS RESERVED.</p>
+          
           <table cellpadding="0" cellspacing="0" align="center"><tr>
-            <td style="padding:0 4px"><a href="https://facebook.com" style="display:inline-block;width:28px;height:28px;background:#1877f2;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">f</a></td>
-            <td style="padding:0 4px"><a href="https://twitter.com" style="display:inline-block;width:28px;height:28px;background:#000;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">𝕏</a></td>
-            <td style="padding:0 4px"><a href="https://instagram.com" style="display:inline-block;width:28px;height:28px;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:11px">&#9679;</a></td>
-            <td style="padding:0 4px"><a href="https://wa.me" style="display:inline-block;width:28px;height:28px;background:#25d366;border-radius:50%;text-align:center;line-height:28px;color:#fff;text-decoration:none;font-size:13px">&#128222;</a></td>
+            <td style="padding:0 4px"><a href="https://facebook.com" style="display:inline-block;width:24px;height:24px;background:#1877f2;border-radius:50%;text-align:center;line-height:24px;color:#ffffff;text-decoration:none;font-size:12px;font-weight:bold">f</a></td>
+            <td style="padding:0 4px"><a href="https://twitter.com" style="display:inline-block;width:24px;height:24px;background:#000000;border-radius:50%;text-align:center;line-height:24px;color:#ffffff;text-decoration:none;font-size:11px;font-weight:bold">𝕏</a></td>
+            <td style="padding:0 4px"><a href="https://instagram.com" style="display:inline-block;width:24px;height:24px;background:#e4405f;border-radius:50%;text-align:center;line-height:24px;color:#ffffff;text-decoration:none;font-size:11px;font-weight:bold">📸</a></td>
+            <td style="padding:0 4px"><a href="https://wa.me" style="display:inline-block;width:24px;height:24px;background:#25d366;border-radius:50%;text-align:center;line-height:24px;color:#ffffff;text-decoration:none;font-size:12px">💬</a></td>
           </tr></table>
         </td>
       </tr>
+
     </table>
   </td></tr>
 </table>
@@ -79,19 +83,19 @@ function emailWrapper(content: string) {
 function orderTable(items: Array<{ platform: string; qty: number; pricePerUnit: number }>) {
   const rows = items.map((i) => `
     <tr>
-      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:14px">${i.platform} Reviews</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:14px">${i.qty}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:14px">$${i.pricePerUnit.toFixed(2)}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:right;font-size:14px">$${(i.pricePerUnit * i.qty).toFixed(2)}</td>
+      <td style="padding:12px 14px;border-bottom:1px solid #e8e8e8;font-size:14px;color:#333">${i.platform} Reviews</td>
+      <td style="padding:12px 14px;border-bottom:1px solid #e8e8e8;text-align:center;font-size:14px;color:#333">${i.qty}</td>
+      <td style="padding:12px 14px;border-bottom:1px solid #e8e8e8;text-align:center;font-size:14px;color:#333">$${i.pricePerUnit}</td>
+      <td style="padding:12px 14px;border-bottom:1px solid #e8e8e8;text-align:right;font-size:14px;color:#333">$${i.pricePerUnit * i.qty}</td>
     </tr>`).join("");
 
-  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin:16px 0">
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dcdcdc;margin:16px 0">
     <thead>
-      <tr style="background:#f8f8f8">
-        <th style="padding:10px 14px;text-align:left;font-size:13px;color:#555;font-weight:600;border-bottom:1px solid #e8e8e8">Product Name</th>
-        <th style="padding:10px 14px;text-align:center;font-size:13px;color:#555;font-weight:600;border-bottom:1px solid #e8e8e8">Quantity</th>
-        <th style="padding:10px 14px;text-align:center;font-size:13px;color:#555;font-weight:600;border-bottom:1px solid #e8e8e8">Amount Per Item</th>
-        <th style="padding:10px 14px;text-align:right;font-size:13px;color:#555;font-weight:600;border-bottom:1px solid #e8e8e8">Amount</th>
+      <tr style="background:#ffffff">
+        <th style="padding:12px 14px;text-align:left;font-size:13px;color:#333;font-weight:600;border-bottom:1px solid #dcdcdc">Product Name</th>
+        <th style="padding:12px 14px;text-align:center;font-size:13px;color:#333;font-weight:600;border-bottom:1px solid #dcdcdc">Quantity</th>
+        <th style="padding:12px 14px;text-align:center;font-size:13px;color:#333;font-weight:600;border-bottom:1px solid #dcdcdc">Amount Per Item</th>
+        <th style="padding:12px 14px;text-align:right;font-size:13px;color:#333;font-weight:600;border-bottom:1px solid #dcdcdc">Amount</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
@@ -99,18 +103,18 @@ function orderTable(items: Array<{ platform: string; qty: number; pricePerUnit: 
 }
 
 function paymentDetails(total: number, amountPaid: number) {
-  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin:16px 0">
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dcdcdc;margin:16px 0">
     <thead>
-      <tr><th colspan="2" style="padding:10px 14px;text-align:center;font-size:15px;color:#1a6fe0;font-weight:700;border-bottom:1px solid #e8e8e8;background:#f8fbff">Payment Details</th></tr>
+      <tr><th colspan="2" style="padding:12px 14px;text-align:center;font-size:16px;color:#1a6fe0;font-weight:700;border-bottom:1px solid #dcdcdc;background:#ffffff">Payment Details</th></tr>
     </thead>
     <tbody>
       <tr>
-        <td style="padding:10px 14px;font-size:14px;color:#555;border-bottom:1px solid #f0f0f0">Total:</td>
-        <td style="padding:10px 14px;font-size:14px;text-align:right;font-weight:600;border-bottom:1px solid #f0f0f0">$${total.toFixed(2)}</td>
+        <td style="padding:10px 14px;font-size:14px;color:#333;border-bottom:1px solid #e8e8e8">Total:</td>
+        <td style="padding:10px 14px;font-size:14px;text-align:right;font-weight:500;border-bottom:1px solid #e8e8e8">$${total}</td>
       </tr>
       <tr>
-        <td style="padding:10px 14px;font-size:14px;color:#555">Amount Paid :</td>
-        <td style="padding:10px 14px;font-size:14px;text-align:right;font-weight:600">${amountPaid > 0 ? `$${amountPaid.toFixed(2)}` : "0"}</td>
+        <td style="padding:10px 14px;font-size:14px;color:#333">Amount Paid :</td>
+        <td style="padding:10px 14px;font-size:14px;text-align:right;font-weight:500">${amountPaid > 0 ? `$${amountPaid}` : "0"}</td>
       </tr>
     </tbody>
   </table>`;
@@ -124,15 +128,13 @@ export function buildOrderCreatedEmail(payload: {
   total: number;
 }) {
   const content = `
-    <p style="margin:0 0 14px;font-size:15px;color:#333">This order has been successfully generated and ready to pay.</p>
-    <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
-    <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:4px">
-      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.5;color:#222">There is an order in your account that is unpaid. Have you experienced any issues while making your payment? Not to worry!</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dcdcdc;margin-bottom:16px">
+      <tr><td style="padding:12px 14px;text-align:center;font-size:14px;font-weight:600;color:#222;background:#ffffff">Order No. - ${payload.orderNumber}</td></tr>
     </table>
     ${orderTable(payload.items)}
     ${paymentDetails(payload.total, 0)}
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:24px 0 4px;font-size:14px;color:#222">Best Regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -149,15 +151,13 @@ export function buildOrderPaidEmail(payload: {
   total: number;
 }) {
   const content = `
-    <p style="margin:0 0 14px;font-size:15px;color:#333">New order has been placed successfully.</p>
-    <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
-    <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:4px">
-      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.5;color:#222">New order has been placed successfully.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dcdcdc;margin-bottom:16px">
+      <tr><td style="padding:12px 14px;text-align:center;font-size:14px;font-weight:600;color:#222;background:#ffffff">Order No. - ${payload.orderNumber}</td></tr>
     </table>
     ${payload.items ? orderTable(payload.items) : ""}
     ${paymentDetails(payload.total, payload.total)}
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:24px 0 4px;font-size:14px;color:#222">Best Regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -176,30 +176,26 @@ export function buildUnpaidReminderEmail(payload: {
 }) {
   const payButtons = payload.payUrl
     ? `
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin:16px 0">
-      <tr><td colspan="4" style="padding:10px 14px"><p style="font-size:15px;margin:0;line-height:28px;padding:5px 0;color:#000">To complete the payment please click the button below.</p></td></tr>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dcdcdc;margin:16px 0">
+      <tr><td style="padding:14px 14px 6px;text-align:center"><p style="font-size:15px;margin:0;font-weight:600;color:#222">To complete the payment please click on desired payment method.</p></td></tr>
       <tr>
-        <td style="padding:12px 14px">
-          <a href="${payload.payUrl}"
-             style="padding:14px 20px;background:#000;border-radius:5px;display:inline-block;color:#fff;text-decoration:none;font-size:14px;font-weight:600">
-            💳 Pay with Debit / Credit Card
-          </a>
+        <td style="padding:14px;text-align:center">
+          <a href="${payload.payUrl}" style="display:inline-block;padding:12px 28px;background:#f2f2f2;border:1px solid #ccc;color:#003087;text-decoration:none;font-size:15px;font-weight:bold;border-radius:4px;margin-right:10px">PayPal</a>
+          <a href="${payload.payUrl}" style="display:inline-block;padding:12px 28px;background:#f2f2f2;border:1px solid #ccc;color:#222;text-decoration:none;font-size:14px;font-weight:bold;border-radius:4px">Credit / Debit Card</a>
         </td>
       </tr>
     </table>`
     : "";
 
   const content = `
-    <p style="margin:0 0 14px;font-size:15px;color:#333">There is an order in your account that is unpaid. Have you experienced any issues while making your payment? Not to worry!</p>
-    <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
-    <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:4px">
-      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.5;color:#222">There is an order in your account that is unpaid. Have you experienced any issues while making your payment? Not to worry!</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dcdcdc;margin-bottom:16px">
+      <tr><td style="padding:12px 14px;text-align:center;font-size:14px;font-weight:600;color:#222;background:#ffffff">Order No. - ${payload.orderNumber}</td></tr>
     </table>
     ${orderTable(payload.items)}
     ${paymentDetails(payload.total, 0)}
     ${payButtons}
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:24px 0 4px;font-size:14px;color:#222">Best Regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -209,7 +205,7 @@ export function buildUnpaidReminderEmail(payload: {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string; message: string }> = {
-  "1": { label: "Pending",    color: "#f59e0b", message: "Your order has been received and is pending review." },
+  "1": { label: "Pending",     color: "#f59e0b", message: "Your order has been received and is pending review." },
   "2": { label: "Processing", color: "#3b82f6", message: "Great news! We are currently processing your order." },
   "3": { label: "Complete",   color: "#10b981", message: "Your order has been completed successfully. Thank you for choosing Get Reviews Buzz!" },
   "4": { label: "On Hold",    color: "#f97316", message: "Your order has been placed on hold. Our team will reach out to you shortly." },
@@ -227,8 +223,8 @@ export function buildOrderStatusEmail(payload: {
   const content = `
     <p style="margin:0 0 14px;font-size:15px;color:#333">Hi <strong>${payload.name}</strong>,</p>
     <p style="margin:0 0 20px;font-size:15px;color:#333">${s.message}</p>
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:20px">
-      <tr><td style="padding:10px 14px;text-align:center;font-size:14px;font-weight:600;color:#333;background:#fafafa;border-bottom:1px solid #e8e8e8">Order No. - ${payload.orderNumber}</td></tr>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dcdcdc;margin-bottom:20px">
+      <tr><td style="padding:12px 14px;text-align:center;font-size:14px;font-weight:600;color:#222;background:#ffffff">Order No. - ${payload.orderNumber}</td></tr>
       <tr>
         <td style="padding:16px 14px;text-align:center">
           <span style="display:inline-block;padding:8px 24px;background:${s.color};color:#fff;border-radius:20px;font-size:15px;font-weight:700;letter-spacing:0.5px">${s.label}</span>
@@ -236,7 +232,7 @@ export function buildOrderStatusEmail(payload: {
       </tr>
     </table>
     <p style="margin:0 0 4px;font-size:14px;color:#444">If you have any questions, feel free to reply to this email or contact our support team.</p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:24px 0 4px;font-size:14px;color:#222">Best Regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {

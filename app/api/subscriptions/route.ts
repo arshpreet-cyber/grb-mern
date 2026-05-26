@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
 
-const PAYMENT_METHOD_LABEL: Record<string, string> = {
-  "1": "Bitcoin", "2": "Razorpay", "3": "Stripe",
-  "4": "PayPal", "5": "Bank Transfer", "6": "Binance",
-};
-
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession();
@@ -24,24 +19,36 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         orderNumber: true,
-        itemName: true,
+        paymentId: true, 
         amount: true,
         currency: true,
-        paymentMethod: true,
-        duedate: true,
+        createdAt: true, // Used for Order Date
+        updatedAt: true, // Fetched to calculate Renewal Date
       },
     });
 
-    const plans = orders.map((o) => ({
-      id: o.orderNumber ?? o.id,
-      product: o.itemName ?? "—",
-      details: o.amount != null ? `${o.currency ?? "$"}${o.amount}/Monthly` : "—",
-      duration: "30 Days",
-      renewalDate: o.duedate ? new Date(o.duedate).toLocaleDateString("en-GB") : "—",
-      method: PAYMENT_METHOD_LABEL[o.paymentMethod ?? ""] ?? o.paymentMethod ?? "—",
-    }));
+    // Transform database rows into the structure expected by your UI
+    const subscriptions = orders.map((o) => {
+      // Calculate renewal date: 30 days after updatedAt
+      let renewalDateStr = "—";
+      if (o.updatedAt) {
+        const rDate = new Date(o.updatedAt);
+        rDate.setDate(rDate.getDate() + 30); 
+        renewalDateStr = rDate.toLocaleDateString("en-GB").replace(/\//g, "-");
+      }
 
-    return NextResponse.json(plans, { status: 200 });
+      return {
+        id: o.id,
+        orderNo: o.orderNumber ?? `ORD-${o.id.substring(0, 7)}`,
+        paymentId: o.paymentId ?? "—",
+        amount: o.amount != null ? `${o.currency ?? "$"}${o.amount}` : "—",
+        orderDate: o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-GB").replace(/\//g, "-") : "—",
+        renewalDate: renewalDateStr,
+        duration: "30 Days",
+      };
+    });
+
+    return NextResponse.json(subscriptions, { status: 200 });
   } catch (error) {
     console.error("Error fetching subscriptions:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
