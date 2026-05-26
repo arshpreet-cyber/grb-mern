@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  ShoppingBag, BadgeCheck, History, BadgeX, 
+import {
+  ShoppingBag, BadgeCheck, History, BadgeX,
   ChevronDown, Filter, MoreVertical, ChevronLeft, ChevronRight,
   CheckCircle2, FileText, Eye, SlidersHorizontal
 } from "lucide-react";
+import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 
 // --- Types ---
 interface Order {
@@ -71,8 +72,8 @@ export default function DemoDashboard() {
             amount: o.amount,
             createdAt: o.date,
             paymentMethod: o.paymentMethod,
-            status: o.status as Order["status"],
-            paymentStatus: o.paymentStatus as Order["paymentStatus"],
+            status: orderStatusLabel(o.status) as Order["status"],
+            paymentStatus: paymentStatusLabel(o.paymentStatus) as Order["paymentStatus"],
           }));
           setAllOrders(mappedOrders);
           setOrders(mappedOrders);

@@ -30,6 +30,7 @@ import {
   Loader2,
 } from "lucide-react";
 import DataTable, { Column, RowAction, StatusPill } from "@/components/ui/DataTable";
+import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 
 // Types
 interface Stats {
@@ -203,18 +204,23 @@ export default function AdminDashboard() {
     ) },
     { key: "adminStatus", header: "Admin Status", render: (r) => (
       <div className="flex flex-col gap-1.5">
-        <StatusPill value={r.status || "Pending"} colorMap={{
-          "Pending": "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
-          "Complete": "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"
+        <StatusPill value={orderStatusLabel(r.status)} colorMap={{
+          "Pending":    "border-[#fef08a] text-[#ca8a04] bg-[#fefce8] dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
+          "Processing": "border-[#bfdbfe] text-[#2563eb] bg-[#eff6ff] dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400",
+          "Complete":   "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
+          "On Hold":    "border-[#fed7aa] text-[#ea580c] bg-[#fff7ed] dark:border-orange-900/50 dark:bg-orange-900/20 dark:text-orange-400",
+          "Cancelled":  "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
+          "Refund":     "border-[#e9d5ff] text-[#7c3aed] bg-[#f5f3ff] dark:border-purple-900/50 dark:bg-purple-900/20 dark:text-purple-400",
         }} />
       </div>
     ) },
     { key: "paymentStatus", header: "Payment Status", render: (r) => (
       <div className="flex flex-col gap-1.5">
-        <StatusPill value={r.paymentStatus || "Unpaid"} colorMap={{
-          "Unpaid": "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
-          "Pending": "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
-          "Complete": "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"
+        <StatusPill value={paymentStatusLabel(r.paymentStatus)} colorMap={{
+          "Unpaid":      "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
+          "Paid":        "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
+          "Unconfirmed": "border-[#fef08a] text-[#ca8a04] bg-[#fefce8] dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
+          "Cancelled":   "border-[#e2e8f0] text-[#64748b] bg-[#f8fafc] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400",
         }} />
       </div>
     ) },

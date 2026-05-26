@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PlusCircle,ArrowUpRight,MoreVertical,CheckCircle2, FileText, Eye } from "lucide-react";
+import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 
 type Order = {
   id: string; paymentId: string; amount: string; date: string;
@@ -40,7 +41,7 @@ export default function UserDashboard() {
           setOrders(data.map((o: ApiOrder) => ({
             id: o.orderNumber, paymentId: o.id.substring(0, 8),
             amount: `$${o.amount.toFixed(2)}`, date: new Date(o.date).toLocaleDateString(),
-            method: o.paymentMethod, status: o.status, paymentStatus: o.paymentStatus,
+            method: o.paymentMethod, status: orderStatusLabel(o.status), paymentStatus: paymentStatusLabel(o.paymentStatus),
           })));
         } else {
           setOrders(dummyOrders);

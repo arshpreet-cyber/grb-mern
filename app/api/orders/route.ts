@@ -9,11 +9,11 @@ export async function GET(req: NextRequest) {
 
     const statusMap: Record<string, object> = {
       all:        { deletedAt: null },
-      paid:       { deletedAt: null, paymentStatus: "Complete" },
-      pending:    { deletedAt: null, status: "Pending" },
-      processing: { deletedAt: null, status: "Processing" },
-      unpaid:     { deletedAt: null, paymentStatus: "Pending" },
-      completed:  { deletedAt: null, status: "Complete" },
+      paid:       { deletedAt: null, paymentStatus: "2" },
+      pending:    { deletedAt: null, status: "1" },
+      processing: { deletedAt: null, status: "2" },
+      unpaid:     { deletedAt: null, paymentStatus: "1" },
+      completed:  { deletedAt: null, status: "3" },
       deleted:    { deletedAt: { not: null } },
     };
 
