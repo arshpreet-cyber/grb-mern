@@ -131,15 +131,7 @@ export default function CartPage() {
   }
 
   if (status === "loading") return null;
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-white font-['Poppins']">
-        <div className="bg-[#f7f7f7] py-[50px]">
-          <Wrapper><AuthGate /></Wrapper>
-        </div>
-      </div>
-    );
-  }
+  const isGuest = !session;
 
   const componentProps = {
     id: "cart-cross-sell",
@@ -162,7 +154,12 @@ export default function CartPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white font-['Poppins']">
+    <div className="relative min-h-screen bg-white font-['Poppins']">
+      {isGuest && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm">
+          <AuthGate />
+        </div>
+      )}
       <div className="bg-[#f7f7f7] py-[50px] md:pb-[60px]">
         <Wrapper>
           {items.length > 0 && (
