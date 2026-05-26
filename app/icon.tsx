@@ -13,18 +13,15 @@ export default function Icon() {
       <div
         style={{
           alignItems: "center",
-          background: "linear-gradient(135deg, #7c3aed, #4338ca)",
-          borderRadius: 8,
-          color: "white",
+          background: "#ffffff",
           display: "flex",
-          fontSize: 18,
-          fontWeight: 800,
+          fontSize: 26,
           height: "100%",
           justifyContent: "center",
           width: "100%",
         }}
       >
-        G
+        ⭐
       </div>
     ),
     size
