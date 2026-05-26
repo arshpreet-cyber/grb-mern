@@ -31,7 +31,7 @@ export async function sendEmailNotification(options: {
   });
 }
 
-const SITE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://getreviews.buzz";
+const SITE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://grb-mern-gilt.vercel.app";
 
 function emailWrapper(content: string) {
   return `<!DOCTYPE html>
