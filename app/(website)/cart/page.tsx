@@ -27,76 +27,63 @@ function AuthGate() {
   };
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center py-12">
-      <div className="w-full max-w-[440px] mx-4 rounded-xl bg-white shadow-lg border border-gray-100 px-8 py-8">
-        {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <Link href="/">
-            <img src="https://grb-mern-gilt.vercel.app/icons/logo.png" alt="Get Reviews Buzz" className="h-12 w-auto object-contain" />
-          </Link>
-        </div>
-
-        {tab === "login" ? (
-          <>
-            <h2 className="text-[18px] font-bold text-center text-gray-900 mb-1">Sign in to continue</h2>
-            <p className="text-[13px] text-gray-500 text-center mb-6">You need to be logged in to checkout.</p>
-          </>
-        ) : (
-          <>
-            <h2 className="text-[18px] font-bold text-center text-gray-900 mb-1">Create an account</h2>
-            <p className="text-[13px] text-gray-500 text-center mb-6">Register to place your order.</p>
-          </>
-        )}
-
-        {/* Tab Toggle */}
-        <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
-          <button onClick={() => { setTab("login"); setError(""); }}
-            className={`flex-1 py-2 text-[14px] font-semibold rounded-md transition-all ${tab === "login" ? "bg-white text-black shadow-sm" : "text-gray-500"}`}>
-            Log In
-          </button>
-          <button onClick={() => { setTab("register"); setError(""); }}
-            className={`flex-1 py-2 text-[14px] font-semibold rounded-md transition-all ${tab === "register" ? "bg-white text-black shadow-sm" : "text-gray-500"}`}>
-            Register
-          </button>
-        </div>
-
-        {tab === "login" ? (
-          <form onSubmit={handleLogin} className="space-y-4">
-            {error && <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {error}</div>}
-            <input type="email" required value={loginForm.email} onChange={(e) => setLoginForm(p => ({ ...p, email: e.target.value }))} placeholder="Email Address"
-              className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
-            <div className="relative">
-              <input type={showPassword ? "text" : "password"} required value={loginForm.password} onChange={(e) => setLoginForm(p => ({ ...p, password: e.target.value }))} placeholder="Password"
-                className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 pl-4 pr-12 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
-                {showPassword
-                  ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
-                  : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
-              </button>
-            </div>
-            <button type="submit" disabled={isLoading}
-              className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
-              {isLoading ? "Signing in..." : "Log In"}
-            </button>
-            <p className="text-center text-[13px] text-gray-500">
-              Don&apos;t have an account?{" "}
-              <button type="button" onClick={() => { setTab("register"); setError(""); }} className="font-bold text-black underline">Register Now.</button>
-            </p>
-          </form>
-        ) : (
-          <div className="text-center space-y-4">
-            <p className="text-[14px] text-gray-600">Complete your registration to place an order.</p>
-            <Link href="/register"
-              className="block w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition text-center">
-              Create Account
-            </Link>
-            <p className="text-[13px] text-gray-500">
-              Already have an account?{" "}
-              <button type="button" onClick={() => { setTab("login"); setError(""); }} className="font-bold text-black underline">Log In.</button>
-            </p>
-          </div>
-        )}
+    <div className="w-full max-w-[420px] rounded-2xl bg-white shadow-2xl px-8 py-8">
+      {/* Logo */}
+      <div className="flex justify-center mb-5">
+        <Link href="/">
+          <img src="https://grb-mern-gilt.vercel.app/icons/logo.png" alt="Get Reviews Buzz" className="h-14 w-auto object-contain" />
+        </Link>
       </div>
+
+      {/* Tab Toggle */}
+      <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
+        <button onClick={() => { setTab("login"); setError(""); }}
+          className={`flex-1 py-2 text-[14px] font-semibold rounded-md transition-all ${tab === "login" ? "bg-white text-black shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+          Log In
+        </button>
+        <button onClick={() => { setTab("register"); setError(""); }}
+          className={`flex-1 py-2 text-[14px] font-semibold rounded-md transition-all ${tab === "register" ? "bg-white text-black shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+          Register
+        </button>
+      </div>
+
+      {tab === "login" ? (
+        <form onSubmit={handleLogin} className="space-y-4">
+          <p className="text-[13px] text-gray-500 text-center -mt-2 mb-2">Sign in to complete your order.</p>
+          {error && <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {error}</div>}
+          <input type="email" required value={loginForm.email} onChange={(e) => setLoginForm(p => ({ ...p, email: e.target.value }))} placeholder="Email Address"
+            className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
+          <div className="relative">
+            <input type={showPassword ? "text" : "password"} required value={loginForm.password} onChange={(e) => setLoginForm(p => ({ ...p, password: e.target.value }))} placeholder="Password"
+              className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 pl-4 pr-12 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
+              {showPassword
+                ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
+            </button>
+          </div>
+          <button type="submit" disabled={isLoading}
+            className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
+            {isLoading ? "Signing in..." : "Log In"}
+          </button>
+          <p className="text-center text-[13px] text-gray-500">
+            Don&apos;t have an account?{" "}
+            <button type="button" onClick={() => { setTab("register"); setError(""); }} className="font-bold text-black underline">Register Now.</button>
+          </p>
+        </form>
+      ) : (
+        <div className="space-y-4">
+          <p className="text-[13px] text-gray-500 text-center -mt-2 mb-2">Create an account to place your order.</p>
+          <Link href="/register"
+            className="block w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition text-center">
+            Create Account
+          </Link>
+          <p className="text-center text-[13px] text-gray-500">
+            Already have an account?{" "}
+            <button type="button" onClick={() => { setTab("login"); setError(""); }} className="font-bold text-black underline">Log In.</button>
+          </p>
+        </div>
+      )}
     </div>
   );
 }
