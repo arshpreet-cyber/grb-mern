@@ -7,7 +7,7 @@ import { sendEmailNotification, buildUnpaidReminderEmail, buildOrderInfoRequired
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role?.toUpperCase() !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
