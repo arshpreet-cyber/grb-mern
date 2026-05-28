@@ -254,16 +254,16 @@ function ItemSection({
 
       {/* Submission Type */}
       <div>
-        <p className="text-[13px] font-semibold text-[#444] mb-2.5">Review Submission Type</p>
-        <div className="flex flex-col sm:flex-row gap-3">
+        <p className="text-[12px] font-semibold text-[#444] mb-2 text-center">Review Submission Type</p>
+        <div className="flex flex-wrap justify-center gap-2">
           {(["provide", "expert"] as const).map((type) => {
-            const label = type === "provide" ? "Provide Reviews Content" : "Let Our Expert Write Reviews Content.";
+            const label = type === "provide" ? "Provide Reviews Content" : "Let Our Expert Write";
             const checked = item.submissionType === type;
             return (
               <label
                 key={type}
                 onClick={() => onChange(idx, "submissionType", type)}
-                className={`flex items-center gap-2.5 cursor-pointer px-4 py-2.5 rounded-[5px] border text-[13px] transition-all ${
+                className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-full border text-[12px] transition-all ${
                   checked
                     ? "border-[#fcd535] bg-[#fffde7] text-[#212529] font-semibold"
                     : "border-[#d0d0d0] bg-white text-[#555] hover:border-[#bbb]"
@@ -277,10 +277,10 @@ function ItemSection({
                   onChange={() => onChange(idx, "submissionType", type)}
                   className="sr-only"
                 />
-                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                <span className={`w-3 h-3 rounded-full border-2 flex items-center justify-center shrink-0 ${
                   checked ? "border-[#fcd535]" : "border-[#bbb]"
                 }`}>
-                  {checked && <span className="w-2 h-2 rounded-full bg-[#fcd535] block" />}
+                  {checked && <span className="w-1.5 h-1.5 rounded-full bg-[#fcd535] block" />}
                 </span>
                 {label}
               </label>
