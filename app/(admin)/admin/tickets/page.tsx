@@ -30,10 +30,11 @@ function sortTickets(tickets: Ticket[]): Ticket[] {
   return [...tickets].sort((a, b) => {
     const aLast = getLastThread(a);
     const bLast = getLastThread(b);
-    const aIsClientReply = aLast?.direction === "1";
-    const bIsClientReply = bLast?.direction === "1";
 
-    // Client-last-reply tickets come first
+    // No-thread tickets = customer opened, treat as client reply → comes first
+    const aIsClientReply = !aLast || String(aLast.direction) === "1";
+    const bIsClientReply = !bLast || String(bLast.direction) === "1";
+
     if (aIsClientReply && !bIsClientReply) return -1;
     if (!aIsClientReply && bIsClientReply) return 1;
 
@@ -108,8 +109,9 @@ export default function AdminTicketsPage() {
       header: "Reply Status",
       render: (t) => {
         const last = getLastThread(t);
-        if (!last) return <span className="text-gray-400 text-[12px]">—</span>;
-        const isCustomer = last.direction === "1";
+        // No threads = customer just opened the ticket (query only)
+        const isCustomer = !last || String(last.direction) === "1";
+        const time = last ? last.createdAt : t.createdAt;
         return (
           <div>
             <span className={`inline-flex items-center gap-2 text-[13px] font-semibold px-3 py-1.5 rounded-lg border ${
@@ -120,7 +122,7 @@ export default function AdminTicketsPage() {
               <span className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? "bg-orange-500" : "bg-green-500"}`} />
               {isCustomer ? "Customer Replied" : "Admin Replied"}
             </span>
-            <div className="text-[11px] text-gray-400 mt-1 pl-1">{timeAgo(last.createdAt)}</div>
+            <div className="text-[11px] text-gray-400 mt-1 pl-1">{timeAgo(time)}</div>
           </div>
         );
       },
