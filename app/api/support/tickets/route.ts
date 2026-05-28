@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, assignedTo, name, email, phone, subject, query, ticketType } = body;
+    const { userId, assignedTo, name, email, phone, subject, query, ticketType, media } = body;
 
     if (!userId || !subject || !query) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {
         phone: phone ?? null,
         subject,
         query,
+        media: media ?? null,
         ticketType: typeof ticketType === "number" ? ticketType : 1,
         title: subject,
         status: "Open",

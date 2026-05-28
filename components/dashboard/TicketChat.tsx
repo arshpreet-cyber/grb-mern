@@ -242,6 +242,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
             isStaff={false}
             time={ticket.createdAt}
             content={ticket.query}
+            media={ticket.media ?? null}
           />
         )}
 
@@ -309,14 +310,28 @@ function MessageCard({ name, role, isStaff, time, content, media }: {
       <div className="px-5 py-4">
         <p className="text-[14px] text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>
 
-        {/* Media attachment */}
-        {media && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <a href={media} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[12px] text-blue-600 hover:underline">
-              <Paperclip size={12} /> View Attachment
-            </a>
-          </div>
-        )}
+        {/* Media attachments */}
+        {media && (() => {
+          let urls: string[] = [];
+          try { urls = JSON.parse(media); } catch { urls = [media]; }
+          return (
+            <div className="mt-3 pt-3 border-t border-gray-100 flex flex-wrap gap-3">
+              {urls.map((url, i) => {
+                const isImage = /\.(png|jpe?g|gif|webp|svg)$/i.test(url);
+                return isImage ? (
+                  <a key={i} href={url} target="_blank" rel="noreferrer">
+                    <img src={url} alt={`attachment-${i+1}`} className="h-24 w-auto rounded-lg border border-gray-200 object-cover hover:opacity-90 transition" />
+                  </a>
+                ) : (
+                  <a key={i} href={url} target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-[12px] text-blue-600 hover:underline bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+                    <Paperclip size={12} /> {url.split("/").pop() ?? `File ${i + 1}`}
+                  </a>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
