@@ -78,10 +78,10 @@ export default function UserDashboard() {
   }, []);
 
   const stats = [
-    { label: "VIEW TOTAL ORDER", value: userStats ? String(userStats.totalOrders) : "—", bg: "bg-[#FBF0E2]", iconColor: "text-[#DA7A00]" },
-    { label: "VIEW ACTIVE SUBSCRIPTIONS", value: userStats ? String(userStats.activeSubscriptions) : "—", bg: "bg-[#F0F4FF]", iconColor: "text-[#001E70]" },
-    { label: "VIEW PENDING ORDERS", value: userStats ? String(userStats.pendingOrders) : "—", bg: "bg-[#EDF5E8]", iconColor: "text-[#317607]" },
-    { label: "VIEW OPEN TICKET", value: userStats ? String(userStats.openTickets) : "—", bg: "bg-[#F6EEFF]", iconColor: "text-[#48009D]" },
+    { label: "VIEW TOTAL ORDER", value: userStats ? String(userStats.totalOrders) : "—", bg: "bg-[#FBF0E2]", iconColor: "text-[#DA7A00]", href: "/dashboard/orders" },
+    { label: "VIEW ACTIVE SUBSCRIPTIONS", value: userStats ? String(userStats.activeSubscriptions) : "—", bg: "bg-[#F0F4FF]", iconColor: "text-[#001E70]", href: "/dashboard/orders/subscriptions" },
+    { label: "VIEW PENDING ORDERS", value: userStats ? String(userStats.pendingOrders) : "—", bg: "bg-[#EDF5E8]", iconColor: "text-[#317607]", href: "/dashboard/orders?status=pending" },
+    { label: "VIEW OPEN TICKET", value: userStats ? String(userStats.openTickets) : "—", bg: "bg-[#F6EEFF]", iconColor: "text-[#48009D]", href: "/dashboard/tickets" },
   ];
 
   return (
@@ -113,22 +113,22 @@ export default function UserDashboard() {
       {/* Stat Cards */}
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className={`${s.bg} dark:bg-[#1a1f2c] rounded-[20px] p-6 h-[121px] flex flex-col justify-between border border-transparent dark:border-slate-800 transition-all`}>
+          <Link key={s.label} href={s.href} className={`${s.bg} dark:bg-[#1a1f2c] rounded-[20px] p-6 h-[121px] flex flex-col justify-between border border-transparent dark:border-slate-800 transition-all hover:shadow-md hover:scale-[1.02] cursor-pointer`}>
             <div className="flex items-start justify-between">
               {/* Large Number */}
               <p className="text-4xl font-[500] text-slate-900 dark:text-white transition-colors">{s.value}</p>
-              
+
               {/* Top-Right Arrow Button */}
               <div className="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-sm">
                 <ArrowUpRight className={`w-5 h-5 ${s.iconColor} dark:text-white`} />
               </div>
             </div>
-            
+
             {/* Bottom Label */}
             <p className="mt-4 text-[15px] font-[500] text-slate-900 dark:text-slate-400 tracking-wide transition-colors">
               {s.label}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 
