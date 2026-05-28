@@ -23,6 +23,7 @@ interface Order {
   paymentMethod?: string;
   payUrl?: string | null;
   detailsFilled?: boolean;
+  isRecurring?: number | null;
   status: "Pending" | "Complete" | "Processing" | "Cancelled";
   paymentStatus: "Pending" | "Complete" | "Unpaid" | "Paid";
   user?: { name: string; email: string };
@@ -37,6 +38,7 @@ type ApiOrder = {
   paymentMethod: string;
   payUrl?: string | null;
   detailsFilled?: boolean;
+  isRecurring?: number | null;
   status: string;
   paymentStatus: string;
 };
@@ -85,6 +87,7 @@ export default function DemoDashboard() {
             paymentMethod: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
             payUrl: o.payUrl,
             detailsFilled: o.detailsFilled,
+            isRecurring: o.isRecurring,
             status: orderStatusLabel(o.status) as Order["status"],
             paymentStatus: paymentStatusLabel(o.paymentStatus) as Order["paymentStatus"],
           }));
@@ -222,7 +225,16 @@ export default function DemoDashboard() {
               ) : paginatedOrders.length > 0 ? (
                 paginatedOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-300 font-medium text-center">{order.orderNumber}</td>
+                    <td className="px-5 py-5 text-center">
+                      <div className="inline-flex flex-col items-center gap-1">
+                        <span className="text-[13px] text-gray-800 dark:text-slate-300 font-medium">{order.orderNumber}</span>
+                        {order.isRecurring === 1 && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide">
+                            ● Subscription
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 text-center">{order.paymentId || "N/A"}</td>
                     <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-200 font-bold text-center">${order.amount.toFixed(2)}</td>
                     <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 font-mono text-center">{new Date(order.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>

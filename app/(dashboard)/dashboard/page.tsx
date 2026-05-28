@@ -22,6 +22,7 @@ type Order = {
   paymentStatus: string;
   payUrl?: string | null;
   detailsFilled?: boolean;
+  isRecurring?: number | null;
 };
 
 type ApiOrder = {
@@ -64,6 +65,7 @@ export default function UserDashboard() {
             paymentStatus: paymentStatusLabel(o.paymentStatus),
             payUrl: o.payUrl,
             detailsFilled: o.detailsFilled,
+            isRecurring: o.isRecurring,
           })));
         } else {
           setAllOrders([]);
@@ -173,10 +175,17 @@ export default function UserDashboard() {
                 </tr>
               ) : orders.map((o, i) => (
                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="text-[14px] px-5 py-5 font-normal text-center">
-                    <button onClick={() => router.push(`/dashboard/orders/${o.id}`)} className="font-mono font-semibold text-violet-600 dark:text-violet-400 hover:underline cursor-pointer">
-                      {o.orderNumber}
-                    </button>
+                  <td className="px-5 py-5 text-center">
+                    <div className="inline-flex flex-col items-center gap-1">
+                      <button onClick={() => router.push(`/dashboard/orders/${o.id}`)} className="text-[14px] font-mono font-semibold text-violet-600 dark:text-violet-400 hover:underline cursor-pointer">
+                        {o.orderNumber}
+                      </button>
+                      {o.isRecurring === 1 && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide">
+                          ● Subscription
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.paymentId}</td>
                   <td className="text-[14px] px-5 py-5 font-medium text-slate-700 dark:text-slate-300 text-center">{o.amount}</td>
