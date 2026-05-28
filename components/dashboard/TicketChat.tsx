@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { Send, RefreshCw, ShieldCheck, User, AlertCircle, Loader2, Tag, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Send, RefreshCw, ShieldCheck, User, AlertCircle, Loader2, Clock, CheckCircle2, XCircle, Paperclip, ChevronDown } from "lucide-react";
 
 export type TicketMessage = {
   id: number;
@@ -24,7 +24,7 @@ type Props = {
 function formatDateTime(dateStr: string) {
   const d = new Date(dateStr);
   return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) +
-    " at " + d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    " · " + d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 }
 
 function formatDate(dateStr: string) {
@@ -52,16 +52,21 @@ function groupByDate(messages: TicketMessage[]) {
   return groups;
 }
 
+function getInitials(name: string) {
+  return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+}
+
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { color: string; icon: React.ReactNode }> = {
-    "Open":    { color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: <CheckCircle2 size={12} /> },
-    "Closed":  { color: "bg-gray-100 text-gray-500 border-gray-200", icon: <XCircle size={12} /> },
-    "Pending": { color: "bg-amber-100 text-amber-700 border-amber-200", icon: <Clock size={12} /> },
+  const map: Record<string, { bg: string; dot: string; text: string }> = {
+    "Open":    { bg: "bg-emerald-50 border-emerald-200 text-emerald-700", dot: "bg-emerald-500", text: "Open" },
+    "Closed":  { bg: "bg-gray-100 border-gray-200 text-gray-500", dot: "bg-gray-400", text: "Closed" },
+    "Pending": { bg: "bg-amber-50 border-amber-200 text-amber-700", dot: "bg-amber-500", text: "Pending" },
   };
   const s = map[status] ?? map["Pending"];
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border ${s.color}`}>
-      {s.icon}{status}
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold border ${s.bg}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+      {s.text}
     </span>
   );
 }
@@ -84,7 +89,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + "px";
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 200) + "px";
     }
   }, [draft]);
 
@@ -135,169 +140,132 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   const customerName = ticket?.user?.name || ticket?.userName || "Customer";
 
   return (
-    <div className="space-y-4">
-      {/* Ticket Header Card */}
-      <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 shrink-0">
-              <Tag size={18} />
+    <div className="min-h-screen bg-[#f5f6fa]">
+      {/* Top Bar */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="shrink-0 w-9 h-9 rounded-lg bg-[#FFCE2E] flex items-center justify-center">
+              <ShieldCheck size={18} className="text-black" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-bold font-mono text-gray-400 dark:text-slate-500">#{ticketId}</span>
+                <span className="text-[13px] font-mono text-gray-400">#{ticketId}</span>
                 {ticket?.status && <StatusBadge status={ticket.status} />}
                 {!connected && (
-                  <button
-                    onClick={connectSocket}
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-900/20 px-2.5 py-1 rounded-full border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition-colors"
-                  >
+                  <button onClick={connectSocket} className="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 bg-red-50 px-2.5 py-1 rounded-full border border-red-200 hover:bg-red-100 transition">
                     <RefreshCw size={10} className="animate-spin" /> Reconnect
                   </button>
                 )}
               </div>
-              <h2 className="text-base font-bold text-gray-900 dark:text-white mt-1">
+              <h1 className="text-[15px] font-bold text-gray-900 truncate mt-0.5">
                 {ticket?.subject ?? ticketSubject ?? "Support Ticket"}
-              </h2>
-              {ticket?.createdAt && (
-                <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
-                  <Clock size={11} /> Opened {formatDateTime(ticket.createdAt)}
-                </p>
-              )}
+              </h1>
             </div>
           </div>
-          {ticket?.user && (
-            <div className="text-right text-xs text-gray-500 dark:text-slate-400">
-              <div className="font-semibold text-gray-700 dark:text-slate-300">{customerName}</div>
-              <div>{ticket.user.email}</div>
-            </div>
-          )}
+          <div className="flex items-center gap-4 text-[12px] text-gray-500">
+            {ticket?.createdAt && (
+              <span className="flex items-center gap-1.5">
+                <Clock size={13} /> Opened {formatDateTime(ticket.createdAt)}
+              </span>
+            )}
+            {ticket?.user && (
+              <div className="text-right hidden sm:block">
+                <div className="font-semibold text-gray-700 text-[13px]">{customerName}</div>
+                <div className="text-gray-400">{ticket.user.email}</div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Thread */}
-      <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="border-b border-gray-100 dark:border-slate-800 px-5 py-3 bg-gray-50 dark:bg-slate-900/50">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Conversation Thread</h3>
-        </div>
+      <div className="max-w-5xl mx-auto px-4 py-6 space-y-0">
 
-        <div className="divide-y divide-gray-50 dark:divide-slate-800/60 max-h-130 overflow-y-auto">
-          {/* Original query */}
-          {ticket?.query && (
-            <div className="px-5 py-5">
-              <div className="flex items-start gap-3 mb-2">
-                <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0">
-                  <User size={14} className="text-gray-500 dark:text-slate-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="font-bold text-sm text-gray-900 dark:text-white">{customerName}</span>
-                    <span className="text-[10px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wide">Customer</span>
-                    <span className="text-xs text-gray-400">{formatDateTime(ticket.createdAt)}</span>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
-                    {ticket.query}
-                  </div>
-                </div>
-              </div>
+        {/* Original Query */}
+        {ticket?.query && (
+          <TicketPost
+            name={customerName}
+            role="Customer"
+            isStaff={false}
+            time={ticket.createdAt}
+            content={ticket.query}
+            isFirst
+          />
+        )}
+
+        {grouped.map(({ date, messages: dayMessages }) => (
+          <div key={date}>
+            {/* Date divider */}
+            <div className="flex items-center gap-3 py-4">
+              <div className="flex-1 h-px bg-gray-200" />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400 bg-[#f5f6fa] px-3">{date}</span>
+              <div className="flex-1 h-px bg-gray-200" />
             </div>
-          )}
 
-          {/* Message groups */}
-          {grouped.map(({ date, messages: dayMessages }) => (
-            <div key={date}>
-              {/* Date separator */}
-              <div className="flex items-center gap-3 px-5 py-2 bg-gray-50/50 dark:bg-slate-900/30">
-                <div className="flex-1 h-px bg-gray-100 dark:bg-slate-800" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-slate-500 shrink-0">{date}</span>
-                <div className="flex-1 h-px bg-gray-100 dark:bg-slate-800" />
-              </div>
+            {dayMessages.map((msg) => {
+              const isAgent = String(msg.direction) === "2";
+              return (
+                <TicketPost
+                  key={msg.id}
+                  name={isAgent ? "Support Team" : customerName}
+                  role={isAgent ? "Staff" : "Customer"}
+                  isStaff={isAgent}
+                  time={msg.createdAt}
+                  content={msg.content ?? ""}
+                />
+              );
+            })}
+          </div>
+        ))}
 
-              {dayMessages.map((msg) => {
-                const isAgent = String(msg.direction) === "2";
-                return (
-                  <div key={msg.id} className={`px-5 py-4 ${isAgent ? "bg-violet-50/30 dark:bg-violet-900/5" : ""}`}>
-                    <div className="flex items-start gap-3">
-                      <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${
-                        isAgent
-                          ? "bg-violet-100 dark:bg-violet-900/40 text-violet-600"
-                          : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400"
-                      }`}>
-                        {isAgent ? <ShieldCheck size={14} /> : <User size={14} />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="font-bold text-sm text-gray-900 dark:text-white">
-                            {isAgent ? "Support Agent" : customerName}
-                          </span>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide ${
-                            isAgent
-                              ? "bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400"
-                              : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400"
-                          }`}>
-                            {isAgent ? "Staff" : "Customer"}
-                          </span>
-                          <span className="text-xs text-gray-400">{formatDateTime(msg.createdAt)}</span>
-                        </div>
-                        <div className={`rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap ${
-                          isAgent
-                            ? "bg-white dark:bg-[#1c1f2e] text-gray-700 dark:text-slate-300 border border-violet-100 dark:border-violet-900/30"
-                            : "bg-gray-50 dark:bg-slate-800/50 text-gray-700 dark:text-slate-300"
-                        }`}>
-                          {msg.content}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+        {!ticket?.query && filteredMessages.length === 0 && (
+          <div className="bg-white rounded-xl border border-gray-200 p-16 text-center text-gray-400">
+            <ShieldCheck size={32} className="mx-auto mb-3 opacity-30" />
+            <p className="font-semibold">No messages yet</p>
+          </div>
+        )}
 
-          {/* Empty state */}
-          {!ticket?.query && filteredMessages.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 gap-2">
-              <div className="h-12 w-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
-                <Tag size={20} className="text-gray-400" />
-              </div>
-              <p className="text-sm font-semibold text-gray-400">No messages yet</p>
-            </div>
-          )}
-
-          <div ref={bottomRef} />
-        </div>
+        <div ref={bottomRef} />
 
         {/* Reply Box */}
-        <div className="border-t border-gray-100 dark:border-slate-800 p-5 bg-gray-50/50 dark:bg-slate-900/30">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-3">
-            {isAdmin ? "Reply to Customer" : "Add Reply"}
-          </h4>
+        <div className="mt-6 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div className="flex items-center gap-2 px-5 py-3 border-b border-gray-100 bg-gray-50">
+            <div className="w-7 h-7 rounded-full bg-[#FFCE2E] flex items-center justify-center text-[11px] font-bold text-black shrink-0">
+              {getInitials(session?.user?.name || "You")}
+            </div>
+            <span className="text-[13px] font-semibold text-gray-700">
+              {isAdmin ? "Reply as Support Team" : `Replying as ${session?.user?.name || "You"}`}
+            </span>
+          </div>
 
           {error && (
-            <div className="mb-3 flex items-center gap-2 rounded-xl bg-rose-50 dark:bg-rose-900/20 px-4 py-2.5 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40">
-              <AlertCircle size={13} className="shrink-0" />
+            <div className="mx-5 mt-4 flex items-center gap-2 rounded-lg bg-red-50 px-4 py-2.5 text-[13px] font-medium text-red-600 border border-red-100">
+              <AlertCircle size={14} className="shrink-0" />
               {error}
             </div>
           )}
 
-          <textarea
-            ref={textareaRef}
-            value={draft}
-            onChange={e => setDraft(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter" && e.ctrlKey) { e.preventDefault(); handleSend(); } }}
-            placeholder={isAdmin ? "Type your response to the customer..." : "Type your reply..."}
-            rows={4}
-            className="w-full resize-none rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-[#1c1f2e] text-sm text-gray-900 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-600 px-4 py-3 outline-none focus:border-violet-400 dark:focus:border-violet-500 transition-colors min-h-25 max-h-50"
-          />
+          <div className="p-5">
+            <textarea
+              ref={textareaRef}
+              value={draft}
+              onChange={e => setDraft(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && e.ctrlKey) { e.preventDefault(); handleSend(); } }}
+              placeholder={isAdmin ? "Write your response to the customer..." : "Write your reply here..."}
+              rows={5}
+              className="w-full resize-none rounded-lg border border-gray-200 bg-white text-[14px] text-gray-800 placeholder:text-gray-400 px-4 py-3 outline-none focus:border-[#FFCE2E] focus:ring-2 focus:ring-[#FFCE2E]/20 transition min-h-30 max-h-60"
+            />
+          </div>
 
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-[11px] text-gray-400 dark:text-slate-600">
-              Press <kbd className="rounded bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-gray-500">Ctrl+Enter</kbd> to send
+          <div className="flex items-center justify-between px-5 pb-5 gap-3">
+            <p className="text-[11px] text-gray-400 hidden sm:block">
+              <kbd className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] text-gray-500">Ctrl+Enter</kbd> to send quickly
             </p>
             <button
               onClick={handleSend}
               disabled={!draft.trim() || !connected || sending}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="ml-auto inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] text-black text-[14px] font-bold transition disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
             >
               {sending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
               {sending ? "Sending..." : "Send Reply"}
@@ -305,6 +273,54 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function TicketPost({ name, role, isStaff, time, content, isFirst }: {
+  name: string;
+  role: string;
+  isStaff: boolean;
+  time: string;
+  content: string;
+  isFirst?: boolean;
+}) {
+  const [collapsed, setCollapsed] = useState(false);
+  const initials = name.split(" ").map(c => c[0]).join("").toUpperCase().slice(0, 2);
+
+  return (
+    <div className={`bg-white rounded-xl border ${isStaff ? "border-l-4 border-l-[#FFCE2E] border-gray-200" : "border-gray-200"} mb-3 overflow-hidden shadow-sm`}>
+      {/* Post Header */}
+      <div
+        className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100 cursor-pointer select-none"
+        onClick={() => setCollapsed(c => !c)}
+      >
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${isStaff ? "bg-[#FFCE2E] text-black" : "bg-gray-200 text-gray-600"}`}>
+            {isStaff ? <ShieldCheck size={14} /> : initials}
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[13px] font-bold text-gray-900">{name}</span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${isStaff ? "bg-[#FFCE2E]/20 text-yellow-700 border border-[#FFCE2E]/40" : "bg-gray-100 text-gray-500 border border-gray-200"}`}>
+                {role}
+              </span>
+              {isFirst && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wide">Original Post</span>}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-gray-400">
+          <span className="text-[12px]">{formatDateTime(time)}</span>
+          <ChevronDown size={15} className={`transition-transform ${collapsed ? "-rotate-90" : ""}`} />
+        </div>
+      </div>
+
+      {/* Post Body */}
+      {!collapsed && (
+        <div className="px-5 py-4">
+          <p className="text-[14px] text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>
+        </div>
+      )}
     </div>
   );
 }

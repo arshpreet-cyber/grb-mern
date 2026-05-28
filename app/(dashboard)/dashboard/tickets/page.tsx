@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { MessageSquare, Clock, CheckCircle2, XCircle, AlertCircle, Plus, ChevronRight, RefreshCw } from "lucide-react";
 
 type Ticket = {
   id: number;
@@ -14,105 +15,158 @@ type Ticket = {
   threads?: { direction: string; createdAt: string; id: number }[];
 };
 
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { bg: string; dot: string }> = {
+    "Open":    { bg: "bg-emerald-50 border-emerald-200 text-emerald-700", dot: "bg-emerald-500" },
+    "Closed":  { bg: "bg-gray-100 border-gray-200 text-gray-500", dot: "bg-gray-400" },
+    "Pending": { bg: "bg-amber-50 border-amber-200 text-amber-700", dot: "bg-amber-500" },
+  };
+  const s = map[status] ?? map["Pending"];
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${s.bg}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+      {status}
+    </span>
+  );
+}
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 export default function DashboardTicketsPage() {
   const { data: session } = useSession();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadTickets = () => {
     const userId = session?.user?.id;
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
-
+    if (!userId) { setLoading(false); return; }
+    setLoading(true);
     fetch(`/api/support/tickets?userId=${encodeURIComponent(userId)}`)
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Unable to load tickets");
-        return response.json();
-      })
-      .then((data) => {
-        setTickets(data ?? []);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Unable to load tickets.");
-      })
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(data => setTickets(data ?? []))
+      .catch(() => setError("Unable to load tickets."))
       .finally(() => setLoading(false));
-  }, [session]);
+  };
+
+  useEffect(() => { loadTickets(); }, [session]);
+
+  const open = tickets.filter(t => t.status === "Open").length;
+  const pending = tickets.filter(t => t.status === "Pending").length;
+  const closed = tickets.filter(t => t.status === "Closed").length;
+  const hasNewReply = (t: Ticket) => t.threads && t.threads.length > 0 && t.threads[0].direction === "2";
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] p-6 shadow-sm sm:flex sm:items-center sm:justify-between transition-colors">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white transition-colors">Your Support Tickets</h1>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            All open support tickets are shown here with live chat access.
-          </p>
+          <h1 className="text-[22px] font-bold text-gray-900">Support Tickets</h1>
+          <p className="text-[13px] text-gray-500 mt-0.5">Track and manage your support requests</p>
         </div>
-        <Link
-          href="/dashboard/support"
-          className="mt-4 inline-flex items-center justify-center rounded-full bg-violet-600 dark:bg-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-700 dark:hover:bg-violet-400 sm:mt-0"
-        >
-          New Ticket
-        </Link>
+        <div className="flex items-center gap-2">
+          <button onClick={loadTickets} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-[13px] font-medium text-gray-600 hover:bg-gray-50 transition">
+            <RefreshCw size={13} /> Refresh
+          </button>
+          <Link href="/dashboard/support" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] text-black text-[13px] font-bold transition shadow-sm">
+            <Plus size={14} /> New Ticket
+          </Link>
+        </div>
       </div>
 
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { label: "Open", count: open, icon: <CheckCircle2 size={16} />, color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
+          { label: "Pending", count: pending, icon: <Clock size={16} />, color: "text-amber-600 bg-amber-50 border-amber-100" },
+          { label: "Closed", count: closed, icon: <XCircle size={16} />, color: "text-gray-500 bg-gray-50 border-gray-100" },
+        ].map(s => (
+          <div key={s.label} className={`rounded-xl border p-4 flex items-center gap-3 ${s.color}`}>
+            <div className="shrink-0">{s.icon}</div>
+            <div>
+              <div className="text-[20px] font-bold leading-none">{s.count}</div>
+              <div className="text-[12px] font-medium mt-0.5 opacity-80">{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Ticket List */}
       {loading ? (
-        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] p-10 text-center text-slate-500 dark:text-slate-400 shadow-sm transition-colors">
-          Loading your tickets...
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400 text-[14px]">
+          <RefreshCw size={20} className="animate-spin mx-auto mb-3 opacity-40" />
+          Loading tickets...
         </div>
       ) : error ? (
-        <div className="rounded-3xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-900/20 p-6 text-rose-700 dark:text-rose-400 shadow-sm transition-colors">{error}</div>
+        <div className="bg-red-50 rounded-xl border border-red-200 p-6 flex items-center gap-3 text-red-600 text-[14px]">
+          <AlertCircle size={16} /> {error}
+        </div>
       ) : tickets.length === 0 ? (
-        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] p-10 text-center text-slate-500 dark:text-slate-400 shadow-sm transition-colors">
-          No tickets found. Submit a new ticket to start support.
+        <div className="bg-white rounded-xl border border-gray-200 p-14 text-center">
+          <MessageSquare size={32} className="mx-auto mb-3 text-gray-300" />
+          <p className="font-semibold text-gray-500 text-[15px]">No tickets yet</p>
+          <p className="text-[13px] text-gray-400 mt-1 mb-5">Submit a ticket and we'll get back to you shortly.</p>
+          <Link href="/dashboard/support" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] text-black text-[13px] font-bold transition">
+            <Plus size={14} /> Open a Ticket
+          </Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] shadow-sm transition-colors">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] text-[11px]">
-                <tr>
-                  <th className="px-5 py-4">Ticket</th>
-                  <th className="px-5 py-4">Subject</th>
-                  <th className="px-5 py-4">Status</th>
-                  <th className="px-5 py-4">Reply Status</th>
-                  <th className="px-5 py-4">Created</th>
-                  <th className="px-5 py-4">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-transparent">
-                {tickets.map((ticket) => {
-                  const isAwaitingUser = ticket.threads && ticket.threads.length > 0 && ticket.threads[0].direction === "2";
-                  return (
-                  <tr key={ticket.id} className={`transition-colors ${isAwaitingUser ? "bg-emerald-50/50 dark:bg-emerald-900/10 hover:bg-emerald-50 dark:hover:bg-emerald-900/20" : "hover:bg-slate-50 dark:hover:bg-slate-800/40"}`}>
-                    <td className="px-5 py-4 font-medium text-slate-800 dark:text-slate-200">{ticket.ticketNumber ?? ticket.ticketId}</td>
-                    <td className="px-5 py-4 text-slate-700 dark:text-slate-300">{ticket.subject ?? "Support conversation"}</td>
-                    <td className="px-5 py-4 text-slate-700 dark:text-slate-300">{ticket.status}</td>
-                    <td className="px-5 py-4">
-                      {isAwaitingUser ? (
-                        <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">New Reply</span>
-                      ) : (
-                        <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-md border border-amber-200 dark:border-amber-800">Awaiting Admin</span>
+        <div className="space-y-2">
+          {tickets.map((ticket) => {
+            const newReply = hasNewReply(ticket);
+            const lastActivity = ticket.threads?.[0]?.createdAt ?? ticket.createdAt;
+            return (
+              <Link
+                key={ticket.id}
+                href={`/dashboard/tickets/${ticket.ticketId}`}
+                className={`block bg-white rounded-xl border transition hover:shadow-md group ${newReply ? "border-[#FFCE2E] ring-1 ring-[#FFCE2E]/30" : "border-gray-200 hover:border-gray-300"}`}
+              >
+                <div className="flex items-center gap-4 px-5 py-4">
+                  {/* Icon */}
+                  <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${newReply ? "bg-[#FFCE2E]" : "bg-gray-100"}`}>
+                    <MessageSquare size={16} className={newReply ? "text-black" : "text-gray-500"} />
+                  </div>
+
+                  {/* Main info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="text-[13px] font-bold text-gray-900 truncate">
+                        {ticket.subject ?? "Support conversation"}
+                      </span>
+                      {newReply && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-[#FFCE2E] text-black px-2 py-0.5 rounded-full uppercase tracking-wide shrink-0">
+                          New Reply
+                        </span>
                       )}
-                    </td>
-                    <td className="px-5 py-4 text-slate-700 dark:text-slate-400">{new Date(ticket.createdAt).toLocaleDateString()}</td>
-                    <td className="px-5 py-4">
-                      <Link
-                        href={`/dashboard/tickets/${ticket.ticketId}`}
-                        className="rounded-full bg-slate-900 dark:bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white dark:text-black transition hover:bg-slate-800 dark:hover:bg-slate-200"
-                      >
-                        Open Chat
-                      </Link>
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-[12px] text-gray-400">
+                      <span className="font-mono">#{ticket.ticketNumber ?? ticket.ticketId}</span>
+                      <span>·</span>
+                      <span className="flex items-center gap-1"><Clock size={11} /> {timeAgo(lastActivity)}</span>
+                      <span>·</span>
+                      <span>{ticket.threads?.length ?? 0} {(ticket.threads?.length ?? 0) === 1 ? "reply" : "replies"}</span>
+                    </div>
+                  </div>
+
+                  {/* Status + arrow */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <StatusBadge status={ticket.status} />
+                    <ChevronRight size={16} className="text-gray-300 group-hover:text-gray-500 transition" />
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
