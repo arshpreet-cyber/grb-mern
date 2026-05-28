@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 interface ProfileData {
   name: string;
   email: string;
-  phone: string;
 }
 
 interface PasswordData {
@@ -19,7 +18,7 @@ type FormErrors = Partial<Record<keyof ProfileData, string | null>>;
 
 export default function AccountPage() {
   const { data: session } = useSession();
-  const [profile, setProfile] = useState<ProfileData>({ name: "", email: "", phone: "" });
+  const [profile, setProfile] = useState<ProfileData>({ name: "", email: "" });
   const [passwords, setPasswords] = useState<PasswordData>({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -29,7 +28,7 @@ export default function AccountPage() {
   useEffect(() => {
     fetch("/api/get-profile")
       .then((r) => r.json())
-      .then((data) => setProfile({ name: data.name ?? "", email: data.email ?? "", phone: data.phone ?? "" }))
+      .then((data) => setProfile({ name: data.name ?? "", email: data.email ?? "" }))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -48,7 +47,6 @@ export default function AccountPage() {
     e.preventDefault();
     const newErrors: FormErrors = {};
     if (!profile.name) newErrors.name = "Name is required!";
-    if (!profile.phone) newErrors.phone = "Phone number is required!";
     if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
 
     setSaving(true);
@@ -57,7 +55,7 @@ export default function AccountPage() {
       const res = await fetch("/api/update-profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: profile.name, phone: profile.phone }),
+        body: JSON.stringify({ name: profile.name }),
       });
       const data = await res.json();
       setMessage(res.ok ? "Profile updated successfully!" : data.error ?? "Failed to update profile.");
@@ -127,26 +125,15 @@ export default function AccountPage() {
                 <span className="text-sm text-gray-500 dark:text-slate-500">{profile.email}</span>
               </div>
 
-              {/* Full Name & Phone Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm text-gray-500 dark:text-slate-400 mb-1" htmlFor="inputName">Full Name</label>
-                  <input
-                    className={`w-full border ${errors.name ? "border-red-500" : "border-gray-300 dark:border-slate-700"} bg-white dark:bg-slate-800 rounded-[4px] px-3 py-2 text-sm text-gray-700 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 transition-colors`}
-                    id="inputName" type="text" name="name"
-                    value={profile.name} onChange={handleProfileChange}
-                  />
-                  {errors.name && <span className="text-red-500 text-xs mt-1 block">{errors.name}</span>}
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-500 dark:text-slate-400 mb-1" htmlFor="inputPhone">Phone Number</label>
-                  <input
-                    className={`w-full border ${errors.phone ? "border-red-500" : "border-gray-300 dark:border-slate-700"} bg-white dark:bg-slate-800 rounded-[4px] px-3 py-2 text-sm text-gray-700 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 transition-colors`}
-                    id="inputPhone" type="tel" name="phone"
-                    value={profile.phone} onChange={handleProfileChange}
-                  />
-                  {errors.phone && <span className="text-red-500 text-xs mt-1 block">{errors.phone}</span>}
-                </div>
+              {/* Full Name */}
+              <div className="mb-6">
+                <label className="block text-sm text-gray-500 dark:text-slate-400 mb-1" htmlFor="inputName">Full Name</label>
+                <input
+                  className={`w-full border ${errors.name ? "border-red-500" : "border-gray-300 dark:border-slate-700"} bg-white dark:bg-slate-800 rounded-[4px] px-3 py-2 text-sm text-gray-700 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 transition-colors`}
+                  id="inputName" type="text" name="name"
+                  value={profile.name} onChange={handleProfileChange}
+                />
+                {errors.name && <span className="text-red-500 text-xs mt-1 block">{errors.name}</span>}
               </div>
 
               <button className="bg-[#295b8d] dark:bg-indigo-600 hover:bg-[#1f4770] dark:hover:bg-indigo-500 text-white text-sm font-medium px-5 py-2.5 rounded-[4px] transition-all disabled:opacity-60" type="submit" disabled={saving}>
