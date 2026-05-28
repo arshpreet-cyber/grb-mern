@@ -262,12 +262,21 @@ function ItemSection({
             return (
               <label
                 key={type}
+                onClick={() => onChange(idx, "submissionType", type)}
                 className={`flex items-center gap-2.5 cursor-pointer px-4 py-2.5 rounded-[5px] border text-[13px] transition-all ${
                   checked
                     ? "border-[#fcd535] bg-[#fffde7] text-[#212529] font-semibold"
                     : "border-[#d0d0d0] bg-white text-[#555] hover:border-[#bbb]"
                 }`}
               >
+                <input
+                  type="radio"
+                  name={`submissionType-${idx}`}
+                  value={type}
+                  checked={checked}
+                  onChange={() => onChange(idx, "submissionType", type)}
+                  className="sr-only"
+                />
                 <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
                   checked ? "border-[#fcd535]" : "border-[#bbb]"
                 }`}>
