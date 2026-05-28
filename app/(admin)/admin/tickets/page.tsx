@@ -108,19 +108,19 @@ export default function AdminTicketsPage() {
       header: "Reply Status",
       render: (t) => {
         const last = getLastThread(t);
-        if (!last) return null;
+        if (!last) return <span className="text-gray-400 text-[12px]">—</span>;
         const isCustomer = last.direction === "1";
         return (
-          <div className="space-y-1">
-            <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-md border uppercase tracking-wide ${
+          <div>
+            <span className={`inline-flex items-center gap-2 text-[13px] font-semibold px-3 py-1.5 rounded-lg border ${
               isCustomer
-                ? "bg-amber-100 text-amber-800 border-amber-300"
-                : "bg-emerald-100 text-emerald-800 border-emerald-300"
+                ? "bg-orange-100 text-orange-800 border-orange-300"
+                : "bg-green-100 text-green-800 border-green-300"
             }`}>
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isCustomer ? "bg-amber-500" : "bg-emerald-500"}`} />
+              <span className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? "bg-orange-500" : "bg-green-500"}`} />
               {isCustomer ? "Customer Replied" : "Admin Replied"}
             </span>
-            <div className="text-[11px] text-gray-400 pl-0.5">{timeAgo(last.createdAt)}</div>
+            <div className="text-[11px] text-gray-400 mt-1 pl-1">{timeAgo(last.createdAt)}</div>
           </div>
         );
       },
@@ -149,15 +149,18 @@ export default function AdminTicketsPage() {
         </span>
       ),
     },
-  ];
-
-  const actions = [
     {
-      label: "View",
-      icon: <Eye size={14} />,
-      onClick: (t: Ticket) => {
-        window.location.href = `/admin/tickets/${t.ticketId}`;
-      },
+      key: "action",
+      header: "Action",
+      render: (t) => (
+        <button
+          onClick={() => { window.location.href = `/admin/tickets/${t.ticketId}`; }}
+          title="View Ticket"
+          className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 hover:bg-[#FFCE2E] text-gray-500 hover:text-black transition"
+        >
+          <Eye size={15} />
+        </button>
+      ),
     },
   ];
 
@@ -187,7 +190,6 @@ export default function AdminTicketsPage() {
           data={tickets}
           columns={columns}
           loading={loading}
-          actions={actions}
           searchable
           searchPlaceholder="Search tickets..."
           pageSize={10}
