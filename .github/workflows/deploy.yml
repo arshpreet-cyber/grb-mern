@@ -13,6 +13,12 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
+      - name: Set git identity to development account
+        run: |
+          git config user.email "development@adaired.com"
+          git config user.name "Adaired-Digital-Media"
+          git commit --allow-empty -m "deploy"
+
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
