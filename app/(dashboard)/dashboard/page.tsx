@@ -35,16 +35,16 @@ type ApiOrder = {
   detailsFilled?: boolean;
   status: string;
   paymentStatus: string;
+  isRecurring?: number | null;
 };
-
-type UserStats = { totalOrders: number; activeSubscriptions: number; pendingOrders: number; openTickets: number };
 
 export default function UserDashboard() {
   const { data: session } = useSession();
   const router = useRouter();
+  const [allOrders, setAllOrders] = useState<ApiOrder[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [openTickets, setOpenTickets] = useState<number | null>(null);
   const name = session?.user?.name ?? "User";
 
   useEffect(() => {
@@ -52,6 +52,7 @@ export default function UserDashboard() {
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
+          setAllOrders(data);
           setOrders(data.map((o: ApiOrder) => ({
             id: o.id,
             orderNumber: o.orderNumber,
@@ -65,23 +66,30 @@ export default function UserDashboard() {
             detailsFilled: o.detailsFilled,
           })));
         } else {
+          setAllOrders([]);
           setOrders([]);
         }
       })
-      .catch(() => setOrders([]))
+      .catch(() => { setAllOrders([]); setOrders([]); })
       .finally(() => setLoading(false));
 
+    // Only tickets need a separate call — not available in orders list
     fetch("/api/dashboard/user-stats")
       .then((r) => r.json())
-      .then((data) => { if (data && !data.error) setUserStats(data); })
+      .then((data) => { if (data && !data.error) setOpenTickets(data.openTickets); })
       .catch(() => {});
   }, []);
 
+  // Derive order stats from the same fetched array so counts always match /dashboard/orders
+  const totalOrders = allOrders.length;
+  const pendingOrders = allOrders.filter(o => ["1", "2", "4"].includes(o.status)).length;
+  const activeSubscriptions = allOrders.filter(o => o.isRecurring === 1 && !["5", "6"].includes(o.status)).length;
+
   const stats = [
-    { label: "VIEW TOTAL ORDER", value: userStats ? String(userStats.totalOrders) : "—", bg: "bg-[#FBF0E2]", iconColor: "text-[#DA7A00]", href: "/dashboard/orders" },
-    { label: "VIEW ACTIVE SUBSCRIPTIONS", value: userStats ? String(userStats.activeSubscriptions) : "—", bg: "bg-[#F0F4FF]", iconColor: "text-[#001E70]", href: "/dashboard/orders/subscriptions" },
-    { label: "VIEW PENDING ORDERS", value: userStats ? String(userStats.pendingOrders) : "—", bg: "bg-[#EDF5E8]", iconColor: "text-[#317607]", href: "/dashboard/orders?status=pending" },
-    { label: "VIEW OPEN TICKET", value: userStats ? String(userStats.openTickets) : "—", bg: "bg-[#F6EEFF]", iconColor: "text-[#48009D]", href: "/dashboard/tickets" },
+    { label: "VIEW TOTAL ORDER", value: loading ? "—" : String(totalOrders), bg: "bg-[#FBF0E2]", iconColor: "text-[#DA7A00]", href: "/dashboard/orders" },
+    { label: "VIEW ACTIVE SUBSCRIPTIONS", value: loading ? "—" : String(activeSubscriptions), bg: "bg-[#F0F4FF]", iconColor: "text-[#001E70]", href: "/dashboard/orders/subscriptions" },
+    { label: "VIEW PENDING ORDERS", value: loading ? "—" : String(pendingOrders), bg: "bg-[#EDF5E8]", iconColor: "text-[#317607]", href: "/dashboard/orders?status=pending" },
+    { label: "VIEW OPEN TICKET", value: openTickets === null ? "—" : String(openTickets), bg: "bg-[#F6EEFF]", iconColor: "text-[#48009D]", href: "/dashboard/tickets" },
   ];
 
   return (
