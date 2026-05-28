@@ -10,6 +10,7 @@ import { ClipboardList, Eye, Trash2, Mail, Search } from "lucide-react";
 type Order = {
   id: string;
   orderNumber: string | null;
+  userId: string | null;
   email: string | null;
   firstName: string | null;
   lastName: string | null;
@@ -240,7 +241,13 @@ export default function AdminOrdersPage() {
                     </td>
                     {/* User */}
                     <td className="px-4 py-3">
-                      <div className="font-semibold text-gray-900 dark:text-white">{customerName}</div>
+                      {o.userId ? (
+                        <Link href={`/admin/users/${o.userId}`} className="font-semibold text-gray-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 hover:underline transition-colors">
+                          {customerName}
+                        </Link>
+                      ) : (
+                        <div className="font-semibold text-gray-900 dark:text-white">{customerName}</div>
+                      )}
                       <div className="text-gray-400 text-[11px]">{o.email ?? o.user?.email ?? ""}</div>
                     </td>
                     {/* Payment ID */}
