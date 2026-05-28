@@ -25,17 +25,17 @@ export default function SideCart() {
       <button
         onClick={toggleCart}
         aria-label={`Open cart with ${visibleCount} ${visibleCount === 1 ? "item" : "items"}`}
-        className="fixed right-6 top-1/2 z-[1210] flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-[#111111] text-white shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all hover:scale-110 active:scale-95 group"
+        className="fixed bottom-6 right-6 z-[1210] flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-[#111111] text-white shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-all duration-200 hover:scale-105 active:scale-95"
       >
-        <ShoppingCart size={24} className="transition-transform group-hover:-rotate-12" />
-        <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#ff5a7a] text-[12px] font-bold text-white shadow-sm ring-2 ring-white">
+        <ShoppingCart size={28} strokeWidth={1.8} />
+        <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#ff5a7a] text-[11px] font-bold text-white shadow ring-2 ring-white">
           {visibleCount}
         </span>
       </button>
 
       {/* Side Drawer */}
-      <div 
-        className={`fixed top-1 right-1 bottom-1 z-[1220] flex w-full max-w-[420px] rounded-3xl flex-col bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.15)] transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-hidden ${
+      <div
+        className={`fixed top-1 right-1 bottom-1 z-[1220] flex w-full max-w-[420px] rounded-3xl flex-col bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.15)] overflow-hidden transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-[calc(100%+32px)]"
         }`}
       >
