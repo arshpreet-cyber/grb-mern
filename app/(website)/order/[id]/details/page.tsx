@@ -60,7 +60,7 @@ export default function OrderDetailsPage() {
             amount: d.amount,
             image: d.image,
             profileUrl: d.profileUrl ?? "",
-            submissionType: "expert",
+            submissionType: "provide",
             businessDetails: "",
             additionalInstructions: "",
             files: [],
