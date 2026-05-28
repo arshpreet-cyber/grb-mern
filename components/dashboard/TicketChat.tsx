@@ -160,11 +160,6 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
           )}
         </div>
 
-        {/* Connection status */}
-        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-medium border ${connected ? "bg-emerald-50 border-emerald-100 text-emerald-700" : "bg-red-50 border-red-100 text-red-600"}`}>
-          <span className={`w-2 h-2 rounded-full shrink-0 ${connected ? "bg-emerald-500" : "bg-red-500"}`} />
-          {connected ? "Connected to live support" : "Disconnected"}
-        </div>
       </div>
 
       {/* ── MAIN THREAD ── */}
