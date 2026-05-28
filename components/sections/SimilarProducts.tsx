@@ -1,83 +1,106 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import products from "@/lib/constants/products";
 import { ProductCard } from "@/components/home/BuyReviewsSection";
 import { SectionProps } from "@/types/section";
 
+const castedProducts = products as any[];
+
+const GOOGLE_REGEX = /(google|gmb|maps|gps|play[\s\-]?store|local[\s\-]?guide|lsa)/i;
+const GOOGLE_REVIEWS_REGEX = /google[\s\-]?reviews?/i;
+const GOOGLE_IDS = new Set([
+  "buy-google-reviews",
+  "buy-google-gps-reviews",
+  "buy-google-local-guide-reviews",
+  "buy-google-lsa-reviews",
+  "buy-google-playstore-reviews",
+]);
+
+function isGoogleRelated(item: any): boolean {
+  if (!item) return false;
+  const id = String(item.id || "").trim().toLowerCase();
+  return (
+    GOOGLE_IDS.has(id) ||
+    GOOGLE_REGEX.test(item.platform || "") ||
+    GOOGLE_REVIEWS_REGEX.test(item.platform || "") ||
+    GOOGLE_REGEX.test(item.slug || "") ||
+    GOOGLE_REGEX.test(item.name || "")
+  );
+}
+
+function getStyleId(item: any): number {
+  const base = String(item.slug || item.id || item.name || "");
+  let hash = 0;
+  for (let i = 0; i < base.length; i++) {
+    hash = (hash * 33) ^ base.charCodeAt(i);
+  }
+  return Math.abs(hash) % 12;
+}
+
 export default function YouMayAlsoLike({ data = {} }: SectionProps) {
-  const { excludeIds = [] } = data;
-  const [finalProducts, setFinalProducts] = useState<any[]>([]);
+  const { excludeIds = [] } = data as { excludeIds?: (string | number)[] };
+  const pathname = usePathname();
   const [selection, setSelection] = useState<Record<string, "onetime" | "monthly">>({});
-
-  const serializedExcludeIds = excludeIds.join(",");
-
-  const isGoogleCategory = useMemo(() => {
-    return excludeIds.some((id: string | number) => 
-      String(id).toLowerCase().includes('google') || Number(id) === 2
-    );
-  }, [serializedExcludeIds]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const structuralExclusions = excludeIds.map((id: string | number) => String(id).trim().toLowerCase());
+    setMounted(true);
+  }, []);
 
-    const applyColorStyleBypass = (item: any) => {
-      let assignedId = Number(item.id);
+  const exclusionSet = useMemo(() => {
+    return new Set(
+      excludeIds.map((id: string | number) => String(id).trim().toLowerCase())
+    );
+  }, [excludeIds]);
 
-      if (isNaN(assignedId)) {
-        // FIX: We now hash the completely unique 'name' or 'title' (e.g., "5 Google Reviews") 
-        // instead of the 'platform' ("google") so each variant calculates a distinct ID number.
-        const uniqueStringIdentifier = String(item.name || item.title || item.id || "").toLowerCase();
-        
-        let hash = 0;
-        for (let i = 0; i < uniqueStringIdentifier.length; i++) {
-          hash = uniqueStringIdentifier.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        // Maps the unique hash cleanly into your style dictionary indexes
-        assignedId = Math.abs(hash) % 30; 
+  const finalProducts = useMemo(() => {
+    if (!mounted || !pathname) return [];
+
+    // Detect if current page is a Google ecosystem page
+    const isGoogleCategory =
+      GOOGLE_REGEX.test(pathname.toLowerCase()) ||
+      GOOGLE_REVIEWS_REGEX.test(pathname.toLowerCase()) ||
+      excludeIds.some((id: string | number) =>
+        GOOGLE_IDS.has(String(id).trim().toLowerCase())
+      );
+
+    const filteredPool = castedProducts.filter((item: any) => {
+      const pId = String(item.id || "").trim().toLowerCase();
+
+      // Rule A: Drop if explicitly passed in excludeIds from the page
+      if (exclusionSet.has(pId)) {
+        return false;
       }
 
-      return {
+      // Rule B: Drop if product id appears in the current URL path
+      // e.g. pathname = "/buy-google-reviews" will match id = "buy-google-reviews"
+      if (pathname.toLowerCase().includes(pId)) {
+        return false;
+      }
+
+      return true;
+    });
+
+    const googleItems    = filteredPool.filter(isGoogleRelated);
+    const nonGoogleItems = filteredPool.filter((item: any) => !isGoogleRelated(item));
+
+    let selectionPool = isGoogleCategory ? googleItems : nonGoogleItems;
+    if (selectionPool.length === 0) selectionPool = isGoogleCategory ? nonGoogleItems : googleItems;
+    if (selectionPool.length === 0) selectionPool = filteredPool;
+
+    return [...selectionPool]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 4)
+      .map((item: any) => ({
         ...item,
-        id: assignedId 
-      };
-    };
+        styleId: getStyleId(item),
+      }));
 
-    const isMatch = (item: any) => {
-      const itemPlatform = String(item.platform || "").toLowerCase();
-      const itemId = String(item.id).toLowerCase();
-      return structuralExclusions.includes(itemId) || structuralExclusions.includes(itemPlatform);
-    };
+  }, [mounted, pathname, exclusionSet, excludeIds]);
 
-    if (isGoogleCategory) {
-      const googleAlternatives = products
-        .filter((item) => {
-          const platformName = String(item.platform || "").toLowerCase();
-          const idName = String(item.id).toLowerCase();
-          const isGoogle = platformName.includes("google") || idName.includes("google") || String(item.id) === "2";
-          return isGoogle && !isMatch(item);
-        })
-        .map(applyColorStyleBypass);
-      
-      if (googleAlternatives.length > 0) {
-        setFinalProducts(googleAlternatives.slice(0, 4));
-        return;
-      }
-    }
-
-    const basicFiltered = products
-      .filter((item) => !isMatch(item))
-      .map(applyColorStyleBypass);
-
-    const randomizedFallback = [...basicFiltered]
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 4);
-
-    setFinalProducts(randomizedFallback);
-    
-  }, [serializedExcludeIds, isGoogleCategory]);
-
-  if (finalProducts.length === 0) return null;
+  if (!mounted || finalProducts.length === 0) return null;
 
   return (
     <section className="bg-white py-12 lg:py-16">
@@ -86,12 +109,17 @@ export default function YouMayAlsoLike({ data = {} }: SectionProps) {
           You May Also Like...
         </h2>
         <ul className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 list-none p-0 m-0 items-stretch">
-          {finalProducts.map((product, index) => (
+          {finalProducts.map((product: any, index: number) => (
             <ProductCard
-              key={`${product.id}-${index}`} 
+              key={`${pathname}-${product.slug}-${index}`}
               product={product}
-              selectedMode={selection[product.id] || null}
-              onSelect={(mode) => setSelection(prev => ({ ...prev, [product.id]: mode }))}
+              selectedMode={selection[product.slug] || null}
+              onSelect={(mode) =>
+                setSelection((prev) => ({
+                  ...prev,
+                  [product.slug]: mode,
+                }))
+              }
             />
           ))}
         </ul>

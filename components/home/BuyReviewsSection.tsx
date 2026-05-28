@@ -8,8 +8,11 @@ import type { Product } from "@/lib/constants/products";
 import { useRouter } from "next/navigation";
 
 // Extend base product locally to safely expect slug & priority fields
-type LocalProduct = Product & { slug?: string; priority?: number | null };
-
+type LocalProduct = Product & {
+  slug?: string;
+  priority?: number | null;
+  styleId?: number;
+};
 // ===== PIXEL MATCH STYLE MAP DICTIONARY =====
 const PRODUCT_STYLE_RULES: Record<number, { headerBg: string; badgeColor: string }> = {
   1: { headerBg: '#E7F7EC99', badgeColor: '#00B077' },
@@ -110,7 +113,13 @@ export function ProductCard({
   const isMonthly = effectiveMode === "monthly";
   
   const isGoogleReviews = Number(product.id) === 2 || product.platform?.toLowerCase() === "google reviews";
-  const designRule = PRODUCT_STYLE_RULES[Number(product.id)] || { headerBg: "#fffcf2", badgeColor: "#c99c15" };
+  const styleKey = Number(product.styleId ?? product.id);
+
+const designRule =
+  PRODUCT_STYLE_RULES[styleKey] || {
+    headerBg: "#fffcf2",
+    badgeColor: "#c99c15",
+  };
 
   const price30 = isGoogleReviews ? 15 : (product.oneTimePrice || 20);
   const price15 = isGoogleReviews ? 10 : (Math.round(price30 * 0.5) || 10); 
