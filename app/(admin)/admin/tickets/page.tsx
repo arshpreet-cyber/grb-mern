@@ -105,24 +105,29 @@ export default function AdminTicketsPage() {
     },
     {
       key: "lastReply",
-      header: "Last Reply By",
+      header: "Reply Status",
       render: (t) => {
         const last = getLastThread(t);
         if (!last) {
-          return <span className="text-[12px] text-gray-400 italic">No replies yet</span>;
+          return (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-md bg-gray-100 text-gray-500 border border-gray-200 uppercase tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
+              No Reply
+            </span>
+          );
         }
         const isCustomer = last.direction === "1";
         return (
-          <div className="flex items-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border ${
+          <div className="space-y-1">
+            <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-md border uppercase tracking-wide ${
               isCustomer
-                ? "bg-amber-50 text-amber-700 border-amber-200"
-                : "bg-blue-50 text-blue-700 border-blue-200"
+                ? "bg-amber-100 text-amber-800 border-amber-300"
+                : "bg-emerald-100 text-emerald-800 border-emerald-300"
             }`}>
-              {isCustomer ? <User size={10} /> : <ShieldCheck size={10} />}
-              {isCustomer ? "Customer" : "Admin"}
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isCustomer ? "bg-amber-500" : "bg-emerald-500"}`} />
+              {isCustomer ? "Customer Replied" : "Admin Replied"}
             </span>
-            <span className="text-[11px] text-gray-400">{timeAgo(last.createdAt)}</span>
+            <div className="text-[11px] text-gray-400 pl-0.5">{timeAgo(last.createdAt)}</div>
           </div>
         );
       },
