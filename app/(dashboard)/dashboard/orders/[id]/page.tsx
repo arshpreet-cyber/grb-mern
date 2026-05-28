@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, ClipboardList } from "lucide-react";
+import { ArrowLeft, ClipboardList, FileText } from "lucide-react";
 
 type OrderDetail = {
   id: string;
@@ -34,6 +34,14 @@ type Order = {
   detailsFilled: boolean;
   orderDetails?: OrderDetail[];
   user?: { name: string | null; email: string } | null;
+};
+
+type ItemNote = {
+  itemId: string;
+  platform: string;
+  submissionType: "provide" | "expert";
+  businessDetails: string;
+  additionalInstructions: string;
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -73,6 +81,16 @@ export default function UserOrderDetailPage() {
   const sym = order.symbol ?? "$";
   const itemsList = Array.isArray(order.orderDetails) ? order.orderDetails : [];
   const subtotal = itemsList.reduce((s, d) => s + (d.amount ?? 0) * (d.quantity ?? 0), 0);
+
+  let itemNotes: ItemNote[] | null = null;
+  if (order.notes) {
+    try {
+      const parsed = JSON.parse(order.notes);
+      if (Array.isArray(parsed)) itemNotes = parsed as ItemNote[];
+    } catch {
+      // plain text notes — shown as-is below
+    }
+  }
 
   return (
     <div className="space-y-5 max-w-4xl">
@@ -156,9 +174,9 @@ export default function UserOrderDetailPage() {
               </div>
             )}
           </dl>
-          {order.notes && (
+          {order.notes && !itemNotes && (
             <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
-              <dt className="text-[11px] text-gray-400 uppercase tracking-wide mb-1">Notes</dt>
+              <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1">Notes</p>
               <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap">{order.notes}</p>
             </div>
           )}
@@ -235,6 +253,76 @@ export default function UserOrderDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Input Details submitted by customer */}
+      {itemNotes && itemNotes.length > 0 && (
+        <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div className="p-5 border-b border-gray-100 dark:border-slate-800 flex items-center gap-3">
+            <FileText size={18} className="text-violet-500" />
+            <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide">
+              Your Submitted Details
+            </h2>
+            <span className="ml-auto text-[10px] font-bold bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full">
+              Submitted
+            </span>
+          </div>
+          <div className="divide-y divide-gray-50 dark:divide-slate-800">
+            {itemNotes.map((note, i) => (
+              <div key={i} className="p-5 space-y-4">
+                <p className="text-[13px] font-bold text-gray-800 dark:text-white">
+                  {note.platform} Reviews
+                </p>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-gray-400 uppercase tracking-wide">Submission Type</span>
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded border ${
+                    note.submissionType === "expert"
+                      ? "bg-violet-50 text-violet-700 border-violet-200"
+                      : "bg-blue-50 text-blue-700 border-blue-200"
+                  }`}>
+                    {note.submissionType === "expert" ? "Expert Write Content" : "Customer Provided Content"}
+                  </span>
+                </div>
+
+                {note.businessDetails && (
+                  <div>
+                    <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1.5">Business Details</p>
+                    <div className="bg-gray-50 dark:bg-slate-900 rounded-xl p-4 text-[13px] text-gray-700 dark:text-slate-300 whitespace-pre-wrap border border-gray-100 dark:border-slate-800">
+                      {note.businessDetails}
+                    </div>
+                  </div>
+                )}
+
+                {note.additionalInstructions && (
+                  <div>
+                    <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1.5">Additional Instructions</p>
+                    <div className="bg-gray-50 dark:bg-slate-900 rounded-xl p-4 text-[13px] text-gray-700 dark:text-slate-300 whitespace-pre-wrap border border-gray-100 dark:border-slate-800">
+                      {note.additionalInstructions}
+                    </div>
+                  </div>
+                )}
+
+                {(() => {
+                  const detail = itemsList.find((d) => d.id === note.itemId);
+                  return detail?.profileUrl ? (
+                    <div>
+                      <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1.5">Profile URL</p>
+                      <a
+                        href={detail.profileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-violet-600 text-[13px] underline break-all"
+                      >
+                        {detail.profileUrl}
+                      </a>
+                    </div>
+                  ) : null;
+                })()}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

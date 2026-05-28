@@ -37,11 +37,14 @@ type ApiOrder = {
   paymentStatus: string;
 };
 
+type UserStats = { totalOrders: number; activeSubscriptions: number; pendingOrders: number; openTickets: number };
+
 export default function UserDashboard() {
   const { data: session } = useSession();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
   const name = session?.user?.name ?? "User";
 
   useEffect(() => {
@@ -67,13 +70,18 @@ export default function UserDashboard() {
       })
       .catch(() => setOrders([]))
       .finally(() => setLoading(false));
+
+    fetch("/api/dashboard/user-stats")
+      .then((r) => r.json())
+      .then((data) => { if (data && !data.error) setUserStats(data); })
+      .catch(() => {});
   }, []);
 
   const stats = [
-    { label: "VIEW TOTAL ORDER", value: "35", bg: "bg-[#FBF0E2]", iconColor: "text-[#DA7A00]" },
-    { label: "VIEW ACTIVE SUBSCRIPTIONS", value: "25", bg: "bg-[#F0F4FF]", iconColor: "text-[#001E70]" },
-    { label: "VIEW PENDING ORDERS", value: "15", bg: "bg-[#EDF5E8]", iconColor: "text-[#317607]" },
-    { label: "VIEW OPEN TICKET", value: "05", bg: "bg-[#F6EEFF]", iconColor: "text-[#48009D]" },
+    { label: "VIEW TOTAL ORDER", value: userStats ? String(userStats.totalOrders) : "—", bg: "bg-[#FBF0E2]", iconColor: "text-[#DA7A00]" },
+    { label: "VIEW ACTIVE SUBSCRIPTIONS", value: userStats ? String(userStats.activeSubscriptions) : "—", bg: "bg-[#F0F4FF]", iconColor: "text-[#001E70]" },
+    { label: "VIEW PENDING ORDERS", value: userStats ? String(userStats.pendingOrders) : "—", bg: "bg-[#EDF5E8]", iconColor: "text-[#317607]" },
+    { label: "VIEW OPEN TICKET", value: userStats ? String(userStats.openTickets) : "—", bg: "bg-[#F6EEFF]", iconColor: "text-[#48009D]" },
   ];
 
   return (
