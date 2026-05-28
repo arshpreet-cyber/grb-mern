@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Globe, LayoutDashboard, RefreshCw, FileText, PanelTopDashed, Menu, Code, FileEdit, Blocks, Handshake, Package, Upload, ShoppingBag, CircleDollarSign, Tag, ReceiptText, UserPlus, Users, Clipboard, Settings, User, BarChart, Bell, Image as ImageIcon, PenTool, HelpCircle, Headphones, MessageSquare, History, LogOut, ChevronsLeft, ChevronDown,
+import { Globe, LayoutDashboard, RefreshCw, FileText, PanelTopDashed, Menu, Code, FileEdit, Blocks, Handshake, Package, Upload, ShoppingBag, CircleDollarSign, Tag, ReceiptText, UserPlus, Users, Clipboard, Settings, User, BarChart, Bell, Image as ImageIcon, PenTool, HelpCircle, Headphones, MessageSquare, History, LogOut, ChevronsLeft, ChevronDown, ArrowLeftRight,
 } from "lucide-react";
 
 type MenuChild = { label: string; href: string };
@@ -95,6 +95,7 @@ const menuSections: MenuSection[] = [
       { label: "Blogs", href: "/admin/blogs", icon: PenTool },
       // { label: "FAQs", href: "/admin/faqs", icon: HelpCircle },
       { label: "Tickets", href: "/admin/tickets", icon: Headphones },
+      { label: "Redirections", href: "/admin/redirections", icon: ArrowLeftRight },
       // { label: "Testimonials", href: "/admin/testimonials", icon: MessageSquare, badge: "7" },
     ],
   },

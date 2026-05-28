@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
 import { Eye, Headphones, RefreshCw, User, ShieldCheck } from "lucide-react";
 
@@ -60,6 +61,7 @@ export default function AdminTicketsPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>("all");
 
   const loadTickets = () => {
     setLoading(true);
@@ -155,16 +157,36 @@ export default function AdminTicketsPage() {
       key: "action",
       header: "Action",
       render: (t) => (
-        <button
-          onClick={() => { window.location.href = `/admin/tickets/${t.ticketId}`; }}
+        <Link
+          href={`/admin/tickets/${t.ticketId}`}
           title="View Ticket"
           className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 hover:bg-[#FFCE2E] text-gray-500 hover:text-black transition"
         >
           <Eye size={15} />
-        </button>
+        </Link>
       ),
     },
   ];
+
+  const counts = {
+    all: tickets.length,
+    open: tickets.filter(t => t.status === "Open").length,
+    awaiting: tickets.filter(t => t.status === "Awaiting Reply" || t.status === "Answered").length,
+    closed: tickets.filter(t => t.status === "Closed").length,
+    pending: tickets.filter(t => t.status === "Pending").length,
+  };
+  const FILTER_TABS = [
+    { key: "all", label: "All", color: "bg-gray-800 text-white" },
+    { key: "open", label: "Open", color: "bg-emerald-600 text-white" },
+    { key: "awaiting", label: "Customer Replied", color: "bg-amber-500 text-white" },
+    { key: "closed", label: "Closed", color: "bg-gray-400 text-white" },
+    { key: "pending", label: "Pending", color: "bg-violet-600 text-white" },
+  ];
+  const filteredTickets = sortTickets(filter === "all" ? tickets
+    : filter === "open" ? tickets.filter(t => t.status === "Open")
+    : filter === "awaiting" ? tickets.filter(t => t.status === "Awaiting Reply" || t.status === "Answered")
+    : filter === "closed" ? tickets.filter(t => t.status === "Closed")
+    : tickets.filter(t => t.status === "Pending"));
 
   return (
     <div className="space-y-6">
@@ -187,9 +209,28 @@ export default function AdminTicketsPage() {
         </div>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        {FILTER_TABS.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setFilter(tab.key)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${
+              filter === tab.key
+                ? `${tab.color} border-transparent shadow-md`
+                : "bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-400 border-gray-100 dark:border-slate-800 hover:border-gray-300"
+            }`}
+          >
+            {tab.label}
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${filter === tab.key ? "bg-white/20 text-white" : "bg-gray-100 dark:bg-slate-800 text-gray-500"}`}>
+              {counts[tab.key as keyof typeof counts]}
+            </span>
+          </button>
+        ))}
+      </div>
+
       <div className="bg-white dark:bg-[#1a1f2c] rounded-[20px] border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
         <DataTable
-          data={tickets}
+          data={filteredTickets}
           columns={columns}
           loading={loading}
           searchable

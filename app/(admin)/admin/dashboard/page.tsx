@@ -22,14 +22,12 @@ import {
   ChevronDown,
   MoreVertical,
   ArrowUpRight,
-  CheckCircle2,
-  FileText,
   Eye,
   TrendingUp,
   TrendingDown,
   Loader2,
 } from "lucide-react";
-import DataTable, { Column, RowAction, StatusPill } from "@/components/ui/DataTable";
+import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
 import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 
 // Types
@@ -57,6 +55,10 @@ interface Order {
   amount: number;
   status: string;
   paymentStatus: string;
+  paymentMethod?: string | null;
+  subscriptionId?: string | null;
+  completedOn?: string | null;
+  workStatus?: number | null;
   createdAt: string;
   user?: { name: string; email: string };
   paymentId?: string;
@@ -111,6 +113,13 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
+const PM_LABELS: Record<string, string> = {
+  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Pay by Card",
+};
+const PM_COLORS: Record<string, string> = {
+  "1": "bg-gray-700", "2": "bg-indigo-600", "3": "bg-blue-500", "4": "bg-blue-700", "5": "bg-gray-700",
+};
+
 export default function AdminDashboard() {
   const { data: session } = useSession();
   
@@ -134,6 +143,8 @@ export default function AdminDashboard() {
     topProducts: [] as any[]
   });
 
+  const [changes, setChanges] = useState({ revenue: "—", orders: "—", users: "—", tickets: "—" });
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -154,6 +165,7 @@ export default function AdminDashboard() {
         if (data.recentOrders) setRecentOrders(data.recentOrders);
         if (data.recentTickets) setRecentTickets(data.recentTickets);
         if (data.charts) setCharts(data.charts);
+        if (data.changes) setChanges(data.changes);
       })
       .catch(() => {})
       .finally(() => { setInitialLoading(false); setLoadingData(false); });
@@ -174,19 +186,17 @@ export default function AdminDashboard() {
     ) },
     { key: "createdAt", header: "Created On", render: (r) => <span className="text-gray-600 dark:text-white text-[15px] font-medium">{new Date(r.createdAt).toLocaleDateString()}</span> },
     { key: "updatedAt", header: "Recent Update", render: (r) => <span className="text-gray-600 dark:text-white text-[15px] font-medium">{r.updatedAt ? new Date(r.updatedAt).toLocaleDateString() : new Date(r.createdAt).toLocaleDateString()}</span> },
-    { key: "action", header: "Action", render: () => <button className="bg-[#15368B] dark:bg-[#15368B] cursor-pointer text-white px-4 py-1 rounded-md text-[15px] font-normal transition shadow-sm">View</button> }
+    { key: "action", header: "Action", render: (r) => (
+      <Link href={`/admin/tickets/${r.ticketId}`} className="bg-[#15368B] cursor-pointer text-white px-4 py-1 rounded-md text-[15px] font-normal transition shadow-sm inline-block">View</Link>
+    ) }
   ];
 
   // Columns for Orders
   const orderColumns: Column<Order>[] = [
     { key: "orderNumber", header: "# Order No", render: (r) => (
-      <div className="flex flex-col gap-1.5">
-        <span className="font-semibold text-[#111827] dark:text-white text-[13px]">{r.orderNumber}</span>
-        <div className="flex gap-1.5">
-          <span className="bg-[#3b82f6] text-white text-[9px] px-1.5 py-0.5 rounded font-medium tracking-wide">RAZORPAY</span>
-          <span className="bg-[#10b981] text-white text-[9px] px-1.5 py-0.5 rounded font-medium tracking-wide">SUBSCRIPTION</span>
-        </div>
-      </div>
+      <Link href={`/admin/orders/${r.id}`} className="font-semibold text-violet-600 dark:text-violet-400 hover:underline font-mono text-[13px]">
+        {r.orderNumber || r.id.substring(0, 8)}
+      </Link>
     ) },
     { key: "user", header: "User", render: (r) => (
       <div className="flex flex-col gap-0.5">
@@ -194,49 +204,50 @@ export default function AdminDashboard() {
         <span className="text-gray-500 dark:text-white/50 text-[11px]">{r.user?.email || "—"}</span>
       </div>
     ) },
-    { key: "paymentId", header: "Payment ID", render: (r) => <span className="text-gray-600 dark:text-white text-[13px] font-mono">{r.paymentId || "—"}</span> },
+    { key: "paymentId", header: "Payment ID", render: (r) => <span className="text-gray-600 dark:text-white text-[13px] font-mono">{r.paymentId ? r.paymentId.slice(0, 12) + "…" : "—"}</span> },
     { key: "amount", header: "Amount", render: (r) => <span className="text-[#111827] dark:text-white font-bold text-[14px]">${r.amount}</span> },
+    { key: "paymentMethod", header: "Method", render: (r) => {
+      const pm = r.paymentMethod ?? "";
+      return (
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded text-white ${PM_COLORS[pm] ?? "bg-gray-500"}`}>
+          {PM_LABELS[pm] ?? "—"}
+        </span>
+      );
+    } },
     { key: "createdAt", header: "Order Date", render: (r) => (
       <div className="flex flex-col text-gray-600 dark:text-white gap-0.5">
         <span className="text-[13px] font-medium">{new Date(r.createdAt).toLocaleDateString()}</span>
         <span className="text-[11px] text-gray-400 dark:text-white/30">{new Date(r.createdAt).toLocaleTimeString()}</span>
       </div>
     ) },
-    { key: "adminStatus", header: "Admin Status", render: (r) => (
-      <div className="flex flex-col gap-1.5">
-        <StatusPill value={orderStatusLabel(r.status)} colorMap={{
-          "Pending":    "border-[#fef08a] text-[#ca8a04] bg-[#fefce8] dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
-          "Processing": "border-[#bfdbfe] text-[#2563eb] bg-[#eff6ff] dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400",
-          "Complete":   "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
-          "On Hold":    "border-[#fed7aa] text-[#ea580c] bg-[#fff7ed] dark:border-orange-900/50 dark:bg-orange-900/20 dark:text-orange-400",
-          "Cancelled":  "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
-          "Refund":     "border-[#e9d5ff] text-[#7c3aed] bg-[#f5f3ff] dark:border-purple-900/50 dark:bg-purple-900/20 dark:text-purple-400",
-        }} />
-      </div>
-    ) },
-    { key: "paymentStatus", header: "Payment Status", render: (r) => (
-      <div className="flex flex-col gap-1.5">
-        <StatusPill value={paymentStatusLabel(r.paymentStatus)} colorMap={{
-          "Unpaid":      "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
-          "Paid":        "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
-          "Unconfirmed": "border-[#fef08a] text-[#ca8a04] bg-[#fefce8] dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
-          "Cancelled":   "border-[#e2e8f0] text-[#64748b] bg-[#f8fafc] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400",
-        }} />
-      </div>
-    ) },
-    { key: "executiveStatus", header: "Executive Status", render: () => (
-      <StatusPill value="Pending" colorMap={{
-        "Pending": "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400"
+    { key: "adminStatus", header: "Status", render: (r) => (
+      <StatusPill value={orderStatusLabel(r.status)} colorMap={{
+        "Pending":    "border-[#fef08a] text-[#ca8a04] bg-[#fefce8] dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
+        "Processing": "border-[#bfdbfe] text-[#2563eb] bg-[#eff6ff] dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400",
+        "Complete":   "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
+        "On Hold":    "border-[#fed7aa] text-[#ea580c] bg-[#fff7ed] dark:border-orange-900/50 dark:bg-orange-900/20 dark:text-orange-400",
+        "Cancelled":  "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
+        "Refund":     "border-[#e9d5ff] text-[#7c3aed] bg-[#f5f3ff] dark:border-purple-900/50 dark:bg-purple-900/20 dark:text-purple-400",
       }} />
     ) },
-    { key: "completedOn", header: "Completed On", render: () => <span className="text-gray-400 dark:text-white/30 text-[13px]">—</span> },
-    { key: "assignAgent", header: "Assign Agent", render: () => <button className="bg-violet-600 dark:bg-violet-900/50 text-white px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wide hover:bg-violet-700 transition shadow-sm">Assign Agent</button> }
-  ];
-
-  const orderActions: RowAction<Order>[] = [
-    { label: "Live Status", icon: <CheckCircle2 size={16} />, onClick: () => {}, className: "bg-[#54CE12] text-white hover:bg-[#4ab810]" },
-    { label: "Invoices", icon: <FileText size={16} />, onClick: () => {} },
-    { label: "See More", icon: <Eye size={16} />, onClick: () => {} }
+    { key: "paymentStatus", header: "Payment", render: (r) => (
+      <StatusPill value={paymentStatusLabel(r.paymentStatus)} colorMap={{
+        "Unpaid":      "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
+        "Paid":        "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
+        "Unconfirmed": "border-[#fef08a] text-[#ca8a04] bg-[#fefce8] dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
+        "Cancelled":   "border-[#e2e8f0] text-[#64748b] bg-[#f8fafc] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400",
+      }} />
+    ) },
+    { key: "completedOn", header: "Completed On", render: (r) => (
+      <span className="text-gray-500 dark:text-white/50 text-[12px]">
+        {r.completedOn ? new Date(r.completedOn).toLocaleDateString() : "—"}
+      </span>
+    ) },
+    { key: "action", header: "", render: (r) => (
+      <Link href={`/admin/orders/${r.id}`} className="inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1.5 rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition">
+        <Eye size={12} /> View
+      </Link>
+    ) },
   ];
 
   if (initialLoading) {
@@ -318,10 +329,10 @@ export default function AdminDashboard() {
 
       {/* Stats Cards */}
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Total Revenue" value={`$${revenue.allTime.toLocaleString()}`} change="12.5%" bg="bg-[#FCF3E8]" pillBg="bg-[#AF670F]" text="text-[#AF670F]" href="/admin/orders" />
-        <StatCard title="Total Orders" value={stats.totalOrders.toLocaleString()} change="08.3%" bg="bg-[#F2F6FE]" pillBg="bg-[#285FF5]" text="text-[#285FF5]" href="/admin/orders" />
-        <StatCard title="Total Users" value={stats.totalUsers.toLocaleString()} change="15.2%" bg="bg-[#EEFAEB]" pillBg="bg-[#54CE12]" text="text-[#54CE12]" href="/admin/users" />
-        <StatCard title="Total Tickets" value={(stats.openTickets + stats.closedTickets + stats.awaitingTickets).toLocaleString()} change="03.6%" bg="bg-[#F4EBFE]" pillBg="bg-[#9B52F0]" text="text-[#9B52F0]" isDown href="/admin/tickets" />
+        <StatCard title="Total Revenue" value={`$${revenue.allTime.toLocaleString()}`} change={changes.revenue} bg="bg-[#FCF3E8]" pillBg="bg-[#AF670F]" text="text-[#AF670F]" href="/admin/orders" />
+        <StatCard title="Total Orders" value={stats.totalOrders.toLocaleString()} change={changes.orders} bg="bg-[#F2F6FE]" pillBg="bg-[#285FF5]" text="text-[#285FF5]" href="/admin/orders" />
+        <StatCard title="Total Users" value={stats.totalUsers.toLocaleString()} change={changes.users} bg="bg-[#EEFAEB]" pillBg="bg-[#54CE12]" text="text-[#54CE12]" href="/admin/users" />
+        <StatCard title="Total Tickets" value={(stats.openTickets + stats.closedTickets + stats.awaitingTickets).toLocaleString()} change={changes.tickets} bg="bg-[#F4EBFE]" pillBg="bg-[#9B52F0]" text="text-[#9B52F0]" isDown href="/admin/tickets" />
       </div>
 
       {/* Charts Row 1 */}
@@ -482,7 +493,6 @@ export default function AdminDashboard() {
         headerRight={<Link href="/admin/orders" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL ORDERS</Link>}
         data={recentOrders}
         columns={orderColumns}
-        actions={orderActions}
       />
     </div>
   );

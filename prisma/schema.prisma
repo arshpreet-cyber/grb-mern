@@ -332,4 +332,13 @@ model Blog {
   deleted_at       DateTime?
 }
 
-
+model Redirect {
+  id        String   @id @default(cuid())
+  fromPath  String   @unique
+  toPath    String
+  type      Int      @default(301)
+  active    Boolean  @default(true)
+  hits      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

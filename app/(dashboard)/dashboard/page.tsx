@@ -157,7 +157,11 @@ export default function UserDashboard() {
                 </tr>
               ) : orders.map((o, i) => (
                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.orderNumber}</td>
+                  <td className="text-[14px] px-5 py-5 font-normal text-center">
+                    <button onClick={() => router.push(`/dashboard/orders/${o.id}`)} className="font-mono font-semibold text-violet-600 dark:text-violet-400 hover:underline cursor-pointer">
+                      {o.orderNumber}
+                    </button>
+                  </td>
                   <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.paymentId}</td>
                   <td className="text-[14px] px-5 py-5 font-medium text-slate-700 dark:text-slate-300 text-center">{o.amount}</td>
                   <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.date}</td>
