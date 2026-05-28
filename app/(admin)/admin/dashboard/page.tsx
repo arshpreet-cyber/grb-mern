@@ -144,6 +144,7 @@ export default function AdminDashboard() {
   });
 
   const [changes, setChanges] = useState({ revenue: "—", orders: "—", users: "—", tickets: "—" });
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -154,9 +155,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     const isFirst = initialLoading;
     if (!isFirst) setLoadingData(true);
+    setApiError(null);
     fetch(`/api/dashboard/analytics?month=${encodeURIComponent(selectedMonth)}`)
       .then((r) => {
-        if (!r.ok) throw new Error("API error");
+        if (!r.ok) return r.json().then(e => { throw new Error(e?.error || `Server error ${r.status}`); });
         return r.json();
       })
       .then((data) => {
@@ -167,7 +169,7 @@ export default function AdminDashboard() {
         if (data.charts) setCharts(data.charts);
         if (data.changes) setChanges(data.changes);
       })
-      .catch(() => {})
+      .catch((err) => { setApiError(err.message || "Failed to load dashboard data"); })
       .finally(() => { setInitialLoading(false); setLoadingData(false); });
   }, [selectedMonth]);
 
@@ -263,6 +265,11 @@ export default function AdminDashboard() {
 
   return (
     <div className="relative space-y-6 min-h-screen">
+      {apiError && (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 dark:bg-rose-900/20 dark:border-rose-800 px-5 py-4 text-sm text-rose-700 dark:text-rose-400 flex items-center gap-3">
+          <span className="font-bold">Dashboard error:</span> {apiError}
+        </div>
+      )}
       {/* Month-change overlay — no blur, just a small indicator */}
       {loadingData && (
         <div className="fixed top-4 right-4 z-100 bg-white dark:bg-slate-900 shadow-xl border border-gray-100 dark:border-slate-800 rounded-2xl px-4 py-2.5 flex items-center gap-2.5">
