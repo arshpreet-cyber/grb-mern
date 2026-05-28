@@ -25,10 +25,10 @@ export default function SideCart() {
       <button
         onClick={toggleCart}
         aria-label={`Open cart with ${visibleCount} ${visibleCount === 1 ? "item" : "items"}`}
-        className="fixed bottom-6 right-6 z-[1210] flex h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-[#111111] text-white shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-all duration-200 hover:scale-105 active:scale-95"
+        className="fixed right-6 top-1/2 z-[1210] flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-[#111111] text-white shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all hover:scale-110 active:scale-95 group"
       >
-        <ShoppingCart size={28} strokeWidth={1.8} />
-        <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#ff5a7a] text-[11px] font-bold text-white shadow ring-2 ring-white">
+        <ShoppingCart size={24} className="transition-transform group-hover:-rotate-12" />
+        <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#ff5a7a] text-[12px] font-bold text-white shadow-sm ring-2 ring-white">
           {visibleCount}
         </span>
       </button>
