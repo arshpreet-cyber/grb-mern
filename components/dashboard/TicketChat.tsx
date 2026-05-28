@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { Send, RefreshCw, ShieldCheck, User, AlertCircle, Loader2, Clock, CheckCircle2, XCircle, Paperclip, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, ShieldCheck, User, AlertCircle, Loader2, Paperclip, X } from "lucide-react";
 
 export type TicketMessage = {
   id: number;
@@ -44,7 +44,6 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   const [attachments, setAttachments] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
-  const [connected, setConnected] = useState(false);
   const [replyOpen, setReplyOpen] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -58,8 +57,8 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     if (socketRef.current) socketRef.current.disconnect();
     const socket = io({ transports: ["websocket", "polling"], reconnectionAttempts: 5 });
     socketRef.current = socket;
-    socket.on("connect", () => { setConnected(true); setError(null); socket.emit("join-ticket", ticketId); });
-    socket.on("connect_error", () => { setConnected(false); setError("Unable to connect to support server."); });
+    socket.on("connect", () => { setError(null); socket.emit("join-ticket", ticketId); });
+    socket.on("connect_error", () => { setError("Unable to connect to support server."); });
     socket.on("ticket-history", (h: TicketMessage[]) => setMessages(h));
     socket.on("ticket-message", (m: TicketMessage) => setMessages(prev => prev.some(p => p.id === m.id) ? prev : [...prev, m]));
     socket.on("ticket-error", ({ message }: { message: string }) => setError(message));
@@ -84,7 +83,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     if (!draft.trim() || !sessionUserId) return;
     setSending(true); setError(null);
     try {
-      if (!socketRef.current?.connected) throw new Error("Not connected. Please reconnect.");
+      if (!socketRef.current?.connected) throw new Error("Connection unavailable. Please refresh the page.");
       socketRef.current.emit("send-ticket-message", {
         ticketId, content: draft.trim(), agentId: sessionUserId,
         direction: isAdmin ? "2" : "1",
@@ -153,11 +152,6 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
           >
             <Send size={13} /> Reply
           </button>
-          {!connected && (
-            <button onClick={connectSocket} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-red-200 bg-red-50 text-red-600 text-[13px] font-medium hover:bg-red-100 transition">
-              <RefreshCw size={13} className="animate-spin" /> Reconnect
-            </button>
-          )}
         </div>
 
       </div>
@@ -228,7 +222,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
                   </span>
                   <button
                     onClick={handleSend}
-                    disabled={!draft.trim() || !connected || sending}
+                    disabled={!draft.trim() || sending}
                     className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] text-black text-[13px] font-bold transition disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
