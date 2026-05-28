@@ -25,7 +25,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const order = await prisma.order.update({
       where: { id },
       data,
-      include: { user: { select: { name: true, email: true } } },
+      include: { orderDetails: true, user: { select: { name: true, email: true } } },
     });
 
     if ("status" in body) {
@@ -35,11 +35,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         : (order.user?.name ?? "Customer");
 
       if (email) {
+        const items = (order.orderDetails ?? []).map((d) => ({
+          platform: d.platform ?? d.itemName ?? "Review",
+          qty: d.quantity ?? 1,
+          pricePerUnit: d.amount ?? 0,
+        }));
+        const total = order.amount ?? 0;
+        const isPaid = order.paymentStatus === "2";
         const { subject, html } = buildOrderStatusEmail({
           name,
           email,
           orderNumber: order.orderNumber ?? order.id,
           status: body.status,
+          items,
+          total,
+          amountPaid: isPaid ? total : 0,
         });
         sendEmailNotification({
           to: email,

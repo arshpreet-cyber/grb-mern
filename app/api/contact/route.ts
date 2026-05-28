@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { randomUUID } from "crypto";
+import { sendEmailNotification, buildContactConfirmationEmail } from "@/server/email";
 
 export async function POST(req: Request) {
   try {
@@ -58,6 +59,11 @@ export async function POST(req: Request) {
         status: "Open",
       },
     });
+
+    // EVT-0017: send confirmation to the person who filled contact form
+    const confirmation = buildContactConfirmationEmail({ email });
+    sendEmailNotification({ to: email, subject: confirmation.subject, text: "Thank you for contacting Get Reviews Buzz. We will get back to you shortly.", html: confirmation.html })
+      .catch((err) => console.error("[contact confirmation email]", err.message));
 
     return NextResponse.json({ success: true, ticketId: ticket.id });
   } catch (error) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/prisma";
+import { sendEmailNotification, buildUserSubmittedDetailsAdminEmail, ADMIN_EMAIL } from "@/server/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,6 +42,20 @@ export async function POST(req: NextRequest) {
           })
         )
       );
+    }
+
+    // EVT-0016: notify admin that user submitted order details
+    if (ADMIN_EMAIL) {
+      const userEmail = order.email ?? session.user.email ?? "";
+      const userName = order.firstName ? `${order.firstName} ${order.lastName ?? ""}`.trim() : (session.user.name ?? "Customer");
+      const adminNotif = buildUserSubmittedDetailsAdminEmail({
+        name: userName,
+        email: userEmail,
+        orderNumber: order.orderNumber ?? orderId,
+        orderId,
+      });
+      sendEmailNotification({ to: ADMIN_EMAIL, subject: adminNotif.subject, text: `Order #${order.orderNumber} details submitted.`, html: adminNotif.html })
+        .catch((err) => console.error("[submitted details email]", err.message));
     }
 
     return NextResponse.json({ success: true });

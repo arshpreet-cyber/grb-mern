@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/prisma";
-import { sendEmailNotification, buildUnpaidReminderEmail } from "@/server/email";
+import { sendEmailNotification, buildUnpaidReminderEmail, buildOrderInfoRequiredEmail } from "@/server/email";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -45,6 +45,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       });
 
       await sendEmailNotification({ to: email, subject, text: `Your order #${order.orderNumber} is unpaid. Please complete your payment.`, html });
+      return NextResponse.json({ success: true });
+    }
+
+    if (type === "info-required") {
+      const name = order.firstName
+        ? `${order.firstName} ${order.lastName ?? ""}`.trim()
+        : (order.user?.name ?? "Customer");
+      const detailsUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/order/${order.id}/details`;
+      const { subject, html } = buildOrderInfoRequiredEmail({
+        name,
+        orderNumber: order.orderNumber ?? order.id,
+        detailsUrl,
+      });
+      await sendEmailNotification({ to: email, subject, text: `Order #${order.orderNumber} requires your information.`, html });
       return NextResponse.json({ success: true });
     }
 

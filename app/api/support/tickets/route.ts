@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { randomUUID } from "crypto";
 import { syncTicketToZoho } from "@/server/services/zohoSync";
+import { sendEmailNotification, buildTicketCreatedEmail } from "@/server/email";
 
 // GET /api/support/tickets?userId=xxx  OR  ?countOnly=true
 export async function GET(req: NextRequest) {
@@ -76,6 +77,13 @@ export async function POST(req: NextRequest) {
         userReadStatus: 1,
       },
     });
+
+    // EVT-0012: send thank-you email to user
+    if (email) {
+      const thankYou = buildTicketCreatedEmail({ name, email, ticketNumber: ticketNumber, subject });
+      sendEmailNotification({ to: email, subject: thankYou.subject, text: `Ticket ${ticketNumber} received. We'll be in touch shortly.`, html: thankYou.html })
+        .catch((err) => console.error("[ticket created email]", err.message));
+    }
 
     // Sync to Zoho Desk in the background (non-blocking)
     syncTicketToZoho(ticket.ticketId).catch((err) => {

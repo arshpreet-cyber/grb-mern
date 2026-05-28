@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { sendEmailNotification, buildTicketHoldEmail, buildTicketEscalatedEmail, buildTicketClosedEmail } from "@/server/email";
 
 // GET /api/support/tickets/[ticketId]
 export async function GET(
@@ -34,10 +35,35 @@ export async function PATCH(
   try {
     const { ticketId } = await params;
     const updates = await req.json();
+
     const ticket = await prisma.ticket.update({
       where: { ticketId },
       data: updates,
+      include: { user: { select: { name: true, email: true } } },
     });
+
+    // Send status-change emails when ticket status is updated
+    if ("status" in updates && ticket.email) {
+      const recipientEmail = ticket.email;
+      const name = ticket.name ?? ticket.user?.name;
+      const ticketNum = ticket.ticketNumber ?? ticketId;
+      const subject = ticket.subject ?? undefined;
+
+      if (updates.status === "Hold") {
+        const { subject: s, html } = buildTicketHoldEmail({ name, ticketNumber: ticketNum, subject });
+        sendEmailNotification({ to: recipientEmail, subject: s, text: `Ticket ${ticketNum} is now on hold.`, html })
+          .catch((err) => console.error("[ticket hold email]", err.message));
+      } else if (updates.status === "Escalated") {
+        const { subject: s, html } = buildTicketEscalatedEmail({ name, ticketNumber: ticketNum, subject });
+        sendEmailNotification({ to: recipientEmail, subject: s, text: `Ticket ${ticketNum} has been escalated.`, html })
+          .catch((err) => console.error("[ticket escalated email]", err.message));
+      } else if (updates.status === "Closed") {
+        const { subject: s, html } = buildTicketClosedEmail({ name, ticketNumber: ticketNum, subject });
+        sendEmailNotification({ to: recipientEmail, subject: s, text: `Ticket ${ticketNum} has been closed.`, html })
+          .catch((err) => console.error("[ticket closed email]", err.message));
+      }
+    }
+
     return NextResponse.json(ticket);
   } catch (error) {
     console.error("Failed to update ticket", error);

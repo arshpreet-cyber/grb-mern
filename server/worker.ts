@@ -29,7 +29,7 @@ async function startWorkers() {
             ticketNumber: ticketId,
             subject: subject ?? "Support ticket created",
           });
-          await sendEmailNotification({ to: email, subject: payload.subject, text: payload.text });
+          await sendEmailNotification({ to: email, subject: payload.subject, text: `Ticket ${ticketId} created.`, html: payload.html });
         } else if (type === "ticket.message") {
           const payload = buildTicketReplyEmail({
             name,
