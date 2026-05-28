@@ -7,9 +7,21 @@ import { PlusCircle, ArrowUpRight, Eye } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
 
+const PM_LABELS: Record<string, string> = {
+  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Pay by Card",
+};
+
 type Order = {
-  id: string; paymentId: string; amount: string; date: string;
-  method: string; status: string; paymentStatus: string;
+  id: string;
+  orderNumber: string;
+  paymentId: string;
+  amount: string;
+  date: string;
+  method: string;
+  status: string;
+  paymentStatus: string;
+  payUrl?: string | null;
+  detailsFilled?: boolean;
 };
 
 type ApiOrder = {
@@ -17,16 +29,13 @@ type ApiOrder = {
   orderNumber: string;
   amount: number;
   date: string;
+  createdAt?: string;
   paymentMethod: string;
+  payUrl?: string | null;
+  detailsFilled?: boolean;
   status: string;
   paymentStatus: string;
 };
-
-const dummyOrders: Order[] = [
-  { id: "#177150846", paymentId: "12345678", amount: "$100.00", date: "19-2-2026", method: "Credit Card", status: "Pending", paymentStatus: "Pending" },
-  { id: "#177150847", paymentId: "87654321", amount: "$250.00", date: "18-2-2026", method: "PayPal", status: "Complete", paymentStatus: "Complete" },
-  { id: "#177150848", paymentId: "11223344", amount: "$75.50", date: "17-2-2026", method: "Credit Card", status: "Complete", paymentStatus: "Complete" },
-];
 
 export default function UserDashboard() {
   const { data: session } = useSession();
@@ -41,15 +50,22 @@ export default function UserDashboard() {
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           setOrders(data.map((o: ApiOrder) => ({
-            id: o.orderNumber, paymentId: o.id.substring(0, 8),
-            amount: `$${o.amount.toFixed(2)}`, date: new Date(o.date).toLocaleDateString(),
-            method: o.paymentMethod, status: orderStatusLabel(o.status), paymentStatus: paymentStatusLabel(o.paymentStatus),
+            id: o.id,
+            orderNumber: o.orderNumber,
+            paymentId: o.id.substring(0, 8),
+            amount: `$${o.amount.toFixed(2)}`,
+            date: new Date(o.date ?? o.createdAt ?? "").toLocaleDateString(),
+            method: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
+            status: orderStatusLabel(o.status),
+            paymentStatus: paymentStatusLabel(o.paymentStatus),
+            payUrl: o.payUrl,
+            detailsFilled: o.detailsFilled,
           })));
         } else {
-          setOrders(dummyOrders);
+          setOrders([]);
         }
       })
-      .catch(() => setOrders(dummyOrders))
+      .catch(() => setOrders([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -141,56 +157,57 @@ export default function UserDashboard() {
                 </tr>
               ) : orders.map((o, i) => (
                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300 text-center">{o.id}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300 text-center">{o.paymentId}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300 text-center font-medium">{o.amount}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300 text-center">{o.date}</td>
+                  <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.orderNumber}</td>
+                  <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.paymentId}</td>
+                  <td className="text-[14px] px-5 py-5 font-medium text-slate-700 dark:text-slate-300 text-center">{o.amount}</td>
+                  <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.date}</td>
 
                   <td className="px-5 py-5 text-center">
-                    <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-[400] text-amber-600 dark:text-amber-400">
+                    <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-normal text-amber-600 dark:text-amber-400">
                       <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                       {o.method}
                     </span>
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${o.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-normal ${o.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${o.status === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
                       {o.status}
                     </span>
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${o.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${o.paymentStatus === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-normal ${o.paymentStatus === "Paid" ? "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400" : "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400"}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${o.paymentStatus === "Paid" ? "bg-emerald-500" : "bg-rose-500"}`} />
                       {o.paymentStatus}
                     </span>
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    <button className="rounded-[5px] bg-blue-600 px-3 py-1 text-[10px] font-[400] text-white shadow-sm hover:bg-blue-700 transition">
-                      Input Details
-                    </button>
-                  </td>
-
-                  <td className="px-5 py-5 text-center">
-                    {o.status === "Pending" && (
-                      <div className="flex flex-col gap-2 items-center">
-                        <select className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300 outline-none w-32">
-                          <option>Credit Card</option>
-                          <option>PayPal</option>
-                        </select>
-                        <button className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-[400] text-white transition w-32">
-                          Pay Now
-                        </button>
-                      </div>
+                    {o.paymentStatus === "Paid" && !o.detailsFilled && (
+                      <button
+                        onClick={() => router.push(`/order/${o.id}/details`)}
+                        className="rounded-[5px] bg-blue-600 px-3 py-1 text-[10px] font-normal text-white shadow-sm hover:bg-blue-700 transition"
+                      >
+                        Input Details
+                      </button>
                     )}
                   </td>
 
-                  {/* Directly Updated Action Layout Column */}
                   <td className="px-5 py-5 text-center">
-                    <button 
-                      onClick={() => router.push(`/dashboard/orders/${encodeURIComponent(o.id)}`)}
+                    {o.paymentStatus !== "Paid" && o.payUrl && (
+                      <a
+                        href={o.payUrl}
+                        className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-normal text-white transition inline-block"
+                      >
+                        Pay by Card
+                      </a>
+                    )}
+                  </td>
+
+                  <td className="px-5 py-5 text-center">
+                    <button
+                      onClick={() => router.push(`/dashboard/orders/${o.id}`)}
                       className="p-2 rounded-lg text-gray-400 dark:text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all duration-200 inline-flex items-center justify-center"
                       title="See More Details"
                     >
