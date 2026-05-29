@@ -119,8 +119,8 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
         </div>
 
         {/* Actions & Profile */}
-        <div className="flex items-center gap-3">
-          
+        <div className="relative flex items-center gap-3">
+
           {/* Theme Toggle */}
           <div className="hidden sm:flex relative items-center bg-[#f4f5f7] dark:bg-[#252b3b] rounded-full p-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] w-[74px] h-[40px]">
             {/* Sliding Active Background */}
@@ -143,8 +143,8 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
           </div>
 
           {/* Messages Section Wrapper */}
-          <div className="relative" ref={messageRef}>
-            <button 
+          <div ref={messageRef}>
+            <button
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f5f7] dark:bg-[#252b3b] text-slate-600 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none"
               onClick={() => setIsMessageOpen(!isMessageOpen)}
             >
@@ -153,8 +153,8 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
             </button>
 
             {/* Message Dropdown */}
-            <div 
-              className={`absolute right-0 top-full mt-2 w-80 transition-all duration-200 ease-in-out z-50 ${
+            <div
+              className={`absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] transition-all duration-200 ease-in-out z-50 ${
                 isMessageOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
               }`}
             >
@@ -193,8 +193,8 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
           </div>
 
           {/* Notification Section Wrapper */}
-          <div className="relative" ref={notificationRef}>
-            <button 
+          <div ref={notificationRef}>
+            <button
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f5f7] dark:bg-[#252b3b] text-slate-600 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none"
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
             >
@@ -203,8 +203,8 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
             </button>
 
             {/* Notification Dropdown */}
-            <div 
-              className={`absolute right-0 top-full mt-2 w-80 transition-all duration-200 ease-in-out z-50 ${
+            <div
+              className={`absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] transition-all duration-200 ease-in-out z-50 ${
                 isNotificationOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
               }`}
             >
