@@ -225,10 +225,12 @@ const designRule =
                     <span>{pkg.label}</span> &nbsp;
                     <span className="tooltip-question relative inline-flex items-center justify-center w-[10px] h-[10px] border border-black text-black rounded-full cursor-pointer group" onClick={(e) => e.stopPropagation()}>
                       ?
-                      <span className={`warranty-tooltip-box absolute bottom-[100%] left-1/2 -translate-x-1/2 mb-[8px] p-[12px] text-justify w-max max-w-[280px] bg-[#111] text-white text-[10px] font-normal leading-[1.5] rounded-[10px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:visible transition-all z-[99999] break-words whitespace-normal max-[600px]:left-1/2 max-[600px]:-translate-x-1/2 max-[600px]:w-[220px] max-[600px]:max-w-[calc(100vw-20px)]
+                      <span className={`warranty-tooltip-box absolute bottom-[100%] left-1/2 -translate-x-1/2 pb-[8px] w-max max-w-[280px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all z-[99999] max-[600px]:left-1/2 max-[600px]:-translate-x-1/2 max-[600px]:w-[220px] max-[600px]:max-w-[calc(100vw-20px)]
                         ${index === 2 ? 'max-[600px]:left-auto max-[600px]:right-0 max-[600px]:transform-none' : ''}
                         ${index === 0 ? 'max-[600px]:left-0 max-[600px]:transform-none' : ''}`}>
-                        If any reviews drop during the warranty period, we will replace them once, subject to a one-time <a href="/terms-conditions/" target="_blank" className="text-[#ffce0c]">replacement policy</a>.
+                        <span className="block p-[12px] text-justify bg-[#111] text-white text-[10px] font-normal leading-[1.5] rounded-[10px] break-words whitespace-normal">
+                          If any reviews drop during the warranty period, we will replace them once, subject to a one-time <a href="/terms-conditions/" target="_blank" className="text-[#ffce0c]">replacement policy</a>.
+                        </span>
                       </span>
                     </span>
                   </div>
