@@ -214,7 +214,7 @@ const designRule =
                 >
                   <div className="warranty-price flex items-baseline gap-[1px] mb-[2px] max-[359px]:mb-0 max-[359px]:mr-[8px]">
                     <span className="amount text-[14px] font-semibold text-[#1a1a1a] max-[359px]:text-[18px]">${pkg.price}</span>
-                    <span className="Review text-[8px] text-black/70 ml-[1px]">/ per Review</span>
+                    <span className="Review text-[8px] text-black/70 ml-[1px] whitespace-nowrap">/ per Review</span>
                   </div>
                   <div className="warranty-min text-[10px] text-black/50">Min. 5 reviews</div>
                   <div 
@@ -326,7 +326,7 @@ const designRule =
           <div className="card-price-val text-[14px] font-semibold text-black flex items-baseline gap-[2px]">
             <span className="currency text-[40px] font-semibold text-black">$</span>
             <span className="amount text-[40px] font-semibold text-black">{Math.floor(finalPrice)}</span>
-            <span className="per-Review text-[13px] font-normal text-[#555] ml-[2px]">/ per Review</span>
+            <span className="per-Review text-[13px] font-normal text-[#555] ml-[2px] whitespace-nowrap">/ per Review</span>
           </div>
           <p className="card-min-qty text-[13px] text-[#888] mb-[25px] mt-0">
             Min. {product.minimumQuantity} Reviews
