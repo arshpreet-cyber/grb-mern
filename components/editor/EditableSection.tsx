@@ -6,7 +6,7 @@ import {
   duplicateSection, 
   deleteSection 
 } from '@/lib/redux/features/pageEditorSlice';
-import { Settings, Copy, Trash2, GripVertical } from 'lucide-react';
+import { Copy, Trash2, GripVertical } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 

@@ -3,7 +3,7 @@
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { useMounted } from "@/hooks/useMounted";
-import { X, Trash2, ShoppingCart, RefreshCcw, Info } from "lucide-react";
+import { X, ShoppingCart, RefreshCcw } from "lucide-react";
 
 export default function SideCart() {
   const { items, removeItem, updateQty, clearCart, total, count, isOpen, closeCart, toggleCart } = useCart();

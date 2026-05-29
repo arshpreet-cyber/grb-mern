@@ -26,7 +26,6 @@ export default function BlogSection({ data, settings }: SectionProps) {
           setBlogs(data.blogs);
         }
       } catch (err) {
-        console.error("Error fetching blogs:", err);
       } finally {
         setLoading(false);
       }

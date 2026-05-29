@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { updateSectionData, updateSectionSettings, setSelectedSectionId, updatePageMeta, setTitle, setSlug } from '@/lib/redux/features/pageEditorSlice';
-import { X, ChevronRight, Layout, Type, Image as ImageIcon, Settings as SettingsIcon, ShoppingCart, Globe, Search, FileText } from 'lucide-react';
+import { X, Layout, Type, Image as ImageIcon, Settings as SettingsIcon, ShoppingCart, Globe } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 
 export default function Sidebar() {

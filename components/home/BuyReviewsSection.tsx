@@ -2,7 +2,6 @@
 
 import { useCart } from "@/context/CartContext";
 import { useState, useEffect } from "react"; 
-import { Search } from "lucide-react"; 
 import Wrapper from "@/components/ui/Wrapper";
 import type { Product } from "@/lib/constants/products";
 import { useRouter } from "next/navigation";
@@ -407,7 +406,7 @@ export function BuyReviewsSection() {
 
         setProducts(sortedProducts);
       } catch (error: any) {
-        console.error("Error fetching products:", error);
+
       } finally {
         setIsLoading(false);
       }

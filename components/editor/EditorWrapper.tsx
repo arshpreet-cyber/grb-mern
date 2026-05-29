@@ -27,7 +27,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Plus, Save, Eye, EyeOff, Loader2, ExternalLink, Smartphone, Monitor, Laptop, PanelRightClose, PanelRight, Settings } from 'lucide-react';
+import { Plus, Save, Loader2, ExternalLink, Smartphone, Monitor, Laptop, PanelRightClose, PanelRight, Settings } from 'lucide-react';
 
 interface EditorWrapperProps {
   initialPage: any;
@@ -99,7 +99,6 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
     try {
       const pageSlug = slug || initialPage.slug;
       const pageId = id || initialPage.id;
-      console.log(`Updating page: ${pageSlug}`, { title, publish, sectionCount: sections?.length });
       const response = await fetch(`/api/page/${encodeURIComponent(pageSlug)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -115,9 +114,7 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
             ? `Database Error [${errorData.code}]: ${errorData.details || errorMessage}`
             : (errorData.details || errorData.error || errorMessage);
           
-          if (errorData.meta) {
-            console.error('Prisma Meta:', errorData.meta);
-          }
+
         } catch (e) {
           errorMessage = `Server Error: ${response.status} ${response.statusText} for slug '${pageSlug}' id '${pageId}'. Response: ${responseText.substring(0, 100)}`;
         }
@@ -125,7 +122,6 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
       }
       alert(publish ? 'Page published to live site!' : 'Draft saved successfully!');
     } catch (error: any) {
-      console.error(error);
       alert(`Error: ${error.message}`);
     } finally {
       dispatch(setIsSaving(false));
