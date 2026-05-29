@@ -33,8 +33,8 @@ function BlogListingContent() {
           setBlogs(data.blogs);
           setPagination(data.pagination);
         }
-      } catch (err) {
-        console.error("Error fetching blogs:", err);
+      } catch {
+        // silent
       } finally {
         setLoading(false);
       }
