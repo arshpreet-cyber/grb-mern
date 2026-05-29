@@ -26,7 +26,6 @@ function useCountUp(target: number, shouldAnimate: boolean, duration = 2000) {
       const elapsed = timestamp - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(startValue + eased * (target - startValue)));
 
@@ -57,16 +56,33 @@ function StatItem({ target, suffix, label, description, shouldAnimate }: StatIte
   );
 }
 
-const stats = [
-  { target: 12804, suffix: "+", label: "Orders Delivered", description: "Focused on getting every delivery right with care and consistency." },
-  { target: 6090, suffix: "+", label: "Active Users", description: "Partnering with businesses across industries to build a lasting reputation." },
-  { target: 95, suffix: "%", label: "Client Satisfaction", description: "A reflection of our commitment to quality, trust, and measurable results." },
-  { target: 7, suffix: "+", label: "Years Of Proven Growth", description: "Determined to adapt experienced strategies in reputation management." },
+const STAT_DESCRIPTIONS = [
+  "Focused on getting every delivery right with care and consistency.",
+  "Partnering with businesses across industries to build a lasting reputation.",
+  "A reflection of our commitment to quality, trust, and measurable results.",
+  "Determined to adapt experienced strategies in reputation management.",
 ];
+
+type SiteStats = { ordersDelivered: number; activeUsers: number; clientSatisfaction: number; yearsOfGrowth: number };
 
 export default function StatsBar() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [siteStats, setSiteStats] = useState<SiteStats>({ ordersDelivered: 12804, activeUsers: 6090, clientSatisfaction: 95, yearsOfGrowth: 7 });
+
+  useEffect(() => {
+    fetch("/api/site-stats")
+      .then((r) => r.json())
+      .then((data) => { if (data && !data.error) setSiteStats(data); })
+      .catch(() => {});
+  }, []);
+
+  const stats = [
+    { target: siteStats.ordersDelivered, suffix: "+", label: "Orders Delivered", description: STAT_DESCRIPTIONS[0] },
+    { target: siteStats.activeUsers, suffix: "+", label: "Active Users", description: STAT_DESCRIPTIONS[1] },
+    { target: siteStats.clientSatisfaction, suffix: "%", label: "Client Satisfaction", description: STAT_DESCRIPTIONS[2] },
+    { target: siteStats.yearsOfGrowth, suffix: "+", label: "Years Of Proven Growth", description: STAT_DESCRIPTIONS[3] },
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(

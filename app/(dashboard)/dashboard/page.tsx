@@ -7,9 +7,22 @@ import { PlusCircle, ArrowUpRight, Eye } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
 
+const PM_LABELS: Record<string, string> = {
+  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Pay by Card",
+};
+
 type Order = {
-  id: string; paymentId: string; amount: string; date: string;
-  method: string; status: string; paymentStatus: string;
+  id: string;
+  orderNumber: string;
+  paymentId: string;
+  amount: string;
+  date: string;
+  method: string;
+  status: string;
+  paymentStatus: string;
+  payUrl?: string | null;
+  detailsFilled?: boolean;
+  isRecurring?: number | null;
 };
 
 type ApiOrder = {
@@ -17,22 +30,22 @@ type ApiOrder = {
   orderNumber: string;
   amount: number;
   date: string;
+  createdAt?: string;
   paymentMethod: string;
+  payUrl?: string | null;
+  detailsFilled?: boolean;
   status: string;
   paymentStatus: string;
+  isRecurring?: number | null;
 };
-
-const dummyOrders: Order[] = [
-  { id: "#177150846", paymentId: "12345678", amount: "$100.00", date: "19-2-2026", method: "Credit Card", status: "Pending", paymentStatus: "Pending" },
-  { id: "#177150847", paymentId: "87654321", amount: "$250.00", date: "18-2-2026", method: "PayPal", status: "Complete", paymentStatus: "Complete" },
-  { id: "#177150848", paymentId: "11223344", amount: "$75.50", date: "17-2-2026", method: "Credit Card", status: "Complete", paymentStatus: "Complete" },
-];
 
 export default function UserDashboard() {
   const { data: session } = useSession();
   const router = useRouter();
+  const [allOrders, setAllOrders] = useState<ApiOrder[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openTickets, setOpenTickets] = useState<number | null>(null);
   const name = session?.user?.name ?? "User";
 
   useEffect(() => {
@@ -40,24 +53,45 @@ export default function UserDashboard() {
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
+          setAllOrders(data);
           setOrders(data.map((o: ApiOrder) => ({
-            id: o.orderNumber, paymentId: o.id.substring(0, 8),
-            amount: `$${o.amount.toFixed(2)}`, date: new Date(o.date).toLocaleDateString(),
-            method: o.paymentMethod, status: orderStatusLabel(o.status), paymentStatus: paymentStatusLabel(o.paymentStatus),
+            id: o.id,
+            orderNumber: o.orderNumber,
+            paymentId: o.id.substring(0, 8),
+            amount: `$${o.amount.toFixed(2)}`,
+            date: new Date(o.date ?? o.createdAt ?? "").toLocaleDateString(),
+            method: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
+            status: orderStatusLabel(o.status),
+            paymentStatus: paymentStatusLabel(o.paymentStatus),
+            payUrl: o.payUrl,
+            detailsFilled: o.detailsFilled,
+            isRecurring: o.isRecurring,
           })));
         } else {
-          setOrders(dummyOrders);
+          setAllOrders([]);
+          setOrders([]);
         }
       })
-      .catch(() => setOrders(dummyOrders))
+      .catch(() => { setAllOrders([]); setOrders([]); })
       .finally(() => setLoading(false));
+
+    // Only tickets need a separate call — not available in orders list
+    fetch("/api/dashboard/user-stats")
+      .then((r) => r.json())
+      .then((data) => { if (data && !data.error) setOpenTickets(data.openTickets); })
+      .catch(() => {});
   }, []);
 
+  // Derive order stats from the same fetched array so counts always match /dashboard/orders
+  const totalOrders = allOrders.length;
+  const pendingOrders = allOrders.filter(o => ["1", "2", "4"].includes(o.status)).length;
+  const activeSubscriptions = allOrders.filter(o => o.isRecurring === 1 && !["5", "6"].includes(o.status)).length;
+
   const stats = [
-    { label: "VIEW TOTAL ORDER", value: "35", bg: "bg-[#FBF0E2]", iconColor: "text-[#DA7A00]" },
-    { label: "VIEW ACTIVE SUBSCRIPTIONS", value: "25", bg: "bg-[#F0F4FF]", iconColor: "text-[#001E70]" },
-    { label: "VIEW PENDING ORDERS", value: "15", bg: "bg-[#EDF5E8]", iconColor: "text-[#317607]" },
-    { label: "VIEW OPEN TICKET", value: "05", bg: "bg-[#F6EEFF]", iconColor: "text-[#48009D]" },
+    { label: "VIEW TOTAL ORDER", value: loading ? "—" : String(totalOrders), bg: "bg-[#FBF0E2]", iconColor: "text-[#DA7A00]", href: "/dashboard/orders" },
+    { label: "VIEW ACTIVE SUBSCRIPTIONS", value: loading ? "—" : String(activeSubscriptions), bg: "bg-[#F0F4FF]", iconColor: "text-[#001E70]", href: "/dashboard/orders/subscriptions" },
+    { label: "VIEW PENDING ORDERS", value: loading ? "—" : String(pendingOrders), bg: "bg-[#EDF5E8]", iconColor: "text-[#317607]", href: "/dashboard/orders?status=pending" },
+    { label: "VIEW OPEN TICKET", value: openTickets === null ? "—" : String(openTickets), bg: "bg-[#F6EEFF]", iconColor: "text-[#48009D]", href: "/dashboard/tickets" },
   ];
 
   return (
@@ -89,22 +123,22 @@ export default function UserDashboard() {
       {/* Stat Cards */}
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className={`${s.bg} dark:bg-[#1a1f2c] rounded-[20px] p-6 h-[121px] flex flex-col justify-between border border-transparent dark:border-slate-800 transition-all`}>
+          <Link key={s.label} href={s.href} className={`${s.bg} dark:bg-[#1a1f2c] rounded-[20px] p-6 h-[121px] flex flex-col justify-between border border-transparent dark:border-slate-800 transition-all hover:shadow-md hover:scale-[1.02] cursor-pointer`}>
             <div className="flex items-start justify-between">
               {/* Large Number */}
               <p className="text-4xl font-[500] text-slate-900 dark:text-white transition-colors">{s.value}</p>
-              
+
               {/* Top-Right Arrow Button */}
               <div className="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-sm">
                 <ArrowUpRight className={`w-5 h-5 ${s.iconColor} dark:text-white`} />
               </div>
             </div>
-            
+
             {/* Bottom Label */}
             <p className="mt-4 text-[15px] font-[500] text-slate-900 dark:text-slate-400 tracking-wide transition-colors">
               {s.label}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -141,56 +175,68 @@ export default function UserDashboard() {
                 </tr>
               ) : orders.map((o, i) => (
                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300 text-center">{o.id}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300 text-center">{o.paymentId}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300 text-center font-medium">{o.amount}</td>
-                  <td className="text-[14px] px-5 py-5 font-[400] text-slate-700 dark:text-slate-300 text-center">{o.date}</td>
+                  <td className="px-5 py-5 text-center">
+                    <div className="inline-flex flex-col items-center gap-1">
+                      <button onClick={() => router.push(`/dashboard/orders/${o.id}`)} className="text-[14px] font-mono font-semibold text-violet-600 dark:text-violet-400 hover:underline cursor-pointer">
+                        {o.orderNumber}
+                      </button>
+                      {o.isRecurring === 1 && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide">
+                          ● Subscription
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.paymentId}</td>
+                  <td className="text-[14px] px-5 py-5 font-medium text-slate-700 dark:text-slate-300 text-center">{o.amount}</td>
+                  <td className="text-[14px] px-5 py-5 font-normal text-slate-700 dark:text-slate-300 text-center">{o.date}</td>
 
                   <td className="px-5 py-5 text-center">
-                    <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-[400] text-amber-600 dark:text-amber-400">
+                    <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-normal text-amber-600 dark:text-amber-400">
                       <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                       {o.method}
                     </span>
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${o.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-normal ${o.status === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
                       <span className={`h-1.5 w-1.5 rounded-full ${o.status === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
                       {o.status}
                     </span>
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-[400] ${o.paymentStatus === "Pending" ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400" : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${o.paymentStatus === "Pending" ? "bg-rose-500" : "bg-emerald-500"}`} />
+                    <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-normal ${o.paymentStatus === "Paid" ? "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400" : "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400"}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${o.paymentStatus === "Paid" ? "bg-emerald-500" : "bg-rose-500"}`} />
                       {o.paymentStatus}
                     </span>
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    <button className="rounded-[5px] bg-blue-600 px-3 py-1 text-[10px] font-[400] text-white shadow-sm hover:bg-blue-700 transition">
-                      Input Details
-                    </button>
-                  </td>
-
-                  <td className="px-5 py-5 text-center">
-                    {o.status === "Pending" && (
-                      <div className="flex flex-col gap-2 items-center">
-                        <select className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300 outline-none w-32">
-                          <option>Credit Card</option>
-                          <option>PayPal</option>
-                        </select>
-                        <button className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-[400] text-white transition w-32">
-                          Pay Now
-                        </button>
-                      </div>
+                    {o.paymentStatus === "Paid" && !o.detailsFilled && (
+                      <button
+                        onClick={() => router.push(`/order/${o.id}/details`)}
+                        className="rounded-[5px] bg-blue-600 px-3 py-1 text-[10px] font-normal text-white shadow-sm hover:bg-blue-700 transition"
+                      >
+                        Input Details
+                      </button>
                     )}
                   </td>
 
-                  {/* Directly Updated Action Layout Column */}
                   <td className="px-5 py-5 text-center">
-                    <button 
-                      onClick={() => router.push(`/dashboard/orders/${encodeURIComponent(o.id)}`)}
+                    {o.paymentStatus !== "Paid" && o.payUrl && (
+                      <a
+                        href={o.payUrl}
+                        className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-normal text-white transition inline-block"
+                      >
+                        Pay by Card
+                      </a>
+                    )}
+                  </td>
+
+                  <td className="px-5 py-5 text-center">
+                    <button
+                      onClick={() => router.push(`/dashboard/orders/${o.id}`)}
                       className="p-2 rounded-lg text-gray-400 dark:text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all duration-200 inline-flex items-center justify-center"
                       title="See More Details"
                     >

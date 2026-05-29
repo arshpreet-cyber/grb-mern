@@ -29,8 +29,7 @@ export default function AdminUsersPage() {
       const res = await fetch(`/api/admin/users?search=${encodeURIComponent(q)}`);
       const data = await res.json();
       setUsers(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error(err);
+    } catch {
       setUsers([]);
     } finally {
       setLoading(false);

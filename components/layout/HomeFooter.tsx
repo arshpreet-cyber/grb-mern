@@ -85,7 +85,7 @@ export default function HomeFooter() {
           <hr className="border-t border-dashed border-[#333] w-full" />
 
           {/* MIDDLE SECTION: Links & Newsletter */}
-          <div className="grid grid-cols-2 lg:grid-cols-6 gap-x-8 gap-y-12 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-8 gap-y-10 py-12">
             
             {/* COLUMN 1: Company */}
             <div>

@@ -75,10 +75,11 @@ const menuSections: MenuSection[] = [
 const ADMIN_ROLES = ["ADMIN", "admin", "MANAGER", "manager", "SEO", "DEVELOPER", "TESTER"];
 
 interface UserSidebarProps {
-  onToggle?: () => void; 
+  isOpen?: boolean;
+  onToggle?: () => void;
 }
 
-export default function UserSidebar({ onToggle }: UserSidebarProps) {
+export default function UserSidebar({ isOpen = true, onToggle }: UserSidebarProps) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
 
@@ -94,7 +95,7 @@ export default function UserSidebar({ onToggle }: UserSidebarProps) {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <aside className="w-[260px] min-h-screen bg-white dark:bg-[#0f1117] border-r border-gray-100 dark:border-slate-800 flex flex-col shrink-0 font-sans transition-colors">
+    <aside className={`fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 w-[260px] h-screen overflow-y-auto flex flex-col shrink-0 font-sans bg-white dark:bg-[#0f1117] border-r border-gray-100 dark:border-slate-800 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
       
       {/* Logo & Toggle Button Container */}
       <div className="px-5 py-6 flex items-center justify-between">

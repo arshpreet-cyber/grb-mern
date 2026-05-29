@@ -28,6 +28,8 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
   const messageRef = useRef<HTMLDivElement>(null);
   const [orderNotifications, setOrderNotifications] = useState<any[]>([]);
   const [ticketNotifications, setTicketNotifications] = useState<any[]>([]);
+  const [ordersRead, setOrdersRead] = useState(false);
+  const [ticketsRead, setTicketsRead] = useState(false);
 
   // Theme support
   const { theme, setTheme } = useTheme();
@@ -74,10 +76,12 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
         if (data.recentTickets) {
             const tickets = data.recentTickets.slice(0, 3).map((t: any) => ({
                 id: t.id,
+                ticketId: t.ticketId,
                 type: 'ticket',
-                title: `Ticket #${t.ticketId}`,
-                desc: t.title,
-                time: t.createdAt
+                title: `Ticket #${t.ticketNumber ?? t.ticketId}`,
+                desc: t.title || t.subject || "Support ticket",
+                time: t.createdAt,
+                unread: t.userReadStatus === 1,
             }));
             setTicketNotifications(tickets);
         }
@@ -96,21 +100,19 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
       <div className="flex items-center justify-between gap-4">
         
         {/* Toggle + Pill-shaped Search */}
-        <div className="flex items-center gap-3 w-full max-w-sm">
-          {onToggle && (
-            <button
-              onClick={onToggle}
-              className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-white transition shrink-0"
-              aria-label="Open Sidebar"
-            >
-              <ChevronsRight size={20} />
-            </button>
-          )}
-          
-          <div className="relative w-full">
-            <Search 
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white" 
-              size={18} 
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <button
+            onClick={onToggle}
+            className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-white transition shrink-0"
+            aria-label="Toggle Sidebar"
+          >
+            <ChevronsRight size={20} />
+          </button>
+
+          <div className="relative hidden sm:block flex-1 min-w-0">
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white"
+              size={18}
             />
             <input
               type="search"
@@ -121,8 +123,8 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
         </div>
 
         {/* Actions & Profile */}
-        <div className="flex items-center gap-3">
-          
+        <div className="relative flex items-center gap-3">
+
           {/* Theme Toggle */}
           <div className="hidden sm:flex relative items-center bg-[#f4f5f7] dark:bg-[#252b3b] rounded-full p-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] w-[74px] h-[40px]">
             {/* Sliding Active Background */}
@@ -145,18 +147,33 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
           </div>
 
           {/* Messages Section Wrapper */}
-          <div className="relative" ref={messageRef}>
-            <button 
+          <div ref={messageRef}>
+            <button
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f5f7] dark:bg-[#252b3b] text-slate-600 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none"
-              onClick={() => setIsMessageOpen(!isMessageOpen)}
+              onClick={() => {
+                const opening = !isMessageOpen;
+                setIsMessageOpen(opening);
+                if (opening && !ticketsRead) {
+                  setTicketsRead(true);
+                  ticketNotifications.forEach((t) => {
+                    if (t.unread && t.ticketId) {
+                      fetch(`/api/support/tickets/${t.ticketId}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ userReadStatus: 0 }),
+                      }).catch(() => {});
+                    }
+                  });
+                }
+              }}
             >
               <MessageSquareText size={18} />
-              {ticketNotifications.length > 0 && <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a1f2c]"></span>}
+              {ticketNotifications.some((t) => t.unread) && !ticketsRead && <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a1f2c]"></span>}
             </button>
 
             {/* Message Dropdown */}
-            <div 
-              className={`absolute right-0 top-full mt-2 w-80 transition-all duration-200 ease-in-out z-50 ${
+            <div
+              className={`absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] transition-all duration-200 ease-in-out z-50 ${
                 isMessageOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
               }`}
             >
@@ -168,7 +185,7 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
                 <div className="max-h-80 overflow-y-auto">
                   {ticketNotifications.length > 0 ? (
                     ticketNotifications.map((notif) => (
-                      <div key={notif.id} className="px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer">
+                      <Link key={notif.id} href={`/dashboard/tickets/${notif.ticketId}`} onClick={() => setIsMessageOpen(false)} className="block px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                         <div className="flex items-start gap-3">
                           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
                             <MessageSquareText size={14} />
@@ -179,7 +196,7 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
                             <p className="text-[10px] text-slate-400 dark:text-white mt-1.5 font-medium">{new Date(notif.time).toLocaleString()}</p>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     ))
                   ) : (
                     <div className="px-4 py-8 text-center text-slate-500 dark:text-white text-[13px]">
@@ -195,18 +212,22 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
           </div>
 
           {/* Notification Section Wrapper */}
-          <div className="relative" ref={notificationRef}>
-            <button 
+          <div ref={notificationRef}>
+            <button
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f5f7] dark:bg-[#252b3b] text-slate-600 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none"
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+              onClick={() => {
+                const opening = !isNotificationOpen;
+                setIsNotificationOpen(opening);
+                if (opening) setOrdersRead(true);
+              }}
             >
               <Bell size={18} />
-              {orderNotifications.length > 0 && <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a1f2c]"></span>}
+              {orderNotifications.length > 0 && !ordersRead && <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a1f2c]"></span>}
             </button>
 
             {/* Notification Dropdown */}
-            <div 
-              className={`absolute right-0 top-full mt-2 w-80 transition-all duration-200 ease-in-out z-50 ${
+            <div
+              className={`absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] transition-all duration-200 ease-in-out z-50 ${
                 isNotificationOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
               }`}
             >
@@ -218,7 +239,7 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
                 <div className="max-h-80 overflow-y-auto">
                   {orderNotifications.length > 0 ? (
                     orderNotifications.map((notif) => (
-                      <div key={notif.id} className="px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer">
+                      <Link key={notif.id} href={`/dashboard/orders/${notif.id}`} onClick={() => setIsNotificationOpen(false)} className="block px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                         <div className="flex items-start gap-3">
                           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
                             <Bell size={14} />
@@ -229,7 +250,7 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
                             <p className="text-[10px] text-slate-400 dark:text-white mt-1.5 font-medium">{new Date(notif.time).toLocaleString()}</p>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     ))
                   ) : (
                     <div className="px-4 py-8 text-center text-slate-500 dark:text-white text-[13px]">
@@ -258,7 +279,7 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
                   className="h-10 w-10 rounded-full object-cover border border-slate-100 shrink-0"
                 />
               ) : (
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white shadow-inner">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white shadow-inner">
                   {userInitials}
                 </div>
               )}

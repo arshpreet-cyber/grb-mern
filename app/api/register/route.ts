@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { sendEmailNotification, buildRegistrationAdminEmail, buildWelcomeEmail, ADMIN_EMAIL } from "@/server/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,6 +29,18 @@ export async function POST(request: NextRequest) {
         role: "USER",
       },
     });
+
+    // EVT-0001: notify admin of new registration
+    if (ADMIN_EMAIL) {
+      const adminEmail = buildRegistrationAdminEmail({ name, email: normalizedEmail });
+      sendEmailNotification({ to: ADMIN_EMAIL, subject: adminEmail.subject, text: `New user registered: ${normalizedEmail}`, html: adminEmail.html })
+        .catch((err) => console.error("[register admin email]", err.message));
+    }
+
+    // EVT-0002: welcome email to the new user
+    const welcome = buildWelcomeEmail({ name });
+    sendEmailNotification({ to: normalizedEmail, subject: welcome.subject, text: `Welcome to Get Reviews Buzz, ${name}!`, html: welcome.html })
+      .catch((err) => console.error("[welcome email]", err.message));
 
     return NextResponse.json({
       message: "User created successfully",

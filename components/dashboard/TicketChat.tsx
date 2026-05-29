@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { Send, RefreshCw, ShieldCheck, User, AlertCircle, Loader2, Tag, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Send, ShieldCheck, User, AlertCircle, Loader2, Paperclip, X } from "lucide-react";
 
 export type TicketMessage = {
   id: number;
@@ -21,49 +21,19 @@ type Props = {
   isAdmin?: boolean;
 };
 
-function formatDateTime(dateStr: string) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) +
-    " at " + d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-}
-
 function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  if (d.toDateString() === today.toDateString()) return "Today";
-  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  return new Date(dateStr).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" }) +
+    " (" + new Date(dateStr).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }) + ")";
 }
 
-function groupByDate(messages: TicketMessage[]) {
-  const groups: { date: string; messages: TicketMessage[] }[] = [];
-  let currentDate = "";
-  for (const msg of messages) {
-    const date = formatDate(msg.createdAt);
-    if (date !== currentDate) {
-      currentDate = date;
-      groups.push({ date, messages: [msg] });
-    } else {
-      groups[groups.length - 1].messages.push(msg);
-    }
-  }
-  return groups;
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { color: string; icon: React.ReactNode }> = {
-    "Open":    { color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: <CheckCircle2 size={12} /> },
-    "Closed":  { color: "bg-gray-100 text-gray-500 border-gray-200", icon: <XCircle size={12} /> },
-    "Pending": { color: "bg-amber-100 text-amber-700 border-amber-200", icon: <Clock size={12} /> },
-  };
-  const s = map[status] ?? map["Pending"];
-  return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border ${s.color}`}>
-      {s.icon}{status}
-    </span>
-  );
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return "Today";
+  if (days === 1) return "1 day ago";
+  if (days < 30) return `${days} days ago`;
+  const months = Math.floor(days / 30);
+  return months === 1 ? "1 month ago" : `${months} months ago`;
 }
 
 export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }: Props) {
@@ -71,30 +41,24 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   const [ticket, setTicket] = useState<any>(null);
   const [messages, setMessages] = useState<TicketMessage[]>([]);
   const [draft, setDraft] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
-  const [connected, setConnected] = useState(false);
+  const [replyOpen, setReplyOpen] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const sessionUserId = session?.user?.id;
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + "px";
-    }
-  }, [draft]);
 
   const connectSocket = () => {
     if (typeof window === "undefined") return;
     if (socketRef.current) socketRef.current.disconnect();
     const socket = io({ transports: ["websocket", "polling"], reconnectionAttempts: 5 });
     socketRef.current = socket;
-    socket.on("connect", () => { setConnected(true); setError(null); socket.emit("join-ticket", ticketId); });
-    socket.on("connect_error", () => { setConnected(false); setError("Unable to connect to support server. Retrying..."); });
+    socket.on("connect", () => { setError(null); socket.emit("join-ticket", ticketId); });
+    socket.on("connect_error", () => { setError("Unable to connect to support server."); });
     socket.on("ticket-history", (h: TicketMessage[]) => setMessages(h));
     socket.on("ticket-message", (m: TicketMessage) => setMessages(prev => prev.some(p => p.id === m.id) ? prev : [...prev, m]));
     socket.on("ticket-error", ({ message }: { message: string }) => setError(message));
@@ -107,19 +71,24 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     return () => { socket?.disconnect(); socketRef.current = null; };
   }, [ticketId]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setAttachments(prev => [...prev, ...files].slice(0, 5));
+    e.target.value = "";
+  };
+
+  const removeAttachment = (idx: number) => setAttachments(prev => prev.filter((_, i) => i !== idx));
+
   const handleSend = async () => {
     if (!draft.trim() || !sessionUserId) return;
-    setSending(true);
-    setError(null);
+    setSending(true); setError(null);
     try {
-      if (!socketRef.current?.connected) throw new Error("Not connected. Please reconnect.");
+      if (!socketRef.current?.connected) throw new Error("Connection unavailable. Please refresh the page.");
       socketRef.current.emit("send-ticket-message", {
-        ticketId,
-        content: draft.trim(),
-        agentId: sessionUserId,
+        ticketId, content: draft.trim(), agentId: sessionUserId,
         direction: isAdmin ? "2" : "1",
       });
-      setDraft("");
+      setDraft(""); setAttachments([]); setReplyOpen(false);
     } catch (err: any) {
       setError(err.message || "Failed to send.");
     } finally {
@@ -131,179 +100,238 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     !(ticket?.query && m.content?.trim().toLowerCase() === ticket.query.trim().toLowerCase())
   );
 
-  const grouped = groupByDate(filteredMessages);
   const customerName = ticket?.user?.name || ticket?.userName || "Customer";
+  const status = ticket?.status ?? "Open";
+
+  const statusStyle: Record<string, string> = {
+    "Open": "bg-emerald-100 text-emerald-800 border-emerald-200",
+    "Answered": "bg-blue-100 text-blue-800 border-blue-200",
+    "Pending": "bg-amber-100 text-amber-800 border-amber-200",
+    "Closed": "bg-gray-100 text-gray-600 border-gray-200",
+  };
 
   return (
-    <div className="space-y-4">
-      {/* Ticket Header Card */}
-      <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 shrink-0">
-              <Tag size={18} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-bold font-mono text-gray-400 dark:text-slate-500">#{ticketId}</span>
-                {ticket?.status && <StatusBadge status={ticket.status} />}
-                {!connected && (
-                  <button
-                    onClick={connectSocket}
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-900/20 px-2.5 py-1 rounded-full border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition-colors"
-                  >
-                    <RefreshCw size={10} className="animate-spin" /> Reconnect
-                  </button>
-                )}
-              </div>
-              <h2 className="text-base font-bold text-gray-900 dark:text-white mt-1">
-                {ticket?.subject ?? ticketSubject ?? "Support Ticket"}
-              </h2>
-              {ticket?.createdAt && (
-                <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
-                  <Clock size={11} /> Opened {formatDateTime(ticket.createdAt)}
-                </p>
-              )}
-            </div>
+    <div className="flex flex-col lg:flex-row gap-5 items-start">
+
+      {/* ── LEFT SIDEBAR ── */}
+      <div className="w-full lg:w-65 shrink-0 space-y-4">
+
+        {/* Ticket Info */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+            <h3 className="text-[12px] font-bold uppercase tracking-widest text-gray-500">Ticket Information</h3>
           </div>
-          {ticket?.user && (
-            <div className="text-right text-xs text-gray-500 dark:text-slate-400">
-              <div className="font-semibold text-gray-700 dark:text-slate-300">{customerName}</div>
-              <div>{ticket.user.email}</div>
-            </div>
-          )}
+          <div className="divide-y divide-gray-100 text-[13px]">
+            <InfoRow label="Requestor">
+              <span className="font-medium text-gray-800">{customerName}</span>
+              <span className="ml-1.5 text-[10px] font-bold bg-gray-800 text-white px-1.5 py-0.5 rounded uppercase">Owner</span>
+            </InfoRow>
+            <InfoRow label="Ticket #">
+              <span className="font-mono text-blue-600 font-semibold">#{ticket?.ticketNumber ?? ticketId}</span>
+            </InfoRow>
+            <InfoRow label="Submitted">
+              <span className="text-gray-600">{ticket?.createdAt ? formatDate(ticket.createdAt) : "—"}</span>
+            </InfoRow>
+            <InfoRow label="Last Updated">
+              <span className="text-gray-600">{ticket?.updatedAt ? timeAgo(ticket.updatedAt) : ticket?.createdAt ? timeAgo(ticket.createdAt) : "—"}</span>
+            </InfoRow>
+            <InfoRow label="Status">
+              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold border uppercase tracking-wide ${statusStyle[status] ?? statusStyle["Pending"]}`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
+                {status}
+              </span>
+            </InfoRow>
+          </div>
         </div>
+
+        {/* Actions */}
+        <div className="space-y-2">
+          <button
+            onClick={() => setReplyOpen(o => !o)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] text-black text-[13px] font-bold transition shadow-sm"
+          >
+            <Send size={13} /> Reply
+          </button>
+        </div>
+
       </div>
 
-      {/* Thread */}
-      <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="border-b border-gray-100 dark:border-slate-800 px-5 py-3 bg-gray-50 dark:bg-slate-900/50">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Conversation Thread</h3>
-        </div>
+      {/* ── MAIN THREAD ── */}
+      <div className="flex-1 min-w-0 space-y-3">
 
-        <div className="divide-y divide-gray-50 dark:divide-slate-800/60 max-h-130 overflow-y-auto">
-          {/* Original query */}
-          {ticket?.query && (
-            <div className="px-5 py-5">
-              <div className="flex items-start gap-3 mb-2">
-                <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center shrink-0">
-                  <User size={14} className="text-gray-500 dark:text-slate-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="font-bold text-sm text-gray-900 dark:text-white">{customerName}</span>
-                    <span className="text-[10px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 px-2 py-0.5 rounded uppercase tracking-wide">Customer</span>
-                    <span className="text-xs text-gray-400">{formatDateTime(ticket.createdAt)}</span>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
-                    {ticket.query}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Message groups */}
-          {grouped.map(({ date, messages: dayMessages }) => (
-            <div key={date}>
-              {/* Date separator */}
-              <div className="flex items-center gap-3 px-5 py-2 bg-gray-50/50 dark:bg-slate-900/30">
-                <div className="flex-1 h-px bg-gray-100 dark:bg-slate-800" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-slate-500 shrink-0">{date}</span>
-                <div className="flex-1 h-px bg-gray-100 dark:bg-slate-800" />
-              </div>
-
-              {dayMessages.map((msg) => {
-                const isAgent = String(msg.direction) === "2";
-                return (
-                  <div key={msg.id} className={`px-5 py-4 ${isAgent ? "bg-violet-50/30 dark:bg-violet-900/5" : ""}`}>
-                    <div className="flex items-start gap-3">
-                      <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${
-                        isAgent
-                          ? "bg-violet-100 dark:bg-violet-900/40 text-violet-600"
-                          : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400"
-                      }`}>
-                        {isAgent ? <ShieldCheck size={14} /> : <User size={14} />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="font-bold text-sm text-gray-900 dark:text-white">
-                            {isAgent ? "Support Agent" : customerName}
-                          </span>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide ${
-                            isAgent
-                              ? "bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400"
-                              : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400"
-                          }`}>
-                            {isAgent ? "Staff" : "Customer"}
-                          </span>
-                          <span className="text-xs text-gray-400">{formatDateTime(msg.createdAt)}</span>
-                        </div>
-                        <div className={`rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap ${
-                          isAgent
-                            ? "bg-white dark:bg-[#1c1f2e] text-gray-700 dark:text-slate-300 border border-violet-100 dark:border-violet-900/30"
-                            : "bg-gray-50 dark:bg-slate-800/50 text-gray-700 dark:text-slate-300"
-                        }`}>
-                          {msg.content}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-
-          {/* Empty state */}
-          {!ticket?.query && filteredMessages.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 gap-2">
-              <div className="h-12 w-12 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
-                <Tag size={20} className="text-gray-400" />
-              </div>
-              <p className="text-sm font-semibold text-gray-400">No messages yet</p>
-            </div>
-          )}
-
-          <div ref={bottomRef} />
+        {/* Ticket Title */}
+        <div className="bg-white rounded-xl border border-gray-200 px-5 py-4 shadow-sm">
+          <h2 className="text-[16px] font-bold text-gray-900">
+            {ticket?.subject ?? ticketSubject ?? "Support Ticket"}
+          </h2>
+          <p className="text-[12px] text-gray-400 mt-0.5 font-mono">#{ticket?.ticketNumber ?? ticketId}</p>
         </div>
 
         {/* Reply Box */}
-        <div className="border-t border-gray-100 dark:border-slate-800 p-5 bg-gray-50/50 dark:bg-slate-900/30">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-3">
-            {isAdmin ? "Reply to Customer" : "Add Reply"}
-          </h4>
-
-          {error && (
-            <div className="mb-3 flex items-center gap-2 rounded-xl bg-rose-50 dark:bg-rose-900/20 px-4 py-2.5 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40">
-              <AlertCircle size={13} className="shrink-0" />
-              {error}
+        {replyOpen && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+              <span className="text-[13px] font-bold text-gray-700 flex items-center gap-2"><Send size={13} /> {isAdmin ? "Reply to Customer" : "Add Reply"}</span>
+              <button onClick={() => setReplyOpen(false)} className="text-gray-400 hover:text-gray-600 transition"><X size={15} /></button>
             </div>
-          )}
 
-          <textarea
-            ref={textareaRef}
-            value={draft}
-            onChange={e => setDraft(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter" && e.ctrlKey) { e.preventDefault(); handleSend(); } }}
-            placeholder={isAdmin ? "Type your response to the customer..." : "Type your reply..."}
-            rows={4}
-            className="w-full resize-none rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-[#1c1f2e] text-sm text-gray-900 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-600 px-4 py-3 outline-none focus:border-violet-400 dark:focus:border-violet-500 transition-colors min-h-25 max-h-50"
+            {error && (
+              <div className="mx-4 mt-3 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-[12px] text-red-600 border border-red-100">
+                <AlertCircle size={13} /> {error}
+              </div>
+            )}
+
+            <div className="p-4">
+              <textarea
+                value={draft}
+                onChange={e => setDraft(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter" && e.ctrlKey) { e.preventDefault(); handleSend(); } }}
+                placeholder="Type your message here..."
+                rows={5}
+                className="w-full resize-none rounded-lg border border-gray-200 text-[13px] text-gray-800 placeholder:text-gray-400 px-3 py-2.5 outline-none focus:border-[#FFCE2E] focus:ring-2 focus:ring-[#FFCE2E]/20 transition"
+              />
+
+              {/* Attachment preview */}
+              {attachments.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {attachments.map((file, i) => (
+                    <div key={i} className="flex items-center gap-1.5 bg-gray-100 rounded-lg px-2.5 py-1.5 text-[12px] text-gray-700">
+                      <Paperclip size={11} className="text-gray-400" />
+                      <span className="max-w-35 truncate">{file.name}</span>
+                      <button onClick={() => removeAttachment(i)} className="text-gray-400 hover:text-red-500 transition ml-0.5"><X size={11} /></button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between mt-3 gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-[12px] text-gray-600 hover:bg-gray-50 transition"
+                  >
+                    <Paperclip size={13} /> Attach File
+                  </button>
+                  <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileChange} />
+                  <span className="text-[11px] text-gray-400 hidden sm:inline">Max 5 files</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-gray-400 hidden sm:inline">
+                    <kbd className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] text-gray-500">Ctrl+Enter</kbd> to send
+                  </span>
+                  <button
+                    onClick={handleSend}
+                    disabled={!draft.trim() || sending}
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] text-black text-[13px] font-bold transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
+                    {sending ? "Sending..." : "Send Reply"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Original Query */}
+        {ticket?.query && (
+          <MessageCard
+            name={customerName}
+            role="Owner"
+            isStaff={false}
+            time={ticket.createdAt}
+            content={ticket.query}
+            media={ticket.media ?? null}
           />
+        )}
 
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-[11px] text-gray-400 dark:text-slate-600">
-              Press <kbd className="rounded bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-gray-500">Ctrl+Enter</kbd> to send
-            </p>
-            <button
-              onClick={handleSend}
-              disabled={!draft.trim() || !connected || sending}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {sending ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
-              {sending ? "Sending..." : "Send Reply"}
-            </button>
+        {/* Messages */}
+        {filteredMessages.map((msg) => {
+          const isAgent = String(msg.direction) === "2";
+          return (
+            <MessageCard
+              key={msg.id}
+              name={isAgent ? "Support Team" : customerName}
+              role={isAgent ? "Operator" : "Owner"}
+              isStaff={isAgent}
+              time={msg.createdAt}
+              content={msg.content ?? ""}
+              media={msg.media}
+            />
+          );
+        })}
+
+        {!ticket?.query && filteredMessages.length === 0 && (
+          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
+            <ShieldCheck size={28} className="mx-auto mb-3 opacity-30" />
+            <p className="text-[14px] font-semibold">No messages yet</p>
+            <p className="text-[12px] mt-1">Click Reply to start the conversation.</p>
+          </div>
+        )}
+
+        <div ref={bottomRef} />
+      </div>
+    </div>
+  );
+}
+
+function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="px-4 py-2.5">
+      <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">{label}</div>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+function MessageCard({ name, role, isStaff, time, content, media }: {
+  name: string; role: string; isStaff: boolean; time: string; content: string; media?: string | null;
+}) {
+  return (
+    <div className={`bg-white rounded-xl border overflow-hidden shadow-sm ${isStaff ? "border-blue-200 border-l-4 border-l-blue-500" : "border-gray-200"}`}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center gap-2.5">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isStaff ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500"}`}>
+            {isStaff ? <ShieldCheck size={14} /> : <User size={14} />}
+          </div>
+          <div>
+            <span className="text-[13px] font-bold text-gray-900">{name}</span>
+            <span className={`ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border ${isStaff ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-100 text-gray-500 border-gray-200"}`}>
+              {role}
+            </span>
           </div>
         </div>
+        <span className="text-[12px] text-gray-400">{formatDate(time)}</span>
+      </div>
+
+      {/* Body */}
+      <div className="px-5 py-4">
+        <p className="text-[14px] text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>
+
+        {/* Media attachments */}
+        {media && (() => {
+          let urls: string[] = [];
+          try { urls = JSON.parse(media); } catch { urls = [media]; }
+          return (
+            <div className="mt-3 pt-3 border-t border-gray-100 flex flex-wrap gap-3">
+              {urls.map((url, i) => {
+                const isImage = /\.(png|jpe?g|gif|webp|svg)$/i.test(url);
+                return isImage ? (
+                  <a key={i} href={url} target="_blank" rel="noreferrer">
+                    <img src={url} alt={`attachment-${i+1}`} className="h-24 w-auto rounded-lg border border-gray-200 object-cover hover:opacity-90 transition" />
+                  </a>
+                ) : (
+                  <a key={i} href={url} target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-[12px] text-blue-600 hover:underline bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+                    <Paperclip size={12} /> {url.split("/").pop() ?? `File ${i + 1}`}
+                  </a>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

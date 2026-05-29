@@ -1,21 +1,41 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { usePathname } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminNavbar from "@/components/admin/AdminNavbar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Open by default on desktop, closed on mobile
+  useEffect(() => {
+    if (window.innerWidth >= 1024) setIsSidebarOpen(true);
+  }, []);
+
+  // Auto-close sidebar on mobile when navigating
+  useEffect(() => {
+    if (window.innerWidth < 1024) setIsSidebarOpen(false);
+  }, [pathname]);
 
   return (
     <div className="flex min-h-screen bg-[#f5f6fa] dark:bg-[#0f1117]">
-      <Suspense fallback={<div className="w-64 bg-[#0f1117]" />}>
-        <AdminSidebar />
+      {/* Mobile backdrop */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      <Suspense fallback={<div className="hidden lg:block w-64 shrink-0 bg-[#fafafa] dark:bg-[#0f1117]" />}>
+        <AdminSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
       </Suspense>
-      
+
       <div className="flex flex-1 flex-col min-w-0">
-        <AdminNavbar onToggle={!isSidebarOpen ? () => setIsSidebarOpen(true) : undefined} />
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
+        <AdminNavbar onToggle={() => setIsSidebarOpen((v) => !v)} />
+        <main className="flex-1 p-4 md:p-6 overflow-auto">{children}</main>
       </div>
     </div>
   );

@@ -36,11 +36,10 @@ export default function AdminTicketThreadPage() {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ readStatus: 2 }),
-          }).catch(console.error);
+          }).catch(() => {});
         }
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setError("Unable to load ticket details.");
       })
       .finally(() => setLoading(false));

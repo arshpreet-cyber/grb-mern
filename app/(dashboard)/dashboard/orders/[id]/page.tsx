@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { ArrowLeft, ClipboardList, FileText } from "lucide-react";
 
 type OrderDetail = {
@@ -11,7 +10,6 @@ type OrderDetail = {
   itemName: string | null;
   quantity: number | null;
   amount: number | null;
-  type: string | null;
   profileUrl: string | null;
   image: string | null;
 };
@@ -19,7 +17,6 @@ type OrderDetail = {
 type Order = {
   id: string;
   orderNumber: string | null;
-  userId: string | null;
   email: string | null;
   firstName: string | null;
   lastName: string | null;
@@ -36,7 +33,7 @@ type Order = {
   payUrl: string | null;
   detailsFilled: boolean;
   orderDetails?: OrderDetail[];
-  user?: { name: string | null; email: string; id?: string } | null;
+  user?: { name: string | null; email: string } | null;
 };
 
 type ItemNote = {
@@ -53,11 +50,8 @@ const STATUS_LABELS: Record<string, string> = {
 const PAYMENT_LABELS: Record<string, string> = {
   "1": "Unpaid", "2": "Paid", "3": "Unconfirmed", "4": "Cancelled",
 };
-const PM_LABELS: Record<string, string> = {
-  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Card",
-};
 
-export default function AdminOrderDetailPage() {
+export default function UserOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
@@ -65,58 +59,36 @@ export default function AdminOrderDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    
     fetch(`/api/orders/${id}`)
       .then(async (r) => {
-        if (!r.ok) throw new Error("Fetch failed");
+        if (!r.ok) throw new Error();
         return r.json();
       })
-      .then((d) => { 
-        if (d && !d.error) {
-          setOrder(d);
-        } else {
-          setOrder(null);
-        }
-        setLoading(false); 
-      })
-      .catch(() => {
-        setOrder(null);
-        setLoading(false);
-      });
+      .then((d) => { setOrder(d?.error ? null : d); setLoading(false); })
+      .catch(() => { setOrder(null); setLoading(false); });
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24 text-gray-400">Loading order...</div>
-    );
+    return <div className="flex items-center justify-center py-24 text-gray-400">Loading order...</div>;
   }
-
-  // Defensively match any structure variants or error keys passed by API middleware
-  if (!order || (order as any).error) {
-    return (
-      <div className="flex items-center justify-center py-24 text-gray-400">Order not found.</div>
-    );
+  if (!order) {
+    return <div className="flex items-center justify-center py-24 text-gray-400">Order not found.</div>;
   }
 
   const customerName = order.firstName
     ? `${order.firstName} ${order.lastName ?? ""}`.trim()
     : (order.user?.name ?? "—");
-
-  const customerEmail = order.email ?? order.user?.email ?? "—";
-  const customerId = order.userId ?? order.user?.id ?? null;
   const sym = order.symbol ?? "$";
-
   const itemsList = Array.isArray(order.orderDetails) ? order.orderDetails : [];
   const subtotal = itemsList.reduce((s, d) => s + (d.amount ?? 0) * (d.quantity ?? 0), 0);
 
-  // Parse structured input details (submitted by customer via order details form)
   let itemNotes: ItemNote[] | null = null;
   if (order.notes) {
     try {
       const parsed = JSON.parse(order.notes);
       if (Array.isArray(parsed)) itemNotes = parsed as ItemNote[];
     } catch {
-      // plain text notes — shown as-is
+      // plain text notes — shown as-is below
     }
   }
 
@@ -138,9 +110,13 @@ export default function AdminOrderDetailPage() {
             Order {order.orderNumber ?? order.id}
           </h1>
           <p className="text-xs text-gray-500">
-            {order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
+            {order.createdAt
+              ? new Date(order.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+              : "—"}
             {" · "}
-            {order.createdAt ? new Date(order.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "—"}
+            {order.createdAt
+              ? new Date(order.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+              : "—"}
           </p>
         </div>
         <div className="ml-auto flex gap-2 flex-wrap">
@@ -162,29 +138,13 @@ export default function AdminOrderDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Customer Info */}
+        {/* Order Info */}
         <div className="md:col-span-1 bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
-          <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300 mb-4 uppercase tracking-wide">Customer</h2>
+          <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300 mb-4 uppercase tracking-wide">Order Info</h2>
           <dl className="space-y-2 text-sm">
             <div>
               <dt className="text-[11px] text-gray-400 uppercase tracking-wide">Name</dt>
-              <dd className="font-semibold">
-                {customerId ? (
-                  <Link href={`/admin/users/${customerId}`} className="text-violet-600 dark:text-violet-400 hover:underline">
-                    {customerName}
-                  </Link>
-                ) : (
-                  <span className="text-gray-900 dark:text-white">{customerName}</span>
-                )}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[11px] text-gray-400 uppercase tracking-wide">Email</dt>
-              <dd className="text-gray-700 dark:text-slate-300 break-all">{customerEmail}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] text-gray-400 uppercase tracking-wide">Payment Method</dt>
-              <dd className="font-medium text-gray-700 dark:text-slate-300">{PM_LABELS[order.paymentMethod ?? ""] ?? "—"}</dd>
+              <dd className="font-semibold text-gray-900 dark:text-white">{customerName}</dd>
             </div>
             {order.paymentId && (
               <div>
@@ -200,13 +160,15 @@ export default function AdminOrderDetailPage() {
                 </dd>
               </div>
             )}
-            {order.payUrl && (
+            {order.paymentStatus !== "2" && order.payUrl && (
               <div>
-                <dt className="text-[11px] text-gray-400 uppercase tracking-wide">Payment Link</dt>
+                <dt className="text-[11px] text-gray-400 uppercase tracking-wide mb-1">Payment</dt>
                 <dd>
-                  <a href={order.payUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-violet-600 text-xs underline break-all">
-                    Open payment page
+                  <a
+                    href={order.payUrl}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] text-black text-[12px] font-bold transition"
+                  >
+                    Pay Now →
                   </a>
                 </dd>
               </div>
@@ -216,6 +178,16 @@ export default function AdminOrderDetailPage() {
             <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
               <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1">Notes</p>
               <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-wrap">{order.notes}</p>
+            </div>
+          )}
+          {order.paymentStatus === "2" && !order.detailsFilled && (
+            <div className="mt-4">
+              <a
+                href={`/order/${order.id}/details`}
+                className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#1E3A8A] hover:bg-blue-900 text-white text-[12px] font-bold transition"
+              >
+                Input Details →
+              </a>
             </div>
           )}
         </div>
@@ -236,7 +208,7 @@ export default function AdminOrderDetailPage() {
               </thead>
               <tbody>
                 {itemsList.length === 0 ? (
-                  <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No items available for this order</td></tr>
+                  <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No items found.</td></tr>
                 ) : itemsList.map(d => (
                   <tr key={d.id} className="border-b border-gray-50 dark:border-slate-800">
                     <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
@@ -259,8 +231,6 @@ export default function AdminOrderDetailPage() {
               </tbody>
             </table>
           </div>
-
-          {/* Totals */}
           <div className="p-5 border-t border-gray-100 dark:border-slate-800 flex justify-end">
             <dl className="space-y-1 text-sm min-w-[200px]">
               <div className="flex justify-between">
@@ -268,13 +238,13 @@ export default function AdminOrderDetailPage() {
                 <dd className="font-semibold text-gray-900 dark:text-white">{sym}{subtotal.toFixed(2)}</dd>
               </div>
               <div className="flex justify-between border-t border-gray-100 dark:border-slate-800 pt-1 mt-1">
-                <dt className="font-bold text-gray-700 dark:text-slate-300">Amount</dt>
+                <dt className="font-bold text-gray-700 dark:text-slate-300">Total</dt>
                 <dd className="font-bold text-gray-900 dark:text-white">
                   {order.amount != null ? `${sym}${Number(order.amount).toFixed(2)}` : "—"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-gray-500">Payment Status</dt>
+                <dt className="text-gray-500">Payment</dt>
                 <dd className={`font-semibold ${order.paymentStatus === "2" ? "text-green-600" : "text-red-500"}`}>
                   {PAYMENT_LABELS[order.paymentStatus ?? "1"] ?? "—"}
                 </dd>
@@ -284,13 +254,13 @@ export default function AdminOrderDetailPage() {
         </div>
       </div>
 
-      {/* Input Details (submitted by customer) */}
+      {/* Input Details submitted by customer */}
       {itemNotes && itemNotes.length > 0 && (
         <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-100 dark:border-slate-800 flex items-center gap-3">
             <FileText size={18} className="text-violet-500" />
             <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide">
-              Customer Input Details
+              Your Submitted Details
             </h2>
             <span className="ml-auto text-[10px] font-bold bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full">
               Submitted
@@ -303,7 +273,6 @@ export default function AdminOrderDetailPage() {
                   {note.platform} Reviews
                 </p>
 
-                {/* Submission type */}
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] text-gray-400 uppercase tracking-wide">Submission Type</span>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded border ${
@@ -315,7 +284,6 @@ export default function AdminOrderDetailPage() {
                   </span>
                 </div>
 
-                {/* Business details */}
                 {note.businessDetails && (
                   <div>
                     <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1.5">Business Details</p>
@@ -325,7 +293,6 @@ export default function AdminOrderDetailPage() {
                   </div>
                 )}
 
-                {/* Additional instructions */}
                 {note.additionalInstructions && (
                   <div>
                     <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1.5">Additional Instructions</p>
@@ -335,7 +302,6 @@ export default function AdminOrderDetailPage() {
                   </div>
                 )}
 
-                {/* Profile URL from orderDetails */}
                 {(() => {
                   const detail = itemsList.find((d) => d.id === note.itemId);
                   return detail?.profileUrl ? (

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { updatePageMeta, setTitle, setSlug } from '@/lib/redux/features/pageEditorSlice';
-import { X, Globe, Search, Code, FileText, Image as ImageIcon, Settings } from 'lucide-react';
+import { X, Search, Code, Image as ImageIcon, Settings } from 'lucide-react';
 
 interface Props { onClose: () => void; }
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Globe, LayoutDashboard, RefreshCw, FileText, PanelTopDashed, Menu, Code, FileEdit, Blocks, Handshake, Package, Upload, ShoppingBag, CircleDollarSign, Tag, ReceiptText, UserPlus, Users, Clipboard, Settings, User, BarChart, Bell, Image as ImageIcon, PenTool, HelpCircle, Headphones, MessageSquare, History, LogOut, ChevronsLeft, ChevronDown,
+import { Globe, LayoutDashboard, RefreshCw, FileText, PanelTopDashed, Menu, Code, FileEdit, Blocks, Handshake, Package, Upload, ShoppingBag, CircleDollarSign, Tag, ReceiptText, UserPlus, Users, Clipboard, Settings, User, BarChart, Bell, Image as ImageIcon, PenTool, HelpCircle, Headphones, MessageSquare, History, LogOut, ChevronsLeft, ChevronDown, ArrowLeftRight,
 } from "lucide-react";
 
 type MenuChild = { label: string; href: string };
@@ -95,6 +95,7 @@ const menuSections: MenuSection[] = [
       { label: "Blogs", href: "/admin/blogs", icon: PenTool },
       // { label: "FAQs", href: "/admin/faqs", icon: HelpCircle },
       { label: "Tickets", href: "/admin/tickets", icon: Headphones },
+      { label: "Redirections", href: "/admin/redirections", icon: ArrowLeftRight },
       // { label: "Testimonials", href: "/admin/testimonials", icon: MessageSquare, badge: "7" },
     ],
   },
@@ -108,10 +109,11 @@ const menuSections: MenuSection[] = [
 ];
 
 interface AdminSidebarProps {
+  isOpen?: boolean;
   onToggle?: () => void;
 }
 
-export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
+export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
@@ -156,7 +158,7 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
   }, [currentUrl]);
 
   return (
-    <aside className="w-64 min-h-screen bg-[#fafafa] dark:bg-[#0f1117] border-r border-gray-200 dark:border-slate-800 flex flex-col shrink-0">
+    <aside className={`fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 w-64 h-screen overflow-y-auto flex flex-col shrink-0 bg-[#fafafa] dark:bg-[#0f1117] border-r border-gray-200 dark:border-slate-800 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
       
       {/* Logo & Toggle Button Container */}
       <div className="px-5 py-6 flex items-center justify-between">
@@ -275,7 +277,7 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
       {/* User Footer */}
       <div className="px-4 py-4 border-t border-gray-200 dark:border-slate-800">
         <div className="flex items-center gap-3 rounded-md bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 shadow-sm px-3 py-3 mb-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-xs font-bold text-white shadow-inner">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-yellow-400 to-yellow-500 text-xs font-bold text-white shadow-inner">
             {initials}
           </div>
           <div className="min-w-0 flex-1">
@@ -298,6 +300,3 @@ export default function AdminSidebar({ onToggle }: AdminSidebarProps) {
     </aside>
   );
 }
-
-
-//tester

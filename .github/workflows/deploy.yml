@@ -11,9 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
 
-      - name: Set git identity to org account
+      - name: Set git identity to development account
         run: |
           git config user.email "development@adaired.com"
           git config user.name "Adaired-Digital-Media"

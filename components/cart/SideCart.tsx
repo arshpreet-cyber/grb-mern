@@ -3,7 +3,7 @@
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { useMounted } from "@/hooks/useMounted";
-import { X, Trash2, ShoppingCart, RefreshCcw, Info } from "lucide-react";
+import { X, ShoppingCart, RefreshCcw } from "lucide-react";
 
 export default function SideCart() {
   const { items, removeItem, updateQty, clearCart, total, count, isOpen, closeCart, toggleCart } = useCart();
@@ -34,8 +34,8 @@ export default function SideCart() {
       </button>
 
       {/* Side Drawer */}
-      <div 
-        className={`fixed top-1 right-1 bottom-1 z-[1220] flex w-full max-w-[420px] rounded-3xl flex-col bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.15)] transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-hidden ${
+      <div
+        className={`fixed top-1 right-1 bottom-1 z-[1220] flex w-[calc(100vw-8px)] sm:w-full max-w-[420px] rounded-3xl flex-col bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.15)] overflow-hidden transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-[calc(100%+32px)]"
         }`}
       >

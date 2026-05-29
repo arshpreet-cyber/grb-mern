@@ -118,6 +118,7 @@ model Ticket {
   phone          String?         @db.VarChar(255)
   subject        String?
   query          String?
+  media          String?
   title          String          @default("")
   ticketId       String          @unique @default(cuid()) @db.VarChar(255) @map("ticket_id")
   byAdmin        Int?            @default(1) @map("by_admin")
@@ -332,4 +333,13 @@ model Blog {
   deleted_at       DateTime?
 }
 
-
+model Redirect {
+  id        String   @id @default(cuid())
+  fromPath  String   @unique
+  toPath    String
+  type      Int      @default(301)
+  active    Boolean  @default(true)
+  hits      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

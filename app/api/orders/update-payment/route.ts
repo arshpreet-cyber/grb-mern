@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { sendEmailNotification, buildOrderPaidEmail } from "@/server/email";
+import { sendEmailNotification, buildOrderPaidEmail, buildSubscriptionAdminEmail, ADMIN_EMAIL } from "@/server/email";
 
 export async function POST(req: NextRequest) {
   const { api_token, order_id, payment_id, subscription_id } = await req.json();
@@ -47,6 +47,13 @@ export async function POST(req: NextRequest) {
       text: `Payment confirmed for order #${order.orderNumber}. Total: $${order.amount}`,
       html: emailContent.html,
     }).catch((err) => console.error("[Payment Email]", err.message));
+  }
+
+  // EVT-0005: notify admin if this is a subscription payment
+  if (subscription_id && order.email && ADMIN_EMAIL) {
+    const subEmail = buildSubscriptionAdminEmail({ email: order.email, orderNumber: order.orderNumber ?? order_id });
+    sendEmailNotification({ to: ADMIN_EMAIL, subject: subEmail.subject, text: `New subscription: ${order.email}`, html: subEmail.html })
+      .catch((err) => console.error("[subscription email]", err.message));
   }
 
   const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL}/order/${order_id}/details`;

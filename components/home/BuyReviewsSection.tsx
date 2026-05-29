@@ -2,7 +2,6 @@
 
 import { useCart } from "@/context/CartContext";
 import { useState, useEffect } from "react"; 
-import { Search } from "lucide-react"; 
 import Wrapper from "@/components/ui/Wrapper";
 import type { Product } from "@/lib/constants/products";
 import { useRouter } from "next/navigation";
@@ -214,7 +213,7 @@ const designRule =
                 >
                   <div className="warranty-price flex items-baseline gap-[1px] mb-[2px] max-[359px]:mb-0 max-[359px]:mr-[8px]">
                     <span className="amount text-[14px] font-semibold text-[#1a1a1a] max-[359px]:text-[18px]">${pkg.price}</span>
-                    <span className="Review text-[8px] text-black/70 ml-[1px]">/ per Review</span>
+                    <span className="Review text-[8px] text-black/70 ml-[1px] whitespace-nowrap">/ per Review</span>
                   </div>
                   <div className="warranty-min text-[10px] text-black/50">Min. 5 reviews</div>
                   <div 
@@ -225,10 +224,12 @@ const designRule =
                     <span>{pkg.label}</span> &nbsp;
                     <span className="tooltip-question relative inline-flex items-center justify-center w-[10px] h-[10px] border border-black text-black rounded-full cursor-pointer group" onClick={(e) => e.stopPropagation()}>
                       ?
-                      <span className={`warranty-tooltip-box absolute bottom-[100%] left-1/2 -translate-x-1/2 mb-[8px] p-[12px] text-justify w-max max-w-[280px] bg-[#111] text-white text-[10px] font-normal leading-[1.5] rounded-[10px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:visible transition-all z-[99999] break-words whitespace-normal max-[600px]:left-1/2 max-[600px]:-translate-x-1/2 max-[600px]:w-[220px] max-[600px]:max-w-[calc(100vw-20px)]
+                      <span className={`warranty-tooltip-box absolute bottom-[100%] left-1/2 -translate-x-1/2 pb-[8px] w-max max-w-[280px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all z-[99999] max-[600px]:left-1/2 max-[600px]:-translate-x-1/2 max-[600px]:w-[220px] max-[600px]:max-w-[calc(100vw-20px)]
                         ${index === 2 ? 'max-[600px]:left-auto max-[600px]:right-0 max-[600px]:transform-none' : ''}
                         ${index === 0 ? 'max-[600px]:left-0 max-[600px]:transform-none' : ''}`}>
-                        If any reviews drop during the warranty period, we will replace them once, subject to a one-time <a href="/terms-conditions/" target="_blank" className="text-[#ffce0c]">replacement policy</a>.
+                        <span className="block p-[12px] text-justify bg-[#111] text-white text-[10px] font-normal leading-[1.5] rounded-[10px] break-words whitespace-normal">
+                          If any reviews drop during the warranty period, we will replace them once, subject to a one-time <a href="/terms-conditions/" target="_blank" className="text-[#ffce0c]">replacement policy</a>.
+                        </span>
                       </span>
                     </span>
                   </div>
@@ -326,7 +327,7 @@ const designRule =
           <div className="card-price-val text-[14px] font-semibold text-black flex items-baseline gap-[2px]">
             <span className="currency text-[40px] font-semibold text-black">$</span>
             <span className="amount text-[40px] font-semibold text-black">{Math.floor(finalPrice)}</span>
-            <span className="per-Review text-[13px] font-normal text-[#555] ml-[2px]">/ per Review</span>
+            <span className="per-Review text-[13px] font-normal text-[#555] ml-[2px] whitespace-nowrap">/ per Review</span>
           </div>
           <p className="card-min-qty text-[13px] text-[#888] mb-[25px] mt-0">
             Min. {product.minimumQuantity} Reviews
@@ -405,7 +406,7 @@ export function BuyReviewsSection() {
 
         setProducts(sortedProducts);
       } catch (error: any) {
-        console.error("Error fetching products:", error);
+
       } finally {
         setIsLoading(false);
       }
