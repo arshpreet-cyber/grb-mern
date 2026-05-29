@@ -57,8 +57,7 @@ export default function EditBlog({ params }: { params: Promise<{ id: string }> }
           alert(data.error || "Blog not found");
           router.push("/admin/blogs");
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
         alert("Error fetching blog");
       } finally {
         setFetching(false);

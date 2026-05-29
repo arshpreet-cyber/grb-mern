@@ -30,7 +30,7 @@ export default function AccountPage() {
     fetch("/api/get-profile")
       .then((r) => r.json())
       .then((data) => setProfile({ name: data.name ?? "", email: data.email ?? "", phone: data.phone ?? "" }))
-      .catch(console.error)
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

@@ -36,7 +36,6 @@ export default function DemoDashboard() {
         }
       })
       .catch((error) => {
-        console.error("Error fetching plans:", error);
         // Fallback mock data matching the schema
         setActiveSubscriptions([
           { id: "1", orderNo: "#ORD-1771509", paymentId: "PAY-987654321", amount: "$100.00", orderDate: "27-03-2026", renewalDate: "30-03-2026", duration: "30 Days" },

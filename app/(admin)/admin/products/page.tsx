@@ -50,7 +50,6 @@ export default function AdminProductsPage() {
       const data = await res.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Dashboard failed to grab catalog:", err);
     } finally {
       setLoading(false);
     }
@@ -86,7 +85,6 @@ export default function AdminProductsPage() {
       const data = await res.json();
       if (data.url) setForm(f => ({ ...f, media: data.url }));
     } catch (err) {
-      console.error("Image upload pipeline crash:", err);
     } finally {
       setUploading(false);
     }
@@ -111,7 +109,6 @@ export default function AdminProductsPage() {
       setShowModal(false);
       fetchProducts();
     } catch (err) {
-      console.error("Form transmission fault:", err);
     } finally {
       setSaving(false);
     }

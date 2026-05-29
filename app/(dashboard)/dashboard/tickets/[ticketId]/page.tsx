@@ -28,8 +28,7 @@ export default function DashboardTicketThreadPage() {
         return response.json();
       })
       .then((data) => setTicket(data))
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setError("Unable to load ticket details.");
       })
       .finally(() => setLoading(false));

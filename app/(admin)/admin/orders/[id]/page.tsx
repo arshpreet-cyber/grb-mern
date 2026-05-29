@@ -79,8 +79,7 @@ export default function AdminOrderDetailPage() {
         }
         setLoading(false); 
       })
-      .catch((err) => {
-        console.error("Error fetching order detail safely:", err);
+      .catch(() => {
         setOrder(null);
         setLoading(false);
       });

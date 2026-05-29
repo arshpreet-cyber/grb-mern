@@ -51,11 +51,9 @@ export async function PUT(
     }
 
     if (publish) {
-      console.log(`[API] PUBLISHING LIVE: ${slug}`);
       updateData.sections = Array.isArray(sections) ? sections : [];
       updateData.status = 'Published';
     } else {
-      console.log(`[API] SAVING DRAFT: ${slug}`);
     }
 
     const updatedPage = await prisma.page.upsert({
