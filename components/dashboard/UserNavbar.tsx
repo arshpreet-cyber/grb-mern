@@ -100,16 +100,14 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
       <div className="flex items-center justify-between gap-4">
         
         {/* Toggle + Pill-shaped Search */}
-        <div className="flex items-center gap-3 w-full max-w-sm">
-          {onToggle && (
-            <button
-              onClick={onToggle}
-              className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-white transition shrink-0"
-              aria-label="Open Sidebar"
-            >
-              <ChevronsRight size={20} />
-            </button>
-          )}
+        <div className="flex items-center gap-3 w-full">
+          <button
+            onClick={onToggle}
+            className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-white transition shrink-0"
+            aria-label="Toggle Sidebar"
+          >
+            <ChevronsRight size={20} />
+          </button>
           
           <div className="relative w-full">
             <Search 

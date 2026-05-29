@@ -35,7 +35,7 @@ export default function SideCart() {
 
       {/* Side Drawer */}
       <div
-        className={`fixed top-1 right-1 bottom-1 z-[1220] flex w-full max-w-[420px] rounded-3xl flex-col bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.15)] overflow-hidden transition-transform duration-300 ease-out ${
+        className={`fixed top-1 right-1 bottom-1 z-[1220] flex w-[calc(100vw-8px)] sm:w-full max-w-[420px] rounded-3xl flex-col bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.15)] overflow-hidden transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-[calc(100%+32px)]"
         }`}
       >
