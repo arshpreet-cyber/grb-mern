@@ -231,14 +231,6 @@ export default function HomeFooter() {
                 >
                   <FaLinkedinIn size={16} />
                 </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-[36px] h-[36px] rounded-full border border-white text-white flex items-center justify-center hover:border-[#f5c518] hover:text-[#f5c518] transition"
-                >
-                  <FaGoogle size={16} />
-                </a>
               </div>
             </div>
 
