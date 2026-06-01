@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+    console.error("[forgot-password]", err);
+    return NextResponse.json({ error: err.message ?? "Something went wrong." }, { status: 500 });
   }
 }
