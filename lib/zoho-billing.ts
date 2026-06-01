@@ -124,7 +124,25 @@ export async function createZohoInvoice(params: {
     const fullData = await parseJson(fullRes, "Zoho get invoice");
     const inv = fullData.invoice;
 
-    // Prefer the most direct payment URL; fall back to invoice_url
+    // Try Zoho's dedicated payment link endpoint — returns a URL that
+    // goes directly to the payment gateway, bypassing the SecurePay
+    // invoice-preview landing page.
+    try {
+      const plRes = await fetch(orgUrl(`/invoices/${invoiceId}/paymentlink`), {
+        headers: authHeader(token),
+      });
+      if (plRes.ok) {
+        const plData = await parseJson(plRes, "Zoho payment link");
+        const direct = plData?.payment_link || plData?.paymentlink;
+        if (direct) return direct as string;
+      }
+    } catch {}
+
+    // short_url skips the invoice-detail view on some Zoho plans
+    const shortUrl = inv?.short_url;
+    if (shortUrl) return shortUrl as string;
+
+    // Fallback: payment_options.payment_url (shows SecurePay landing page)
     const payUrl =
       inv?.payment_options?.payment_url ||
       inv?.online_payment_url ||
