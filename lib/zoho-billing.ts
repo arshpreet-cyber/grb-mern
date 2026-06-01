@@ -124,32 +124,30 @@ export async function createZohoInvoice(params: {
     const fullData = await parseJson(fullRes, "Zoho get invoice");
     const inv = fullData.invoice;
 
-    // Try Zoho's dedicated payment link endpoint — returns a URL that
-    // goes directly to the payment gateway, bypassing the SecurePay
-    // invoice-preview landing page.
-    try {
-      const plRes = await fetch(orgUrl(`/invoices/${invoiceId}/paymentlink`), {
-        headers: authHeader(token),
-      });
-      if (plRes.ok) {
-        const plData = await parseJson(plRes, "Zoho payment link");
-        const direct = plData?.payment_link || plData?.paymentlink;
-        if (direct) return direct as string;
-      }
-    } catch {}
+    // Log all URL fields so we can see exactly what Zoho returns
+    console.log("[Zoho URL fields]", JSON.stringify({
+      payment_options_url: inv?.payment_options?.payment_url,
+      online_payment_url: inv?.online_payment_url,
+      invoice_url: inv?.invoice_url,
+      short_url: inv?.short_url,
+      client_portal_url: inv?.client_portal_url,
+      hosted_page_url: inv?.hosted_page_url,
+    }));
 
-    // short_url skips the invoice-detail view on some Zoho plans
-    const shortUrl = inv?.short_url;
-    if (shortUrl) return shortUrl as string;
-
-    // Fallback: payment_options.payment_url (shows SecurePay landing page)
-    const payUrl =
+    // The SecurePay URL format is: /secure?CInvoiceID=...
+    // Zoho's direct-pay URL skips the invoice landing page:
+    //   /pay?CInvoiceID=...  (payment methods page directly)
+    const basePayUrl =
       inv?.payment_options?.payment_url ||
       inv?.online_payment_url ||
       inv?.invoice_url ||
       data.invoice?.invoice_url;
 
-    if (!payUrl) throw new Error("Zoho did not return a payment URL for this invoice.");
-    return payUrl as string;
+    if (!basePayUrl) throw new Error("Zoho did not return a payment URL for this invoice.");
+
+    // Replace /secure path with /pay to skip the invoice-preview landing page
+    // and land directly on the payment methods screen
+    const directPayUrl = basePayUrl.replace(/\/secure(\?|#|$)/, "/pay$1");
+    return directPayUrl as string;
   }
 }
