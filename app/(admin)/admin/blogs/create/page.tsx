@@ -58,7 +58,8 @@ export default function CreateBlog() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || !formData.slug || !formData.content) {
-      alert("Please fill in the required fields: Title, Slug, and Content.");
+      const { toast } = await import("sonner");
+      toast.error("Please fill in the required fields: Title, Slug, and Content.");
       return;
     }
 
@@ -74,10 +75,12 @@ export default function CreateBlog() {
       if (data.success) {
         router.push("/admin/blogs");
       } else {
-        alert(data.error || "Something went wrong");
+        const { toast } = await import("sonner");
+        toast.error(data.error || "Something went wrong");
       }
-    } catch (error) {
-      alert("Failed to submit form");
+    } catch {
+      const { toast } = await import("sonner");
+      toast.error("Failed to submit form");
     } finally {
       setLoading(false);
     }

@@ -158,8 +158,9 @@ export default function AdminOrdersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "unpaid" }),
       });
-      if (res.ok) alert("Unpaid reminder email sent.");
-      else alert("Failed to send email.");
+      const { toast } = await import("sonner");
+      if (res.ok) toast.success("Unpaid reminder email sent.");
+      else toast.error("Failed to send email.");
     } finally {
       setSendingEmail(null);
     }

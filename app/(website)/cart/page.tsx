@@ -300,7 +300,8 @@ export default function CartPage() {
       if (!res.ok) throw new Error(data?.error ?? "Failed to create order");
       window.location.href = data.payUrl;
     } catch (err: any) {
-      alert(err.message ?? "Something went wrong. Please try again.");
+      const { toast } = await import("sonner");
+      toast.error(err.message ?? "Something went wrong. Please try again.");
     } finally {
       setLoading(null);
     }
