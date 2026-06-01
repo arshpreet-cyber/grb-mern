@@ -180,9 +180,13 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               </span>
             </div>
 
-            <h1 className="text-[#000000] text-[28px] md:text-[36px] font-300 leading-[1.25] tracking-[-0.5px] mb-4">
-              {title || <>Buy Real <span className="font-[700]">Google Reviews</span> That Build Trust</>}
-            </h1>
+<h1 className="text-[#000000] text-[28px] md:text-[40px] font-[300] leading-[1.25] tracking-[-0.5px] mb-4">
+  Buy Real{" "}
+  <span className="font-[500]">
+    {title || "Google Reviews"}
+  </span>{" "}
+  That Build Trust
+</h1>
 
             <div className="text-[15px] text-[#4A4A48] line-height-[1.55] mb-2">
               {description ? renderDescription() : (
