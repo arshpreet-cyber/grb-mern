@@ -560,6 +560,24 @@ export function buildTicketClosedEmail(payload: {
   };
 }
 
+// ─── Password Reset ───────────────────────────────────────────────────────────
+export function buildPasswordResetEmail(payload: { name: string; resetUrl: string }) {
+  const content = `
+    <p style="margin:0 0 14px;font-size:15px;color:#333">Hi <strong>${payload.name}</strong>,</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#333">We received a request to reset your password. Click the button below to set a new password.</p>
+    <p style="margin:20px 0">
+      <a href="${payload.resetUrl}" style="display:inline-block;padding:12px 28px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600">Reset Password →</a>
+    </p>
+    <p style="margin:0 0 16px;font-size:13px;color:#888">This link expires in <strong>1 hour</strong>. If you did not request a password reset, you can safely ignore this email.</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
+  `;
+  return {
+    subject: "Reset your password – Get Reviews Buzz",
+    html: emailWrapper(content),
+  };
+}
+
 export function buildTicketReplyEmail(payload: {
   name?: string | null;
   ticketNumber: string;
