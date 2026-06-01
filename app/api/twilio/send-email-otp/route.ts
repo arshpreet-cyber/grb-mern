@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { setEmailOtp } from "@/lib/email-otp-store";
-import { sendEmailNotification } from "@/server/email";
+import { sendEmailNotification, buildOtpEmail } from "@/server/email";
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
@@ -10,18 +10,12 @@ export async function POST(req: NextRequest) {
   setEmailOtp(email, code);
 
   try {
+    const { subject, html } = buildOtpEmail({ code });
     await sendEmailNotification({
       to: email,
-      subject: "Your email verification code",
+      subject,
       text: `Your verification code is: ${code}. It expires in 10 minutes.`,
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px">
-          <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Verify your email</h2>
-          <p style="color:#555;font-size:14px;margin-bottom:24px">Use the code below to complete your registration. It expires in 10 minutes.</p>
-          <div style="background:#f5f5f5;border-radius:8px;padding:20px;text-align:center;letter-spacing:12px;font-size:32px;font-weight:700;color:#111">${code}</div>
-          <p style="color:#999;font-size:12px;margin-top:24px">If you did not request this, you can safely ignore this email.</p>
-        </div>
-      `,
+      html,
     });
     return NextResponse.json({ success: true });
   } catch (err: any) {
