@@ -124,30 +124,14 @@ export async function createZohoInvoice(params: {
     const fullData = await parseJson(fullRes, "Zoho get invoice");
     const inv = fullData.invoice;
 
-    // Log all URL fields so we can see exactly what Zoho returns
-    console.log("[Zoho URL fields]", JSON.stringify({
-      payment_options_url: inv?.payment_options?.payment_url,
-      online_payment_url: inv?.online_payment_url,
-      invoice_url: inv?.invoice_url,
-      short_url: inv?.short_url,
-      client_portal_url: inv?.client_portal_url,
-      hosted_page_url: inv?.hosted_page_url,
-    }));
-
-    // The SecurePay URL format is: /secure?CInvoiceID=...
-    // Zoho's direct-pay URL skips the invoice landing page:
-    //   /pay?CInvoiceID=...  (payment methods page directly)
-    const basePayUrl =
+    // Prefer the most direct payment URL; fall back to invoice_url
+    const payUrl =
       inv?.payment_options?.payment_url ||
       inv?.online_payment_url ||
       inv?.invoice_url ||
       data.invoice?.invoice_url;
 
-    if (!basePayUrl) throw new Error("Zoho did not return a payment URL for this invoice.");
-
-    // Replace /secure path with /pay to skip the invoice-preview landing page
-    // and land directly on the payment methods screen
-    const directPayUrl = basePayUrl.replace(/\/secure(\?|#|$)/, "/pay$1");
-    return directPayUrl as string;
+    if (!payUrl) throw new Error("Zoho did not return a payment URL for this invoice.");
+    return payUrl as string;
   }
 }
