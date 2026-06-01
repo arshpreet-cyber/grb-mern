@@ -6,7 +6,83 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { countryCodes } from "@/lib/constants/countryCodes";
 
-function LoginForm({ onSwitch }: { onSwitch: () => void }) {
+function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "sent">("idle");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Something went wrong."); setStatus("idle"); return; }
+      setStatus("sent");
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setStatus("idle");
+    }
+  };
+
+  if (status === "sent") {
+    return (
+      <div className="text-center space-y-4 py-4">
+        <div className="w-14 h-14 mx-auto rounded-full bg-green-50 flex items-center justify-center">
+          <svg className="w-7 h-7 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="text-[16px] font-bold text-gray-900">Check your email</h3>
+        <p className="text-[13px] text-gray-500">
+          If an account exists for <span className="font-semibold text-gray-700">{email}</span>, you will receive a password reset link shortly.
+        </p>
+        <button type="button" onClick={onBack} className="text-[13px] font-bold text-black underline">
+          ← Back to Login
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="text-center mb-2">
+        <h3 className="text-[18px] font-bold text-gray-900">Forgot password?</h3>
+        <p className="text-[13px] text-gray-500 mt-1">Enter your email and we&apos;ll send you a reset link.</p>
+      </div>
+      {error && (
+        <div className="flex items-center gap-2.5 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+          <span>⚠</span> {error}
+        </div>
+      )}
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email Address"
+        className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition"
+      />
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50"
+      >
+        {status === "loading" ? "Sending..." : "Send Reset Email"}
+      </button>
+      <p className="text-center text-[13px] text-gray-500">
+        <button type="button" onClick={onBack} className="font-bold text-black underline">← Back to Login</button>
+      </p>
+    </form>
+  );
+}
+
+function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
@@ -52,7 +128,7 @@ function LoginForm({ onSwitch }: { onSwitch: () => void }) {
           <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="w-3.5 h-3.5 rounded border-gray-300" />
           <span className="text-gray-700">Remember password</span>
         </label>
-        <Link href="#" className="text-black underline hover:text-gray-600 transition">Forgot password?</Link>
+        <button type="button" onClick={onForgot} className="text-black underline hover:text-gray-600 transition">Forgot password?</button>
       </div>
       <button type="submit" disabled={isLoading}
         className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
@@ -362,7 +438,7 @@ function AuthModalInner() {
   const isLogin = pathname === "/login";
   const isRegister = pathname === "/register";
   const isOpen = isLogin || isRegister;
-  const [tab, setTab] = useState<"login" | "register">(
+  const [tab, setTab] = useState<"login" | "register" | "forgot">(
     isRegister || searchParams.get("tab") === "register" ? "register" : "login"
   );
 
@@ -375,11 +451,11 @@ function AuthModalInner() {
 
   return (
     <div
-      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/50 backdrop-blur-[3px] overflow-y-auto font-sans cursor-pointer"
+      className="fixed inset-0 z-2000 flex items-center justify-center bg-black/50 backdrop-blur-[3px] overflow-y-auto font-sans cursor-pointer"
       onClick={() => router.push("/")}
     >
       <div
-        className="relative w-full max-w-[440px] mx-4 my-8 rounded-xl bg-white shadow-2xl px-8 py-8 cursor-default"
+        className="relative w-full max-w-110 mx-4 my-8 rounded-xl bg-white shadow-2xl px-8 py-8 cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
@@ -397,20 +473,27 @@ function AuthModalInner() {
           </Link>
         </div>
 
-        {/* Tab Toggle */}
-        <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
-          <button onClick={() => { setTab("login"); router.replace("/login"); }}
-            className={`flex-1 py-2 text-[14px] font-semibold rounded-md transition-all ${tab === "login" ? "bg-white text-black shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
-            Log In
-          </button>
-          <button onClick={() => { setTab("register"); router.replace("/register"); }}
-            className={`flex-1 py-2 text-[14px] font-semibold rounded-md transition-all ${tab === "register" ? "bg-white text-black shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
-            Register
-          </button>
-        </div>
+        {/* Tab Toggle — hidden on forgot step */}
+        {tab !== "forgot" && (
+          <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
+            <button onClick={() => { setTab("login"); router.replace("/login"); }}
+              className={`flex-1 py-2 text-[14px] font-semibold rounded-md transition-all ${tab === "login" ? "bg-white text-black shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+              Log In
+            </button>
+            <button onClick={() => { setTab("register"); router.replace("/register"); }}
+              className={`flex-1 py-2 text-[14px] font-semibold rounded-md transition-all ${tab === "register" ? "bg-white text-black shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+              Register
+            </button>
+          </div>
+        )}
 
-        {tab === "login"
-          ? <LoginForm onSwitch={() => { setTab("register"); router.replace("/register"); }} />
+        {tab === "forgot"
+          ? <ForgotPasswordForm onBack={() => setTab("login")} />
+          : tab === "login"
+          ? <LoginForm
+              onSwitch={() => { setTab("register"); router.replace("/register"); }}
+              onForgot={() => setTab("forgot")}
+            />
           : <RegisterForm onSwitch={() => { setTab("login"); router.replace("/login"); }} />
         }
       </div>

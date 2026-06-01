@@ -109,26 +109,34 @@ async function sendTicketCreatedEmails(opts: {
   customerEmail: string;
 }) {
   const ticketUrl = `${APP_URL}/admin/tickets/${opts.ticketId}`;
+  const { sendEmailNotification, emailWrapper } = await import("../email.ts");
 
   // Build HTML email for admin
-  const adminHtml = `
-    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 24px 32px; border-radius: 12px 12px 0 0;">
-        <h2 style="color: #fff; margin: 0; font-size: 20px;">🎫 New Support Ticket #${opts.zohoTicketNumber}</h2>
-      </div>
-      <div style="background: #ffffff; padding: 24px 32px; border: 1px solid #e2e8f0; border-top: none;">
-        <p style="color: #475569; margin: 0 0 16px;"><strong>From:</strong> ${opts.customerName} (${opts.customerEmail})</p>
-        <p style="color: #475569; margin: 0 0 8px;"><strong>Subject:</strong> ${opts.subject}</p>
-        <div style="background: #f8fafc; border-left: 4px solid #6366f1; padding: 16px; margin: 16px 0; border-radius: 0 8px 8px 0;">
-          <p style="color: #334155; margin: 0; white-space: pre-wrap;">${opts.query}</p>
-        </div>
-        <a href="${ticketUrl}" style="display: inline-block; background: #6366f1; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-top: 8px;">View Ticket in Dashboard</a>
-        <p style="color: #94a3b8; font-size: 13px; margin-top: 24px;">
-          <strong>Reply to this email</strong> to respond directly — your reply will be added to the ticket automatically.
-        </p>
-      </div>
+  const adminContent = `
+    <p style="margin:0 0 14px;font-size:15px;color:#333">🎫 New Support Ticket <strong>#${opts.zohoTicketNumber}</strong></p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e0e0e0;margin:16px 0;background:#ffffff">
+      <tr>
+        <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;color:#555;width:100px">From :</td>
+        <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;font-weight:600;color:#333">${opts.customerName} (${opts.customerEmail})</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;color:#555">Subject :</td>
+        <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;color:#333">${opts.subject}</td>
+      </tr>
+    </table>
+    <div style="background:#ffffff;border:1px solid #e0e0e0;padding:16px;margin:16px 0;border-radius:4px">
+      <p style="color:#333;margin:0;white-space:pre-wrap;font-size:14px">${opts.query}</p>
     </div>
+    <p style="margin:20px 0">
+      <a href="${ticketUrl}" style="display:inline-block;padding:12px 24px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600;font-family:Arial,sans-serif">View Ticket in Dashboard →</a>
+    </p>
+    <p style="margin:16px 0 4px;font-size:13px;color:#888">
+      <strong>Reply to this email</strong> to respond directly — your reply will be added to the ticket automatically.
+    </p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
+  const adminHtml = emailWrapper(adminContent);
 
   // Try sending via Zoho Desk sendReply first (replies go back to Zoho)
   if (isZohoEmailConfigured()) {
@@ -147,8 +155,6 @@ async function sendTicketCreatedEmails(opts: {
 
   // Fallback: send via nodemailer/SMTP
   try {
-    const { sendEmailNotification } = await import("../email.ts");
-    
     // Notify admin
     await sendEmailNotification({
       to: ADMIN_EMAIL,
@@ -159,23 +165,29 @@ async function sendTicketCreatedEmails(opts: {
     console.log(`[EMAIL] ✅ Admin notification sent to ${ADMIN_EMAIL}`);
 
     // Notify user
-    const userHtml = `
-      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 24px 32px; border-radius: 12px 12px 0 0;">
-          <h2 style="color: #fff; margin: 0; font-size: 20px;">🎫 Ticket #${opts.zohoTicketNumber} Created</h2>
-        </div>
-        <div style="background: #ffffff; padding: 24px 32px; border: 1px solid #e2e8f0; border-top: none;">
-          <p style="color: #475569;">Hello ${opts.customerName},</p>
-          <p style="color: #475569;">Your support ticket has been created successfully. Our team will respond shortly.</p>
-          <p style="color: #475569; margin: 0 0 8px;"><strong>Subject:</strong> ${opts.subject}</p>
-          <p style="color: #475569;"><strong>Ticket Number:</strong> #${opts.zohoTicketNumber}</p>
-          <a href="${APP_URL}/dashboard/tickets/${opts.ticketId}" style="display: inline-block; background: #6366f1; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-top: 8px;">View Your Ticket</a>
-          <p style="color: #94a3b8; font-size: 13px; margin-top: 24px;">
-            You can also <strong>reply to this email</strong> to add a message to your ticket.
-          </p>
-        </div>
-      </div>
+    const userContent = `
+      <p style="margin:0 0 14px;font-size:15px;color:#333">Hello <strong>${opts.customerName}</strong>,</p>
+      <p style="margin:0 0 20px;font-size:15px;color:#333">Your support ticket has been created successfully. Our team will respond shortly.</p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e0e0e0;margin:16px 0;background:#ffffff">
+        <tr>
+          <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;color:#555;width:120px">Ticket # :</td>
+          <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;font-weight:600;color:#333;font-family:monospace">${opts.zohoTicketNumber}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;color:#555">Subject :</td>
+          <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;color:#333">${opts.subject}</td>
+        </tr>
+      </table>
+      <p style="margin:20px 0">
+        <a href="${APP_URL}/dashboard/tickets/${opts.ticketId}" style="display:inline-block;padding:12px 24px;background:#FFCE2E;color:#000;text-decoration:none;border-radius:5px;font-size:14px;font-weight:700">View Your Ticket →</a>
+      </p>
+      <p style="margin:16px 0 4px;font-size:13px;color:#888">
+        You can also <strong>reply to this email</strong> to add a message to your ticket.
+      </p>
+      <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+      <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
     `;
+    const userHtml = emailWrapper(userContent);
 
     await sendEmailNotification({
       to: opts.customerEmail,
@@ -217,24 +229,24 @@ export async function sendReplyNotificationEmail(opts: {
 
     if (!notifyEmail) return;
 
-    const replyHtml = `
-      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: linear-gradient(135deg, #6366f1, #8b5cf6); padding: 24px 32px; border-radius: 12px 12px 0 0;">
-          <h2 style="color: #fff; margin: 0; font-size: 20px;">💬 New Reply on Ticket #${ticketNumber}</h2>
-        </div>
-        <div style="background: #ffffff; padding: 24px 32px; border: 1px solid #e2e8f0; border-top: none;">
-          <p style="color: #475569;">Hello ${notifyName},</p>
-          <p style="color: #475569;"><strong>${senderLabel}</strong> replied to ticket <strong>#${ticketNumber}</strong>:</p>
-          <div style="background: #f8fafc; border-left: 4px solid #6366f1; padding: 16px; margin: 16px 0; border-radius: 0 8px 8px 0;">
-            <p style="color: #334155; margin: 0; white-space: pre-wrap;">${opts.content}</p>
-          </div>
-          <a href="${APP_URL}/${opts.isAgent ? 'dashboard' : 'admin'}/tickets/${opts.ticketId}" style="display: inline-block; background: #6366f1; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-top: 8px;">View Conversation</a>
-          <p style="color: #94a3b8; font-size: 13px; margin-top: 24px;">
-            Reply to this email to respond directly.
-          </p>
-        </div>
+    const { sendEmailNotification, emailWrapper } = await import("../email.ts");
+
+    const replyContent = `
+      <p style="margin:0 0 14px;font-size:15px;color:#333">Hello <strong>${notifyName}</strong>,</p>
+      <p style="margin:0 0 20px;font-size:15px;color:#333"><strong>${senderLabel}</strong> replied to ticket <strong>#${ticketNumber}</strong>:</p>
+      <div style="background:#ffffff;border:1px solid #e0e0e0;padding:16px;margin:16px 0;border-radius:4px">
+        <p style="color:#333;margin:0;white-space:pre-wrap;font-size:14px">${opts.content}</p>
       </div>
+      <p style="margin:20px 0">
+        <a href="${APP_URL}/${opts.isAgent ? 'dashboard' : 'admin'}/tickets/${opts.ticketId}" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: 600; font-family: Arial, sans-serif">View Conversation →</a>
+      </p>
+      <p style="margin:16px 0 4px;font-size:13px;color:#888">
+        Reply to this email to respond directly.
+      </p>
+      <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+      <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
     `;
+    const replyHtml = emailWrapper(replyContent);
 
     // Try Zoho Desk sendReply first
     if (isZohoEmailConfigured()) {
@@ -248,7 +260,6 @@ export async function sendReplyNotificationEmail(opts: {
 
     // Fallback: SMTP
     try {
-      const { sendEmailNotification } = await import("../email.ts");
       await sendEmailNotification({
         to: notifyEmail,
         subject: `[Ticket #${ticketNumber}] New reply from ${senderLabel}`,
