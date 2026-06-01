@@ -26,8 +26,14 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
   const messageRef = useRef<HTMLDivElement>(null);
+  
+  // Notification states
   const [orderNotifications, setOrderNotifications] = useState<any[]>([]);
+  const [ordersRead, setOrdersRead] = useState(false); // Added for Order Alerts
+  
+  // Ticket states
   const [ticketNotifications, setTicketNotifications] = useState<any[]>([]);
+  const [ticketsRead, setTicketsRead] = useState(false);
 
   // Theme support
   const { theme, setTheme } = useTheme();
@@ -123,7 +129,6 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
 
           {/* Theme Toggle */}
           <div className="hidden sm:flex relative items-center bg-[#f4f5f7] dark:bg-[#252b3b] rounded-full p-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] w-[74px] h-[40px]">
-            {/* Sliding Active Background */}
             <div 
               className="absolute left-1 top-1 h-8 w-8 rounded-full bg-black shadow-md transition-transform duration-300 ease-out"
               style={{ transform: isDarkMode ? 'translateX(34px)' : 'translateX(0)' }}
@@ -146,10 +151,28 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
           <div ref={messageRef}>
             <button
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f5f7] dark:bg-[#252b3b] text-slate-600 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none"
-              onClick={() => setIsMessageOpen(!isMessageOpen)}
+              onClick={() => {
+                const opening = !isMessageOpen;
+                setIsMessageOpen(opening);
+                
+                if (opening && !ticketsRead) {
+                  setTicketsRead(true);
+                  ticketNotifications.forEach((t) => {
+                    if (t.ticketId || t.id) {
+                      fetch(`/api/admin/tickets/${t.ticketId || t.id}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ adminReadStatus: 0 }),
+                      }).catch(() => {});
+                    }
+                  });
+                }
+              }}
             >
               <MessageSquareText size={18} />
-              {ticketNotifications.length > 0 && <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a1f2c]"></span>}
+              {ticketNotifications.length > 0 && !ticketsRead && (
+                <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a1f2c]"></span>
+              )}
             </button>
 
             {/* Message Dropdown */}
@@ -161,12 +184,20 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
               <div className="flex flex-col rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] shadow-xl overflow-hidden">
                 <div className="px-4 py-3 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
                   <h3 className="text-[13px] font-bold text-slate-800 dark:text-white">Messages & Tickets</h3>
-                  <span className="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{ticketNotifications.length} New</span>
+                  <span className="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {ticketsRead ? 0 : ticketNotifications.length} New
+                  </span>
                 </div>
+                
                 <div className="max-h-80 overflow-y-auto">
                   {ticketNotifications.length > 0 ? (
                     ticketNotifications.map((notif) => (
-                      <div key={notif.id} className="px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer">
+                      <Link 
+                        key={notif.id} 
+                        href={`/admin/tickets/${notif.ticketId || notif.id}`} 
+                        onClick={() => setIsMessageOpen(false)} 
+                        className="block px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer"
+                      >
                         <div className="flex items-start gap-3">
                           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
                             <MessageSquareText size={14} />
@@ -177,7 +208,7 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
                             <p className="text-[10px] text-slate-400 dark:text-white mt-1.5 font-medium">{new Date(notif.time).toLocaleString()}</p>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     ))
                   ) : (
                     <div className="px-4 py-8 text-center text-slate-500 dark:text-white text-[13px]">
@@ -185,6 +216,7 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
                     </div>
                   )}
                 </div>
+                
                 <Link href="/admin/tickets" onClick={() => setIsMessageOpen(false)} className="block text-center px-4 py-2.5 text-[12px] font-bold text-[#285FF5] dark:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-t border-slate-50 dark:border-slate-800">
                   View All Tickets
                 </Link>
@@ -196,10 +228,21 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
           <div ref={notificationRef}>
             <button
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f5f7] dark:bg-[#252b3b] text-slate-600 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none"
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+              onClick={() => {
+                const opening = !isNotificationOpen;
+                setIsNotificationOpen(opening);
+                
+                // FIXED: Set ordersRead to true as soon as dropdown opens
+                if (opening) {
+                  setOrdersRead(true);
+                }
+              }}
             >
               <Bell size={18} />
-              {orderNotifications.length > 0 && <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a1f2c]"></span>}
+              {/* FIXED: Check if orders have not been read yet */}
+              {orderNotifications.length > 0 && !ordersRead && (
+                <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-[#1a1f2c]"></span>
+              )}
             </button>
 
             {/* Notification Dropdown */}
@@ -210,13 +253,15 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
             >
               <div className="flex flex-col rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] shadow-xl overflow-hidden">
                 <div className="px-4 py-3 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
-                  <h3 className="text-[13px] font-bold text-slate-800 dark:text-white">Alerts</h3>
-                  <span className="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{orderNotifications.length} New</span>
+                  <h3 className="text-[13px] font-bold text-slate-800 dark:text-white">Order Alerts</h3>
+                  <span className="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {ordersRead ? 0 : orderNotifications.length} Recent
+                  </span>
                 </div>
                 <div className="max-h-80 overflow-y-auto">
                   {orderNotifications.length > 0 ? (
                     orderNotifications.map((notif) => (
-                      <div key={notif.id} className="px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer">
+                      <Link key={notif.id} href={`/admin/orders/${notif.id}`} onClick={() => setIsNotificationOpen(false)} className="block px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                         <div className="flex items-start gap-3">
                           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
                             <Bell size={14} />
@@ -227,7 +272,7 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
                             <p className="text-[10px] text-slate-400 dark:text-white mt-1.5 font-medium">{new Date(notif.time).toLocaleString()}</p>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     ))
                   ) : (
                     <div className="px-4 py-8 text-center text-slate-500 dark:text-white text-[13px]">
@@ -235,17 +280,15 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
                     </div>
                   )}
                 </div>
-                <Link href="/admin/dashboard" onClick={() => setIsNotificationOpen(false)} className="block text-center px-4 py-2.5 text-[12px] font-bold text-[#285FF5] dark:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-t border-slate-50 dark:border-slate-800">
-                  View All Activity
+                <Link href="/admin/orders" onClick={() => setIsNotificationOpen(false)} className="block text-center px-4 py-2.5 text-[12px] font-bold text-[#285FF5] dark:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-t border-slate-50 dark:border-slate-800">
+                  View All Orders
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* Profile Section Wrapper - attached the ref here */}
+          {/* Profile Section Wrapper */}
           <div className="relative ml-1" ref={dropdownRef}>
-            
-            {/* The Trigger Element - Now using onClick to toggle state */}
             <div 
               className="flex items-center gap-3 cursor-pointer select-none"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -270,7 +313,6 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
               </div>
             </div>
 
-            {/* The Dropdown Menu - Visibility controlled by state instead of group-hover */}
             <div 
               className={`absolute right-0 top-full pt-2 w-52 transition-all duration-200 ease-in-out z-50 ${
                 isProfileOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
@@ -279,7 +321,7 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
               <div className="flex flex-col rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] p-1.5 shadow-xl">
                 <Link 
                   href="/dashboard/account" 
-                  onClick={() => setIsProfileOpen(false)} // Close when clicking link
+                  onClick={() => setIsProfileOpen(false)}
                   className="flex items-center gap-2 rounded-lg px-3.5 py-2.5 text-sm text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                 >
                   <User size={16} className="text-slate-400 dark:text-white" />
