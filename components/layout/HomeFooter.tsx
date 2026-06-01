@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Wrapper from "@/components/ui/Wrapper";
+import SubscribeForm from "@/components/SubscribeForm";
 
 import {
   FaInstagram,
@@ -186,19 +187,7 @@ export default function HomeFooter() {
                 updates.
               </h3>
               
-              <form className="flex items-center border-b border-[#555] pb-3 mb-8">
-                <input
-                  type="email"
-                  placeholder="Enter Your Email..."
-                  className="bg-transparent w-full text-white placeholder:text-[#888] outline-none text-[13px]"
-                />
-                <button
-                  type="submit"
-                  className="w-[32px] h-[32px] bg-[#f5c518] text-black rounded flex items-center justify-center hover:opacity-90 transition"
-                >
-                  →
-                </button>
-              </form>
+              <SubscribeForm />
 
               {/* SOCIAL ICONS */}
               <div className="flex items-center gap-3">
