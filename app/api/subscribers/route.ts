@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sendEmailNotification } from "@/server/email";
 
+// Extract bare email address from "Display Name <email@example.com>" or plain "email@example.com"
+function extractEmail(raw: string): string {
+  const match = raw.match(/<([^>]+)>/);
+  return match ? match[1].trim() : raw.trim();
+}
+
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
@@ -22,15 +28,20 @@ export async function POST(req: Request) {
       data: { email, user_ip: userIp, user_browser: userAgent, status: 1 },
     });
 
+    // Derive a clean admin email address
+    const rawAdminEmail = process.env.ADMIN_EMAIL ?? process.env.EMAIL_FROM ?? "";
+    const adminEmail = rawAdminEmail ? extractEmail(rawAdminEmail) : "";
+
     // Notify admin
-    const adminEmail = process.env.ADMIN_EMAIL ?? process.env.EMAIL_FROM ?? "";
     if (adminEmail) {
       sendEmailNotification({
         to: adminEmail,
         subject: "New Newsletter Subscriber – Get Reviews Buzz",
         text: `New subscriber: ${email}`,
         html: `<p style="font-family:Arial,sans-serif;font-size:15px">New newsletter subscriber: <strong>${email}</strong></p>`,
-      }).catch(() => {});
+      }).catch((err) => console.error("[subscriber admin email]", err.message));
+    } else {
+      console.warn("[subscribers] ADMIN_EMAIL not set — skipping admin notification");
     }
 
     // Confirmation to subscriber
@@ -38,8 +49,8 @@ export async function POST(req: Request) {
       to: email,
       subject: "You're subscribed – Get Reviews Buzz",
       text: "Thank you for subscribing to Get Reviews Buzz newsletter!",
-      html: `<p style="font-family:Arial,sans-serif;font-size:15px">Hi there,</p><p style="font-family:Arial,sans-serif;font-size:15px">Thank you for subscribing to the <strong>Get Reviews Buzz</strong> newsletter! You'll receive the latest updates, tips, and news from us.</p><p style="font-family:Arial,sans-serif;font-size:14px;color:#555">If you didn't subscribe, you can safely ignore this email.</p><p style="font-family:Arial,sans-serif;font-size:14px">Best Regards,<br/><strong>Team Get Reviews Buzz</strong></p>`,
-    }).catch(() => {});
+      html: `<p style="font-family:Arial,sans-serif;font-size:15px">Hi there,</p><p style="font-family:Arial,sans-serif;font-size:15px">Thank you for subscribing to the <strong>Get Reviews Buzz</strong> newsletter! You'll receive the latest updates, tips, and news from us.</p><p style="font-family:Arial,sans-serif;font-size:14px;color:#555">If you didn\'t subscribe, you can safely ignore this email.</p><p style="font-family:Arial,sans-serif;font-size:14px">Best Regards,<br/><strong>Team Get Reviews Buzz</strong></p>`,
+    }).catch((err) => console.error("[subscriber confirm email]", err.message));
 
     return NextResponse.json({ success: true });
   } catch (error) {
