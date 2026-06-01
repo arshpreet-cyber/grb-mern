@@ -1,4 +1,3 @@
-// Triggering HMR refresh for new sections
 import Hero from './Hero';
 import TextSection from './TextSection';
 import ImageSection from './ImageSection';
@@ -21,6 +20,7 @@ import CTAProduct from './CTAProduct';
 import RatingCalculator from './RatingCalculator';
 import RatingStatsBar from './RatingStatsBar';
 import RatingCTA from './RatingCTA';
+import SitemapSection from './SitemapSection';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -46,6 +46,7 @@ const sectionMap: Record<string, React.FC<any>> = {
   'rating-calculator': RatingCalculator,
   'rating-stats-bar': RatingStatsBar,
   'rating-cta': RatingCTA,
+  sitemap: SitemapSection,
 };
 
 interface PageRendererProps {

@@ -141,6 +141,7 @@ export default function Sidebar() {
             {selectedSection.type === 'text' && <Type size={18} />}
             {selectedSection.type === 'image' && <ImageIcon size={18} />}
             {selectedSection.type === 'buy-reviews' && <ShoppingCart size={18} />}
+            {selectedSection.type === 'sitemap' && <Globe size={18} />}
             {['stats-bar', 'custom-platform', 'image-text'].includes(selectedSection.type) && <Layout size={18} />}
           </span>
           <div className="flex flex-col">
@@ -368,12 +369,32 @@ export default function Sidebar() {
           )}
 
           {selectedSection.type === 'text' && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Content</label>
-              <RichTextEditor 
-                content={selectedSection.data.content || ''}
-                onChange={(html) => handleDataChange('content', html)}
-              />
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Content</label>
+                <RichTextEditor 
+                  content={selectedSection.data.content || ''}
+                  onChange={(html) => handleDataChange('content', html)}
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const name = window.prompt("Enter a name for this custom template:");
+                  if (name && name.trim()) {
+                    const templates = JSON.parse(localStorage.getItem('grb_custom_templates') || '[]');
+                    templates.push({
+                      id: `custom_${Date.now()}`,
+                      name: name.trim(),
+                      content: selectedSection.data.content
+                    });
+                    localStorage.setItem('grb_custom_templates', JSON.stringify(templates));
+                    alert("Template saved! You can now select it from the Add New Section menu.");
+                  }
+                }}
+                className="w-full px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-sm transition-colors border border-slate-200"
+              >
+                Save as Reusable Template
+              </button>
             </div>
           )}
 
@@ -1020,6 +1041,28 @@ export default function Sidebar() {
                   onChange={(e) => handleDataChange('pricePerReview', parseFloat(e.target.value))}
                   className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
                   placeholder="15"
+                />
+              </div>
+            </>
+          )}
+
+          {selectedSection.type === 'sitemap' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Title</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.title || ''}
+                  onChange={(e) => handleDataChange('title', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Description</label>
+                <textarea 
+                  value={selectedSection.data.description || ''}
+                  onChange={(e) => handleDataChange('description', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
                 />
               </div>
             </>

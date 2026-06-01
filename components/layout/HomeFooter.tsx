@@ -165,6 +165,7 @@ export default function HomeFooter() {
                   { label: "Refund Policy", href: "/refund-policy" },
                   { label: "FAQ's", href: "/faqs" },
                   { label: "Login / Signup", href: "/login" },
+                  { label: "Site map", href: "/sitemap" },
                 ].map((item) => (
                   <li key={item.label}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">

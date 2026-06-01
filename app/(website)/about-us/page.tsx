@@ -22,7 +22,55 @@ const IMGS = {
   ctaImage:   "https://beta.getreviews.buzz/storage/app/blog/0707270001780033172_Group-1000008234.webp",
 };
 
-const TIMELINE_YEARS = ["2017-2018", "2020", "2021", "2022", "2023"];
+const TIMELINE_YEARS = ["2017-2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026"];
+
+const TIMELINE_CONTENT = [
+  {
+    title: "The Foundation",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0540134001779962686_Rectangle-10202.webp",
+    description: "Before Get Reviews Buzz officially launched, we spent years working in the digital industry, gaining hands-on experience, industry knowledge, and long-term expertise in reputation management, customer trust, and business growth."
+  },
+  {
+    title: "The Beginning",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0905781001780289444_2.webp",
+    description: "Over time, more businesses started reaching out to help with managing their online reputation. With growing demand and encouragement from clients and colleagues, we officially began our journey through Black Hat World Forum."
+  },
+  {
+    title: "Building Momentum",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0316217001780289676_3.webp",
+    description: "As demand increased, we expanded our operations and began developing a dedicated customer portal. During this stage, we also managed orders directly through email while steadily growing within the community."
+  },
+  {
+    title: "Expanding Our Reach",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0277675001780289761_4.webp",
+    description: "We officially launched our platform and quickly gained momentum, processing 1,000+ orders. More businesses began trusting us for reliable service, consistent support, and long-term reputation growth."
+  },
+  {
+    title: "Strengthening Trust",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0801983001780289780_5.svg",
+    description: "This marked an important stage in our growth. We partnered with larger brands and businesses across multiple industries while continuing to improve our platform and customer experience."
+  },
+  {
+    title: "Scaling Growth",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0012101001780289864_6.webp",
+    description: "Our focus shifted towards refining internal processes, strengthening our team, and introducing more advanced tools and systems to improve efficiency and service quality."
+  },
+  {
+    title: "Growing Our Impact",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0330518001780289912_7.webp",
+    description: "We revamped our platform, introduced a dedicated ticket support system, and focused heavily on faster processing along with more responsive 24/7 customer assistance."
+  },
+  {
+    title: "Building Stronger Brands",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0507832001780289975_8.webp",
+    description: "As our platform gained stronger organic visibility online, more businesses and industries connected with us. We continued improving our systems, strategies, and overall service experience."
+  },
+  {
+    title: "Leading With Trust",
+    img: "https://beta.getreviews.buzz/storage/app/blog/0357361001780290153_9.webp",
+    description: "Our journey continues as we continue helping businesses build credibility online, strengthen customer confidence, and create a reputation that supports long-term growth."
+  }
+];
 
 const STEPS = [
   {
@@ -171,7 +219,6 @@ function WhoWeAreSection() {
   );
 }
 
-// ─── SECTION: JOURNEY ──────────────────────────────────────────────────────────
 function JourneySection() {
   const [activeIdx, setActiveIdx] = useState(0);
   return (
@@ -181,46 +228,65 @@ function JourneySection() {
           Our Journey So Far
         </h2>
         {/* Timeline */}
-        <div className="relative mb-[60px] md:mb-[100px]">
-          <div className="absolute top-[12px] left-0 w-full h-[2px] bg-[#d9d9d9]" />
-          <div className="flex justify-between items-start relative overflow-x-auto pb-4 gap-8 md:gap-0">
+        <div className="relative mb-[60px] md:mb-[100px] max-w-[1000px] mx-auto px-4 md:px-0 select-none">
+          {/* Base track (rail) */}
+          <div className="absolute top-[36px] left-[5.55555%] w-[88.88888%] h-[2px] bg-[#d9d9d9]" />
+          
+          {/* Sliding yellow track (progress bar) */}
+          <div 
+            className="absolute top-[36px] left-[5.55555%] h-[2px] bg-[#F4B000] transition-all duration-500 ease-out" 
+            style={{ width: `${activeIdx * 11.11111}%` }} 
+          />
+          
+          {/* Sliding handle (slider knob) with pulse ring */}
+          <div 
+            className="absolute top-[29px] w-[16px] h-[16px] bg-[#F4B000] rounded-full shadow-lg transition-all duration-500 ease-out -translate-x-1/2 flex items-center justify-center cursor-pointer z-20" 
+            style={{ left: `${5.55555 + activeIdx * 11.11111}%` }}
+          >
+            {/* Pulsating ring */}
+            <span className="absolute w-[28px] h-[28px] bg-[#F4B000]/30 rounded-full animate-ping pointer-events-none" />
+            {/* Inner core */}
+            <span className="w-[8px] h-[8px] bg-white rounded-full" />
+          </div>
+
+          <div className="flex justify-between items-start relative w-full pb-4">
             {TIMELINE_YEARS.map((year, i) => (
               <div
                 key={year}
-                className="relative cursor-pointer flex-shrink-0"
+                className="flex-grow flex-shrink-0 flex flex-col items-center cursor-pointer z-10"
+                style={{ width: '11.11111%' }}
+                onMouseEnter={() => setActiveIdx(i)}
                 onClick={() => setActiveIdx(i)}
               >
-                {activeIdx === i && (
-                  <>
-                    <div
-                      className="absolute top-[11px] left-0 h-[2px] bg-[#F4B000]"
-                      style={{ width: year === "2017-2018" ? "108px" : "95px" }}
-                    />
-                    <span className="absolute top-[5px] left-[90px] w-[14px] h-[14px] bg-[#F4B000] rounded-full" />
-                  </>
-                )}
-                <h3 className={`text-[28px] md:text-[42px] font-normal mt-10 whitespace-nowrap ${activeIdx === i ? "text-[#F4B000]" : "text-[#d5d5d5]"}`}>
+                <div className="h-12" />
+                <h3 className={`text-[12px] md:text-[20px] font-black transition-all duration-300 ${activeIdx === i ? "text-[#F4B000] scale-110" : "text-[#d5d5d5] hover:text-black/60"}`}>
                   {year}
                 </h3>
               </div>
             ))}
           </div>
         </div>
-        {/* Content */}
-        <div className="flex flex-col lg:flex-row items-end justify-between gap-10">
-          <div className="w-full lg:w-[48%]">
-            <img src={IMGS.journey} alt="Journey" className="w-full max-w-[500px] rounded-[18px] block" />
+
+        {/* Content with dynamic transition */}
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-10 min-h-[350px] mt-10">
+          <div className="w-full lg:w-[45%]">
+            <div className="w-full max-w-[500px] h-[330px] rounded-[18px] overflow-hidden shadow-lg border border-black/5 mx-auto lg:mx-0">
+              <img 
+                src={TIMELINE_CONTENT[activeIdx].img} 
+                alt={TIMELINE_CONTENT[activeIdx].title} 
+                className="w-full h-full object-cover transition-all duration-500 ease-in-out transform hover:scale-105" 
+              />
+            </div>
           </div>
-          <div className="w-full lg:w-[66%]">
-            <h3 className="text-[32px] md:text-[40px] font-normal italic text-[#111] mb-10 leading-[1.2]">
-              The Foundation
+          <div className="w-full lg:w-[50%] flex flex-col justify-center text-center lg:text-left">
+            <span className="text-xs font-black text-[#F4B000] tracking-[0.2em] uppercase mb-2 block animate-pulse">
+              Milestone {TIMELINE_YEARS[activeIdx]}
+            </span>
+            <h3 className="text-[28px] md:text-[36px] font-bold text-[#111] mb-6 leading-tight">
+              {TIMELINE_CONTENT[activeIdx].title}
             </h3>
-            <p className="text-[16px] md:text-[18px] leading-[1.6] text-black/70 max-w-[624px]">
-              <i>
-                Before Get Reviews Buzz officially launched, we spent years working in the digital industry,
-                gaining hands-on experience, industry knowledge, and long-term expertise in reputation management,
-                customer trust, and business growth.
-              </i>
+            <p className="text-[16px] md:text-[18px] leading-[1.7] text-black/70 max-w-[624px] mx-auto lg:mx-0">
+              <i>{TIMELINE_CONTENT[activeIdx].description}</i>
             </p>
           </div>
         </div>

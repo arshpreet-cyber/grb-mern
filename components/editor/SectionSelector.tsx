@@ -1,14 +1,23 @@
 'use client';
 import React from 'react';
-import { Layout, Type, Image as ImageIcon, ShoppingCart, X, BarChart3, MessageSquare, Megaphone } from 'lucide-react';
+import { Layout, Type, Image as ImageIcon, ShoppingCart, X, BarChart3, MessageSquare, Megaphone, Globe } from 'lucide-react';
 
 interface SectionSelectorProps {
-  onSelect: (type: string) => void;
+  onSelect: (type: string, data?: any) => void;
   onClose: () => void;
 }
 
 export default function SectionSelector({ onSelect, onClose }: SectionSelectorProps) {
+  const [customTemplates, setCustomTemplates] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    try {
+      const templates = JSON.parse(localStorage.getItem('grb_custom_templates') || '[]');
+      setCustomTemplates(templates);
+    } catch (e) {}
+  }, []);
   const options = [
+    { type: 'sitemap', label: 'Site Map', icon: <Globe />, description: 'Sitemap with main pages, case studies & services' },
     { type: 'text', label: 'Custom Section', icon: <Type />, description: 'Full width custom HTML/rich text content' },
     { type: 'hero', label: 'Hero Banner', icon: <Megaphone />, description: 'The original typing banner' },
     { type: 'buy-reviews', label: 'Product Grid', icon: <ShoppingCart />, description: 'The dynamic review platform grid' },
@@ -56,6 +65,44 @@ export default function SectionSelector({ onSelect, onClose }: SectionSelectorPr
               </div>
             </button>
           ))}
+          
+          {customTemplates.length > 0 && (
+            <div className="col-span-1 md:col-span-2 mt-6 mb-2 border-t border-slate-200 pt-6">
+              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <Type size={20} className="text-[#fc0]" /> Saved Templates
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {customTemplates.map((template) => (
+                  <button
+                    key={template.id}
+                    onClick={() => onSelect('text', { content: template.content })}
+                    className="flex items-start gap-4 p-4 border border-[#fc0]/30 bg-[#fc0]/5 rounded-xl hover:border-[#fc0] hover:bg-[#fc0]/10 transition-all text-left group relative"
+                  >
+                    <div className="p-3 bg-white text-[#fc0] rounded-lg group-hover:bg-[#fc0] group-hover:text-white transition-colors shadow-sm">
+                      <Layout size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-slate-800 transition-colors">{template.name}</h3>
+                      <p className="text-sm text-slate-500 leading-tight line-clamp-1">Custom Section</p>
+                    </div>
+                    <div 
+                      className="absolute top-2 right-2 p-1.5 bg-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 text-red-500 z-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm('Delete this template?')) {
+                          const updated = customTemplates.filter(t => t.id !== template.id);
+                          setCustomTemplates(updated);
+                          localStorage.setItem('grb_custom_templates', JSON.stringify(updated));
+                        }
+                      }}
+                    >
+                      <X size={14} />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
