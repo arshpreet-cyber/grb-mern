@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       data: { email: user.email, token, expiresAt },
     });
 
-    const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://getreviews.buzz";
+    const siteUrl = (process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXTAUTH_URL ?? "https://grb-mern-gilt.vercel.app").replace(/\/$/, "");
     const resetUrl = `${siteUrl}/reset-password?token=${token}`;
 
     const { subject, html } = buildPasswordResetEmail({
