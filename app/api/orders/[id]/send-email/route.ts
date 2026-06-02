@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { type } = await req.json();
 
     const order = await prisma.order.findUnique({
-      where: { id: parseInt(id) },
+      where: { id },
       include: { orderDetails: true, user: { select: { name: true, email: true } } },
     });
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       const { subject, html } = buildUnpaidReminderEmail({
         name,
         email,
-        orderNumber: order.orderNumber ?? order.id,
+        orderNumber: order.orderNumber ?? order.id.toString(),
         items,
         total,
         payUrl: order.payUrl ?? null,
@@ -49,13 +49,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     if (type === "info-required") {
-      const name = order.firstName
-        ? `${order.firstName} ${order.lastName ?? ""}`.trim()
-        : (order.user?.name ?? "Customer");
       const detailsUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/order/${order.id}/details`;
       const { subject, html } = buildOrderInfoRequiredEmail({
         name,
-        orderNumber: order.orderNumber ?? order.id,
+        orderNumber: order.orderNumber ?? order.id.toString(),
         detailsUrl,
       });
       await sendEmailNotification({ to: email, subject, text: `Order #${order.orderNumber} requires your information.`, html });
