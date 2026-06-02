@@ -160,11 +160,10 @@ export default function HomeFooter() {
               <h3 className="text-white font-semibold text-[16px] mb-6">Resources</h3>
               <ul className="space-y-3.5 text-[#bdbdbd] text-[13px]">
                 {[
-                  { label: "Help Center", href: "/help-center" },
+                  { label: "Help Center", href: "/dashboard/support" },
                   { label: "Privacy Policy", href: "/privacy-policy" },
                   { label: "Terms & Conditions", href: "/terms-and-conditions" },
                   { label: "Refund Policy", href: "/refund-policy" },
-                  { label: "FAQ's", href: "/faqs" },
                   { label: "Login / Signup", href: "/login" },
                   { label: "Site map", href: "/sitemap" },
                   { label: "Disclaimer & Platform Usage Policy", href: "/usage-policy" },
