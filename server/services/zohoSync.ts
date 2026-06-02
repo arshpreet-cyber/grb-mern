@@ -489,10 +489,13 @@ export async function syncAllZohoThreadsToLocal(): Promise<{ ticketsChecked: num
   if (!isZohoConfigured()) return { ticketsChecked: 0, messagesImported: 0 };
 
   const syncedTickets = await prisma.ticket.findMany({
-    where: { zohoTicketId: { not: null } },
+    where: { 
+      zohoTicketId: { not: null },
+      status: { notIn: ["Closed", "Closed/Resolved"] }
+    },
     select: { ticketId: true },
     orderBy: { updatedAt: "desc" },
-    take: 50, // Check most recently updated tickets
+    take: 5, // Check the 5 most recently active tickets to conserve API call limits
   });
 
   let totalImported = 0;

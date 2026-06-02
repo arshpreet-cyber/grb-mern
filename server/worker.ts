@@ -72,7 +72,7 @@ async function startWorkers() {
   // Start periodic Zoho → local thread sync (every 2 minutes)
   // This catches email replies made in Zoho Desk that need to appear locally
   if (isZohoConfigured()) {
-    const SYNC_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+    const SYNC_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
     
     async function runPeriodicSync() {
       try {
