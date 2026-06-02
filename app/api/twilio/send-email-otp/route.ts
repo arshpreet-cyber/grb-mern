@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   if (!email) return NextResponse.json({ error: "Email required" }, { status: 400 });
 
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-  setEmailOtp(email, code);
+  await setEmailOtp(email, code);
 
   try {
     const { subject, html } = buildOtpEmail({ code });

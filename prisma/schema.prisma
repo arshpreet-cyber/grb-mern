@@ -356,3 +356,11 @@ model PasswordResetToken {
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+model EmailOtp {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
