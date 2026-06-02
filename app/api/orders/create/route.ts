@@ -88,12 +88,20 @@ export async function POST(req: NextRequest) {
       }).catch((err) => console.error("[Order Email]", err.message));
     }
 
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXTAUTH_URL ?? "").replace(/\/$/, "");
+    // Use SITE_URL env var (set on Vercel to production domain) with fallbacks
+    const appUrl = (
+      process.env.SITE_URL ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      process.env.NEXTAUTH_URL ??
+      ""
+    ).replace(/\/$/, "").replace("http://localhost:3000", "https://grb-mern-gilt.vercel.app");
+
     const callbackUrl = `${appUrl}/api/orders/payment-callback?orderId=${order.id}&tokenCode=${tokenCode}`;
 
     let payUrl = "";
     if (paymentMethod === "paypal") {
-      payUrl = `${process.env.PAYPAL_PAYMENT_URL}?orderno=${order.id}&tokenCode=${tokenCode}&return_url=${encodeURIComponent(callbackUrl)}`;
+      // Pass callback under multiple common param names so the gateway picks it up
+      payUrl = `${process.env.PAYPAL_PAYMENT_URL}?orderno=${order.id}&tokenCode=${tokenCode}&return_url=${encodeURIComponent(callbackUrl)}&success_url=${encodeURIComponent(callbackUrl)}&redirect_url=${encodeURIComponent(callbackUrl)}`;
     } else if (paymentMethod === "razorpay") {
       payUrl = `${process.env.PAYMENT_URL}stripe?orderno=${order.id}&tokenCode=${tokenCode}`;
     } else if (paymentMethod === "zoho") {
