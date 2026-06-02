@@ -16,6 +16,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const order = await prisma.order.findUnique({
       where: { id: parseInt(id) },
+      include: { orderDetails: true, user: { select: { name: true, email: true } } },
     });
 
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
