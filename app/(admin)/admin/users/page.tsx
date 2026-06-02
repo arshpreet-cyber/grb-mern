@@ -63,7 +63,7 @@ export default function AdminUsersPage() {
       header: "#",
       render: (u) => (
         <span className="font-mono font-bold text-gray-400 dark:text-slate-500 text-[12px]">
-          #{u.displayId ?? "—"}
+          {u.displayId ?? "—"}
         </span>
       ),
     },

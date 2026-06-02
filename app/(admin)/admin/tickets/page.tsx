@@ -85,7 +85,7 @@ export default function AdminTicketsPage() {
             <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" title="Unread" />
           )}
           <span className="font-mono font-semibold text-[13px]">
-            #{t.displayId ?? t.ticketNumber ?? t.ticketId}
+            {t.displayId ?? t.ticketNumber ?? t.ticketId}
           </span>
         </div>
       ),
