@@ -46,7 +46,6 @@ export async function POST(req: Request) {
     // Create a ticket for the contact submission
     const ticket = await prisma.ticket.create({
       data: {
-        id: randomUUID(),
         ticketNumber,
         userId: systemUser.id, // Associated with an admin for guest submissions
         name: email.split('@')[0], // Fallback name

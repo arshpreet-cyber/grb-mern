@@ -17,7 +17,6 @@ export async function createTicket(data: CreateTicketPayload) {
 
   return prisma.ticket.create({
     data: {
-      id: randomUUID(),
       ticketNumber,
       userId: data.userId,
       assignedTo: data.assignedTo ?? null,
