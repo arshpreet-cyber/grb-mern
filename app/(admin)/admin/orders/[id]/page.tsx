@@ -136,7 +136,7 @@ export default function AdminOrderDetailPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            Order #{order.id}
+            Order {order.orderNumber || `#${order.id}`}
           </h1>
           <p className="text-xs text-gray-500">
             {order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—"}

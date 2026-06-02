@@ -238,7 +238,7 @@ export default function AdminOrdersPage() {
                     {/* Order No */}
                     <td className="px-4 py-3 whitespace-nowrap">
                       <Link href={`/admin/orders/${o.id}`} className="font-bold text-amber-600 dark:text-amber-400 hover:underline font-mono text-[12px]">
-                        {o.id}
+                        {o.orderNumber || `#${o.id}`}
                       </Link>
                     </td>
                     {/* User */}

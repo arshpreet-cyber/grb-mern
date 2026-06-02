@@ -510,11 +510,32 @@ export default function CartPage() {
 
                     <div className="space-y-[10px]">
 
-                      {/* Pay with Debit/Credit Card */}
+                      {/* PayPal Button */}
+                      <button
+                        onClick={() => handlePayment("paypal")}
+                        disabled={!!loading}
+                        className="w-full flex items-center justify-center bg-[#FFC439] hover:bg-[#f0b429] text-[#003087] text-[15px] font-bold py-[13px] px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
+                      >
+                        {loading === "paypal" ? (
+                          <>
+                            <svg className="animate-spin mr-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10" strokeOpacity="0.3"/>
+                              <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
+                            </svg>
+                            <span>Processing...</span>
+                          </>
+                        ) : (
+                          <svg height="20" viewBox="0 0 101 32" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="#003087" d="M12.237 2.8c-.5 0-.9.3-1 .8L8.6 18.7c-.1.4.2.7.5.7h3.2c.5 0 .9-.3 1-.8l.8-4.9c.1-.5.5-.8 1-.8h2c3.8 0 6-1.8 6.6-5.4.3-1.6 0-2.8-.7-3.7-.8-.9-2.2-1.7-4.6-1.7H12.237zm2.1 3.2h1.7c1.3 0 2.1.3 2.5.8.4.5.5 1.3.3 2.4-.4 2.4-1.9 3.3-4.2 3.3h-1.5l1.2-6.5zM34.337 8.2c-.7 0-1.5.1-2.4.4-.8.3-1.5.7-2.1 1.2l-.3-1c-.1-.3-.4-.5-.7-.5h-2.7c-.3 0-.6.2-.7.5l-2.4 15.2c-.1.3.2.6.5.6h2.9c.3 0 .6-.2.7-.5l.7-4.4c.8.3 1.7.5 2.7.5 4 0 6.6-2.6 7.3-6.7.3-1.8 0-3.3-.8-4.3-.9-1.1-2.3-1.5-4.4-1.5h.7zm-1.3 3.2c.8 0 1.4.2 1.7.7.3.5.4 1.3.2 2.4-.5 2.8-1.9 3.5-3.9 3.5-.6 0-1.1-.1-1.6-.3l.9-5.9c.5-.2 1.1-.4 1.8-.4h.9zM48.737 8.2c-3.9 0-6.7 2.6-7.5 6.7-.4 2.1-.1 3.9.9 5.1 1 1.2 2.5 1.8 4.6 1.8 3.9 0 6.7-2.6 7.5-6.7.4-2.1.1-3.9-.9-5.1-1-1.2-2.5-1.8-4.6-1.8zm-.2 3.2c1.8 0 2.8.9 2.4 3.6-.4 2.5-1.7 3.6-3.5 3.6-1.8 0-2.8-.9-2.4-3.6.4-2.5 1.7-3.6 3.5-3.6zM62.737 8.5h-2.9c-.4 0-.7.2-.8.5l-3.1 9.8-1.3-9.8c-.1-.4-.4-.5-.8-.5h-2.7c-.3 0-.6.3-.5.6l2.4 13.5-2.2 3.5c-.2.3 0 .7.4.7h2.9c.4 0 .7-.2.9-.5l8.3-16.9c.1-.4-.1-.9-.6-.9zM71.237 8.2c-.7 0-1.5.1-2.4.4-.8.3-1.5.7-2.1 1.2l-.3-1c-.1-.3-.4-.5-.7-.5h-2.7c-.3 0-.6.2-.7.5l-2.4 15.2c-.1.3.2.6.5.6h2.9c.3 0 .6-.2.7-.5l.7-4.4c.8.3 1.7.5 2.7.5 4 0 6.6-2.6 7.3-6.7.3-1.8 0-3.3-.8-4.3-.9-1.1-2.3-1.5-4.4-1.5h.7zm-1.3 3.2c.8 0 1.4.2 1.7.7.3.5.4 1.3.2 2.4-.5 2.8-1.9 3.5-3.9 3.5-.6 0-1.1-.1-1.6-.3l.9-5.9c.5-.2 1.1-.4 1.8-.4h.9z"/>
+                          </svg>
+                        )}
+                      </button>
+
+                      {/* Debit or Credit Card Button */}
                       <button
                         onClick={() => handlePayment("zoho")}
                         disabled={!!loading}
-                        className="w-full flex items-center justify-center gap-2.5 bg-black text-white text-[14px] font-semibold py-[13px] px-4 rounded-[50px] hover:bg-[#222] transition-all disabled:opacity-60 cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-[14px] font-semibold py-[13px] px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
                       >
                         {loading === "zoho" ? (
                           <>
@@ -530,15 +551,50 @@ export default function CartPage() {
                               <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
                               <line x1="1" y1="10" x2="23" y2="10"/>
                             </svg>
-                            <span>Pay with Debit / Credit Card</span>
-                            <span className="flex items-center gap-1 ml-auto">
-                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/visa.svg" alt="Visa" className="h-[13px] object-contain brightness-0 invert opacity-80" />
-                              <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg" alt="Mastercard" className="h-[15px] object-contain brightness-0 invert opacity-80" />
+                            <span>Debit or Credit Card</span>
+                          </>
+                        )}
+                      </button>
+
+                      {/* Powered by PayPal */}
+                      <p className="text-center text-[12px] text-[#888] pb-1">Powered by <span className="font-semibold text-[#003087]">PayPal</span></p>
+
+                      {/* Razorpay Button */}
+                      <button
+                        onClick={() => handlePayment("razorpay")}
+                        disabled={!!loading}
+                        className="w-full flex items-center justify-center gap-2 bg-[#072654] hover:bg-[#0a3570] text-white text-[14px] font-semibold py-[13px] px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
+                      >
+                        {loading === "razorpay" ? (
+                          <>
+                            <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10" strokeOpacity="0.3"/>
+                              <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
+                            </svg>
+                            <span>Processing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Pay Now</span>
+                            <span className="flex items-center gap-1 text-[12px] font-normal opacity-75">
+                              Secured by
+                              <svg height="14" viewBox="0 0 100 22" fill="none" xmlns="http://www.w3.org/2000/svg" className="inline-block">
+                                <path d="M19.5 0L12 14h5L9 22l14-12h-6L19.5 0z" fill="#2EB8E6"/>
+                                <text x="26" y="17" fill="white" fontSize="14" fontFamily="Arial" fontWeight="bold">razorpay</text>
+                              </svg>
                             </span>
                           </>
                         )}
                       </button>
 
+                      {/* Card brand icons */}
+                      <div className="flex items-center justify-center gap-2 pt-1">
+                        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/visa.svg" alt="Visa" className="h-[18px] object-contain" />
+                        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg" alt="Mastercard" className="h-[20px] object-contain" />
+                        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/paypal.svg" alt="PayPal" className="h-[18px] object-contain" />
+                        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/americanexpress.svg" alt="Amex" className="h-[18px] object-contain" />
+                        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/dinersclub.svg" alt="Discover" className="h-[18px] object-contain" />
+                      </div>
 
                     </div>
 

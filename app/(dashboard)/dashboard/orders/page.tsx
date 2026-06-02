@@ -229,7 +229,7 @@ export default function DemoDashboard() {
                   <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="px-5 py-5 text-center">
                       <div className="inline-flex flex-col items-center gap-1">
-                        <span className="text-[13px] text-gray-800 dark:text-slate-300 font-medium">{order.id}</span>
+                        <span className="text-[13px] text-gray-800 dark:text-slate-300 font-medium">{order.orderNumber || order.id}</span>
                         {order.isRecurring === 1 && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide">
                             ● Subscription

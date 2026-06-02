@@ -1,11 +1,20 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Wrapper from "@/components/ui/Wrapper";
 
 export default function ThankYouPage() {
   const { id } = useParams<{ id: string }>();
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/orders/${id}`)
+      .then(r => r.json())
+      .then(data => { if (data?.orderNumber) setOrderNumber(data.orderNumber); })
+      .catch(() => {});
+  }, [id]);
 
   const steps = [
     { number: 1, label: "Configure & Order", active: false },
@@ -54,7 +63,7 @@ export default function ThankYouPage() {
             <p className="text-[15px] text-[#6c757d] mb-2">
               Your order has been placed successfully and our team has been notified.
             </p>
-            <p className="text-[13px] text-[#adb5bd] mb-8">Order ID: {id}</p>
+            <p className="text-[13px] text-[#adb5bd] mb-8">Order No: {orderNumber || id}</p>
 
             <div className="bg-[#fff3cd] border border-[#ffeeba] rounded-xl p-5 mb-8 text-left">
               <p className="text-[13px] font-semibold text-[#856404] mb-1">What happens next?</p>
