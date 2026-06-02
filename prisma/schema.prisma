@@ -14,7 +14,6 @@ model Review {
   createdAt  DateTime @default(now())
 }
 
-// Define your specific roles here
 enum Role {
   ADMIN
   MANAGER
@@ -24,10 +23,8 @@ enum Role {
   USER
 }
 
-// Make sure this is the ONLY "model User" in the entire file!
 model User {
-  id        String   @id @default(cuid())
-  displayId Int      @default(autoincrement()) @unique
+  id        Int      @id @default(autoincrement())
   name      String?
   email     String   @unique
   password  String?
@@ -36,17 +33,15 @@ model User {
   status    String   @default("passive")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  // Relations
+
   orders    Order[]
   tickets   Ticket[]
 }
 
 model Order {
-  id                  String        @id @default(cuid())
-  displayId           Int           @default(autoincrement()) @unique
+  id                  Int           @id @default(autoincrement())
   orderNumber         String?       @unique
-  userId              String?
+  userId              Int?
   amount              Float?
   paymentMethod       String?       @default("1")
   status              String        @default("1")
@@ -94,26 +89,25 @@ model Order {
 }
 
 model OrderDetail {
-  id        String   @id @default(cuid())
-  orderId   String
+  id        Int      @id @default(autoincrement())
+  orderId   Int
   order     Order    @relation(fields: [orderId], references: [id])
   itemName  String?
   itemId    String?
   quantity  Int?
   amount    Float?
-  platform   String?
-  type       String?
-  image      String?
+  platform  String?
+  type      String?
+  image     String?
   profileUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Ticket {
-  id             String          @id @default(cuid()) @map("id")
-  displayId      Int             @default(autoincrement()) @unique
+  id             Int             @id @default(autoincrement())
   ticketNumber   String?         @db.VarChar(50) @map("ticket_number")
-  userId         String          @map("user_id")
+  userId         Int             @map("user_id")
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   assignedTo     String?         @db.VarChar(30) @map("assigned_to")
   name           String?         @db.VarChar(225)
@@ -158,7 +152,7 @@ model TicketThread {
 }
 
 model Revenue {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   month     String
   year      Int
   today     Float    @default(0)
@@ -170,10 +164,10 @@ model Revenue {
 }
 
 model Page {
-  id              String   @id @default(cuid())
+  id              Int      @id @default(autoincrement())
   title           String
   slug            String   @unique
-  status          String   @default("Draft") // Draft, Published
+  status          String   @default("Draft")
   titleImage      String?
   opengraphImage  String?
   canonicalLink   String?
@@ -192,25 +186,21 @@ model Page {
   updatedAt       DateTime @updatedAt
 }
 
-// 1-yes, 2-no
 enum YesNo {
   YES
   NO
 }
 
-// 1-one time, 2-recurring
 enum PaymentType {
   ONE_TIME
   RECURRING
 }
 
-// 1-service, 2-goods
 enum ProductType {
   SERVICE
   GOODS
 }
 
-// 1-reviews, 2-SEO, 3-SMM, 4-Accounts, 5-GBP
 enum CatType {
   REVIEWS
   SEO
@@ -219,7 +209,6 @@ enum CatType {
   GBP
 }
 
-// 1-publish, 2-draft, 3-unused
 enum ProductStatus {
   PUBLISH
   DRAFT
@@ -235,41 +224,41 @@ model Product {
   isFreeProduct     Int?           @map("isFreeProduct")
   zohoItemId        String?        @map("zohoItemId")
   bannerTitle       String?        @map("bannerTitle")
-  title             String?        // No @map needed (Unquoted lower-case in Postgres)
+  title             String?
   content           String?        @db.Text
   categoryId        String?        @map("categoryId")
   subcategoryId     String?        @map("subcategoryId")
   accountTag        String?        @db.VarChar(30) @map("accountTag")
-  stock             String?        // No @map needed
+  stock             String?
   replacementPolicy String?        @map("replacementPolicy")
   minimumQuantity   Int            @default(1) @map("minimumQuantity")
   seeDetailLink     String?        @map("seeDetailLink")
   isMultiplePrice   Int?           @map("isMultiplePrice")
-  price             String?        // No @map needed
+  price             String?
   dropdownPrice     String?        @db.Text @map("dropdownPrice")
   isMonthly         Int?           @map("isMonthly")
   colorCode         String?        @map("colorCode")
-  slug              String?        // No @map needed
-  keywords          String?        // No @map needed
+  slug              String?
+  keywords          String?
   metaDescription   String?        @db.Text @map("metaDescription")
   metaTitle         String?        @db.Text @map("metaTitle")
   canonicalLink     String?        @db.Text @map("canonicalLink")
-  media             String?        // No @map needed
+  media             String?
   allowMultiple     YesNo?         @map("allowMultiple")
   paymentType       PaymentType?   @map("paymentType")
   productType       ProductType?   @map("productType")
   catType           CatType?       @map("catType")
   formAttached      String?        @db.VarChar(30) @map("formAttached")
-  priority          Int?           @default(1000) // No @map needed
-  status            ProductStatus? // No @map needed
+  priority          Int?           @default(1000)
+  status            ProductStatus?
   platformRange     Int?           @map("platformRange")
   createdAt         DateTime?      @default(now()) @map("createdAt")
   updatedAt         DateTime?      @updatedAt @map("updatedAt")
   deletedAt         DateTime?      @map("deletedAt")
 
-  @@map("Product") // Maps the model to the strict case-sensitive "Product" table
+  @@map("Product")
 }
-// 1-blog, 2-banner, 3-category, 4-testimonial, 5-employees/users, 6-pages, 7-portfolio, 8-services, 9-logo
+
 enum AttachmentType {
   BLOG
   BANNER
@@ -286,13 +275,13 @@ model Coupon {
   id           Int       @id @default(autoincrement())
   code         String?
   discount     String?
-  discountType String?   @map("discount_type") // 1-percentage, 2-price
-  discountOn   String?   @map("discount_on")   // 1-all, 2-qty
+  discountType String?   @map("discount_type")
+  discountOn   String?   @map("discount_on")
   quantity     String?
   expiry       String?
   discountFor  Int       @default(1) @map("discount_for")
   meta         String?
-  status       String?   // 1-active, 2-expired
+  status       String?
   createdAt    DateTime? @default(now()) @map("created_at")
   updatedAt    DateTime? @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
@@ -304,12 +293,12 @@ model Attachment {
   id        Int             @id @default(autoincrement())
   mediaUrl  String?
   alt       String?
-  isTitle   String?         // If image set as title for blog or page
+  isTitle   String?
   mediaType String?
   type      AttachmentType
   createdAt DateTime?       @default(now())
   updatedAt DateTime?       @updatedAt
-  deletedAt DateTime?       // Soft delete
+  deletedAt DateTime?
 }
 
 model Blog {
@@ -330,14 +319,14 @@ model Blog {
   media            String?
   author           String?
   about_author     String?  @db.Text
-  status           Int      @default(2) // 1=publish, 2=draft, 3=unused
+  status           Int      @default(2)
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
   deleted_at       DateTime?
 }
 
 model Redirect {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   fromPath  String   @unique
   toPath    String
   type      Int      @default(301)
@@ -353,15 +342,14 @@ model subscribers {
   phone         String?
   user_ip       String?
   user_browser  String?
-  status        Int      @default(1) // 1 = active, 2 = deactive
-
+  status        Int      @default(1)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
   deleted_at    DateTime?
 }
 
 model PasswordResetToken {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   email     String
   token     String   @unique
   expiresAt DateTime

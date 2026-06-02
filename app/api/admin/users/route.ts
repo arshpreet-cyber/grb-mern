@@ -28,7 +28,7 @@ export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
     const { id, ...data } = body;
-    const user = await prisma.user.update({ where: { id }, data });
+    const user = await prisma.user.update({ where: { id: parseInt(id) }, data });
     return NextResponse.json(user);
   } catch (e) {
     console.error(e);

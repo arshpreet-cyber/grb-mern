@@ -12,7 +12,7 @@ const SITE_URL = (
 
 async function markOrderPaid(orderId: string, tokenCode: string, paymentId: string | null) {
   const order = await prisma.order.findUnique({
-    where: { id: orderId },
+    where: { id: parseInt(orderId) },
     include: { orderDetails: true },
   });
   if (!order) return null;
@@ -26,7 +26,7 @@ async function markOrderPaid(orderId: string, tokenCode: string, paymentId: stri
 
   if (order.paymentStatus !== "2") {
     await prisma.order.update({
-      where: { id: orderId },
+      where: { id: parseInt(orderId) },
       data: { paymentStatus: "2", paymentId: paymentId ?? null },
     });
 

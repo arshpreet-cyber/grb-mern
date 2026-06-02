@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { type } = await req.json();
 
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { id: parseInt(id) },
       include: { orderDetails: true, user: { select: { name: true, email: true } } },
     });
 

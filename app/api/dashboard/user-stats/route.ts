@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = parseInt(session.user.id);
     const userEmail = session.user.email;
 
     // Match orders by userId OR by email (covers guest/imported orders)

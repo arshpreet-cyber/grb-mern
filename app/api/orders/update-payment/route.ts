@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   }
 
   const order = await prisma.order.findUnique({
-    where: { id: order_id },
+    where: { id: parseInt(order_id) },
     include: { orderDetails: true },
   });
   if (!order) {
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   }
 
   await prisma.order.update({
-    where: { id: order_id },
+    where: { id: parseInt(order_id) },
     data: {
       paymentStatus: "2",
       paymentId: payment_id ?? null,

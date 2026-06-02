@@ -14,17 +14,17 @@ export async function POST(req: NextRequest) {
     const { orderId, notes, items } = await req.json();
 
     const order = await prisma.order.findUnique({
-      where: { id: orderId },
+      where: { id: parseInt(orderId) },
       include: { orderDetails: true },
     });
 
-    if (!order || order.userId !== session.user.id) {
+    if (!order || order.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
     // Save notes and mark details as filled
     await prisma.order.update({
-      where: { id: orderId },
+      where: { id: parseInt(orderId) },
       data: {
         notes,
         detailsFilled: true,
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       await Promise.all(
         items.map((item: { id: string; profileUrl: string }) =>
           prisma.orderDetail.update({
-            where: { id: item.id },
+            where: { id: parseInt(item.id) },
             data: { profileUrl: item.profileUrl },
           })
         )

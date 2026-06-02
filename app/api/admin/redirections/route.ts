@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const { id, ...data } = await req.json();
-    const redirect = await prisma.redirect.update({ where: { id }, data });
+    const redirect = await prisma.redirect.update({ where: { id: parseInt(id) }, data });
     return NextResponse.json(redirect);
   } catch {
     return NextResponse.json({ error: "Failed to update" }, { status: 500 });
@@ -35,7 +35,7 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const { id } = await req.json();
-    await prisma.redirect.delete({ where: { id } });
+    await prisma.redirect.delete({ where: { id: parseInt(id) } });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Failed to delete" }, { status: 500 });

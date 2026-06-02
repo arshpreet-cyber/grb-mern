@@ -7,7 +7,8 @@ import { sendEmailNotification, buildTicketCreatedEmail } from "@/server/email";
 // GET /api/support/tickets?userId=xxx  OR  ?countOnly=true
 export async function GET(req: NextRequest) {
   try {
-    const userId = req.nextUrl.searchParams.get("userId") || undefined;
+    const userIdRaw = req.nextUrl.searchParams.get("userId");
+    const userId = userIdRaw ? parseInt(userIdRaw) : undefined;
     const countOnly = req.nextUrl.searchParams.get("countOnly") === "true";
 
     // Fast path: just return the total count for sidebar badge
@@ -50,7 +51,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, assignedTo, name, email, phone, subject, query, ticketType, media } = body;
+    const { userId: userIdRaw, assignedTo, name, email, phone, subject, query, ticketType, media } = body;
+    const userId = parseInt(userIdRaw);
 
     if (!userId || !subject || !query) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -60,7 +62,6 @@ export async function POST(req: NextRequest) {
 
     const ticket = await prisma.ticket.create({
       data: {
-        id: randomUUID(),
         ticketNumber,
         userId,
         assignedTo: assignedTo ?? null,

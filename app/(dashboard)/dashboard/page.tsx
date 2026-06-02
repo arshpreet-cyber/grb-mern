@@ -58,9 +58,8 @@ export default function UserDashboard() {
           setAllOrders(data);
           setOrders(data.map((o: ApiOrder) => ({
             id: o.id,
-            displayId: o.displayId,
             orderNumber: o.orderNumber,
-            paymentId: o.id.substring(0, 8),
+            paymentId: String(o.id),
             amount: `$${o.amount.toFixed(2)}`,
             date: new Date(o.date ?? o.createdAt ?? "").toLocaleDateString(),
             method: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
@@ -181,7 +180,7 @@ export default function UserDashboard() {
                   <td className="px-5 py-5 text-center">
                     <div className="inline-flex flex-col items-center gap-1">
                       <button onClick={() => router.push(`/dashboard/orders/${o.id}`)} className="text-[14px] font-mono font-semibold text-violet-600 dark:text-violet-400 hover:underline cursor-pointer">
-                        {o.displayId ?? o.orderNumber}
+                        {o.id}
                       </button>
                       {o.isRecurring === 1 && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide">

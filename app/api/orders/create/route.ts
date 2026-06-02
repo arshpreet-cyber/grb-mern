@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       .digest("hex");
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: parseInt(session.user.id) },
       select: { email: true, name: true },
     });
 
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     const order = await prisma.order.create({
       data: {
         orderNumber,
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
         email: user?.email,
         firstName: user?.name?.split(" ")[0] ?? "",
         lastName: user?.name?.split(" ").slice(1).join(" ") ?? "",

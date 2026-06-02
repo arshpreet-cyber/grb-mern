@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     }
 
     const isAdmin = (session.user as any).role?.toUpperCase() === "ADMIN";
-    const userId = session.user.id;
+    const userId = parseInt(session.user.id);
     const userEmail = session.user.email;
 
     const { searchParams } = req.nextUrl;
