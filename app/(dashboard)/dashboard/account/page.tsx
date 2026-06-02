@@ -136,7 +136,7 @@ export default function AccountPage() {
                 {errors.name && <span className="text-red-500 text-xs mt-1 block">{errors.name}</span>}
               </div>
 
-              <button className="bg-[#295b8d] dark:bg-indigo-600 hover:bg-[#1f4770] dark:hover:bg-indigo-500 text-white text-sm font-medium px-5 py-2.5 rounded-[4px] transition-all disabled:opacity-60" type="submit" disabled={saving}>
+              <button className="bg-[#295b8d] dark:bg-[#fc0] hover:bg-[#1f4770] dark:hover:bg-[#e6bb00] text-white dark:text-slate-900 text-sm font-medium px-5 py-2.5 rounded-[4px] transition-all disabled:opacity-60" type="submit" disabled={saving}>
                 {saving ? "Saving..." : "Save changes"}
               </button>
             </form>
@@ -162,7 +162,7 @@ export default function AccountPage() {
                 <label className="block text-sm text-gray-500 dark:text-slate-400 mb-1" htmlFor="confirmPassword">Confirm Password</label>
                 <input className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-[4px] px-3 py-2 text-sm text-gray-700 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors" id="confirmPassword" type="password" name="confirmPassword" value={passwords.confirmPassword} onChange={handlePasswordChange} required />
               </div>
-              <button className="bg-[#295b8d] dark:bg-indigo-600 hover:bg-[#1f4770] dark:hover:bg-indigo-500 text-white text-sm font-medium px-6 py-2.5 rounded-[4px] transition-all disabled:opacity-60" type="submit" disabled={saving}>
+              <button className="bg-[#295b8d] dark:bg-[#fc0] hover:bg-[#1f4770] dark:hover:bg-[#e6bb00] text-white dark:text-slate-900 text-sm font-medium px-6 py-2.5 rounded-[4px] transition-all disabled:opacity-60" type="submit" disabled={saving}>
                 {saving ? "Saving..." : "Save Password"}
               </button>
             </form>

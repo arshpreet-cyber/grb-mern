@@ -56,7 +56,7 @@ export default function AdminPagesPage() {
       sortable: true,
       render: (p) => (
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 shrink-0 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+          <div className="h-9 w-9 shrink-0 rounded-xl bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720] dark:text-yellow-400">
             <FileText size={16} />
           </div>
           <div className="flex flex-col gap-0.5">
@@ -130,7 +130,7 @@ export default function AdminPagesPage() {
       {/* Header */}
       <div className="rounded-[20px] bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-6 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+          <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720] dark:text-yellow-400">
             <FileText size={20} />
           </div>
           <div>
@@ -143,7 +143,7 @@ export default function AdminPagesPage() {
             <span className="text-xs font-black text-gray-500 dark:text-white uppercase tracking-widest">{pages.length} Pages</span>
           </div>
           <button onClick={() => setTab("new")}
-            className="rounded-xl bg-violet-600 hover:bg-violet-700 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition">
+            className="rounded-xl bg-[#fc0] hover:bg-[#e6bb00] px-5 py-2.5 text-sm font-bold text-slate-900 shadow-lg shadow-amber-500/10 transition">
             + New Page
           </button>
         </div>
@@ -153,7 +153,7 @@ export default function AdminPagesPage() {
       <div className="flex gap-1 rounded-xl bg-slate-100 dark:bg-slate-800 p-1 w-fit">
         {(["all", "new"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)}
-            className={`rounded-lg px-5 py-2 text-sm font-semibold transition ${tab === t ? "bg-white dark:bg-slate-700 text-violet-700 dark:text-violet-400 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white"}`}>
+            className={`rounded-lg px-5 py-2 text-sm font-semibold transition ${tab === t ? "bg-white dark:bg-slate-700 text-[#D8A720] dark:text-yellow-400 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white"}`}>
             {t === "all" ? "All Pages" : "Create New Page"}
           </button>
         ))}
@@ -267,7 +267,7 @@ function CreatePageTab({ onSuccess }: { onSuccess: () => void }) {
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="e.g. Buy Google Reviews"
               required autoFocus
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-sm text-slate-800 dark:text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/30 transition"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-sm text-slate-800 dark:text-white outline-none focus:border-[#fc0] focus:ring-2 focus:ring-amber-500/20 dark:focus:ring-yellow-950/40 transition"
             />
           </div>
 
@@ -286,7 +286,7 @@ function CreatePageTab({ onSuccess }: { onSuccess: () => void }) {
         </div>
 
         <button type="submit" disabled={saving}
-          className="rounded-xl bg-violet-600 hover:bg-violet-700 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2">
+          className="rounded-xl bg-[#fc0] hover:bg-[#e6bb00] px-8 py-3 text-sm font-bold text-slate-900 shadow-lg shadow-amber-500/10 transition disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2">
           {saving ? (
             <span className="flex items-center gap-2">
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />

@@ -209,7 +209,7 @@ export default function AdminProductsPage() {
     <div className="space-y-6">
       <div className="rounded-[20px] bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-6 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+          <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720] dark:text-yellow-400">
             <Package size={20} />
           </div>
           <div>
@@ -219,7 +219,7 @@ export default function AdminProductsPage() {
         </div>
         <button 
           onClick={openAdd} 
-          className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-violet-500/20 flex items-center gap-2"
+          className="bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-500/10 flex items-center gap-2"
         >
           <Plus size={18} />
           Add Product
@@ -243,9 +243,9 @@ export default function AdminProductsPage() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 dark:border-slate-800">
-            <div className="bg-violet-600 dark:bg-violet-900/50 px-6 py-4 flex items-center gap-3">
-              <ShoppingBag className="text-white h-5 w-5" />
-              <h2 className="text-lg font-bold text-white">{editId ? "Edit Product" : "Create Product"}</h2>
+            <div className="bg-[#fc0] dark:bg-amber-950/80 px-6 py-4 flex items-center gap-3">
+              <ShoppingBag className="text-slate-900 dark:text-white h-5 w-5" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{editId ? "Edit Product" : "Create Product"}</h2>
             </div>
             
             <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
@@ -254,7 +254,7 @@ export default function AdminProductsPage() {
                 <input 
                   value={form.title} 
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white" 
+                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white" 
                   placeholder="e.g. Google Maps Reviews"
                 />
               </div>
@@ -265,7 +265,7 @@ export default function AdminProductsPage() {
                   <select 
                     value={form.catType} 
                     onChange={e => setForm(f => ({ ...f, catType: e.target.value }))}
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white"
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white"
                   >
                     {CAT_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -275,7 +275,7 @@ export default function AdminProductsPage() {
                   <select 
                     value={form.status} 
                     onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white"
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white"
                   >
                     {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -288,7 +288,7 @@ export default function AdminProductsPage() {
                   <input 
                     value={form.price} 
                     onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white" 
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white" 
                     placeholder="0.00"
                   />
                 </div>
@@ -298,7 +298,7 @@ export default function AdminProductsPage() {
                     type="number" 
                     value={form.priority} 
                     onChange={e => setForm(f => ({ ...f, priority: Number(e.target.value) }))}
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white" 
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white" 
                   />
                 </div>
               </div>
@@ -311,7 +311,7 @@ export default function AdminProductsPage() {
                     min={1} 
                     value={form.minimumQuantity} 
                     onChange={e => setForm(f => ({ ...f, minimumQuantity: Number(e.target.value) }))}
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white" 
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white" 
                   />
                 </div>
                 <div>
@@ -319,7 +319,7 @@ export default function AdminProductsPage() {
                   <input 
                     value={form.stock} 
                     onChange={e => setForm(f => ({ ...f, stock: e.target.value }))}
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white" 
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white" 
                     placeholder="In Stock"
                   />
                 </div>
@@ -336,7 +336,7 @@ export default function AdminProductsPage() {
                     )}
                   </div>
                   <div className="flex flex-col gap-2 flex-1">
-                    <label className="cursor-pointer bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-700 dark:text-white hover:border-violet-500 hover:text-violet-600 transition-all flex items-center gap-2 w-fit">
+                    <label className="cursor-pointer bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-700 dark:text-white hover:border-[#fc0] hover:text-[#D8A720] transition-all flex items-center gap-2 w-fit">
                       <Upload size={14} />
                       {uploading ? "Uploading..." : (form.media ? "Change Image" : "Upload Image")}
                       <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
@@ -366,7 +366,7 @@ export default function AdminProductsPage() {
               <button 
                 onClick={handleSave} 
                 disabled={saving}
-                className="px-6 py-2 text-sm font-bold rounded-xl bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-500/20 disabled:opacity-60 transition-all"
+                className="px-6 py-2 text-sm font-bold rounded-xl bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 shadow-lg shadow-amber-500/10 disabled:opacity-60 transition-all"
               >
                 {saving ? "Saving..." : (editId ? "Update Product" : "Create Product")}
               </button>

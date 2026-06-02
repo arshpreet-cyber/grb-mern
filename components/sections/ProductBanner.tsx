@@ -16,6 +16,8 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
     ratingText = "4.9 · 2,847+ Reviews",
     pricePerReview = 15,
     productId,
+    checklist,
+    stats,
   } = data;
 
   const product = productId ? products.find((p) => p.id === productId) : null;
@@ -147,7 +149,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
           className="max-w-[1500px] mx-auto px-5 lg:px-10 flex flex-col lg:flex-row gap-14 items-start"
         >
           
-          {/* PHP COLUMN 1: LEFT SIDE MEDIA FRAME */}
+
           <div 
             ref={mediaColumnRef}
             className="w-full lg:w-[55%] flex flex-col relative transition-all duration-200 will-change-[margin-top] lg:max-w-none"
@@ -164,7 +166,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             </div>
           </div>
 
-          {/* PHP COLUMN 2: RIGHT SIDE PRODUCT CONTENT COLUMN */}
+          
           <div className="w-full lg:w-[45%] flex flex-col" id="prod-gmbpots">
             
             {/* Google Verified Badge */}
@@ -229,28 +231,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             </div>
             <div className="w-full h-[1px] bg-[#EBE9E1] mb-8"></div>
 
-            {/* Mode Switches */}
-            <div className="inline-flex bg-white border border-[#0000000F] rounded-[9px] p-1 w-fit mb-8 gap-0.5">
-              <button
-                type="button"
-                onClick={() => setPlan("one-time")}
-                className={`inline-flex items-center justify-center gap-1.5 px-6 py-2.5 text-[13px] font-bold rounded-[9px] border-none cursor-pointer text-[#4A4A48] transition-all bg-transparent ${plan === "one-time" ? "!bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] !text-[#000000]" : ""}`}
-              >
-                One - Time
-              </button>
-              <button
-                type="button"
-                onClick={() => { setPlan("monthly"); setSpinKey(k => k + 1); }}
-                className={`inline-flex items-center justify-center gap-1.5 px-6 py-2.5 text-[13px] font-bold rounded-[9px] border-none cursor-pointer text-[#4A4A48] transition-all bg-transparent ${plan === "monthly" ? "!bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] !text-[#000000]" : ""}`}
-              >
-                <svg key={spinKey} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 mr-0.5 animate-spin-once">
-                  <polyline points="23 4 23 10 17 10"></polyline>
-                  <polyline points="1 20 1 14 7 14"></polyline>
-                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                </svg>
-                Monthly
-              </button>
-            </div>
+           
 
 {/* CONDITIONALLY RENDER PACKAGES OR IMAGE-MATCHED TEXT PRICE */}
             {isGoogleProduct ? (
@@ -331,6 +312,29 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                 </div>
               </div>
             )}
+            
+             {/* Mode Switches */}
+            <div className="inline-flex bg-white border border-[#0000000F] rounded-[9px] p-1 w-fit mb-8 gap-0.5">
+              <button
+                type="button"
+                onClick={() => setPlan("one-time")}
+                className={`inline-flex items-center justify-center gap-1.5 px-6 py-2.5 text-[13px] font-bold rounded-[9px] border-none cursor-pointer text-[#4A4A48] transition-all bg-transparent ${plan === "one-time" ? "!bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] !text-[#000000]" : ""}`}
+              >
+                One - Time
+              </button>
+              <button
+                type="button"
+                onClick={() => { setPlan("monthly"); setSpinKey(k => k + 1); }}
+                className={`inline-flex items-center justify-center gap-1.5 px-6 py-2.5 text-[13px] font-bold rounded-[9px] border-none cursor-pointer text-[#4A4A48] transition-all bg-transparent ${plan === "monthly" ? "!bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] !text-[#000000]" : ""}`}
+              >
+                <svg key={spinKey} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 mr-0.5 animate-spin-once">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <polyline points="1 20 1 14 7 14"></polyline>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                Monthly
+              </button>
+            </div>
 
             {/* Quantity Strips Counter & Cart Buttons */}
             <span className="text-[15px] font-medium text-[#000000] uppercase tracking-[0.8px] mb-3 block">
@@ -373,24 +377,26 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               <button 
                 type="button" 
                 onClick={handleAddToCart}
-                className="inline-flex items-center justify-center gap-2 flex-1 h-[49px] !bg-black text-white text-[16px] font-500 rounded-[8px] border-none no-underline cursor-pointer tracking-[0.2px] hover:opacity-90 transition-opacity"
+                className={`inline-flex items-center justify-center gap-2 flex-1 h-[49px] text-[16px] font-500 rounded-[8px] border-none no-underline cursor-pointer tracking-[0.2px] hover:opacity-90 transition-all ${
+                  plan === "monthly" ? "!bg-[#fc0] text-[#1a1a1a]" : "!bg-black text-white"
+                }`}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                 </svg>
-                <span>Add to Cart-${total.toFixed(2)}</span>
+                <span>{plan === "monthly" ? "Subscribe" : "Add to Cart"}-${total.toFixed(2)}</span>
               </button>
             </div>
 
             {/* Checklists */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 mb-9 border-b border-[#EBE9E1] pb-9">
-              {[
+              {(checklist && Array.isArray(checklist) ? checklist : [
                 "Real, verified accounts — no bots or fakes",
                 "Gradual drip-feed for natural-looking growth",
                 "Custom written content tailored to your brand",
                 "Free replacements within 30 days"
-              ].map((text, i) => (
+              ]).map((text: string, i: number) => (
                 <div key={i} className="flex items-start gap-3 text-[16px] leading-[1.45] text-[#333331] font-400 text-left">
                   <img 
                     src="https://beta.getreviews.buzz/storage/app/blog/0280225001779423808_Vector.svg" 
@@ -406,14 +412,14 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
 
             {/* Bottom Stats Grid */}
             <div className="flex flex-col sm:flex-row gap-4 w-full">
-              {[
+              {(stats && Array.isArray(stats) ? stats : [
                 { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
                 { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
                 { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
-              ].map((stat, idx) => (
+              ]).map((stat: any, idx: number) => (
                 <div key={idx} className="flex-1 bg-white border border-[#EBE9E1] rounded-[16px] p-[24px_28px] flex flex-col items-baseline justify-center text-center">
                   <div className="mb-3.5 flex items-center justify-start w-full">
-                    <img src={stat.img} alt="Stat Asset Wrapper" />
+                    {stat.img && <img src={stat.img} alt="Stat Asset Wrapper" />}
                   </div>
                   <div className="text-[22px] font-semibold text-black mb-1 tracking-[-0.5px] w-full text-left">
                     {stat.val}

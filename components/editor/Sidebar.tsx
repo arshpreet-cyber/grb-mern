@@ -1043,6 +1043,155 @@ export default function Sidebar() {
                   placeholder="15"
                 />
               </div>
+
+              {/* Checklist items section */}
+              <div className="space-y-4 pt-4 border-t border-black/5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Checklist Items</label>
+                  <button 
+                    onClick={() => {
+                      const currentChecklist = selectedSection.data.checklist || [
+                        "Real, verified accounts — no bots or fakes",
+                        "Gradual drip-feed for natural-looking growth",
+                        "Custom written content tailored to your brand",
+                        "Free replacements within 30 days"
+                      ];
+                      const newChecklist = [...currentChecklist, "New checklist item"];
+                      handleDataChange('checklist', newChecklist);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Item
+                  </button>
+                </div>
+                {(selectedSection.data.checklist || [
+                  "Real, verified accounts — no bots or fakes",
+                  "Gradual drip-feed for natural-looking growth",
+                  "Custom written content tailored to your brand",
+                  "Free replacements within 30 days"
+                ]).map((item: string, idx: number) => (
+                  <div key={idx} className="flex gap-2 items-center relative group/item">
+                    <input 
+                      type="text"
+                      value={item}
+                      onChange={(e) => {
+                        const newChecklist = [...(selectedSection.data.checklist || [
+                          "Real, verified accounts — no bots or fakes",
+                          "Gradual drip-feed for natural-looking growth",
+                          "Custom written content tailored to your brand",
+                          "Free replacements within 30 days"
+                        ])];
+                        newChecklist[idx] = e.target.value;
+                        handleDataChange('checklist', newChecklist);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-medium"
+                    />
+                    <button 
+                      onClick={() => {
+                        const newChecklist = (selectedSection.data.checklist || [
+                          "Real, verified accounts — no bots or fakes",
+                          "Gradual drip-feed for natural-looking growth",
+                          "Custom written content tailored to your brand",
+                          "Free replacements within 30 days"
+                        ]).filter((_: any, i: number) => i !== idx);
+                        handleDataChange('checklist', newChecklist);
+                      }}
+                      className="p-1 text-red-400 hover:text-red-600"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Stats Cards Section */}
+              <div className="space-y-4 pt-4 border-t border-black/5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Stats Cards</label>
+                  <button 
+                    onClick={() => {
+                      const currentStats = selectedSection.data.stats || [
+                        { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
+                        { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
+                        { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                      ];
+                      const newStats = [...currentStats, { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "New Stat" }];
+                      handleDataChange('stats', newStats);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Stat
+                  </button>
+                </div>
+                {(selectedSection.data.stats || [
+                  { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
+                  { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
+                  { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                ]).map((stat: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button 
+                      onClick={() => {
+                        const newStats = (selectedSection.data.stats || [
+                          { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
+                          { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
+                          { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                        ]).filter((_: any, i: number) => i !== idx);
+                        handleDataChange('stats', newStats);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <input 
+                      type="text"
+                      placeholder="Icon Image URL"
+                      value={stat.img || ''}
+                      onChange={(e) => {
+                        const newStats = [...(selectedSection.data.stats || [
+                          { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
+                          { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
+                          { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                        ])];
+                        newStats[idx] = { ...newStats[idx], img: e.target.value };
+                        handleDataChange('stats', newStats);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Value (e.g. 10K+)"
+                        value={stat.val || ''}
+                        onChange={(e) => {
+                          const newStats = [...(selectedSection.data.stats || [
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                          ])];
+                          newStats[idx] = { ...newStats[idx], val: e.target.value };
+                          handleDataChange('stats', newStats);
+                        }}
+                        className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                      />
+                      <input 
+                        type="text"
+                        placeholder="Label"
+                        value={stat.lbl || ''}
+                        onChange={(e) => {
+                          const newStats = [...(selectedSection.data.stats || [
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                          ])];
+                          newStats[idx] = { ...newStats[idx], lbl: e.target.value };
+                          handleDataChange('stats', newStats);
+                        }}
+                        className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </>
           )}
 

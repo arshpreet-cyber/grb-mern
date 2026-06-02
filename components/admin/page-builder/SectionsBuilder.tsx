@@ -73,7 +73,7 @@ export default function SectionsBuilder({
             {/* Card Header */}
             <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 text-violet-600 text-xs font-bold">{i + 1}</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-100 text-[#D8A720] text-xs font-bold">{i + 1}</span>
                 <span className="text-lg">{tpl?.icon}</span>
                 <div>
                   <p className="text-sm font-semibold text-slate-700">{section.label}</p>
@@ -86,7 +86,7 @@ export default function SectionsBuilder({
                 <button onClick={() => move(i, 1)} disabled={i === sections.length - 1} type="button"
                   className="h-7 w-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-30 transition text-xs">Γåô</button>
                 <button onClick={() => setEditingId(section.id)} type="button"
-                  className="h-7 px-3 rounded-lg flex items-center gap-1.5 text-violet-600 hover:bg-violet-50 transition text-xs font-semibold">
+                  className="h-7 px-3 rounded-lg flex items-center gap-1.5 text-amber-600 hover:bg-amber-50 transition text-xs font-semibold">
                   Γ£Å Edit Section
                 </button>
                 <button onClick={() => remove(section.id)} type="button"
@@ -100,13 +100,13 @@ export default function SectionsBuilder({
                 value={section.heading}
                 onChange={(e) => update(section.id, "heading", e.target.value)}
                 placeholder="Section label / heading (optional)"
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-[#fc0] focus:ring-2 focus:ring-amber-500/20 transition"
               />
             </div>
 
             {/* Mini HTML preview */}
             <div className="px-4 pb-3">
-              <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 cursor-pointer hover:border-violet-300 transition"
+              <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 cursor-pointer hover:border-[#fc0] transition"
                 onClick={() => setEditingId(section.id)}>
                 <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Preview ΓÇö click to edit</p>
                 <pre className="text-[11px] text-slate-500 font-mono overflow-hidden whitespace-pre-wrap line-clamp-3">
@@ -121,7 +121,7 @@ export default function SectionsBuilder({
       {/* Add Section Button */}
       <button onClick={() => setShowPicker(true)}
         type="button"
-        className="w-full rounded-xl border-2 border-dashed border-violet-200 py-3 text-sm font-semibold text-violet-600 hover:border-violet-400 hover:bg-violet-50 transition flex items-center justify-center gap-2">
+        className="w-full rounded-xl border-2 border-dashed border-[#fc0]/40 py-3 text-sm font-semibold text-amber-700 hover:border-amber-400 hover:bg-amber-50 transition flex items-center justify-center gap-2">
         <span className="text-lg">+</span> Add Section
       </button>
 
@@ -140,10 +140,10 @@ export default function SectionsBuilder({
             <div className="p-6 grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto">
               {SECTION_TEMPLATES.map((tpl) => (
                 <button key={tpl.type} onClick={() => addSection(tpl.type)} type="button"
-                  className="flex flex-col items-start gap-2 rounded-xl border-2 border-slate-100 bg-slate-50 p-4 text-left hover:border-violet-400 hover:bg-violet-50 transition group">
+                  className="flex flex-col items-start gap-2 rounded-xl border-2 border-slate-100 bg-slate-50 p-4 text-left hover:border-amber-400 hover:bg-amber-50 transition group">
                   <span className="text-3xl">{tpl.icon}</span>
                   <div>
-                    <p className="text-sm font-bold text-slate-800 group-hover:text-violet-700">{tpl.label}</p>
+                    <p className="text-sm font-bold text-slate-800 group-hover:text-amber-700">{tpl.label}</p>
                     <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{tpl.description}</p>
                   </div>
                 </button>

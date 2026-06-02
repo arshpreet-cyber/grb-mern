@@ -196,7 +196,7 @@ export default function AdminDashboard() {
   // Columns for Orders
   const orderColumns: Column<Order>[] = [
     { key: "orderNumber", header: "# Order No", render: (r) => (
-      <Link href={`/admin/orders/${r.id}`} className="font-semibold text-violet-600 dark:text-violet-400 hover:underline font-mono text-[13px]">
+      <Link href={`/admin/orders/${r.id}`} className="font-semibold text-amber-600 dark:text-amber-400 hover:underline font-mono text-[13px]">
         {r.orderNumber || r.id.substring(0, 8)}
       </Link>
     ) },
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
       </span>
     ) },
     { key: "action", header: "", render: (r) => (
-      <Link href={`/admin/orders/${r.id}`} className="inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1.5 rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition">
+      <Link href={`/admin/orders/${r.id}`} className="inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1.5 rounded-lg bg-[#fc0] text-slate-900 hover:bg-[#e6bb00] transition">
         <Eye size={12} /> View
       </Link>
     ) },
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 text-violet-600 animate-spin" />
+          <Loader2 className="h-10 w-10 text-[#fc0] animate-spin" />
           <span className="text-sm font-semibold text-gray-500 dark:text-slate-400">Loading dashboard...</span>
         </div>
       </div>
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
       {/* Month-change overlay — no blur, just a small indicator */}
       {loadingData && (
         <div className="fixed top-4 right-4 z-100 bg-white dark:bg-slate-900 shadow-xl border border-gray-100 dark:border-slate-800 rounded-2xl px-4 py-2.5 flex items-center gap-2.5">
-          <Loader2 className="h-4 w-4 text-violet-600 animate-spin" />
+          <Loader2 className="h-4 w-4 text-[#fc0] animate-spin" />
           <span className="text-sm font-semibold text-gray-700 dark:text-white">Updating...</span>
         </div>
       )}
@@ -316,7 +316,7 @@ export default function AdminDashboard() {
                         }}
                         className={`flex items-center justify-center rounded-xl py-3 text-[13px] font-semibold transition-all ${
                           selectedMonth === month 
-                            ? "bg-[#111827] text-white dark:bg-violet-600 dark:text-white shadow-lg scale-105" 
+                            ? "bg-[#111827] text-white dark:bg-[#fc0] dark:text-slate-900 shadow-lg scale-105" 
                             : "text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
                         }`}
                       >
@@ -431,7 +431,7 @@ export default function AdminDashboard() {
                    cursor={{ fill: "currentColor", opacity: 0.1 }} 
                    contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.2)", background: "#1e293b", color: "#fff", fontSize: 12 }} 
                 />
-                <Bar dataKey="users" fill="#a855f7" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="users" fill="#fc0" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

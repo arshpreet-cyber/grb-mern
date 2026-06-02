@@ -169,7 +169,7 @@ function AdminMediaPageInner() {
             <button
               onClick={() => setTab("all")}
               className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                currentTab === "all" ? "bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-slate-300"
+                currentTab === "all" ? "bg-white dark:bg-slate-800 text-[#D8A720] dark:text-yellow-400 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-slate-300"
               }`}
             >
               Library
@@ -177,7 +177,7 @@ function AdminMediaPageInner() {
             <button
               onClick={() => setTab("new")}
               className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                currentTab === "new" ? "bg-white dark:bg-slate-800 text-violet-600 dark:text-violet-400 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-slate-300"
+                currentTab === "new" ? "bg-white dark:bg-slate-800 text-[#D8A720] dark:text-yellow-400 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-white dark:hover:text-slate-300"
               }`}
             >
               Upload New
@@ -189,18 +189,18 @@ function AdminMediaPageInner() {
       {currentTab === "all" ? (
         <div className="space-y-6">
           <div className="relative group max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-violet-500 transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-[#D8A720] transition-colors" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by alt text, URL or type..."
-              className="w-full rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] pl-11 pr-5 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-violet-500/10 focus:border-violet-500"
+              className="w-full rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1a1f2c] pl-11 pr-5 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-amber-500/10 focus:border-[#fc0]"
             />
           </div>
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#1a1f2c] rounded-[20px] border border-gray-100 dark:border-slate-800">
-              <div className="h-12 w-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin mb-4"></div>
+              <div className="h-12 w-12 border-4 border-[#fc0]/20 border-t-[#fc0] rounded-full animate-spin mb-4"></div>
               <p className="text-sm text-gray-500 dark:text-white font-medium">Loading your media library...</p>
             </div>
           ) : error ? (
@@ -214,7 +214,7 @@ function AdminMediaPageInner() {
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">No media assets found</h3>
               <p className="text-sm text-gray-500 dark:text-white mt-1 max-w-xs">Start building your library by uploading images for your blogs or products.</p>
-              <button onClick={() => setTab("new")} className="mt-6 text-violet-600 dark:text-violet-400 font-bold text-sm hover:underline">Upload your first asset</button>
+              <button onClick={() => setTab("new")} className="mt-6 text-amber-600 dark:text-yellow-400 font-bold text-sm hover:underline">Upload your first asset</button>
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -244,7 +244,7 @@ function AdminMediaPageInner() {
                             setTimeout(() => setCopiedId(null), 2000);
                           }, (msg) => setError(msg));
                         }}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gray-50 dark:bg-slate-800 py-2.5 text-xs font-bold text-gray-600 dark:text-white transition hover:bg-violet-600 hover:text-white"
+                        className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gray-50 dark:bg-slate-800 py-2.5 text-xs font-bold text-gray-600 dark:text-white transition hover:bg-[#fc0] hover:text-slate-900"
                       >
                         {copiedId === item.id ? (
                           <>
@@ -278,7 +278,7 @@ function AdminMediaPageInner() {
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-500 dark:text-white uppercase tracking-wider mb-2 block">Source File</label>
-              <div className={`relative group flex flex-col items-center justify-center rounded-3xl border-2 border-dashed transition-all p-2 ${previewUrl ? 'border-violet-500/50 bg-violet-50/10' : 'border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 hover:border-violet-500'}`}>
+              <div className={`relative group flex flex-col items-center justify-center rounded-3xl border-2 border-dashed transition-all p-2 ${previewUrl ? 'border-[#fc0]/50 bg-amber-50/10' : 'border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 hover:border-[#fc0]'}`}>
                 {previewUrl ? (
                   <div className="relative w-full aspect-video rounded-2xl overflow-hidden group">
                     <img src={previewUrl} className="h-full w-full object-contain bg-black/5" alt="Preview" />
@@ -291,7 +291,7 @@ function AdminMediaPageInner() {
                 ) : (
                   <label className="flex cursor-pointer flex-col items-center gap-3 py-12 w-full">
                     <div className="h-16 w-16 rounded-2xl bg-white dark:bg-slate-800 shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Upload className="h-8 w-8 text-violet-500" />
+                      <Upload className="h-8 w-8 text-[#D8A720]" />
                     </div>
                     <div className="text-center">
                       <p className="text-sm font-bold text-gray-900 dark:text-white">Click to choose image</p>
@@ -310,7 +310,7 @@ function AdminMediaPageInner() {
                   value={alt} 
                   onChange={(e) => setAlt(e.target.value)} 
                   placeholder="Accessibility description" 
-                  className="w-full rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-violet-500/10 focus:border-violet-500" 
+                  className="w-full rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-amber-500/10 focus:border-[#fc0]" 
                 />
               </div>
               <div className="space-y-2">
@@ -318,7 +318,7 @@ function AdminMediaPageInner() {
                 <select 
                   value={type} 
                   onChange={(e) => setType(e.target.value as MediaAttachmentType)} 
-                  className="w-full rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-violet-500/10 focus:border-violet-500 appearance-none"
+                  className="w-full rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-gray-900 dark:text-white outline-none transition focus:ring-2 focus:ring-amber-500/10 focus:border-[#fc0] appearance-none"
                 >
                   {attachmentTypeOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -330,7 +330,7 @@ function AdminMediaPageInner() {
             <button 
               disabled={uploading} 
               type="submit" 
-              className="w-full flex items-center justify-center gap-3 rounded-2xl bg-violet-600 py-4 text-sm font-bold text-white shadow-xl shadow-violet-500/30 transition hover:bg-violet-700 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 rounded-2xl bg-[#fc0] py-4 text-sm font-bold text-slate-900 shadow-xl shadow-amber-500/10 transition hover:bg-[#e6bb00] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
             >
               {uploading ? (
                 <>

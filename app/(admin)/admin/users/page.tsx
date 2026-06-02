@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
       header: "User Details",
       render: (u) => (
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 shrink-0 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-700 dark:text-violet-400 font-bold text-sm shadow-sm">
+          <div className="h-10 w-10 shrink-0 rounded-full bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720] dark:text-yellow-400 font-bold text-sm shadow-sm">
             {u.name?.charAt(0)?.toUpperCase() ?? "?"}
           </div>
           <div className="flex flex-col gap-0.5">
@@ -91,7 +91,7 @@ export default function AdminUsersPage() {
         <StatusPill 
           value={u.role} 
           colorMap={{
-            ADMIN: "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-900/50 dark:bg-violet-900/20 dark:text-violet-400",
+            ADMIN: "border-amber-200 bg-amber-50 text-amber-700 dark:border-[#fc0]/30 dark:bg-[#fc0]/10 dark:text-[#fc0]",
             MANAGER: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400",
             SEO: "border-cyan-200 bg-cyan-50 text-cyan-700 dark:border-cyan-900/50 dark:bg-cyan-900/20 dark:text-cyan-400",
             DEVELOPER: "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900/50 dark:bg-orange-900/20 dark:text-orange-400",
@@ -133,7 +133,7 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div className="rounded-[20px] bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-6 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+          <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720] dark:text-yellow-400">
             <Users size={20} />
           </div>
           <div>
@@ -163,14 +163,14 @@ export default function AdminUsersPage() {
       {editUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-gray-100 dark:border-slate-800">
-            <div className="bg-violet-600 dark:bg-violet-900/50 px-6 py-4 flex items-center gap-3">
-              <Shield className="text-white h-5 w-5" />
-              <h2 className="text-lg font-bold text-white">Modify User Access</h2>
+            <div className="bg-[#fc0] dark:bg-amber-950/80 px-6 py-4 flex items-center gap-3">
+              <Shield className="text-slate-900 dark:text-white h-5 w-5" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Modify User Access</h2>
             </div>
             
             <div className="p-6 space-y-4">
               <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700">
-                <div className="h-10 w-10 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-violet-600 font-black shadow-sm">
+                <div className="h-10 w-10 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-[#D8A720] font-black shadow-sm">
                   {editUser.name?.charAt(0)?.toUpperCase() ?? "?"}
                 </div>
                 <div className="flex flex-col">
@@ -186,7 +186,7 @@ export default function AdminUsersPage() {
                   <input 
                     value={editUser.phone ?? ""} 
                     onChange={e => setEditUser(u => u ? { ...u, phone: e.target.value } : u)}
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white" 
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white" 
                     placeholder="+1 (555) 000-0000"
                   />
                 </div>
@@ -197,7 +197,7 @@ export default function AdminUsersPage() {
                 <select 
                   value={editUser.role} 
                   onChange={e => setEditUser(u => u ? { ...u, role: e.target.value } : u)}
-                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white"
+                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white"
                 >
                   {["ADMIN", "MANAGER", "SEO", "DEVELOPER", "TESTER", "USER"].map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
@@ -208,7 +208,7 @@ export default function AdminUsersPage() {
                 <select 
                   value={editUser.status} 
                   onChange={e => setEditUser(u => u ? { ...u, status: e.target.value } : u)}
-                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all dark:text-white"
+                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white"
                 >
                   <option value="active">Active</option>
                   <option value="passive">Passive</option>
@@ -226,7 +226,7 @@ export default function AdminUsersPage() {
               <button 
                 onClick={handleSave} 
                 disabled={saving}
-                className="px-6 py-2 text-sm font-bold rounded-xl bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-500/20 disabled:opacity-60 transition-all"
+                className="px-6 py-2 text-sm font-bold rounded-xl bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 shadow-lg shadow-amber-500/10 disabled:opacity-60 transition-all"
               >
                 {saving ? "Updating..." : "Save Changes"}
               </button>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 interface Props {
   label: string;
@@ -24,10 +24,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export function Input({ prefix, className = "", ...props }: InputProps) {
-  const base = "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition placeholder-slate-400";
+  const base = "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none focus:border-[#fc0] focus:ring-2 focus:ring-amber-500/20 transition placeholder-slate-400";
   if (prefix) {
     return (
-      <div className="flex rounded-xl border border-slate-200 bg-white overflow-hidden focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100 transition">
+      <div className="flex rounded-xl border border-slate-200 bg-white overflow-hidden focus-within:border-[#fc0] focus-within:ring-2 focus-within:ring-amber-500/20 transition">
         <span className="flex items-center px-3 text-xs text-slate-400 bg-slate-50 border-r border-slate-200 whitespace-nowrap">{prefix}</span>
         <input {...props} className="flex-1 px-3 py-2.5 text-sm text-slate-800 outline-none bg-white" />
       </div>
@@ -40,7 +40,7 @@ export function Textarea({ className = "", ...props }: React.TextareaHTMLAttribu
   return (
     <textarea
       {...props}
-      className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition placeholder-slate-400 resize-none ${className}`}
+      className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none focus:border-[#fc0] focus:ring-2 focus:ring-amber-500/20 transition placeholder-slate-400 resize-none ${className}`}
     />
   );
 }
@@ -49,7 +49,7 @@ export function Select({ children, className = "", ...props }: React.SelectHTMLA
   return (
     <select
       {...props}
-      className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition ${className}`}
+      className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none focus:border-[#fc0] focus:ring-2 focus:ring-amber-500/20 transition ${className}`}
     >
       {children}
     </select>
@@ -61,7 +61,7 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
     <label className="flex items-center gap-3 cursor-pointer">
       <div
         onClick={() => onChange(!checked)}
-        className={`relative h-6 w-11 rounded-full transition-colors ${checked ? "bg-violet-600" : "bg-slate-200"}`}
+        className={`relative h-6 w-11 rounded-full transition-colors ${checked ? "bg-[#fc0]" : "bg-slate-200"}`}
       >
         <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? "translate-x-5" : "translate-x-0"}`} />
       </div>

@@ -199,7 +199,7 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
                         className="block px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
+                          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-yellow-950/40 text-amber-600 dark:text-yellow-400">
                             <MessageSquareText size={14} />
                           </div>
                           <div>
@@ -300,7 +300,7 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
                   className="h-10 w-10 rounded-full object-cover border border-slate-100 shrink-0"
                 />
               ) : (
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-sm font-bold text-white shadow-inner">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 via-[#fc0] to-yellow-500 text-sm font-bold text-slate-900 shadow-inner">
                   {userInitials}
                 </div>
               )}

@@ -173,7 +173,7 @@ export default function AdminMediaClient() {
             onClick={() => setTab(tab.id)}
             className={`rounded-lg px-5 py-2 text-sm font-semibold transition ${
               currentTab === tab.id
-                ? "bg-white text-violet-700 shadow-sm"
+                ? "bg-white text-[#D8A720] shadow-sm"
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
@@ -219,7 +219,7 @@ export default function AdminMediaClient() {
                   onChange={(event) =>
                     setSelectedFile(event.target.files?.[0] ?? null)
                   }
-                  className="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-violet-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700"
+                  className="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-amber-700"
                 />
               </label>
 
@@ -231,7 +231,7 @@ export default function AdminMediaClient() {
                   <select
                     value={type}
                     onChange={(event) => setType(event.target.value as MediaAttachmentType)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-[#fc0] focus:ring-2 focus:ring-amber-500/20"
                   >
                     {attachmentTypeOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -246,7 +246,7 @@ export default function AdminMediaClient() {
                     type="checkbox"
                     checked={isTitle}
                     onChange={(event) => setIsTitle(event.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-400"
+                    className="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-400"
                   />
                   <span className="text-sm text-slate-700">
                     Mark as title image
@@ -262,7 +262,7 @@ export default function AdminMediaClient() {
                   value={alt}
                   onChange={(event) => setAlt(event.target.value)}
                   placeholder="Describe the image for accessibility"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-[#fc0] focus:ring-2 focus:ring-amber-500/20"
                 />
               </label>
             </div>
@@ -271,7 +271,7 @@ export default function AdminMediaClient() {
               <button
                 type="submit"
                 disabled={uploading}
-                className="rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-xl bg-[#fc0] hover:bg-[#e6bb00] px-5 py-2.5 text-sm font-bold text-slate-900 shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {uploading ? "Uploading..." : "Upload Media"}
               </button>
@@ -332,7 +332,7 @@ export default function AdminMediaClient() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search media by alt text, type, or link..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-[#fc0] focus:ring-2 focus:ring-amber-500/20"
               />
             </div>
             <button
@@ -345,7 +345,7 @@ export default function AdminMediaClient() {
 
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-200 border-t-amber-600" />
             </div>
           ) : filteredMedia.length === 0 ? (
             <div className="py-20 text-center">
@@ -397,7 +397,7 @@ export default function AdminMediaClient() {
 
                       <td className="px-5 py-4">
                         <div className="space-y-2">
-                          <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-violet-700">
+                          <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-700">
                             {attachmentTypeOptions.find((option) => option.value === item.type)?.label ?? item.type}
                           </span>
                           <div>
@@ -418,7 +418,7 @@ export default function AdminMediaClient() {
                             target="_blank"
                             rel="noreferrer"
                             title={item.staticUrl ?? ""}
-                            className="block max-w-[220px] truncate rounded-lg bg-violet-50 px-3 py-2 text-sm text-violet-700 hover:bg-violet-100 hover:text-violet-800"
+                            className="block max-w-[220px] truncate rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700 hover:bg-amber-100 hover:text-amber-800"
                           >
                             {formatDisplayLink(item.staticUrl)}
                           </a>
@@ -438,7 +438,7 @@ export default function AdminMediaClient() {
                                 }
                               )
                             }
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-violet-200 bg-white text-sm text-violet-700 transition hover:bg-violet-50"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-amber-200 bg-white text-sm text-amber-700 transition hover:bg-amber-50"
                           >
                             ⧉
                           </button>
