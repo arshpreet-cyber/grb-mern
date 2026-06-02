@@ -9,6 +9,7 @@ import { ClipboardList, Eye, Trash2, Mail, Search } from "lucide-react";
 
 type Order = {
   id: string;
+  displayId: number | null;
   orderNumber: string | null;
   userId: string | null;
   email: string | null;
@@ -237,7 +238,7 @@ export default function AdminOrdersPage() {
                     {/* Order No */}
                     <td className="px-4 py-3 whitespace-nowrap">
                       <Link href={`/admin/orders/${o.id}`} className="font-bold text-violet-600 dark:text-violet-400 hover:underline font-mono text-[12px]">
-                        {o.orderNumber ?? o.id}
+                        #{o.displayId ?? o.orderNumber ?? o.id}
                       </Link>
                     </td>
                     {/* User */}

@@ -27,6 +27,7 @@ enum Role {
 // Make sure this is the ONLY "model User" in the entire file!
 model User {
   id        String   @id @default(cuid())
+  displayId Int      @default(autoincrement()) @unique
   name      String?
   email     String   @unique
   password  String?
@@ -43,6 +44,7 @@ model User {
 
 model Order {
   id                  String        @id @default(cuid())
+  displayId           Int           @default(autoincrement()) @unique
   orderNumber         String?       @unique
   userId              String?
   amount              Float?
@@ -109,6 +111,7 @@ model OrderDetail {
 
 model Ticket {
   id             String          @id @default(cuid()) @map("id")
+  displayId      Int             @default(autoincrement()) @unique
   ticketNumber   String?         @db.VarChar(50) @map("ticket_number")
   userId         String          @map("user_id")
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -8,6 +8,7 @@ import { Users, Search, Edit2, Shield, User as UserIcon, Phone, Mail, X } from "
 
 type User = {
   id: string;
+  displayId: number | null;
   name: string | null;
   email: string;
   phone: string | null;
@@ -57,6 +58,15 @@ export default function AdminUsersPage() {
   };
 
   const columns: Column<User>[] = [
+    {
+      key: "displayId",
+      header: "#",
+      render: (u) => (
+        <span className="font-mono font-bold text-gray-400 dark:text-slate-500 text-[12px]">
+          #{u.displayId ?? "—"}
+        </span>
+      ),
+    },
     {
       key: "name",
       header: "User Details",
