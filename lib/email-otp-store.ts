@@ -18,7 +18,8 @@ export async function verifyEmailOtp(email: string, code: string): Promise<boole
     await prisma.emailOtp.delete({ where: { email: email.toLowerCase() } }).catch(() => {});
     return false;
   }
-  if (entry.code !== code) return false;
+  if (entry.code !== code.trim()) return false;
+  // Only delete after successful verification
   await prisma.emailOtp.delete({ where: { email: email.toLowerCase() } }).catch(() => {});
   return true;
 }

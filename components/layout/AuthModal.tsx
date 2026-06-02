@@ -257,7 +257,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
     try {
       const res = await fetch("/api/twilio/verify-phone-otp", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: fullPhone, code: phoneOtp }),
+        body: JSON.stringify({ phone: fullPhone, code: phoneOtp.trim() }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Invalid OTP."); setIsLoading(false); return; }
@@ -285,7 +285,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       // Verify email OTP
       const vRes = await fetch("/api/twilio/verify-email-otp", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.username, code: emailOtp }),
+        body: JSON.stringify({ email: form.username.trim().toLowerCase(), code: emailOtp.trim() }),
       });
       const vData = await vRes.json();
       if (!vRes.ok) { setError(vData.error || "Invalid code."); setIsLoading(false); return; }
