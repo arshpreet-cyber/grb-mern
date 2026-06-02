@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 
       return {
         id: o.id,
-        orderNo: o.orderNumber ?? `ORD-${o.id.substring(0, 7)}`,
+        orderNo: o.orderNumber ?? `ORD-${o.id.toString().substring(0, 7)}`,
         paymentId: o.paymentId ?? "—",
         amount: o.amount != null ? `${o.currency ?? "$"}${o.amount}` : "—",
         orderDate: o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-GB").replace(/\//g, "-") : "—",

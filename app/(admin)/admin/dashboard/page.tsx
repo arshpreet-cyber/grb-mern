@@ -197,7 +197,7 @@ export default function AdminDashboard() {
   const orderColumns: Column<Order>[] = [
     { key: "orderNumber", header: "# Order No", render: (r) => (
       <Link href={`/admin/orders/${r.id}`} className="font-semibold text-amber-600 dark:text-amber-400 hover:underline font-mono text-[13px]">
-        {r.orderNumber || r.id.substring(0, 8)}
+        {r.orderNumber || r.id.toString().substring(0, 8)}
       </Link>
     ) },
     { key: "user", header: "User", render: (r) => (

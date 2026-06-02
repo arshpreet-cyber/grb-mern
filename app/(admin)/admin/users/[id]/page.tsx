@@ -195,7 +195,7 @@ export default function AdminUserDetailPage() {
                 <tr key={o.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/40 transition-colors">
                   <td className="px-4 py-3">
                     <Link href={`/admin/orders/${o.id}`} className="font-bold font-mono text-amber-600 dark:text-amber-400 hover:underline">
-                      {o.orderNumber ?? o.id.substring(0, 8)}
+                      {o.orderNumber ?? o.id.toString().substring(0, 8)}
                     </Link>
                   </td>
                   <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">
