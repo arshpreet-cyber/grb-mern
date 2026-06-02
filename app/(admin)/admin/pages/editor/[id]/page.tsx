@@ -13,7 +13,7 @@ export default async function AdminEditorPage({
 
   let page;
   try {
-    page = await prisma.page.findUnique({ where: { id } }) as any;
+    page = await prisma.page.findUnique({ where: { id: parseInt(id) } }) as any;
   } catch {
     notFound();
   }
