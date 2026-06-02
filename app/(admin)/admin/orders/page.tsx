@@ -171,7 +171,7 @@ export default function AdminOrdersPage() {
       {/* Header */}
       <div className="rounded-2xl bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-5 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600">
+          <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720]">
             <ClipboardList size={20} />
           </div>
           <div>
@@ -187,11 +187,11 @@ export default function AdminOrdersPage() {
           <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearch(""); }}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${
               activeTab === tab.key
-                ? "bg-violet-600 text-white border-violet-600 shadow-lg shadow-violet-500/20"
-                : "bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-400 border-gray-100 dark:border-slate-800 hover:border-violet-300 hover:text-violet-600"
+                ? "bg-[#fc0] text-slate-900 border-[#fc0] shadow-lg shadow-amber-500/10"
+                : "bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-400 border-gray-100 dark:border-slate-800 hover:border-amber-300 hover:text-amber-600"
             }`}>
             {tab.label}
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${activeTab === tab.key ? "bg-white/20 text-white" : "bg-gray-100 dark:bg-slate-800 text-gray-500"}`}>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${activeTab === tab.key ? "bg-black/10 text-slate-900" : "bg-gray-100 dark:bg-slate-800 text-gray-500"}`}>
               {counts[tab.key] ?? 0}
             </span>
           </button>
@@ -209,7 +209,7 @@ export default function AdminOrdersPage() {
               placeholder="Search by order no, customer, email..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-8 pr-4 py-2 text-[13px] border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-white outline-none focus:border-violet-400"
+              className="w-full pl-8 pr-4 py-2 text-[13px] border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-white outline-none focus:border-[#fc0]"
             />
           </div>
         </div>
@@ -236,14 +236,14 @@ export default function AdminOrdersPage() {
                   <tr key={o.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                     {/* Order No */}
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <Link href={`/admin/orders/${o.id}`} className="font-bold text-violet-600 dark:text-violet-400 hover:underline font-mono text-[12px]">
+                      <Link href={`/admin/orders/${o.id}`} className="font-bold text-amber-600 dark:text-amber-400 hover:underline font-mono text-[12px]">
                         {o.orderNumber ?? o.id}
                       </Link>
                     </td>
                     {/* User */}
                     <td className="px-4 py-3">
                       {o.userId ? (
-                        <Link href={`/admin/users/${o.userId}`} className="font-semibold text-gray-900 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 hover:underline transition-colors">
+                        <Link href={`/admin/users/${o.userId}`} className="font-semibold text-gray-900 dark:text-white hover:text-[#D8A720] dark:hover:text-yellow-400 hover:underline transition-colors">
                           {customerName}
                         </Link>
                       ) : (

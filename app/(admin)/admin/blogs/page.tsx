@@ -116,7 +116,7 @@ export default function BlogsListing() {
     <div className="space-y-6">
       <div className="rounded-[20px] bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-6 shadow-sm flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+          <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720] dark:text-yellow-400">
             <PenTool size={20} />
           </div>
           <div>
@@ -126,7 +126,7 @@ export default function BlogsListing() {
         </div>
         <Link 
           href="/admin/blogs/create" 
-          className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-violet-500/20 flex items-center gap-2"
+          className="bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-amber-500/10 flex items-center gap-2"
         >
           <Plus size={18} />
           Add New Blog

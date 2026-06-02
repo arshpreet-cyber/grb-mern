@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -209,7 +209,7 @@ export default function PageForm({
       {/* Submit */}
       <div className="flex items-center gap-3 pt-2">
         <button type="submit" disabled={saving}
-          className="rounded-xl bg-linear-to-r from-violet-600 to-indigo-600 px-8 py-3 text-sm font-bold text-white shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
+          className="rounded-xl bg-[#fc0] hover:bg-[#e6bb00] px-8 py-3 text-sm font-bold text-slate-900 shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
           {saving ? (
             <span className="flex items-center gap-2">
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />

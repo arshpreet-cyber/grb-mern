@@ -180,7 +180,7 @@ export default function AdminTicketsPage() {
     { key: "open", label: "Open", color: "bg-emerald-600 text-white" },
     { key: "awaiting", label: "Customer Replied", color: "bg-amber-500 text-white" },
     { key: "closed", label: "Closed", color: "bg-gray-400 text-white" },
-    { key: "pending", label: "Pending", color: "bg-violet-600 text-white" },
+    { key: "pending", label: "Pending", color: "bg-[#fc0] text-slate-900" },
   ];
   const filteredTickets = sortTickets(filter === "all" ? tickets
     : filter === "open" ? tickets.filter(t => t.status === "Open")
@@ -193,7 +193,7 @@ export default function AdminTicketsPage() {
       <div className="rounded-[20px] bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-6 shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+            <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720] dark:text-yellow-400">
               <Headphones size={20} />
             </div>
             <div>

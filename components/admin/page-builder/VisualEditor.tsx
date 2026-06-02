@@ -269,7 +269,7 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
             </button>
             <button onClick={handleSave}
               type="button"
-              className="rounded-lg bg-violet-600 px-5 py-2 text-sm font-bold text-white hover:bg-violet-700 transition shadow-sm">
+              className="rounded-lg bg-[#fc0] px-5 py-2 text-sm font-bold text-slate-900 hover:bg-[#e6bb00] transition shadow-sm">
               Save Changes
             </button>
           </div>
@@ -289,7 +289,7 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
                   .interactive-preview a:hover, 
                   .interactive-preview img:hover,
                   .interactive-preview span:hover {
-                    outline: 2px dashed #8b5cf6 !important;
+                    outline: 2px dashed #fc0 !important;
                     outline-offset: 4px;
                     cursor: pointer;
                     border-radius: 4px;
@@ -307,8 +307,8 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
               {/* Sidebar Editor (Right Side) */}
               <div className="w-96 flex-shrink-0 bg-white border-l border-slate-200 overflow-y-auto shadow-[-4px_0_15px_rgba(0,0,0,0.03)] z-10">
                 <div className="p-6 space-y-6">
-                  <div className="rounded-xl bg-violet-50 border border-violet-100 p-4 shadow-sm">
-                    <p className="text-xs text-violet-700 font-medium leading-relaxed">
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 shadow-sm">
+                    <p className="text-xs text-amber-700 font-medium leading-relaxed">
                       ≡ƒÆí Select an element on the left, or edit the fields directly below.
                     </p>
                   </div>
@@ -323,12 +323,12 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
                           ref={(el) => { fieldRefs.current[field.key] = el }}
                           className={`p-4 rounded-xl border transition-all duration-300 ${
                             isActive 
-                              ? "border-violet-500 bg-violet-50/50 shadow-[0_0_0_4px_rgba(139,92,246,0.1)] ring-1 ring-violet-500" 
-                              : "border-slate-200 bg-white hover:border-violet-300"
+                              ? "border-[#fc0] bg-amber-50/50 shadow-[0_0_0_4px_rgba(255,204,0,0.1)] ring-1 ring-[#fc0]" 
+                              : "border-slate-200 bg-white hover:border-amber-300"
                           }`}
                           onClick={() => setActiveField(field.key)}
                         >
-                          <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isActive ? "text-violet-700" : "text-slate-600"}`}>
+                          <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isActive ? "text-amber-700" : "text-slate-600"}`}>
                             {field.label}
                           </label>
                           
@@ -339,7 +339,7 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
                               placeholder={field.placeholder}
                               rows={4}
                               className={`w-full rounded-xl border px-4 py-3 text-sm text-slate-800 outline-none transition resize-none ${
-                                isActive ? "border-violet-400 bg-white ring-2 ring-violet-100" : "border-slate-200 bg-slate-50 focus:border-violet-400 focus:bg-white"
+                                isActive ? "border-[#fc0] bg-white ring-2 ring-amber-100" : "border-slate-200 bg-slate-50 focus:border-[#fc0] focus:bg-white"
                               }`}
                             />
                           ) : field.type === "color" ? (
@@ -356,7 +356,7 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
                                 onChange={(e) => set(field.key, e.target.value)}
                                 placeholder="#000000"
                                 className={`flex-1 rounded-xl border px-4 py-2.5 text-sm outline-none transition ${
-                                  isActive ? "border-violet-400 bg-white ring-2 ring-violet-100" : "border-slate-200 bg-slate-50 focus:border-violet-400 focus:bg-white"
+                                  isActive ? "border-[#fc0] bg-white ring-2 ring-amber-100" : "border-slate-200 bg-slate-50 focus:border-[#fc0] focus:bg-white"
                                 }`}
                               />
                             </div>
@@ -368,7 +368,7 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
                                 onChange={(e) => set(field.key, e.target.value)}
                                 placeholder={field.placeholder}
                                 className={`w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition ${
-                                  isActive ? "border-violet-400 bg-white ring-2 ring-violet-100" : "border-slate-200 bg-slate-50 focus:border-violet-400 focus:bg-white"
+                                  isActive ? "border-[#fc0] bg-white ring-2 ring-amber-100" : "border-slate-200 bg-slate-50 focus:border-[#fc0] focus:bg-white"
                                 }`}
                               />
                               {values[field.key] && (
@@ -385,7 +385,7 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
                               onChange={(e) => set(field.key, e.target.value)}
                               placeholder={field.placeholder}
                               className={`w-full rounded-xl border px-4 py-2.5 text-sm text-slate-800 outline-none transition ${
-                                isActive ? "border-violet-400 bg-white ring-2 ring-violet-100" : "border-slate-200 bg-slate-50 focus:border-violet-400 focus:bg-white"
+                                isActive ? "border-[#fc0] bg-white ring-2 ring-amber-100" : "border-slate-200 bg-slate-50 focus:border-[#fc0] focus:bg-white"
                               }`}
                             />
                           )}

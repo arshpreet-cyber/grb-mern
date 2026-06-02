@@ -177,7 +177,7 @@ export default function UserDashboard() {
                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                   <td className="px-5 py-5 text-center">
                     <div className="inline-flex flex-col items-center gap-1">
-                      <button onClick={() => router.push(`/dashboard/orders/${o.id}`)} className="text-[14px] font-mono font-semibold text-violet-600 dark:text-violet-400 hover:underline cursor-pointer">
+                      <button onClick={() => router.push(`/dashboard/orders/${o.id}`)} className="text-[14px] font-mono font-semibold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer">
                         {o.orderNumber}
                       </button>
                       {o.isRecurring === 1 && (

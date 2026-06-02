@@ -123,11 +123,11 @@ export default function UserSidebar({ isOpen = true, onToggle }: UserSidebarProp
           <div>
             <Link
               href="/admin/dashboard"
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors font-medium"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm bg-[#FCF8EC] dark:bg-yellow-900/20 text-[#D8A720] dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors font-medium"
             >
               <Zap size={18} strokeWidth={1.5} />
               <span className="flex-1">Admin Dashboard</span>
-              <span className="text-[9px] bg-purple-600 text-white px-1.5 py-0.5 rounded-full font-bold uppercase">
+              <span className="text-[9px] bg-[#fc0] text-slate-900 px-1.5 py-0.5 rounded-full font-bold uppercase">
                 {role}
               </span>
             </Link>
@@ -234,7 +234,7 @@ export default function UserSidebar({ isOpen = true, onToggle }: UserSidebarProp
       {/* User Footer */}
       <div className="px-4 py-4 border-t border-gray-100 dark:border-slate-800 transition-colors">
         <div className="flex items-center gap-3 rounded-xl bg-white dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700 shadow-sm px-3 py-3 mb-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-xs font-bold text-white shadow-inner">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 via-[#fc0] to-yellow-500 text-xs font-bold text-slate-900 shadow-inner">
             {session?.user?.name?.charAt(0)?.toUpperCase() ?? "U"}
           </div>
           <div className="min-w-0 flex-1">

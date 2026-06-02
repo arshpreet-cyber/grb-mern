@@ -112,7 +112,7 @@ export default function AdminUserDetailPage() {
         >
           <ArrowLeft size={18} />
         </button>
-        <div className="h-12 w-12 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-700 font-bold text-lg">
+        <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-yellow-950/40 flex items-center justify-center text-[#D8A720] font-bold text-lg">
           {user.name?.charAt(0)?.toUpperCase() ?? "?"}
         </div>
         <div>
@@ -121,7 +121,7 @@ export default function AdminUserDetailPage() {
         </div>
         <div className="ml-auto flex gap-2 flex-wrap">
           <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
-            user.role === "ADMIN" ? "bg-violet-100 text-violet-700 border-violet-300"
+            user.role === "ADMIN" ? "bg-amber-100 text-amber-700 border-amber-300"
             : "bg-gray-100 text-gray-600 border-gray-300"
           }`}>{user.role}</span>
           <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
@@ -159,7 +159,7 @@ export default function AdminUserDetailPage() {
         {/* Stats */}
         <div className="md:col-span-2 grid grid-cols-3 gap-4">
           {[
-            { label: "Total Orders", value: user.orders.length, color: "bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400" },
+            { label: "Total Orders", value: user.orders.length, color: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400" },
             { label: "Total Spent", value: `$${totalSpend.toFixed(2)}`, color: "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400" },
             { label: "Support Tickets", value: user.tickets.length, color: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400" },
           ].map((s) => (
@@ -174,7 +174,7 @@ export default function AdminUserDetailPage() {
       {/* Orders */}
       <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-gray-100 dark:border-slate-800 flex items-center gap-3">
-          <ClipboardList size={18} className="text-violet-500" />
+          <ClipboardList size={18} className="text-[#D8A720]" />
           <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide">
             Orders ({user.orders.length})
           </h2>
@@ -194,7 +194,7 @@ export default function AdminUserDetailPage() {
               ) : user.orders.map((o) => (
                 <tr key={o.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/40 transition-colors">
                   <td className="px-4 py-3">
-                    <Link href={`/admin/orders/${o.id}`} className="font-bold font-mono text-violet-600 dark:text-violet-400 hover:underline">
+                    <Link href={`/admin/orders/${o.id}`} className="font-bold font-mono text-amber-600 dark:text-amber-400 hover:underline">
                       {o.orderNumber ?? o.id.substring(0, 8)}
                     </Link>
                   </td>

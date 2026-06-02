@@ -160,7 +160,7 @@ export default function AdminRedirectionsPage() {
                     {r.fromPath}
                   </code>
                   <ArrowRight size={14} className="text-gray-400 shrink-0 hidden sm:block" />
-                  <code className="text-[13px] font-mono text-violet-600 dark:text-violet-400 truncate bg-gray-50 dark:bg-slate-900 px-2 py-0.5 rounded">
+                  <code className="text-[13px] font-mono text-amber-600 dark:text-amber-400 truncate bg-gray-50 dark:bg-slate-900 px-2 py-0.5 rounded">
                     {r.toPath}
                   </code>
                 </div>
