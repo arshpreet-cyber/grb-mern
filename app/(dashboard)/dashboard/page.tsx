@@ -28,6 +28,7 @@ type Order = {
 
 type ApiOrder = {
   id: string;
+  displayId?: number | null;
   orderNumber: string;
   amount: number;
   date: string;
