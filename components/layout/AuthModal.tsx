@@ -145,8 +145,13 @@ function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () 
 type Step = "form" | "phone-otp" | "email-otp";
 
 function OtpInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const inputs = Array.from({ length: 6 });
-  const refs = Array.from({ length: 6 }, () => useRef<HTMLInputElement>(null));
+  const ref0 = useRef<HTMLInputElement>(null);
+  const ref1 = useRef<HTMLInputElement>(null);
+  const ref2 = useRef<HTMLInputElement>(null);
+  const ref3 = useRef<HTMLInputElement>(null);
+  const ref4 = useRef<HTMLInputElement>(null);
+  const ref5 = useRef<HTMLInputElement>(null);
+  const refs = [ref0, ref1, ref2, ref3, ref4, ref5];
 
   const handleChange = (i: number, v: string) => {
     if (!/^\d*$/.test(v)) return;
@@ -169,7 +174,7 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
 
   return (
     <div className="flex gap-2 justify-center">
-      {inputs.map((_, i) => (
+      {refs.map((ref, i) => (
         <input key={i} ref={refs[i]} type="text" inputMode="numeric" maxLength={1}
           value={value[i] ?? ""}
           onChange={(e) => handleChange(i, e.target.value)}
@@ -451,11 +456,11 @@ function AuthModalInner() {
 
   return (
     <div
-      className="fixed inset-0 z-2000 flex items-center justify-center bg-black/50 backdrop-blur-[3px] overflow-y-auto font-sans cursor-pointer"
+      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/50 backdrop-blur-[3px] overflow-y-auto font-sans cursor-pointer"
       onClick={() => router.push("/")}
     >
       <div
-        className="relative w-full max-w-110 mx-4 my-8 rounded-xl bg-white shadow-2xl px-8 py-8 cursor-default"
+        className="relative w-full max-w-[440px] mx-4 my-8 rounded-xl bg-white shadow-2xl px-8 py-8 cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
