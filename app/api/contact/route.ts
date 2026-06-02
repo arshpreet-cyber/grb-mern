@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { randomUUID } from "crypto";
 import { sendEmailNotification, buildContactConfirmationEmail } from "@/server/email";
 
 export async function POST(req: Request) {

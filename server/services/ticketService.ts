@@ -1,5 +1,4 @@
 import prisma from "../../lib/prisma.ts";
-import { randomUUID } from "crypto";
 
 export type CreateTicketPayload = {
   userId: string;
