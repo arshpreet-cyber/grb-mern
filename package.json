@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "tsx server.ts",
-    "build": "prisma db push --accept-data-loss && node --max-old-space-size=4096 ./node_modules/next/dist/bin/next build",
+    "dev": "node --max-old-space-size=8192 node_modules/tsx/dist/cli.mjs server.ts",
+    "build": "prisma db push --accept-data-loss && node --max-old-space-size=8192 ./node_modules/next/dist/bin/next build",
     "start": "NODE_ENV=production tsx server.ts",
     "worker": "tsx server/worker.ts",
     "lint": "next lint",
