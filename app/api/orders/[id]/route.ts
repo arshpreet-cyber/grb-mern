@@ -23,7 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const order = await prisma.order.update({
-      where: { id },
+      where: { id: parseInt(id) },
       data,
       include: { orderDetails: true, user: { select: { name: true, email: true } } },
     });
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
     // Fetch the order along with its relations
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { id: parseInt(id) },
       include: { 
         orderDetails: true,
         user: { select: { name: true, email: true } } 
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     // (Note: Adjust 'session.user.role' depending on your next-auth setup variable)
     const isAdmin = (session.user as any).role === "ADMIN" || (session.user as any).role === "admin";
     
-    if (!isAdmin && order.userId?.toString() !== session.user.id) {
+    if (!isAdmin && order.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: "Unauthorized access to order" }, { status: 403 });
     }
 
