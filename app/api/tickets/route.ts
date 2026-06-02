@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     const ticket = await createTicket({
-      userId,
+      userId: parseInt(userId),
       assignedTo,
       name,
       email,

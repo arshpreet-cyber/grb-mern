@@ -1,7 +1,7 @@
 import prisma from "../../lib/prisma.ts";
 
 export type CreateTicketPayload = {
-  userId: string;
+  userId: number;
   assignedTo?: string | null;
   name?: string | null;
   email?: string | null;
@@ -36,7 +36,7 @@ export async function createTicket(data: CreateTicketPayload) {
 
 export async function getTickets(userId?: string) {
   return prisma.ticket.findMany({
-    where: userId ? { userId } : undefined,
+    where: userId ? { userId: parseInt(userId) } : undefined,
     include: {
       user: {
         select: {

@@ -31,7 +31,7 @@ router.post("/tickets", async (req, res) => {
     }
 
     const ticket = await createTicket({
-      userId,
+      userId: parseInt(userId),
       assignedTo,
       name,
       email,
