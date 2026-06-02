@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { Edit3, ExternalLink } from 'lucide-react';
+import { Edit3, Copy, ExternalLink } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export default function AdminToolbar() {
@@ -17,6 +17,15 @@ export default function AdminToolbar() {
   return (
     <div className="bg-[#0f172a] text-white py-2.5 px-6 flex items-center justify-end gap-8 text-[13px] font-medium z-[9999] relative border-b border-slate-800">
       <div className="flex items-center gap-6 mr-auto md:mr-0">
+        <button
+          onClick={() => alert('Duplicate Page logic will be implemented here')}
+          className="flex items-center gap-2 hover:text-blue-300 transition-all group"
+        >
+          <Copy size={15} className="text-slate-400 group-hover:text-blue-300" />
+          <span>Duplicate Page</span>
+          <ExternalLink size={13} className="opacity-40" />
+        </button>
+
         <Link
           href={`${pathname}?edit=true`}
           target="_blank"
