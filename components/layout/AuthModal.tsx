@@ -155,15 +155,22 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
 
   const handleChange = (i: number, v: string) => {
     if (!/^\d*$/.test(v)) return;
-    const digits = value.split("");
+    const digits = Array.from({ length: 6 }, (_, idx) => value[idx] ?? "");
     digits[i] = v.slice(-1);
-    const next = digits.join("").padEnd(6, "").slice(0, 6);
-    onChange(next.trimEnd());
+    onChange(digits.join("").replace(/\s/g, ""));
     if (v && i < 5) refs[i + 1].current?.focus();
   };
 
   const handleKeyDown = (i: number, e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !value[i] && i > 0) refs[i - 1].current?.focus();
+    if (e.key === "Backspace") {
+      if (value[i]) {
+        const digits = Array.from({ length: 6 }, (_, idx) => value[idx] ?? "");
+        digits[i] = "";
+        onChange(digits.join("").replace(/\s/g, ""));
+      } else if (i > 0) {
+        refs[i - 1].current?.focus();
+      }
+    }
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -175,7 +182,7 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
   return (
     <div className="flex gap-2 justify-center">
       {refs.map((ref, i) => (
-        <input key={i} ref={refs[i]} type="text" inputMode="numeric" maxLength={1}
+        <input key={i} ref={ref} type="text" inputMode="numeric" maxLength={1}
           value={value[i] ?? ""}
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
