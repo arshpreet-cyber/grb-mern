@@ -66,10 +66,10 @@ export function emailWrapper(content: string) {
           </p>
           <p style="margin:0 0 10px;font-size:10px;color:#ccc;letter-spacing:0.5px">&copy;${new Date().getFullYear()} GET REVIEWS BUZZ. ALL RIGHTS RESERVED.</p>
           <table cellpadding="0" cellspacing="0" align="center"><tr>
-            <td style="padding:0 4px"><a href="https://www.facebook.com/getreviews.buzz" style="display:inline-block;text-decoration:none"><img src="https://img.icons8.com/ios-filled/48/facebook-new.png" alt="Facebook" width="22" height="22" style="display:block" /></a></td>
-            <td style="padding:0 4px"><a href="https://x.com/GetReviewsBuzz" style="display:inline-block;text-decoration:none"><img src="https://img.icons8.com/ios-filled/48/twitterx.png" alt="Twitter" width="22" height="22" style="display:block" /></a></td>
-            <td style="padding:0 4px"><a href="https://www.instagram.com/getreviews.buzz/" style="display:inline-block;text-decoration:none"><img src="https://img.icons8.com/ios-filled/48/instagram-new.png" alt="Instagram" width="22" height="22" style="display:block" /></a></td>
-            <td style="padding:0 4px"><a href="https://api.whatsapp.com/send?phone=13068025402" style="display:inline-block;text-decoration:none"><img src="https://img.icons8.com/ios-filled/48/whatsapp.png" alt="WhatsApp" width="22" height="22" style="display:block" /></a></td>
+            <td style="padding:0 4px"><a href="https://www.facebook.com/getreviews.buzz" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="22" height="22" style="display:block" /></a></td>
+            <td style="padding:0 4px"><a href="https://x.com/GetReviewsBuzz" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969020.png" alt="Twitter" width="22" height="22" style="display:block" /></a></td>
+            <td style="padding:0 4px"><a href="https://www.instagram.com/getreviews.buzz/" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" width="22" height="22" style="display:block" /></a></td>
+            <td style="padding:0 4px"><a href="https://api.whatsapp.com/send?phone=13068025402" style="display:inline-block;text-decoration:none"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" width="22" height="22" style="display:block" /></a></td>
           </tr></table>
         </td>
       </tr>

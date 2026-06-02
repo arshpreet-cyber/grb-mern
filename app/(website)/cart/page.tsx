@@ -298,9 +298,11 @@ export default function CartPage() {
         throw new Error("Server error — please try again.");
       }
       if (!res.ok) throw new Error(data?.error ?? "Failed to create order");
+      clearCart();
       window.location.href = data.payUrl;
     } catch (err: any) {
-      alert(err.message ?? "Something went wrong. Please try again.");
+      const { toast } = await import("sonner");
+      toast.error(err.message ?? "Something went wrong. Please try again.");
     } finally {
       setLoading(null);
     }

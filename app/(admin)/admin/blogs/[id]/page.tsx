@@ -99,7 +99,8 @@ export default function EditBlog({ params }: { params: Promise<{ id: string }> }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || !formData.slug || !formData.content) {
-      alert("Please fill in the required fields: Title, Slug, and Content.");
+      const { toast } = await import("sonner");
+      toast.error("Please fill in the required fields: Title, Slug, and Content.");
       return;
     }
 
@@ -112,14 +113,16 @@ export default function EditBlog({ params }: { params: Promise<{ id: string }> }
       });
 
       const data = await res.json();
+      const { toast } = await import("sonner");
       if (data.success) {
-        alert("Blog updated successfully!");
+        toast.success("Blog updated successfully!");
         router.push("/admin/blogs");
       } else {
-        alert(data.error || "Something went wrong");
+        toast.error(data.error || "Something went wrong");
       }
-    } catch (error) {
-      alert("Failed to submit form");
+    } catch {
+      const { toast } = await import("sonner");
+      toast.error("Failed to submit form");
     } finally {
       setLoading(false);
     }

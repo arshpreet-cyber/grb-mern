@@ -18,9 +18,9 @@ export default function CTABanner() {
           </h2>
         </div>
 
-        <a href="#" className="shrink-0 bg-gradient-to-r from-black to-[#333333] text-white text-[13px] font-bold tracking-wider px-8 py-4 rounded shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all uppercase">
+        <Link href="/contact-us" className="shrink-0 bg-linear-to-r from-black to-[#333333] text-white text-[13px] font-bold tracking-wider px-8 py-4 rounded shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all uppercase">
           Contact With Us
-        </a>
+        </Link>
 
       </div>
       </Wrapper>

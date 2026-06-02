@@ -40,13 +40,16 @@ export default function BlogsListing() {
         method: "DELETE",
       });
       const data = await res.json();
+      const { toast } = await import("sonner");
       if (data.success) {
         fetchBlogs();
+        toast.success("Blog deleted.");
       } else {
-        alert(data.error || "Failed to delete");
+        toast.error(data.error || "Failed to delete");
       }
-    } catch (err: any) {
-      alert("An error occurred");
+    } catch {
+      const { toast } = await import("sonner");
+      toast.error("An error occurred");
     }
   };
 
