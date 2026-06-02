@@ -127,7 +127,7 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
               <span className="ml-1.5 text-[10px] font-bold bg-gray-800 text-white px-1.5 py-0.5 rounded uppercase">Owner</span>
             </InfoRow>
             <InfoRow label="Ticket #">
-              <span className="font-mono text-blue-600 font-semibold">#{ticket?.ticketNumber ?? ticketId}</span>
+              <span className="font-mono text-amber-600 dark:text-[#fc0] font-semibold">#{ticket?.ticketNumber ?? ticketId}</span>
             </InfoRow>
             <InfoRow label="Submitted">
               <span className="text-gray-600">{ticket?.createdAt ? formatDate(ticket.createdAt) : "—"}</span>
@@ -289,16 +289,16 @@ function MessageCard({ name, role, isStaff, time, content, media }: {
   name: string; role: string; isStaff: boolean; time: string; content: string; media?: string | null;
 }) {
   return (
-    <div className={`bg-white rounded-xl border overflow-hidden shadow-sm ${isStaff ? "border-blue-200 border-l-4 border-l-blue-500" : "border-gray-200"}`}>
+    <div className={`bg-white rounded-xl border overflow-hidden shadow-sm ${isStaff ? "border-amber-200 border-l-4 border-l-[#fc0]" : "border-gray-200"}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
         <div className="flex items-center gap-2.5">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isStaff ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500"}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isStaff ? "bg-[#fffdeb] text-amber-600" : "bg-gray-100 text-gray-500"}`}>
             {isStaff ? <ShieldCheck size={14} /> : <User size={14} />}
           </div>
           <div>
             <span className="text-[13px] font-bold text-gray-900">{name}</span>
-            <span className={`ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border ${isStaff ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-gray-100 text-gray-500 border-gray-200"}`}>
+            <span className={`ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border ${isStaff ? "bg-[#fffdeb] text-amber-700 border-[#ffe57f]" : "bg-gray-100 text-gray-500 border-gray-200"}`}>
               {role}
             </span>
           </div>
@@ -324,7 +324,7 @@ function MessageCard({ name, role, isStaff, time, content, media }: {
                   </a>
                 ) : (
                   <a key={i} href={url} target="_blank" rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-[12px] text-blue-600 hover:underline bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+                    className="inline-flex items-center gap-2 text-[12px] text-amber-600 hover:underline bg-[#fffdeb] border border-[#ffe57f] rounded-lg px-3 py-2">
                     <Paperclip size={12} /> {url.split("/").pop() ?? `File ${i + 1}`}
                   </a>
                 );

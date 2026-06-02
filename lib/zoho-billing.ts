@@ -1,5 +1,5 @@
-const ZOHO_ACCOUNTS_URL = process.env.ZOHO_ACCOUNTS_URL ?? "https://accounts.zoho.com";
-const ZOHO_API_BASE = process.env.ZOHO_API_BASE_URL ?? "https://books.zoho.com/api/v3";
+const ZOHO_ACCOUNTS_URL = process.env.ZOHO_ACCOUNTS_URL ?? "https://accounts.zoho.in";
+const ZOHO_API_BASE = process.env.ZOHO_API_BASE_URL ?? "https://books.zoho.in/api/v3";
 const ZOHO_ORG_ID = () => process.env.ZOHO_ORG_ID ?? "";
 
 async function parseJson(res: Response, label: string): Promise<any> {

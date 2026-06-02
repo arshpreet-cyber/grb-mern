@@ -121,7 +121,7 @@ export default function AdminOrderDetailPage() {
   }
 
   return (
-    <div className="space-y-5 max-w-4xl">
+    <div className="space-y-5 w-full">
       {/* Header */}
       <div className="rounded-2xl bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-5 shadow-sm flex items-center gap-4">
         <button
@@ -130,7 +130,7 @@ export default function AdminOrderDetailPage() {
         >
           <ArrowLeft size={18} />
         </button>
-        <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600">
+        <div className="h-10 w-10 rounded-xl bg-[#fffdeb] dark:bg-[#fc0]/10 border border-[#ffe57f] dark:border-[#fc0]/20 flex items-center justify-center text-[#e6b800] dark:text-[#fc0]">
           <ClipboardList size={20} />
         </div>
         <div>
@@ -170,7 +170,7 @@ export default function AdminOrderDetailPage() {
               <dt className="text-[11px] text-gray-400 uppercase tracking-wide">Name</dt>
               <dd className="font-semibold">
                 {customerId ? (
-                  <Link href={`/admin/users/${customerId}`} className="text-violet-600 dark:text-violet-400 hover:underline">
+                  <Link href={`/admin/users/${customerId}`} className="text-amber-600 dark:text-[#fc0] hover:text-amber-700 dark:hover:text-amber-400 hover:underline">
                     {customerName}
                   </Link>
                 ) : (
@@ -205,7 +205,7 @@ export default function AdminOrderDetailPage() {
                 <dt className="text-[11px] text-gray-400 uppercase tracking-wide">Payment Link</dt>
                 <dd>
                   <a href={order.payUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-violet-600 text-xs underline break-all">
+                    className="text-amber-600 dark:text-[#fc0] hover:text-amber-700 dark:hover:text-amber-400 text-xs underline break-all">
                     Open payment page
                   </a>
                 </dd>
@@ -251,7 +251,7 @@ export default function AdminOrderDetailPage() {
                     </td>
                     <td className="px-4 py-3 text-gray-500 dark:text-slate-400 max-w-[180px]">
                       {d.profileUrl
-                        ? <a href={d.profileUrl} target="_blank" rel="noopener noreferrer" className="text-violet-600 underline truncate block">{d.profileUrl}</a>
+                        ? <a href={d.profileUrl} target="_blank" rel="noopener noreferrer" className="text-amber-600 dark:text-[#fc0] hover:text-amber-700 dark:hover:text-amber-400 underline truncate block">{d.profileUrl}</a>
                         : <span className="text-gray-300">—</span>}
                     </td>
                   </tr>
@@ -288,7 +288,7 @@ export default function AdminOrderDetailPage() {
       {itemNotes && itemNotes.length > 0 && (
         <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-100 dark:border-slate-800 flex items-center gap-3">
-            <FileText size={18} className="text-violet-500" />
+            <FileText size={18} className="text-amber-500" />
             <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide">
               Customer Input Details
             </h2>
@@ -308,8 +308,8 @@ export default function AdminOrderDetailPage() {
                   <span className="text-[11px] text-gray-400 uppercase tracking-wide">Submission Type</span>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded border ${
                     note.submissionType === "expert"
-                      ? "bg-violet-50 text-violet-700 border-violet-200"
-                      : "bg-blue-50 text-blue-700 border-blue-200"
+                      ? "bg-[#fffdeb] dark:bg-[#fc0]/10 text-amber-700 dark:text-amber-400 border-[#ffe57f] dark:border-[#fc0]/20"
+                      : "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/50"
                   }`}>
                     {note.submissionType === "expert" ? "Expert Write Content" : "Customer Provided Content"}
                   </span>
@@ -345,7 +345,7 @@ export default function AdminOrderDetailPage() {
                         href={detail.profileUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-violet-600 text-[13px] underline break-all"
+                        className="text-amber-600 dark:text-[#fc0] hover:text-amber-700 dark:hover:text-amber-400 text-[13px] underline break-all"
                       >
                         {detail.profileUrl}
                       </a>

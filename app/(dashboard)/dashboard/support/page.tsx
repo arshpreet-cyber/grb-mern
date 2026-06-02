@@ -76,20 +76,20 @@ export default function DashboardSupportPage() {
   };
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="w-full space-y-6">
 
       {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-linear-to-r from-violet-600 to-violet-800 px-8 py-8 text-white shadow-lg">
-        <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/5 blur-2xl" />
-        <div className="absolute right-20 bottom-0 h-24 w-48 rounded-full bg-white/5 blur-xl" />
+      <div className="relative overflow-hidden rounded-2xl bg-linear-to-r from-[#ffe135] via-[#ffcc00] to-[#ffa000] px-8 py-8 text-slate-950 shadow-md border border-[#ffd54f]/30">
+        <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/20 blur-2xl" />
+        <div className="absolute right-20 bottom-0 h-24 w-48 rounded-full bg-white/20 blur-xl" />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-950/10 text-slate-950">
               <HeadphonesIcon size={22} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Create Support Ticket</h1>
-              <p className="mt-0.5 text-sm text-violet-200">Our team typically responds within a few hours.</p>
+              <h1 className="text-2xl font-extrabold tracking-tight">Create Support Ticket</h1>
+              <p className="mt-0.5 text-sm text-slate-800/90 font-medium">Our team typically responds within a few hours.</p>
             </div>
           </div>
           <div className="flex gap-3 shrink-0">
@@ -97,11 +97,11 @@ export default function DashboardSupportPage() {
               { icon: Clock, label: "Avg. Response", value: "< 4 hrs" },
               { icon: CheckCircle2, label: "Resolution", value: "98%" },
             ].map(({ icon: Icon, label, value }) => (
-              <div key={label} className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm">
-                <Icon size={15} className="text-violet-200" />
+              <div key={label} className="flex items-center gap-2 rounded-xl bg-slate-950/10 px-4 py-2.5 text-sm border border-slate-950/5">
+                <Icon size={15} className="text-slate-800" />
                 <div>
-                  <p className="text-[10px] text-violet-300 font-medium">{label}</p>
-                  <p className="font-bold text-white leading-tight">{value}</p>
+                  <p className="text-[10px] text-slate-800/70 font-bold uppercase tracking-wider">{label}</p>
+                  <p className="font-extrabold text-slate-950 leading-tight">{value}</p>
                 </div>
               </div>
             ))}
@@ -132,7 +132,7 @@ export default function DashboardSupportPage() {
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
                 placeholder="e.g. Issue with my order #1234"
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none transition focus:border-violet-500 dark:focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/20 placeholder:text-slate-400"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none transition focus:border-amber-500 dark:focus:border-amber-400 focus:ring-2 focus:ring-amber-100 dark:focus:ring-amber-900/20 placeholder:text-slate-400"
               />
             </div>
 
@@ -146,7 +146,7 @@ export default function DashboardSupportPage() {
                 onChange={e => setQuery(e.target.value)}
                 rows={8}
                 placeholder="Describe your issue in detail. Include any relevant order numbers, error messages, or steps to reproduce."
-                className="w-full resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none transition focus:border-violet-500 dark:focus:border-violet-400 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-900/20 placeholder:text-slate-400"
+                className="w-full resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none transition focus:border-amber-500 dark:focus:border-amber-400 focus:ring-2 focus:ring-amber-100 dark:focus:ring-amber-900/20 placeholder:text-slate-400"
               />
               <p className="mt-2 text-xs text-slate-400">{query.length} characters</p>
             </div>
@@ -165,8 +165,8 @@ export default function DashboardSupportPage() {
                 onClick={() => fileInputRef.current?.click()}
                 className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed py-10 cursor-pointer transition-all
                   ${dragging
-                    ? "border-violet-400 bg-violet-50 dark:bg-violet-900/20"
-                    : "border-slate-200 dark:border-slate-700 hover:border-violet-300 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                    ? "border-amber-400 bg-amber-50 dark:bg-amber-950/20"
+                    : "border-slate-200 dark:border-slate-700 hover:border-amber-400 hover:bg-slate-50 dark:hover:bg-slate-800/40"
                   }`}
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400">
@@ -174,7 +174,7 @@ export default function DashboardSupportPage() {
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Drop files here or <span className="text-violet-600 dark:text-violet-400">click to browse</span>
+                    Drop files here or <span className="text-amber-600 dark:text-[#fc0] font-semibold hover:underline">click to browse</span>
                   </p>
                   <p className="mt-1 text-xs text-slate-400">PNG, JPG, PDF, DOCX up to 10MB each · Max 5 files</p>
                 </div>
@@ -196,7 +196,7 @@ export default function DashboardSupportPage() {
                     const sizeMB = (file.size / 1024 / 1024).toFixed(1);
                     return (
                       <li key={i} className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 px-4 py-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-[#fc0]">
                           {isImage
                             ? <img src={URL.createObjectURL(file)} alt="" className="h-9 w-9 rounded-lg object-cover" />
                             : <Paperclip size={15} />
@@ -223,7 +223,7 @@ export default function DashboardSupportPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-400 px-6 py-3.5 text-sm font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#fc0] hover:bg-[#e6b800] text-black px-6 py-3.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50 shadow-sm active:scale-[0.98]"
             >
               {loading ? (
                 <>
@@ -258,8 +258,8 @@ export default function DashboardSupportPage() {
               </ul>
             </div>
 
-            <div className="rounded-2xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 p-5">
-              <h3 className="text-sm font-bold text-violet-700 dark:text-violet-400 mb-2">Response time</h3>
+            <div className="rounded-2xl bg-amber-50/50 dark:bg-amber-950/10 border border-amber-100 dark:border-amber-900/50 p-5">
+              <h3 className="text-sm font-bold text-amber-800 dark:text-amber-400 mb-2">Response time</h3>
               <div className="space-y-2 text-sm">
                 {[
                   { label: "Normal", time: "Within 24 hrs", color: "bg-slate-400" },

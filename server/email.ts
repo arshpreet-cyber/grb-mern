@@ -166,9 +166,9 @@ export function buildRegistrationAdminEmail(payload: { name: string; email: stri
       </tr>
     </table>
     <p style="margin:20px 0">
-      <a href="${SITE_URL}/admin/users" style="display:inline-block;padding:12px 24px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600">View Users</a>
+      <a href="${SITE_URL}/admin/users" style="display:inline-block;padding:12px 24px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600">View</a>
     </p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -177,20 +177,21 @@ export function buildRegistrationAdminEmail(payload: { name: string; email: stri
   };
 }
 
-// ─── EVT-0002: User – Welcome / Email Verified ───────────────────────────────
-export function buildWelcomeEmail(payload: { name: string }) {
+// ─── EVT-0002: User – Email Verification ─────────────────────────────────────
+export function buildWelcomeEmail(payload: { name: string; verifyUrl?: string }) {
+  const verifyLink = payload.verifyUrl ?? `${SITE_URL}/dashboard`;
   const content = `
-    <p style="margin:0 0 14px;font-size:15px;color:#333">Hello <strong>${payload.name}</strong>!</p>
-    <p style="margin:0 0 20px;font-size:15px;color:#333">Welcome to Get Reviews Buzz. Your account has been created successfully.</p>
-    <p style="margin:0 0 20px;font-size:14px;color:#555">You can now log in and start managing your reviews and orders from your dashboard.</p>
+    <p style="margin:0 0 14px;font-size:15px;color:#333">Hello!</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#333">Please click the button below to verify your email address and activate your account.</p>
     <p style="margin:20px 0">
-      <a href="${SITE_URL}/dashboard" style="display:inline-block;padding:12px 24px;background:#FFCE2E;color:#000;text-decoration:none;border-radius:5px;font-size:14px;font-weight:700">Go to Dashboard</a>
+      <a href="${verifyLink}" style="display:inline-block;padding:12px 24px;background:#FFCE2E;color:#000;text-decoration:none;border-radius:5px;font-size:14px;font-weight:700">Verify Email Address</a>
     </p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:0 0 16px;font-size:13px;color:#888">If you did not create an account, no further action is required.</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
-    subject: "Welcome to Get Reviews Buzz!",
+    subject: "Verify your email – Get Reviews Buzz",
     html: emailWrapper(content),
   };
 }
@@ -230,7 +231,7 @@ export function buildUnpaidReminderEmail(payload: {
       amountPaid: 0
     })}
     ${payButtons}
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -257,7 +258,7 @@ export function buildOrderPaidEmail(payload: {
       total: payload.total,
       amountPaid: payload.total
     })}
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -279,7 +280,7 @@ export function buildSubscriptionAdminEmail(payload: { email: string; orderNumbe
       ${payload.orderNumber ? `<tr><td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;color:#555">Order # :</td>
         <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;font-weight:600;color:#333">${payload.orderNumber}</td></tr>` : ""}
     </table>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -318,7 +319,7 @@ export function buildOrderStatusEmail(payload: {
       total: payload.total,
       amountPaid: isPaid ? (payload.amountPaid ?? payload.total) : (payload.amountPaid ?? 0)
     }) : ""}
-    <p style="margin:20px 0 4px;font-size:15px;color:#333">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:15px;color:#333">Best regards,</p>
     <p style="margin:0;font-size:15px;font-weight:bold;color:#000">Team Get Reviews Buzz</p>
   `;
   return {
@@ -345,7 +346,7 @@ export function buildOrderCreatedEmail(payload: {
       total: payload.total,
       amountPaid: 0
     })}
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -363,7 +364,7 @@ export function buildTicketCreatedEmail(payload: {
 }) {
   const content = `
     <p style="margin:0 0 14px;font-size:15px;color:#333">Hi <strong>${payload.name ?? "Customer"}</strong>,</p>
-    <p style="margin:0 0 20px;font-size:15px;color:#333">Thank you for submitting a ticket. Our team will soon get back to you.</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#333">Thank you for submitting the ticket. Our team will soon come to you.</p>
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e0e0e0;margin:16px 0;background:#ffffff">
       <tr>
         <td style="padding:10px 14px;border:1px solid #e0e0e0;font-size:14px;color:#555;width:120px">Ticket # :</td>
@@ -378,7 +379,7 @@ export function buildTicketCreatedEmail(payload: {
     <p style="margin:20px 0">
       <a href="${SITE_URL}/dashboard/tickets" style="display:inline-block;padding:12px 24px;background:#FFCE2E;color:#000;text-decoration:none;border-radius:5px;font-size:14px;font-weight:700">View My Tickets</a>
     </p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -412,7 +413,7 @@ export function buildTicketHoldEmail(payload: {
     <p style="margin:20px 0">
       <a href="${SITE_URL}/dashboard/tickets" style="display:inline-block;padding:12px 24px;background:#FFCE2E;color:#000;text-decoration:none;border-radius:5px;font-size:14px;font-weight:700">View My Tickets</a>
     </p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -446,7 +447,7 @@ export function buildTicketEscalatedEmail(payload: {
     <p style="margin:20px 0">
       <a href="${SITE_URL}/dashboard/tickets" style="display:inline-block;padding:12px 24px;background:#FFCE2E;color:#000;text-decoration:none;border-radius:5px;font-size:14px;font-weight:700">View My Tickets</a>
     </p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -470,7 +471,7 @@ export function buildOrderInfoRequiredEmail(payload: {
       <a href="${payload.detailsUrl}" style="display:inline-block;padding:12px 24px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600">Fill Order Details →</a>
     </p>
     <p style="margin:16px 0 4px;font-size:14px;color:#555">If you have any questions or need help, feel free to reach out — we're happy to assist.</p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -501,7 +502,7 @@ export function buildUserSubmittedDetailsAdminEmail(payload: {
     <p style="margin:20px 0">
       <a href="${SITE_URL}/admin/orders/${payload.orderId}" style="display:inline-block;padding:12px 24px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600">View Order Details →</a>
     </p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -517,7 +518,7 @@ export function buildContactConfirmationEmail(payload: { email: string }) {
     <p style="margin:0 0 14px;font-size:15px;color:#333">Hi <strong>${firstName}</strong>,</p>
     <p style="margin:0 0 20px;font-size:15px;color:#333">Thank you for contacting Get Reviews Buzz. We have received your message and will get back to you shortly.</p>
     <p style="margin:0 0 16px;font-size:14px;color:#555">Our team typically responds within 24 hours. If your matter is urgent, please reach out to us directly.</p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -551,7 +552,7 @@ export function buildTicketClosedEmail(payload: {
     <p style="margin:20px 0">
       <a href="${SITE_URL}/dashboard/support" style="display:inline-block;padding:12px 24px;background:#FFCE2E;color:#000;text-decoration:none;border-radius:5px;font-size:14px;font-weight:700">Open New Ticket</a>
     </p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -569,7 +570,7 @@ export function buildPasswordResetEmail(payload: { name: string; resetUrl: strin
       <a href="${payload.resetUrl}" style="display:inline-block;padding:12px 28px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600">Reset Password →</a>
     </p>
     <p style="margin:0 0 16px;font-size:13px;color:#888">This link expires in <strong>1 hour</strong>. If you did not request a password reset, you can safely ignore this email.</p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -592,7 +593,7 @@ export function buildTicketReplyEmail(payload: {
     <p style="margin:20px 0">
       <a href="${SITE_URL}/dashboard/tickets" style="display:inline-block;padding:12px 24px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600">Log In to Support Area →</a>
     </p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
@@ -608,7 +609,7 @@ export function buildOtpEmail(payload: { code: string }) {
     <p style="margin:0 0 20px;font-size:15px;color:#333">Verify your email to complete your registration. Use the code below inside the app. It will expire in 10 minutes.</p>
     <div style="background:#ffffff;border:1px solid #e0e0e0;border-radius:6px;padding:24px;text-align:center;letter-spacing:8px;font-size:32px;font-weight:700;color:#111;margin:20px auto;max-width:240px">${payload.code}</div>
     <p style="margin:20px 0 4px;font-size:13px;color:#999">If you did not request this code, you can safely ignore this email.</p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best Regards,</p>
+    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
