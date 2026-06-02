@@ -88,9 +88,12 @@ export async function POST(req: NextRequest) {
       }).catch((err) => console.error("[Order Email]", err.message));
     }
 
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXTAUTH_URL ?? "").replace(/\/$/, "");
+    const callbackUrl = `${appUrl}/api/orders/payment-callback?orderId=${order.id}&tokenCode=${tokenCode}`;
+
     let payUrl = "";
     if (paymentMethod === "paypal") {
-      payUrl = `${process.env.PAYPAL_PAYMENT_URL}?orderno=${order.id}`;
+      payUrl = `${process.env.PAYPAL_PAYMENT_URL}?orderno=${order.id}&tokenCode=${tokenCode}&return_url=${encodeURIComponent(callbackUrl)}`;
     } else if (paymentMethod === "razorpay") {
       payUrl = `${process.env.PAYMENT_URL}stripe?orderno=${order.id}&tokenCode=${tokenCode}`;
     } else if (paymentMethod === "zoho") {
