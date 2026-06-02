@@ -514,7 +514,7 @@ export default function CartPage() {
                       <button
                         onClick={() => handlePayment("paypal")}
                         disabled={!!loading}
-                        className="w-full flex items-center justify-center bg-[#FFC439] hover:bg-[#f0b429] py-[13px] px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
+                        className="w-full h-[52px] flex items-center justify-center bg-[#FFC439] hover:bg-[#f0b429] px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
                       >
                         {loading === "paypal" ? (
                           <div className="flex items-center gap-2">
@@ -537,7 +537,7 @@ export default function CartPage() {
                       <button
                         onClick={() => handlePayment("zoho")}
                         disabled={!!loading}
-                        className="w-full flex items-center justify-center gap-2.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-[14px] font-semibold py-[13px] px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
+                        className="w-full h-[52px] flex items-center justify-center gap-2.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-[14px] font-semibold px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
                       >
                         {loading === "zoho" ? (
                           <>
@@ -565,7 +565,7 @@ export default function CartPage() {
                       <button
                         onClick={() => handlePayment("razorpay")}
                         disabled={!!loading}
-                        className="w-full flex items-center justify-center gap-3 bg-[#072654] hover:bg-[#0a3570] text-white py-[12px] px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
+                        className="w-full h-[52px] flex items-center justify-center gap-3 bg-[#072654] hover:bg-[#0a3570] text-white px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
                       >
                         {loading === "razorpay" ? (
                           <div className="flex items-center gap-2">
@@ -577,11 +577,11 @@ export default function CartPage() {
                           </div>
                         ) : (
                           <>
-                            <svg width="22" height="28" viewBox="0 0 22 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M13 0L5.5 16h6L4 28l17-15h-7.5L13 0z" fill="#2EB8E6"/>
+                            <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M10.5 0L4 13h5L2 22l14-12H9.5L10.5 0z" fill="#2EB8E6"/>
                             </svg>
                             <div className="flex flex-col items-start leading-tight">
-                              <span className="text-[16px] font-bold">Pay Now</span>
+                              <span className="text-[15px] font-bold">Pay Now</span>
                               <span className="text-[11px] text-white/70">Secured by <span className="text-white font-semibold">Razorpay</span></span>
                             </div>
                           </>
@@ -593,9 +593,8 @@ export default function CartPage() {
                         <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/visa.svg" alt="Visa" className="h-[24px] rounded object-contain" />
                         <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/mastercard.svg" alt="Mastercard" className="h-[24px] rounded object-contain" />
                         <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/paypal.svg" alt="PayPal" className="h-[24px] rounded object-contain" />
-                        <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/american-express.svg" alt="Amex" className="h-[24px] rounded object-contain" />
+                        <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/amex.svg" alt="Amex" className="h-[24px] rounded object-contain" />
                         <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/discover.svg" alt="Discover" className="h-[24px] rounded object-contain" />
-                      </div>
 
                     </div>
 
