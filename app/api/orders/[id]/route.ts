@@ -96,7 +96,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     // (Note: Adjust 'session.user.role' depending on your next-auth setup variable)
     const isAdmin = (session.user as any).role === "ADMIN" || (session.user as any).role === "admin";
     
-    if (!isAdmin && order.userId !== session.user.id) {
+    if (!isAdmin && order.userId?.toString() !== session.user.id) {
       return NextResponse.json({ error: "Unauthorized access to order" }, { status: 403 });
     }
 
