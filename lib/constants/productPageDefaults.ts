@@ -64,55 +64,7 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
       },
     },
 
-    // ─── 2. Benefits Section ─────────────────────────────────
-    {
-      id: `section-benefits-${product.id}`,
-      type: 'benefits-section',
-      data: { platform: product.platform },
-      settings: {
-        padding: '80px 0',
-        backgroundColor: '#FFFFFF',
-        visibility: true,
-      },
-    },
-
-    // ─── 3. How It Works (uses component's Google Reviews defaults) ───
-    {
-      id: `section-hiw-${product.id}`,
-      type: 'how-it-work-card',
-      data: {},
-      settings: {
-        padding: '80px 0',
-        backgroundColor: '#FFFFFF',
-        visibility: true,
-      },
-    },
-
-    // ─── 3. Customer Reviews (uses component's Google Reviews defaults) ─
-    {
-      id: `section-cr-${product.id}`,
-      type: 'customer-reviews',
-      data: {},
-      settings: {
-        padding: '80px 0',
-        backgroundColor: '#FAFAF5',
-        visibility: true,
-      },
-    },
-
-    // ─── 4. FAQ Section (uses component's Google Reviews defaults) ──
-    {
-      id: `section-faq-${product.id}`,
-      type: 'faq-section',
-      data: {},
-      settings: {
-        padding: '50px 0',
-        backgroundColor: '#faf8f7',
-        visibility: true,
-      },
-    },
-
-    // ─── 5. Similar Products ─────────────────────────────────
+      // ─── 2. Similar Products ─────────────────────────────────
     {
       id: `section-sp-${product.id}`,
       type: 'similar-products',
@@ -126,13 +78,236 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
       },
     },
 
-    // ─── 6. CTA Product (uses component's Google Reviews defaults) ──
+    // ─── 3. Image Text Section (1st instance) ───────────────────
     {
-      id: `section-cta-${product.id}`,
-      type: 'cta-product',
+      id: `section-imgtext-1-${product.id}`,
+      type: 'image-text',
+      data: {
+        title: `How We Help You Manage <br/> <span class='font-semibold'>${product.platform} Reviews</span>`,
+        content: `<p>We take a strategic, secure approach to ${product.platform} reputation management that improves your profile while keeping reviews authentic.</p><p>Our custom reviews accurately reflect customer experiences, boosting credibility and trustworthiness.</p>`,
+        image: "/uploads/media/safe_reviews_graphic.png",
+        imagePosition: "left",
+        showButton: false,
+      },
+      settings: {
+        padding: '80px 0',
+        backgroundColor: '#FFFFFF',
+        visibility: true,
+      },
+    },
+
+    // ─── 4. How It Works Section ─────────────────────────────
+    {
+      id: `section-how-it-work-card-${product.id}`,
+      type: 'how-it-work-card',
+      data: {
+        heading: "How It Works in <strong>4 Simple Steps</strong>",
+        subheading: "Our process is quick, simple, and designed to help you improve your online reputation effortlessly.",
+        steps: [
+          { 
+            title: "Pick A Review", 
+            desc: `Choose The Type And Number Of ${product.platform} Reviews You Want To Improve Your Company's Profile.`, 
+            color: "bg-yellow-100", 
+            icon: { href: "/uploads/media/1777977982660-8109977b-4427-4a5e-955a-11ba0bb2ac91-rating-1.svg" } 
+          },
+          { 
+            title: "Select Your Package", 
+            desc: "Pick The Number Of Reviews Or The Service Package That Fits Your Needs.", 
+            color: "bg-blue-100", 
+            icon: { href: "/uploads/media/1777978008677-ecbb379c-db78-4858-84fe-1d5559314feb-XMLID-991-.svg" } 
+          },
+          { 
+            title: "Configure & Order", 
+            desc: `Buy ${product.platform} Reviews With A Secure, One-Step Checkout And Your Preferred Payment Method.`, 
+            color: "bg-green-100", 
+            icon: { href: "/uploads/media/1777978022187-e61c5a1a-4fe8-41d4-9e55-a6c5f33f2cb5-Group-844.svg" } 
+          },
+          { 
+            title: "Fill Business Details", 
+            desc: `Include Your ${product.platform} Link And Any Customization Instructions.`, 
+            color: "bg-indigo-100", 
+            icon: { href: "/uploads/media/1777978039825-2a6a3096-e833-42c5-8286-e4b1a7a10566-Group-846.svg" } 
+          },
+        ]
+      },
+      settings: {
+        padding: '80px 0',
+        backgroundColor: '#FFFFFF',
+        visibility: true,
+      },
+    },
+
+
+    // ─── 5. Benefits Section ─────────────────────────────────
+    {
+      id: `section-benefits-${product.id}`,
+      type: 'benefits-section',
+      data: { platform: product.platform },
+      settings: {
+        padding: '80px 0',
+        backgroundColor: '#FFFFFF',
+        visibility: true,
+      },
+    },
+
+    // ─── 6. Organic Drawbacks Section ──────────────────────────────────
+    {
+      id: `section-drawbacks-${product.id}`,
+      type: 'organic-drawbacks',
+      data: {
+        platform: product.platform,
+        heading: `The Drawbacks Of Relying Solely On Organic ${product.platform} Reviews`,
+        subheading: `While organic ${product.platform} reviews are useful for establishing credibility, relying solely on them can present several challenges that may slow your company's growth. Here are some major drawbacks:`,
+        cards: [
+          {
+            title: "Slow and Unpredictable Growth",
+            iconType: "chart",
+            paragraphs: [
+              `Obtaining organic reviews necessitates that customers take the initiative to provide feedback, which can be a slow and inconsistent process.`,
+              `Since many happy consumers just don't write reviews, it can be challenging to build a strong online reputation fast.`,
+            ],
+          },
+          {
+            title: "Vulnerable to Negative Feedback",
+            iconType: "warning",
+            paragraphs: [
+              `A single disgruntled customer or malicious competitor can easily damage your score. Without a steady stream of positive feedback, your rating suffers disproportionately.`,
+              `Relying on organic reviews means you have no control over the frequency and timing of reviews to balance negative feedback.`,
+            ],
+          },
+          {
+            title: "Outpaced by Competitors",
+            iconType: "competition",
+            paragraphs: [
+              `Competitors who actively acquire reviews will quickly outrank you in search visibility and local map pack rankings.`,
+              `If you rely solely on natural review growth, it could take years to reach the rating volume that your competitors achieve in weeks.`,
+            ],
+          },
+        ],
+      },
+      settings: {
+        padding: '80px 0',
+        backgroundColor: '#FFFFFF',
+        visibility: true,
+      },
+    },
+
+    // ─── 7. Safe Reviews Carousel ──────────────────────────────────────
+    {
+      id: `section-safe-reviews-${product.id}`,
+      type: 'safe-reviews-carousel',
+      data: {
+        platform: product.platform,
+        slides: [
+          {
+            heading: `How We Provide Safe And Authentic ${product.platform} Reviews`,
+            subheading: `We take a strategic, secure approach to ${product.platform} reputation management that improves your profile while keeping reviews authentic.`,
+            listTitle: `Here's how we keep ${product.platform} reviews safe and authentic:`,
+            features: [
+              {
+                title: "Accounts That Are Both Legitimate and Active",
+                desc: "Our reviews are provided by genuine, geographically relevant profiles with established activity, ensuring that they complement organic customer feedback.",
+              },
+              {
+                title: "Customized Reviews",
+                desc: "Our customized reviews accurately reflect customer experiences, boosting credibility and trustworthiness.",
+              },
+              {
+                title: "Delivery Occurs Gradually and Naturally",
+                desc: "To maintain authenticity, reviews are posted in a consistent pattern over time, avoiding sudden spikes that may raise suspicion.",
+              },
+            ],
+            image: "/uploads/media/safe_reviews_graphic.png",
+          },
+          {
+            heading: "Targeted Geolocation Profiles",
+            subheading: `We assign reviews to profiles that match the geographic location of your business for maximum local SEO impact.`,
+            listTitle: "How we ensure localized profile matching:",
+            features: [
+              {
+                title: "IP-Verified Routing",
+                desc: `Reviews are posted using residential IPs matching your business's target cities and neighborhoods.`,
+              },
+              {
+                title: "Realistic Activity Patterns",
+                desc: "Reviewers have historical check-ins and reviews in your region, making their profiles fully organic and relevant.",
+              },
+              {
+                title: "SEO-Optimized Content",
+                desc: "Our custom reviews contain regional keywords to boost your local map pack search visibility ranking.",
+              },
+            ],
+            image: "/uploads/media/safe_reviews_graphic.png",
+          },
+          {
+            heading: "Active Anti-Drop Refill Guarantee",
+            subheading: "We implement rigorous quality controls and follow up with a 30-day warranty to keep your rating intact.",
+            listTitle: "Our reliability and safety features include:",
+            features: [
+              {
+                title: "Strict Account Verification",
+                desc: "All review profiles pass continuous checks to confirm active status on local directories.",
+              },
+              {
+                title: "30-Day Free Replacements",
+                desc: "If any reviews are filtered or dropped, our automated system replaces them free of charge within 24 hours.",
+              },
+              {
+                title: "Safe, Compliant Billing",
+                desc: "Billing info is completely separated and kept private from directory crawler bots to guarantee profile safety.",
+              },
+            ],
+            image: "/uploads/media/safe_reviews_graphic.png",
+          },
+        ],
+      },
+      settings: {
+        padding: '80px 0',
+        visibility: true,
+      },
+    },
+
+    // ─── 8. Image Text Section (2nd instance) ───────────────────
+    {
+      id: `section-imgtext-2-${product.id}`,
+      type: 'image-text',
+      data: {
+        title: `We Focus on Building <br/> <span class='font-semibold'>a Reputation for Your Business</span>`,
+        content: `<p>A well-reviewed business will appear higher in search results, making it easier for potential customers to find.</p><p>More reviews boost your company's reliability and local-global reach. People read reviews before they buy or visit a business.</p>`,
+        image: "https://getreviews.buzz/storage/app/blog/0547241001776770835_0936012001776065359_right-img.png",
+        imagePosition: "left",
+        buttonText: "Read More",
+        buttonLink: "/",
+        showButton: true,
+      },
+      settings: {
+        padding: '80px 0',
+        backgroundColor: '#FFFFFF',
+        visibility: true,
+      },
+    },
+
+
+    // ─── 10. Customer Reviews ────────────────────────────────────────
+    {
+      id: `section-cr-${product.id}`,
+      type: 'customer-reviews',
       data: {},
       settings: {
         padding: '80px 0',
+        backgroundColor: '#FAFAF5',
+        visibility: true,
+      },
+    },
+
+    // ─── 11. FAQ Section ─────────────────────────────────────────────
+    {
+      id: `section-faq-${product.id}`,
+      type: 'faq-section',
+      data: {},
+      settings: {
+        padding: '50px 0',
+        backgroundColor: '#faf8f7',
         visibility: true,
       },
     },

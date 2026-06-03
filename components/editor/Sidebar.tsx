@@ -978,6 +978,170 @@ export default function Sidebar() {
             </>
           )}
 
+          {selectedSection.type === 'safe-reviews-carousel' && (
+            <>
+              {/* Slide Selector */}
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Editing Slide</label>
+                <div className="flex gap-2">
+                  {(selectedSection.data.slides || []).map((_: any, idx: number) => {
+                    const isEditingThisSlide = (selectedSection.data._activeEditIdx ?? 0) === idx;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleDataChange('_activeEditIdx', idx)}
+                        className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all ${
+                          isEditingThisSlide
+                            ? "bg-[#fc0] text-[#1a1a1a] border-[#fc0] shadow-sm"
+                            : "bg-white text-gray-500 border-black/5 hover:bg-black/5"
+                        }`}
+                      >
+                        Slide {idx + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {(() => {
+                const activeSlideIdx = selectedSection.data._activeEditIdx ?? 0;
+                const slide = (selectedSection.data.slides || [])[activeSlideIdx];
+                if (!slide) return <p className="text-xs text-red-500 font-bold">No slides found. Click to add a section with template data.</p>;
+
+                const handleActiveSlideChange = (field: string, val: any) => {
+                  const updatedSlides = [...selectedSection.data.slides];
+                  updatedSlides[activeSlideIdx] = { ...updatedSlides[activeSlideIdx], [field]: val };
+                  handleDataChange('slides', updatedSlides);
+                };
+
+                const handleActiveFeatChange = (featIdx: number, field: string, val: string) => {
+                  const updatedFeatures = [...(slide.features || [])];
+                  updatedFeatures[featIdx] = { ...updatedFeatures[featIdx], [field]: val };
+                  handleActiveSlideChange('features', updatedFeatures);
+                };
+
+                return (
+                  <div className="space-y-6 pt-4 border-t border-black/5">
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Slide Heading</label>
+                      <input
+                        type="text"
+                        value={slide.heading || ''}
+                        onChange={(e) => handleActiveSlideChange('heading', e.target.value)}
+                        className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                      <textarea
+                        value={slide.subheading || ''}
+                        onChange={(e) => handleActiveSlideChange('subheading', e.target.value)}
+                        className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">List Header</label>
+                      <input
+                        type="text"
+                        value={slide.listTitle || ''}
+                        onChange={(e) => handleActiveSlideChange('listTitle', e.target.value)}
+                        className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Showcase Image URL</label>
+                      <input
+                        type="text"
+                        value={slide.image || ''}
+                        onChange={(e) => handleActiveSlideChange('image', e.target.value)}
+                        className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                      />
+                    </div>
+
+                    {/* Features list edits */}
+                    <div className="space-y-4 pt-2">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Slide Bullet Points</label>
+                      {(slide.features || []).map((feature: any, featIdx: number) => (
+                        <div key={featIdx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                          <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Bullet #{featIdx + 1}</span>
+                          <input
+                            placeholder="Title"
+                            value={feature.title || ''}
+                            onChange={(e) => handleActiveFeatChange(featIdx, 'title', e.target.value)}
+                            className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                          />
+                          <textarea
+                            placeholder="Description"
+                            value={feature.desc || ''}
+                            onChange={(e) => handleActiveFeatChange(featIdx, 'desc', e.target.value)}
+                            className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+            </>
+          )}
+
+          {selectedSection.type === 'organic-drawbacks' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.heading ?? ''}
+                  onChange={(e) => handleDataChange('heading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="Section Heading"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea
+                  value={selectedSection.data.subheading ?? ''}
+                  onChange={(e) => handleDataChange('subheading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                  placeholder="Section Subheading..."
+                />
+              </div>
+              <div className="space-y-4 pt-2">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Drawback Cards</label>
+                {(selectedSection.data.cards || []).map((card: any, cardIdx: number) => (
+                  <div key={cardIdx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Card #{cardIdx + 1}</span>
+                    <input
+                      placeholder="Title"
+                      value={card.title || ''}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.cards];
+                        updated[cardIdx] = { ...updated[cardIdx], title: e.target.value };
+                        handleDataChange('cards', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                    />
+                    {(card.paragraphs || []).map((p: string, pIdx: number) => (
+                      <textarea
+                        key={pIdx}
+                        placeholder={`Paragraph ${pIdx + 1}`}
+                        value={p || ''}
+                        onChange={(e) => {
+                          const updatedCards = [...selectedSection.data.cards];
+                          const updatedParagraphs = [...(card.paragraphs || [])];
+                          updatedParagraphs[pIdx] = e.target.value;
+                          updatedCards[cardIdx] = { ...updatedCards[cardIdx], paragraphs: updatedParagraphs };
+                          handleDataChange('cards', updatedCards);
+                        }}
+                        className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
           {selectedSection.type === 'customer-reviews' && (
             <>
               <div className="space-y-3">

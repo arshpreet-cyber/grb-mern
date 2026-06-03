@@ -1,3 +1,4 @@
+// Trigger tsx server reload to refresh Prisma Client instance
 import "dotenv/config";
 import express from "express";
 import http from "http";
