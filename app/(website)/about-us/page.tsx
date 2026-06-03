@@ -523,14 +523,14 @@ function CommitmentsGridSection() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6 items-start">
-          {/* Left Column: Image with container and background */}
-          
-        <img
-          src="/uploads/media/1780464814337-3faaff7e-c755-4f04-a4d9-12b452e1140f-Rectangle-10325.webp"
-          alt="Illustration"
-          className="w-[720px] h-[450px] sm:w-full sm:max-w-[676px] sm:h-[726px] rounded-[15px] object-contain"
-        />
-          
+          {/* Left Column: Image wrapper with sticky positioning */}
+          <div className="md:sticky md:top-42">
+            <img
+              src="/uploads/media/1780464814337-3faaff7e-c755-4f04-a4d9-12b452e1140f-Rectangle-10325.webp"
+              alt="Illustration"
+              className="w-[720px] h-[450px] sm:w-full sm:max-w-[676px] sm:h-[726px] rounded-[15px] object-contain"
+            />
+          </div>
 
           {/* Right Column: Vertical stack of four cards */}
           <div className="flex flex-col gap-6 md:gap-8">
