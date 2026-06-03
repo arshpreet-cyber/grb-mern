@@ -430,7 +430,7 @@ function OurCommitmentSection() {
           </div>
         ))}
         {/* Floating graphic — hidden on mobile */}
-        <div className="hidden lg:block absolute right-10 top-[130px] w-[360px] h-[300px] z-10">
+        <div className="hidden lg:block absolute right-10 top-[130px] w-[380px] h-[360px] z-10">
           <img src={IMGS.commitment} alt="Our team" className="w-full h-full mt-6 object-cover" />
         </div>
         {/* Mobile graphic */}
