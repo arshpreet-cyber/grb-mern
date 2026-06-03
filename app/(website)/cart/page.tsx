@@ -595,7 +595,7 @@ export default function CartPage() {
                         <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/paypal.svg" alt="PayPal" className="h-[24px] rounded object-contain" />
                         <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/amex.svg" alt="Amex" className="h-[24px] rounded object-contain" />
                         <img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat/discover.svg" alt="Discover" className="h-[24px] rounded object-contain" />
-
+                      </div>
                     </div>
 
                     <p className="text-center text-[14px] text-[#515151] mt-[10px]">*You will input your order details on the next page</p>
