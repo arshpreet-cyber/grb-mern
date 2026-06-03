@@ -319,7 +319,7 @@ const designRule =
           <span>100% SECURE</span>
         </div>
         <h4 className="s-prod-title text-[20px] font-semibold text-black m-[0_0_6px_0] leading-[1.2]">{product.platform}</h4>
-        <p className="s-trust-score text-[12px] text-[#666666] m-0">Trust Score 4.9 | based on 6,792 reviews</p>
+        {/* <p className="s-trust-score text-[12px] text-[#666666] m-0">Trust Score 4.9 | based on 6,792 reviews</p> */}
       </div>
 
       <div className="card-body p-[25px] flex flex-col flex-1">
