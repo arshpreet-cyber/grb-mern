@@ -168,12 +168,6 @@ export default function SingleProductPage({ product }: { product: ProductData })
         settings={{ padding: "80px 0", backgroundColor: "#FFFFFF", visibility: true }}
       />
 
-      {/* ── 9. CTA Product ───────────────────────────────────── */}
-      <CTAProduct
-        id={`cta-${productIdStr}`}
-        data={{}}
-        settings={{ padding: "80px 0", visibility: true }}
-      />
 
       {/* ── 10. Customer Reviews ─────────────────────────────── */}
       <CustomerReviews

@@ -287,16 +287,6 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
       },
     },
 
-    // ─── 9. CTA Product ──────────────────────────────────────────
-    {
-      id: `section-cta-${product.id}`,
-      type: 'cta-product',
-      data: {},
-      settings: {
-        padding: '80px 0',
-        visibility: true,
-      },
-    },
 
     // ─── 10. Customer Reviews ────────────────────────────────────────
     {
