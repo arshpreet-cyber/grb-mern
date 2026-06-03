@@ -516,7 +516,7 @@ function ReputationStrategiesSection() {
 // ─── SECTION: 4 COMMITMENTS CARDS ─────────────────────────────────────────────
 function CommitmentsGridSection() {
   return (
-    <section className="w-full bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] my-16 md:my-20 py-16 md:py-24 px-5">
+    <section className="w-full bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] py-16 md:py-24 px-5">
       <div className="w-full max-w-[1500px] mx-auto">
         <h2 className="w-full max-w-[732px] mx-auto text-center text-[28px] md:text-[40px] font-[400] leading-[1.3] tracking-[-0.5px] text-[#111] mb-12 md:mb-16">
           Four Risk-Reversal <span className="font-[600]">Commitments</span>
