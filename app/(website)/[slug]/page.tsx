@@ -182,20 +182,46 @@ export default async function SlugPage({
         sections.splice(similarIndex !== -1 ? similarIndex + 1 : 1, 0, imgText1Sec);
       }
 
-      // 3. Steps
-      const hasSteps = sections.some((s: any) => s.type === 'steps');
-      if (!hasSteps) {
-        const stepsSec = {
-          id: `section-steps-${slug}-${Date.now()}`,
-          type: 'steps',
+      // 3. How It Works
+      const hasHowItWorks = sections.some((s: any) => s.type === 'how-it-work-card');
+      if (!hasHowItWorks) {
+        const howItWorksSec = {
+          id: `section-how-it-work-card-${slug}-${Date.now()}`,
+          type: 'how-it-work-card',
           data: {
-            heading: `Why Get Reviews Buzz\nis a Trusted Platform\nFor ${platformName}`,
-            subheading: `At Get Reviews Buzz, we offer a dependable and efficient solution for businesses looking to boost their ${platformName} Profile with genuine, high-quality reviews.`,
+            heading: "How It Works in <strong>4 Simple Steps</strong>",
+            subheading: "Our process is quick, simple, and designed to help you improve your online reputation effortlessly.",
+            steps: [
+              { 
+                title: "Pick A Review", 
+                desc: `Choose The Type And Number Of ${platformName} Reviews You Want To Improve Your Company's Profile.`, 
+                color: "bg-yellow-100", 
+                icon: { href: "/uploads/media/1777977982660-8109977b-4427-4a5e-955a-11ba0bb2ac91-rating-1.svg" } 
+              },
+              { 
+                title: "Select Your Package", 
+                desc: "Pick The Number Of Reviews Or The Service Package That Fits Your Needs.", 
+                color: "bg-blue-100", 
+                icon: { href: "/uploads/media/1777978008677-ecbb379c-db78-4858-84fe-1d5559314feb-XMLID-991-.svg" } 
+              },
+              { 
+                title: "Configure & Order", 
+                desc: `Buy ${platformName} Reviews With A Secure, One-Step Checkout And Your Preferred Payment Method.`, 
+                color: "bg-green-100", 
+                icon: { href: "/uploads/media/1777978022187-e61c5a1a-4fe8-41d4-9e55-a6c5f33f2cb5-Group-844.svg" } 
+              },
+              { 
+                title: "Fill Business Details", 
+                desc: `Include Your ${platformName} Link And Any Customization Instructions.`, 
+                color: "bg-indigo-100", 
+                icon: { href: "/uploads/media/1777978039825-2a6a3096-e833-42c5-8286-e4b1a7a10566-Group-846.svg" } 
+              },
+            ]
           },
           settings: { padding: '80px 0', backgroundColor: '#FFFFFF', visibility: true }
         };
         const imgText1Index = sections.findIndex((s: any) => s.type === 'image-text' && s.data?.title?.includes("How We Help You Manage"));
-        sections.splice(imgText1Index !== -1 ? imgText1Index + 1 : 2, 0, stepsSec);
+        sections.splice(imgText1Index !== -1 ? imgText1Index + 1 : 2, 0, howItWorksSec);
       }
 
       // 4. Benefits
@@ -207,9 +233,10 @@ export default async function SlugPage({
           data: { platform: platformName },
           settings: { padding: '80px 0', backgroundColor: '#FFFFFF', visibility: true }
         };
-        const stepsIndex = sections.findIndex((s: any) => s.type === 'steps');
+        const stepsIndex = sections.findIndex((s: any) => s.type === 'how-it-work-card');
         sections.splice(stepsIndex !== -1 ? stepsIndex + 1 : 3, 0, benefitsSec);
       }
+
 
       // 5. Drawbacks
       const hasDrawbacks = sections.some((s: any) => s.type === 'organic-drawbacks');

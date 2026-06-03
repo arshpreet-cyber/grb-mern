@@ -96,13 +96,39 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
       },
     },
 
-    // ─── 4. Steps Section ───────────────────────────────────
+    // ─── 4. How It Works Section ─────────────────────────────
     {
-      id: `section-steps-${product.id}`,
-      type: 'steps',
+      id: `section-how-it-work-card-${product.id}`,
+      type: 'how-it-work-card',
       data: {
-        heading: `Why Get Reviews Buzz\nis a Trusted Platform\nFor ${product.platform}`,
-        subheading: `At Get Reviews Buzz, we offer a dependable and efficient solution for businesses looking to boost their ${product.platform} Profile with genuine, high-quality reviews.`,
+        heading: "How It Works in <strong>4 Simple Steps</strong>",
+        subheading: "Our process is quick, simple, and designed to help you improve your online reputation effortlessly.",
+        steps: [
+          { 
+            title: "Pick A Review", 
+            desc: `Choose The Type And Number Of ${product.platform} Reviews You Want To Improve Your Company's Profile.`, 
+            color: "bg-yellow-100", 
+            icon: { href: "/uploads/media/1777977982660-8109977b-4427-4a5e-955a-11ba0bb2ac91-rating-1.svg" } 
+          },
+          { 
+            title: "Select Your Package", 
+            desc: "Pick The Number Of Reviews Or The Service Package That Fits Your Needs.", 
+            color: "bg-blue-100", 
+            icon: { href: "/uploads/media/1777978008677-ecbb379c-db78-4858-84fe-1d5559314feb-XMLID-991-.svg" } 
+          },
+          { 
+            title: "Configure & Order", 
+            desc: `Buy ${product.platform} Reviews With A Secure, One-Step Checkout And Your Preferred Payment Method.`, 
+            color: "bg-green-100", 
+            icon: { href: "/uploads/media/1777978022187-e61c5a1a-4fe8-41d4-9e55-a6c5f33f2cb5-Group-844.svg" } 
+          },
+          { 
+            title: "Fill Business Details", 
+            desc: `Include Your ${product.platform} Link And Any Customization Instructions.`, 
+            color: "bg-indigo-100", 
+            icon: { href: "/uploads/media/1777978039825-2a6a3096-e833-42c5-8286-e4b1a7a10566-Group-846.svg" } 
+          },
+        ]
       },
       settings: {
         padding: '80px 0',
@@ -110,6 +136,7 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
         visibility: true,
       },
     },
+
 
     // ─── 5. Benefits Section ─────────────────────────────────
     {
