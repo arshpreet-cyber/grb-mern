@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import products from "@/lib/constants/products";
 import { ProductCard } from "@/components/home/BuyReviewsSection";
 import { SectionProps } from "@/types/section";
@@ -105,9 +106,31 @@ export default function YouMayAlsoLike({ data = {} }: SectionProps) {
   return (
     <section className="bg-white py-12 lg:py-16">
       <div className="max-w-[1500px] mx-auto px-6">
-        <h2 className="text-2xl lg:text-3xl font-semibold mb-8 text-[#333]">
+        <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl lg:text-3xl font-semibold text-[#333]">
           You May Also Like...
         </h2>
+        <Link
+          href="/"
+          className="group flex items-center gap-2.5 px-6 py-2 border border-black rounded-[14px] text-sm font-semibold text-black bg-transparent transition-all duration-300 hover:bg-black hover:text-white"
+        >
+          View More
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="transition-transform duration-300 group-hover:translate-x-0.5"
+          >
+            <line x1="3" y1="8" x2="13" y2="8" />
+            <polyline points="9 4 13 8 9 12" />
+          </svg>
+        </Link>
+        </div>
         <ul className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 list-none p-0 m-0 items-stretch">
           {finalProducts.map((product: any, index: number) => (
             <ProductCard

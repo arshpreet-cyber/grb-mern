@@ -322,6 +322,104 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
           ]
         };
       }
+      if (type === 'safe-reviews-carousel') {
+        data = {
+          slides: [
+            {
+              heading: "How We Provide Safe And Authentic Google Reviews",
+              subheading: "We take a strategic, secure approach to Google reputation management that improves your profile while keeping reviews authentic.",
+              listTitle: "Here's how we keep Google reviews safe and authentic:",
+              features: [
+                {
+                  title: "Accounts That Are Both Legitimate and Active",
+                  desc: "Our reviews are provided by genuine, geographically relevant profiles with established activity, ensuring that they complement organic customer feedback."
+                },
+                {
+                  title: "Customized Reviews",
+                  desc: "Our customized reviews accurately reflect customer experiences, boosting credibility and trustworthiness."
+                },
+                {
+                  title: "Delivery Occurs Gradually and Naturally",
+                  desc: "To maintain authenticity, reviews are posted in a consistent pattern over time, avoiding sudden spikes that may raise suspicion."
+                }
+              ],
+              image: "/uploads/media/safe_reviews_graphic.png"
+            },
+            {
+              heading: "Targeted Geolocation Profiles",
+              subheading: "We assign reviews to profiles that match the geographic location of your business for maximum local SEO impact.",
+              listTitle: "How we ensure localized profile matching:",
+              features: [
+                {
+                  title: "IP-Verified Routing",
+                  desc: "Reviews are posted using residential IPs matching your business's target cities and neighborhoods."
+                },
+                {
+                  title: "Realistic Activity Patterns",
+                  desc: "Reviewers have historical check-ins and reviews in your region, making their profiles fully organic and relevant."
+                },
+                {
+                  title: "SEO-Optimized Content",
+                  desc: "Our custom reviews contain regional keywords to boost your local map pack search visibility ranking."
+                }
+              ],
+              image: "/uploads/media/safe_reviews_graphic.png"
+            },
+            {
+              heading: "Active Anti-Drop Refill Guarantee",
+              subheading: "We implement rigorous quality controls and follow up with a 30-day warranty to keep your rating intact.",
+              listTitle: "Our reliability and safety features include:",
+              features: [
+                {
+                  title: "Strict Account Verification",
+                  desc: "All review profiles pass continuous checks to confirm active status on local directories."
+                },
+                {
+                  title: "30-Day Free Replacements",
+                  desc: "If any reviews are filtered or dropped, our automated system replaces them free of charge within 24 hours."
+                },
+                {
+                  title: "Safe, Compliant Billing",
+                  desc: "Billing info is completely separated and kept private from directory crawler bots to guarantee profile safety."
+                }
+              ],
+              image: "/uploads/media/safe_reviews_graphic.png"
+            }
+          ]
+        };
+      }
+      if (type === 'organic-drawbacks') {
+        data = {
+          heading: "",
+          subheading: "",
+          cards: [
+            {
+              title: "Slow and Unpredictable Growth",
+              iconType: "chart",
+              paragraphs: [
+                "Obtaining organic reviews necessitates that customers take the initiative to provide feedback, which can be a slow and inconsistent process.",
+                "Since many happy consumers just don't write reviews, it can be challenging to build a strong online reputation fast."
+              ]
+            },
+            {
+              title: "Vulnerable to Negative Feedback",
+              iconType: "warning",
+              paragraphs: [
+                "A single disgruntled customer or malicious competitor can easily damage your score. Without a steady stream of positive feedback, your rating suffers disproportionately.",
+                "Relying on organic reviews means you have no control over the frequency and timing of reviews to balance negative feedback."
+              ]
+            },
+            {
+              title: "Outpaced by Competitors",
+              iconType: "competition",
+              paragraphs: [
+                "Competitors who actively acquire reviews will quickly outrank you in search visibility and local map pack rankings.",
+                "If you rely solely on natural review growth, it could take years to reach the rating volume that your competitors achieve in weeks."
+              ]
+            }
+          ]
+        };
+      }
     }
 
     dispatch(addSection({ type, data }));

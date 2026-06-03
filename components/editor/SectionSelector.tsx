@@ -32,6 +32,8 @@ export default function SectionSelector({ onSelect, onClose }: SectionSelectorPr
     { type: 'similar-products', label: 'Similar Products', icon: <ShoppingCart />, description: 'Showcase similar products in a grid' },
     { type: 'how-it-work-card', label: 'How It Works Card', icon: <Layout />, description: 'A 3-step how it works card' },
     { type: 'benefits-section', label: 'Benefits Section', icon: <Layout />, description: 'A premium 3-column benefits overview section' },
+    { type: 'safe-reviews-carousel', label: 'Safe Reviews Carousel', icon: <Layout />, description: 'A premium slider detailing secure review delivery' },
+    { type: 'organic-drawbacks', label: 'Organic Drawbacks Grid', icon: <Layout />, description: 'A card grid showing the drawbacks of organic review collection' },
     { type: 'customer-reviews', label: 'Customer Reviews', icon: <MessageSquare />, description: 'A slider showcasing customer reviews' },
     { type: 'steps', label: 'Steps Section', icon: <BarChart3 />, description: 'A section showcasing steps or processes' },
     { type: 'cta-product', label: 'CTA Product', icon: <Megaphone />, description: 'A call-to-action section for products' },
