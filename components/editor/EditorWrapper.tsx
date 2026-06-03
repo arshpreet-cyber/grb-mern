@@ -293,6 +293,35 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
           ],
         };
       }
+      if (type === 'benefits-section') {
+        data = {
+          heading: 'Benefits of Buying Google Reviews',
+          subheading: 'Below are the advantages of buying Google reviews online, demonstrating how it improves your business profile:',
+          centerImage: '/uploads/media/benefits_center_image.png',
+          benefits: [
+            {
+              badge: "01",
+              title: "LOCAL SEO RANKINGS",
+              description: "Google uses reviews as a ranking factor for local searches. A higher Google Business Profile ranking will put you in the top results when prospective clients look for businesses similar to yours."
+            },
+            {
+              badge: "02",
+              title: "IMPROVE ONLINE VISIBILITY",
+              description: "A well reviewed business will appear higher in Google search results, making it easier for potential customers to find. More reviews boost your company's reliability and local-global reach."
+            },
+            {
+              badge: "03",
+              title: "BUILD TRUST",
+              description: "People read reviews before they buy or visit a business. Paid Google reviews reassure potential customers about your quality and dependability, leading them to choose you over competitors."
+            },
+            {
+              badge: "04",
+              title: "INCREASE CONVERSIONS",
+              description: "Reviews are social proof and influence buying decisions. Businesses that receive more Google 5 star reviews have higher conversion rates because customers feel more confident in their choices."
+            }
+          ]
+        };
+      }
     }
 
     dispatch(addSection({ type, data }));

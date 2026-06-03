@@ -903,6 +903,81 @@ export default function Sidebar() {
             </>
           )}
 
+          {selectedSection.type === 'benefits-section' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.heading || ''}
+                  onChange={(e) => handleDataChange('heading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea
+                  value={selectedSection.data.subheading || ''}
+                  onChange={(e) => handleDataChange('subheading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Center Image URL</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.centerImage || ''}
+                  onChange={(e) => handleDataChange('centerImage', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-4 pt-2">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Benefits Cards (Max 4)</label>
+                {(selectedSection.data.benefits || []).map((benefit: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Benefit {idx + 1}</span>
+                    <div className="grid grid-cols-4 gap-2">
+                      <div className="col-span-1">
+                        <input
+                          placeholder="Badge"
+                          value={benefit.badge || ''}
+                          onChange={(e) => {
+                            const updated = [...selectedSection.data.benefits];
+                            updated[idx] = { ...updated[idx], badge: e.target.value };
+                            handleDataChange('benefits', updated);
+                          }}
+                          className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg text-center"
+                        />
+                      </div>
+                      <div className="col-span-3">
+                        <input
+                          placeholder="Title"
+                          value={benefit.title || ''}
+                          onChange={(e) => {
+                            const updated = [...selectedSection.data.benefits];
+                            updated[idx] = { ...updated[idx], title: e.target.value };
+                            handleDataChange('benefits', updated);
+                          }}
+                          className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                        />
+                      </div>
+                    </div>
+                    <textarea
+                      placeholder="Description"
+                      value={benefit.description || ''}
+                      onChange={(e) => {
+                        const updated = [...selectedSection.data.benefits];
+                        updated[idx] = { ...updated[idx], description: e.target.value };
+                        handleDataChange('benefits', updated);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
           {selectedSection.type === 'customer-reviews' && (
             <>
               <div className="space-y-3">
