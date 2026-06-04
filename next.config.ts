@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "www.google.com" },
+      { protocol: "https", hostname: "logo.clearbit.com" },
+      { protocol: "https", hostname: "t3.gstatic.com" },
+      { protocol: "https", hostname: "icon.horse" },
       { protocol: "https", hostname: "beta.getreviews.buzz" },
       { protocol: "https", hostname: "getreviews.buzz" },
       { protocol: "https", hostname: "flagcdn.com" },

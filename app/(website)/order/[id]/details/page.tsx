@@ -229,7 +229,7 @@ function ItemSection({
       {/* Product header */}
       <div className="flex items-center gap-3">
         {item.image && (
-          <img src={item.image} alt={item.platform} className="w-10 h-10 object-contain rounded" />
+          <img src={item.image} alt={item.platform} className="w-10 h-10 object-contain rounded" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
         )}
         <h3 className="text-[15px] font-bold text-[#212529]">
           {item.platform} Reviews{" "}

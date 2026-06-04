@@ -35,6 +35,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         pricePerUnit: d.amount ?? 0,
       }));
       const total = items.reduce((s, i) => s + i.pricePerUnit * i.qty, 0);
+
+      const paypalBase  = (process.env.PAYPAL_PAYMENT_URL   ?? "").replace(/\/$/, "");
+      const razorpayUrl = (process.env.RAZORPAY_PAYMENT_URL ?? "").replace(/\/$/, "");
+      const tc          = order.tokenCode ?? "";
+      const paymentUrls = {
+        paypal:   `${paypalBase}?orderno=${order.id}&tokenCode=${tc}`,
+        card:     `${paypalBase}?orderno=${order.id}&tokenCode=${tc}&funding=card`,
+        razorpay: `${razorpayUrl}?orderno=${order.id}&tokenCode=${tc}`,
+      };
+
       const { subject, html } = buildUnpaidReminderEmail({
         name,
         email,
@@ -42,6 +52,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         items,
         total,
         payUrl: order.payUrl ?? null,
+        paymentUrls,
       });
 
       await sendEmailNotification({ to: email, subject, text: `Your order #${order.orderNumber} is unpaid. Please complete your payment.`, html });

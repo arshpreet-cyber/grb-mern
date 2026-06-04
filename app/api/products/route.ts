@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import staticProducts from "@/lib/constants/products";
 
 export async function GET(req: NextRequest) {
   try {
@@ -37,7 +38,7 @@ export async function GET(req: NextRequest) {
         // Pulling the slug exactly as it exists in the database column
         slug: product.slug || "",
         platform: product.title || "Unknown Platform",
-        image: product.media || " ",
+        image: product.media || staticProducts.find(p => p.id === product.slug)?.image || "",
         oneTimePrice: standardPrice,
         subscribePrice: monthlyPrice,
         minimumQuantity: product.minimumQuantity || 1,

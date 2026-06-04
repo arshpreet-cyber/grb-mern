@@ -13,16 +13,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { items, paymentMethod } = await req.json();
+    const { items, paymentMethod, couponCode, discountAmount } = await req.json();
 
     if (!items?.length) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
-    const total = items.reduce(
+    const rawTotal = items.reduce(
       (sum: number, item: any) => sum + item.pricePerUnit * item.qty,
       0
     );
+    const discount = parseFloat(discountAmount ?? 0) || 0;
+    const total    = Math.max(rawTotal - discount, 0);
 
     const orderNumber = Date.now().toString();
     const tokenCode = crypto
@@ -49,13 +51,15 @@ export async function POST(req: NextRequest) {
         email: user?.email,
         firstName: user?.name?.split(" ")[0] ?? "",
         lastName: user?.name?.split(" ").slice(1).join(" ") ?? "",
-        amount: Math.round(total * 100) / 100,
-        currency: "USD",
-        symbol: "$",
-        paymentStatus: "1",
-        status: "1",
-        paymentMethod: pmMap[paymentMethod] ?? "2",
+        amount:         Math.round(total * 100) / 100,
+        currency:       "USD",
+        symbol:         "$",
+        paymentStatus:  "1",
+        status:         "1",
+        paymentMethod:  pmMap[paymentMethod] ?? "2",
         tokenCode,
+        ...(couponCode   ? { coupon: couponCode }                              : {}),
+        ...(discount > 0 ? { couponDiscount: Math.round(discount * 100) }     : {}),
         orderDetails: {
           create: items.map((item: any) => ({
             itemName: item.platform,
@@ -70,6 +74,17 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Shared payment URL bases (used for both email buttons and payUrl redirect)
+    const paymentBaseUrl = (process.env.PAYMENT_URL        ?? "").replace(/\/$/, "");
+    const paypalBase     = (process.env.PAYPAL_PAYMENT_URL  ?? "").replace(/\/$/, "");
+    const razorpayUrl    = (process.env.RAZORPAY_PAYMENT_URL ?? `${paymentBaseUrl}/grb/stripe`).replace(/\/$/, "");
+
+    const emailPaymentUrls = {
+      paypal:   `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}`,
+      card:     `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}&funding=card`,
+      razorpay: `${razorpayUrl}?orderno=${order.id}&tokenCode=${tokenCode}`,
+    };
+
     // Send order confirmation email immediately after order is saved
     if (user?.email) {
       const emailContent = buildOrderCreatedEmail({
@@ -82,6 +97,7 @@ export async function POST(req: NextRequest) {
           pricePerUnit: item.pricePerUnit,
         })),
         total: Math.round(total * 100) / 100,
+        paymentUrls: emailPaymentUrls,
       });
       const devEmail = process.env.DEV_EMAIL;
       const recipients = devEmail ? `${user.email},${devEmail}` : user.email;
@@ -103,19 +119,13 @@ export async function POST(req: NextRequest) {
 
     const callbackUrl = `${appUrl}/api/orders/payment-callback?orderId=${order.id}&tokenCode=${tokenCode}`;
 
-    const paymentBaseUrl = (process.env.PAYMENT_URL ?? "").replace(/\/$/, "");
-
-    const paypalBase = (process.env.PAYPAL_PAYMENT_URL ?? "").replace(/\/$/, "");
-
     let payUrl = "";
     if (paymentMethod === "paypal") {
       payUrl = `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}`;
     } else if (paymentMethod === "card") {
-      // PayPal card flow — forces card entry form instead of PayPal login
       payUrl = `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}&funding=card`;
     } else if (paymentMethod === "razorpay") {
-      const rzpUrl = (process.env.RAZORPAY_PAYMENT_URL ?? `${paymentBaseUrl}/grb/stripe`).replace(/\/$/, "");
-      payUrl = `${rzpUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
+      payUrl = `${razorpayUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
     } else {
       payUrl = `${paymentBaseUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
     }
