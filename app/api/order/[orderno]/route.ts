@@ -12,8 +12,9 @@ export async function GET(
   { params }: { params: Promise<{ orderno: string }> }
 ) {
   const apiToken = new URL(req.url).searchParams.get("api_token");
+  const validTokens = [process.env.GRB_API_TOKEN, process.env.BULK_API_TOKEN].filter(Boolean);
 
-  if (!apiToken || apiToken !== process.env.GRB_API_TOKEN) {
+  if (!apiToken || !validTokens.includes(apiToken)) {
     return NextResponse.json({ message: "error", error: "Unauthorized" }, { status: 401 });
   }
 
