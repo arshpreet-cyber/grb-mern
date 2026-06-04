@@ -1,42 +1,35 @@
 'use client';
 import Wrapper from "@/components/ui/Wrapper";
 
+const COOKIE_PURPOSES = [
+  "Remember user preferences",
+  "Analyse website traffic and performance",
+  "Improve website speed and functionality",
+  "Maintain website security",
+  "Enhance overall user experience",
+];
+
 const COOKIE_TYPES = [
   {
-    type: "Strictly Necessary",
-    color: "#4caf50",
-    canDisable: false,
-    desc: "These cookies are essential for the website to function and cannot be switched off. They are usually set in response to actions you take such as logging in, filling forms, or setting privacy preferences.",
-    examples: ["Session cookies", "Authentication tokens", "Security cookies"],
+    title: "Essential Cookies",
+    desc: "These cookies are necessary for the core functionality of our website. They help support features such as page navigation, security, accessibility, and form submissions. Without these cookies, certain parts of the website may not function properly.",
   },
   {
-    type: "Performance & Analytics",
-    color: "#2196f3",
-    canDisable: true,
-    desc: "These cookies allow us to count visits and traffic sources so we can measure and improve site performance. They help us understand which pages are most and least popular.",
-    examples: ["Google Analytics", "Page view tracking", "Error monitoring"],
+    title: "Analytics & Performance Cookies",
+    desc: "These cookies help us understand how visitors interact with our website by collecting information such as pages visited, time spent on the site, and overall website experience. This data helps us improve usability, optimize content, and enhance the overall user experience.",
   },
   {
-    type: "Functional",
-    color: "#ff9800",
-    canDisable: true,
-    desc: "These cookies enable enhanced functionality and personalisation such as remembering your preferences, language settings, and login status across sessions.",
-    examples: ["Language preference", "Cart contents", "User preferences"],
-  },
-  {
-    type: "Marketing & Targeting",
-    color: "#e91e63",
-    canDisable: true,
-    desc: "These cookies may be set through our site by advertising partners to build a profile of your interests and show you relevant ads on other sites.",
-    examples: ["Retargeting pixels", "Social media cookies", "Ad conversion tracking"],
+    title: "Functionality Cookies",
+    desc: "Functionality cookies allow the website to remember your preferences and settings, such as previously entered information or customized browsing preferences. These cookies help create a smoother and more personalized experience during future visits.",
   },
 ];
 
-const MANAGE = [
-  { title: "Browser Settings", desc: "Most browsers allow you to refuse or delete cookies through their settings. Refer to your browser's help section for instructions." },
-  { title: "Opt-Out Tools", desc: "You can opt out of Google Analytics by installing the Google Analytics Opt-out Browser Add-on available at tools.google.com/dlpage/gaoptout." },
-  { title: "Cookie Banner", desc: "When you first visit our site, you can accept or decline non-essential cookies via our cookie consent banner." },
-  { title: "Contact Us", desc: "If you have questions about specific cookies we use, contact us at support@getreviews.buzz and we'll provide full details." },
+const BROWSER_CONTROLS = [
+  "View stored cookies",
+  "Block or disable cookies",
+  "Delete existing cookies",
+  "Receive alerts before cookies are stored",
+  "Manage website-specific cookie preferences",
 ];
 
 export default function CookiePolicyPage() {
@@ -45,88 +38,94 @@ export default function CookiePolicyPage() {
       {/* Hero */}
       <div className="bg-[#f7f7f7] py-16 border-b border-[#ebebeb]">
         <Wrapper>
-          <div className="max-w-3xl">
-            <p className="text-[13px] font-semibold text-[#FFCE2E] uppercase tracking-widest mb-3">Legal</p>
-            <h1 className="text-[36px] md:text-[44px] font-bold text-[#1a1a1a] leading-tight mb-4">Cookie Policy</h1>
-            <p className="text-[16px] text-[#666] leading-relaxed">
-              This policy explains what cookies are, how Get Reviews Buzz uses them, and how you can manage your cookie preferences.
-            </p>
-            <p className="text-[13px] text-[#999] mt-4">Last updated: June 2025</p>
-          </div>
+          <p className="text-[13px] font-semibold text-[#FFCE2E] uppercase tracking-widest mb-3">Legal</p>
+          <h1 className="text-[36px] md:text-[44px] font-bold text-[#1a1a1a] leading-tight mb-4">How Get Reviews Buzz Uses Cookies Responsibly</h1>
+          <p className="text-[16px] text-[#666] leading-relaxed max-w-3xl">
+            At Get Reviews Buzz, transparency matters just as much as authenticity. This page explains how we use cookies and similar technologies to improve your browsing experience, website functionality, and overall experience.
+          </p>
+          <p className="text-[14px] text-[#999] mt-3">Safe &amp; Secure Browsing Experience &nbsp;|&nbsp; Applies to: getreviews.buzz</p>
+          <p className="text-[13px] text-[#999] mt-2">Last updated: June 2025</p>
         </Wrapper>
       </div>
 
       <div className="py-14">
         <Wrapper>
-          <div className="max-w-3xl space-y-12">
+          <div className="space-y-14">
 
-            {/* What are cookies */}
+            {/* What are Cookies */}
             <div>
-              <h2 className="text-[22px] font-bold text-[#1a1a1a] mb-4 flex items-center gap-3">
-                <span className="text-[26px]">🍪</span> What Are Cookies?
-              </h2>
-              <p className="text-[14px] text-[#555] leading-relaxed">
-                Cookies are small text files stored on your device when you visit a website. They help websites remember your preferences, keep you logged in, and understand how you use the site. Cookies do not contain personally identifiable information unless you have provided it to us.
+              <h2 className="text-[26px] font-bold text-[#1a1a1a] mb-4">What are Cookies?</h2>
+              <p className="text-[15px] text-[#555] leading-relaxed">
+                Cookies are small text files stored on your browser or device when you visit a website. They act like a digital memory, helping websites remember your preferences, keep you logged in, and deliver a smoother, more personalized experience each time you return. They do not contain personal data on their own, and they cannot run programs or deliver viruses. Think of them as tiny bookmarks that make your next visit smarter and faster.
               </p>
             </div>
 
-            {/* Cookie Types */}
+            {/* Why We Use Cookies */}
             <div>
-              <h2 className="text-[22px] font-bold text-[#1a1a1a] mb-6 flex items-center gap-3">
-                <span className="text-[26px]">📂</span> Types of Cookies We Use
-              </h2>
-              <div className="space-y-5">
-                {COOKIE_TYPES.map((c) => (
-                  <div key={c.type} className="border border-[#f0f0f0] rounded-xl p-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-[15px] font-bold text-[#1a1a1a]" style={{ color: c.color }}>{c.type}</p>
-                      <span className={`text-[11px] px-3 py-1 rounded-full font-semibold ${c.canDisable ? "bg-orange-50 text-orange-600" : "bg-green-50 text-green-600"}`}>
-                        {c.canDisable ? "Optional" : "Required"}
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-[#555] mb-3">{c.desc}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {c.examples.map((ex) => (
-                        <span key={ex} className="text-[11px] bg-[#f5f5f5] text-[#666] px-3 py-1 rounded-full">{ex}</span>
-                      ))}
-                    </div>
+              <h2 className="text-[26px] font-bold text-[#1a1a1a] mb-4">Why We Use Cookies</h2>
+              <p className="text-[15px] text-[#555] leading-relaxed mb-5">
+                We use cookies to make your experience on Get Reviews Buzz smoother, faster, and more personalized. These cookies help us remember preferences, improve website performance, and better understand how visitors interact with our content and services.
+              </p>
+              <p className="text-[15px] font-semibold text-[#1a1a1a] mb-3">Cookies may help us:</p>
+              <ul className="space-y-2">
+                {COOKIE_PURPOSES.map(p => (
+                  <li key={p} className="flex items-center gap-3 text-[14px] text-[#555]">
+                    <span className="text-[#4caf50] font-bold">✔</span> {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Types */}
+            <div>
+              <h2 className="text-[26px] font-bold text-[#1a1a1a] mb-3">Types of Cookies We Use</h2>
+              <p className="text-[15px] text-[#555] leading-relaxed mb-7">
+                Different cookies serve different purposes on our website. Some help the website function properly, while others help us improve performance and enhance our user experience.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {COOKIE_TYPES.map(c => (
+                  <div key={c.title} className="border border-[#f0f0f0] rounded-xl p-6">
+                    <h3 className="text-[16px] font-bold text-[#1a1a1a] mb-3">{c.title}</h3>
+                    <p className="text-[14px] text-[#555] leading-relaxed">{c.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Third-party */}
+            {/* Managing Preferences */}
             <div>
-              <h2 className="text-[22px] font-bold text-[#1a1a1a] mb-4 flex items-center gap-3">
-                <span className="text-[26px]">🌐</span> Third-Party Cookies
-              </h2>
-              <p className="text-[14px] text-[#555] leading-relaxed">
-                Some cookies on our site are set by third-party services such as Google Analytics, payment processors, and social media platforms. These third parties have their own privacy and cookie policies, which we encourage you to review. We do not control these cookies.
+              <h2 className="text-[26px] font-bold text-[#1a1a1a] mb-4">Managing Your Cookie Preferences</h2>
+              <p className="text-[15px] text-[#555] leading-relaxed mb-5">
+                You can control or manage cookies through your browser settings at any time. Most browsers allow you to:
+              </p>
+              <ul className="space-y-2 mb-5">
+                {BROWSER_CONTROLS.map(b => (
+                  <li key={b} className="flex items-center gap-3 text-[14px] text-[#555]">
+                    <span className="text-[#FFCE2E] font-bold">•</span> {b}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[14px] text-[#555] italic">
+                Please note that disabling certain cookies may affect website functionality and limit access to some features or services available on our website. For additional guidance, we recommend visiting your browser&apos;s help or support section.
               </p>
             </div>
 
-            {/* How to manage */}
+            {/* Updates */}
             <div>
-              <h2 className="text-[22px] font-bold text-[#1a1a1a] mb-6 flex items-center gap-3">
-                <span className="text-[26px]">⚙️</span> How to Manage Cookies
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {MANAGE.map((m) => (
-                  <div key={m.title} className="bg-[#f7f7f7] rounded-xl p-5">
-                    <p className="text-[14px] font-bold text-[#1a1a1a] mb-2">{m.title}</p>
-                    <p className="text-[13px] text-[#666] leading-relaxed">{m.desc}</p>
-                  </div>
-                ))}
-              </div>
+              <h2 className="text-[26px] font-bold text-[#1a1a1a] mb-4">Update to This Policy</h2>
+              <p className="text-[15px] text-[#555] leading-relaxed">
+                Get Reviews Buzz may revise this Cookie Policy periodically to reflect improvements to our website, services, or compliance practices. We encourage users to review this page occasionally to stay informed about how cookies are used on our website.
+              </p>
             </div>
 
             {/* Contact */}
             <div className="bg-[#fffcf0] border border-[#ffeaa7] rounded-xl p-6">
-              <h3 className="text-[16px] font-bold text-[#1a1a1a] mb-2">Cookie Questions?</h3>
-              <p className="text-[14px] text-[#555]">
-                For questions about our cookie practices, email us at{" "}
-                <a href="mailto:support@getreviews.buzz" className="text-[#FFCE2E] font-semibold underline">support@getreviews.buzz</a>
+              <h3 className="text-[18px] font-bold text-[#1a1a1a] mb-3">Need Assistance?</h3>
+              <p className="text-[14px] text-[#555] mb-3">
+                If you would like more information about how cookies are used on our website or need assistance regarding your privacy preferences, our team is here to help.
               </p>
+              <p className="text-[14px] text-[#555]">Email: <a href="mailto:support@getreviews.buzz" className="text-[#FFCE2E] font-semibold underline">support@getreviews.buzz</a></p>
+              <p className="text-[14px] text-[#555]">Website: <a href="https://getreviews.buzz" className="text-[#FFCE2E] font-semibold underline">https://getreviews.buzz</a></p>
             </div>
           </div>
         </Wrapper>
