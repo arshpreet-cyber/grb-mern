@@ -62,6 +62,7 @@ export default function UserDashboard() {
             orderNumber: o.orderNumber,
             paymentId: o.paymentId ?? "—",
             amount: `$${o.amount?.toFixed(2) ?? "0.00"}`,
+            date: new Date(o.date ?? o.createdAt ?? "").toLocaleDateString(),
             method: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
             status: orderStatusLabel(o.status),
             paymentStatus: paymentStatusLabel(o.paymentStatus),
