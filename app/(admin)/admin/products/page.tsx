@@ -133,7 +133,7 @@ export default function AdminProductsPage() {
             {/* Image fetched safely from the media column fallback configuration */}
             <div className="h-10 w-10 shrink-0 rounded-lg overflow-hidden border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
               {p.image ? (
-                <img src={p.image} alt={p.platform ?? ""} className="h-full w-full object-cover" />
+                <img src={p.image} alt={p.platform ?? ""} className="h-full w-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
               ) : (
                 <ImageIcon className="text-gray-300 h-5 w-5" />
               )}

@@ -77,10 +77,11 @@ export default function SideCart() {
                     {/* Item Image */}
                     <div className="h-[70px] w-[70px] shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-[#f9f9f9] flex items-center justify-center">
                       {item.image ? (
-                        <img 
-                          src={item.image} 
-                          alt={item.platform} 
-                          className="h-[40px] w-[40px] object-contain transition-transform group-hover:scale-110" 
+                        <img
+                          src={item.image}
+                          alt={item.platform}
+                          className="h-[40px] w-[40px] object-contain transition-transform group-hover:scale-110"
+                          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
                         />
                       ) : (
                         <ShoppingCart size={24} className="text-gray-300" />

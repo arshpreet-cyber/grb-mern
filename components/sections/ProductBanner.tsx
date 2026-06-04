@@ -123,6 +123,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                   src={resolvedImage}
                   alt="preview"
                   className="w-full h-auto block object-contain"
+                  onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
                 />
               </div>
             </div>
