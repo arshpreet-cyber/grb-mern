@@ -282,6 +282,38 @@ export default function CartPage() {
   const { items, removeItem, updateQty, clearCart, total } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState<"paypal" | "card" | "razorpay" | null>(null);
+  const [couponCode, setCouponCode]     = useState("");
+  const [couponApplied, setCouponApplied] = useState<{ code: string; discountAmount: number; discountType: string; discountValue: number } | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError]   = useState("");
+
+  const discountedTotal = couponApplied ? Math.max(total - couponApplied.discountAmount, 0) : total;
+
+  async function applyCoupon() {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError("");
+    try {
+      const res  = await fetch("/api/coupons/validate", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ code: couponCode.trim(), total }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setCouponError(data.error ?? "Invalid coupon"); return; }
+      setCouponApplied({ code: data.code, discountAmount: data.discountAmount, discountType: data.discountType, discountValue: data.discountValue });
+    } catch {
+      setCouponError("Failed to apply coupon. Please try again.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function removeCoupon() {
+    setCouponApplied(null);
+    setCouponCode("");
+    setCouponError("");
+  }
 
   async function handlePayment(method: "paypal" | "card" | "razorpay") {
     setLoading(method);
@@ -289,7 +321,12 @@ export default function CartPage() {
       const res = await fetch("/api/orders/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, paymentMethod: method }),
+        body: JSON.stringify({
+          items,
+          paymentMethod: method,
+          couponCode:    couponApplied?.code ?? null,
+          discountAmount: couponApplied?.discountAmount ?? 0,
+        }),
       });
       let data: any;
       try { data = await res.json(); } catch { throw new Error("Server error — please try again."); }
@@ -470,16 +507,36 @@ export default function CartPage() {
                   {/* Coupon Block */}
                   <div className="coupon-block mt-10">
                     <label className="coupon-label text-[15px] font-bold mb-3 block text-[#333]">Have a coupon?</label>
-                    <div className="coupon-row flex max-w-[420px]">
-                      <input 
-                        type="text" 
-                        placeholder="Enter your Coupon Code" 
-                        className="coupon-field flex-1 border border-[#ced4da] border-r-0 rounded-l-md px-[15px] h-[46px] text-[14px] outline-none focus:border-[#333] transition-colors"
-                      />
-                      <button className="coupon-submit bg-[#333] text-white border-none rounded-r-md px-[30px] h-[46px] text-[14px] font-medium hover:bg-black transition-colors">
-                        Apply
-                      </button>
-                    </div>
+                    {couponApplied ? (
+                      <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-md px-4 py-3 max-w-[420px]">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span className="text-[14px] text-green-700 font-semibold flex-1">
+                          {couponApplied.code} — {couponApplied.discountType === "percentage" ? `${couponApplied.discountValue}% off` : `$${couponApplied.discountAmount.toFixed(2)} off`}
+                        </span>
+                        <button onClick={removeCoupon} className="text-[12px] text-red-500 hover:text-red-700 underline">Remove</button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="coupon-row flex max-w-[420px]">
+                          <input
+                            type="text"
+                            value={couponCode}
+                            onChange={e => { setCouponCode(e.target.value); setCouponError(""); }}
+                            onKeyDown={e => e.key === "Enter" && applyCoupon()}
+                            placeholder="Enter your Coupon Code"
+                            className="coupon-field flex-1 border border-[#ced4da] border-r-0 rounded-l-md px-[15px] h-[46px] text-[14px] outline-none focus:border-[#333] transition-colors"
+                          />
+                          <button
+                            onClick={applyCoupon}
+                            disabled={couponLoading || !couponCode.trim()}
+                            className="coupon-submit bg-[#333] text-white border-none rounded-r-md px-[30px] h-[46px] text-[14px] font-medium hover:bg-black transition-colors disabled:opacity-50"
+                          >
+                            {couponLoading ? "..." : "Apply"}
+                          </button>
+                        </div>
+                        {couponError && <p className="text-red-500 text-[13px] mt-2">{couponError}</p>}
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -499,9 +556,16 @@ export default function CartPage() {
 
                     <div className="sum-divider h-[1px] bg-[#e9ecef] my-5"></div>
 
+                    {couponApplied && (
+                      <div className="flex justify-between text-[14px] mb-2">
+                        <span className="text-green-600 font-medium">Discount ({couponApplied.code})</span>
+                        <span className="text-green-600 font-semibold">−${couponApplied.discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
+
                     <div className="sum-total flex justify-between items-center mb-[30px]">
                       <span className="text-[16px] font-medium text-[#6c757d]">Subtotal</span>
-                      <span className="text-[24px] font-bold text-black">${total.toFixed(2)}</span>
+                      <span className="text-[24px] font-bold text-black">${discountedTotal.toFixed(2)}</span>
                     </div>
 
                     <div className="space-y-[10px]">

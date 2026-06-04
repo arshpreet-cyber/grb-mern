@@ -13,16 +13,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { items, paymentMethod } = await req.json();
+    const { items, paymentMethod, couponCode, discountAmount } = await req.json();
 
     if (!items?.length) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
-    const total = items.reduce(
+    const rawTotal = items.reduce(
       (sum: number, item: any) => sum + item.pricePerUnit * item.qty,
       0
     );
+    const discount = parseFloat(discountAmount ?? 0) || 0;
+    const total    = Math.max(rawTotal - discount, 0);
 
     const orderNumber = Date.now().toString();
     const tokenCode = crypto
@@ -49,13 +51,15 @@ export async function POST(req: NextRequest) {
         email: user?.email,
         firstName: user?.name?.split(" ")[0] ?? "",
         lastName: user?.name?.split(" ").slice(1).join(" ") ?? "",
-        amount: Math.round(total * 100) / 100,
-        currency: "USD",
-        symbol: "$",
-        paymentStatus: "1",
-        status: "1",
-        paymentMethod: pmMap[paymentMethod] ?? "2",
+        amount:         Math.round(total * 100) / 100,
+        currency:       "USD",
+        symbol:         "$",
+        paymentStatus:  "1",
+        status:         "1",
+        paymentMethod:  pmMap[paymentMethod] ?? "2",
         tokenCode,
+        ...(couponCode   ? { coupon: couponCode }                              : {}),
+        ...(discount > 0 ? { couponDiscount: Math.round(discount * 100) }     : {}),
         orderDetails: {
           create: items.map((item: any) => ({
             itemName: item.platform,
