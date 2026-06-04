@@ -53,8 +53,10 @@ export async function GET(
         stripe_session_id: null,
         is_recurring:     0,
         created_at:       (order.createdAt ?? new Date()).toISOString(),
-        order_detail:     order.orderDetails.map((d) => ({
-          // No `id` field — let PHP's grb_order_details auto-increment assign its own PK
+        order_detail:     order.orderDetails.map((d, idx) => ({
+          // Stable high-range ID: orderId * 10000 + position avoids clashing with
+          // existing grb_order_details rows from the old GRB site (which are small ints).
+          id:          order.id * 10000 + idx + 1,
           order_id:    order.id,
           item_name:   d.itemName ?? d.platform ?? "",
           item_id:     d.itemId ?? d.platform ?? "",
