@@ -74,9 +74,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Build payment URLs for all 3 methods (used in email buttons)
-    const paypalBase  = (process.env.PAYPAL_PAYMENT_URL  ?? "").replace(/\/$/, "");
-    const razorpayUrl = (process.env.RAZORPAY_PAYMENT_URL ?? `${paymentBaseUrl}/grb/stripe`).replace(/\/$/, "");
+    // Shared payment URL bases (used for both email buttons and payUrl redirect)
+    const paymentBaseUrl = (process.env.PAYMENT_URL        ?? "").replace(/\/$/, "");
+    const paypalBase     = (process.env.PAYPAL_PAYMENT_URL  ?? "").replace(/\/$/, "");
+    const razorpayUrl    = (process.env.RAZORPAY_PAYMENT_URL ?? `${paymentBaseUrl}/grb/stripe`).replace(/\/$/, "");
+
     const emailPaymentUrls = {
       paypal:   `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}`,
       card:     `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}&funding=card`,
@@ -117,19 +119,13 @@ export async function POST(req: NextRequest) {
 
     const callbackUrl = `${appUrl}/api/orders/payment-callback?orderId=${order.id}&tokenCode=${tokenCode}`;
 
-    const paymentBaseUrl = (process.env.PAYMENT_URL ?? "").replace(/\/$/, "");
-
-    const paypalBase = (process.env.PAYPAL_PAYMENT_URL ?? "").replace(/\/$/, "");
-
     let payUrl = "";
     if (paymentMethod === "paypal") {
       payUrl = `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}`;
     } else if (paymentMethod === "card") {
-      // PayPal card flow — forces card entry form instead of PayPal login
       payUrl = `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}&funding=card`;
     } else if (paymentMethod === "razorpay") {
-      const rzpUrl = (process.env.RAZORPAY_PAYMENT_URL ?? `${paymentBaseUrl}/grb/stripe`).replace(/\/$/, "");
-      payUrl = `${rzpUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
+      payUrl = `${razorpayUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
     } else {
       payUrl = `${paymentBaseUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
     }
