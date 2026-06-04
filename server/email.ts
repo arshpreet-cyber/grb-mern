@@ -204,16 +204,43 @@ export function buildUnpaidReminderEmail(payload: {
   items: Array<{ platform: string; qty: number; pricePerUnit: number }>;
   total: number;
   payUrl: string | null;
+  paymentUrls?: { paypal: string; card: string; razorpay: string };
 }) {
-  const payButtons = payload.payUrl
+  const urls = payload.paymentUrls;
+  const payButtons = urls
+    ? `
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e0e0e0;margin:16px 0;background:#ffffff">
+      <tr><td style="padding:12px 14px"><p style="font-size:15px;margin:0;line-height:28px;padding:5px 0;color:#000">To complete the payment, choose a payment method below.</p></td></tr>
+      <tr>
+        <td style="padding:8px 14px">
+          <a href="${urls.paypal}" style="padding:14px 20px;background:#FFC439;border-radius:5px;display:inline-block;color:#003087;text-decoration:none;font-size:14px;font-weight:700">
+            Pay with PayPal
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:8px 14px">
+          <a href="${urls.card}" style="padding:14px 20px;background:#1a1a1a;border-radius:5px;display:inline-block;color:#fff;text-decoration:none;font-size:14px;font-weight:600">
+            💳 Pay with Debit / Credit Card
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:8px 14px 14px">
+          <a href="${urls.razorpay}" style="padding:14px 20px;background:#072654;border-radius:5px;display:inline-block;color:#fff;text-decoration:none;font-size:14px;font-weight:600">
+            ⚡ Pay with Razorpay
+          </a>
+        </td>
+      </tr>
+    </table>`
+    : payload.payUrl
     ? `
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e0e0e0;margin:16px 0;background:#ffffff">
       <tr><td style="padding:12px 14px"><p style="font-size:15px;margin:0;line-height:28px;padding:5px 0;color:#000">To complete the payment please click the button below.</p></td></tr>
       <tr>
         <td style="padding:12px 14px">
-          <a href="${payload.payUrl}"
-             style="padding:14px 20px;background:#000;border-radius:5px;display:inline-block;color:#fff;text-decoration:none;font-size:14px;font-weight:600">
-            💳 Pay with Debit / Credit Card
+          <a href="${payload.payUrl}" style="padding:14px 20px;background:#000;border-radius:5px;display:inline-block;color:#fff;text-decoration:none;font-size:14px;font-weight:600">
+            💳 Pay Now
           </a>
         </td>
       </tr>
@@ -335,7 +362,35 @@ export function buildOrderCreatedEmail(payload: {
   orderNumber: string;
   items: Array<{ platform: string; qty: number; pricePerUnit: number }>;
   total: number;
+  paymentUrls?: { paypal: string; card: string; razorpay: string };
 }) {
+  const urls = payload.paymentUrls;
+  const payButtons = urls ? `
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e0e0e0;margin:16px 0;background:#ffffff">
+      <tr><td style="padding:12px 14px"><p style="font-size:15px;margin:0;line-height:28px;padding:5px 0;color:#000">Choose a payment method to complete your order.</p></td></tr>
+      <tr>
+        <td style="padding:8px 14px">
+          <a href="${urls.paypal}" style="padding:14px 20px;background:#FFC439;border-radius:5px;display:inline-block;color:#003087;text-decoration:none;font-size:14px;font-weight:700">
+            Pay with PayPal
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:8px 14px">
+          <a href="${urls.card}" style="padding:14px 20px;background:#1a1a1a;border-radius:5px;display:inline-block;color:#fff;text-decoration:none;font-size:14px;font-weight:600">
+            💳 Pay with Debit / Credit Card
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:8px 14px 14px">
+          <a href="${urls.razorpay}" style="padding:14px 20px;background:#072654;border-radius:5px;display:inline-block;color:#fff;text-decoration:none;font-size:14px;font-weight:600">
+            ⚡ Pay with Razorpay
+          </a>
+        </td>
+      </tr>
+    </table>` : "";
+
   const content = `
     <p style="margin:0 0 14px;font-size:15px;color:#333">This order has been successfully generated and ready to pay.</p>
     <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
@@ -346,6 +401,7 @@ export function buildOrderCreatedEmail(payload: {
       total: payload.total,
       amountPaid: 0
     })}
+    ${payButtons}
     <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;

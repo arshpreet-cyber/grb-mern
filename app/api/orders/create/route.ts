@@ -70,6 +70,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Build payment URLs for all 3 methods (used in email buttons)
+    const paypalBase  = (process.env.PAYPAL_PAYMENT_URL  ?? "").replace(/\/$/, "");
+    const razorpayUrl = (process.env.RAZORPAY_PAYMENT_URL ?? `${paymentBaseUrl}/grb/stripe`).replace(/\/$/, "");
+    const emailPaymentUrls = {
+      paypal:   `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}`,
+      card:     `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}&funding=card`,
+      razorpay: `${razorpayUrl}?orderno=${order.id}&tokenCode=${tokenCode}`,
+    };
+
     // Send order confirmation email immediately after order is saved
     if (user?.email) {
       const emailContent = buildOrderCreatedEmail({
@@ -82,6 +91,7 @@ export async function POST(req: NextRequest) {
           pricePerUnit: item.pricePerUnit,
         })),
         total: Math.round(total * 100) / 100,
+        paymentUrls: emailPaymentUrls,
       });
       const devEmail = process.env.DEV_EMAIL;
       const recipients = devEmail ? `${user.email},${devEmail}` : user.email;
