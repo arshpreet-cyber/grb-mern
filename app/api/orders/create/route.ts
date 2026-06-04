@@ -105,9 +105,14 @@ export async function POST(req: NextRequest) {
 
     const paymentBaseUrl = (process.env.PAYMENT_URL ?? "").replace(/\/$/, "");
 
+    const paypalBase = (process.env.PAYPAL_PAYMENT_URL ?? "").replace(/\/$/, "");
+
     let payUrl = "";
     if (paymentMethod === "paypal") {
-      payUrl = `${process.env.PAYPAL_PAYMENT_URL}?orderno=${order.id}&tokenCode=${tokenCode}&return_url=${encodeURIComponent(callbackUrl)}&success_url=${encodeURIComponent(callbackUrl)}&redirect_url=${encodeURIComponent(callbackUrl)}`;
+      payUrl = `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}`;
+    } else if (paymentMethod === "card") {
+      // PayPal card flow — forces card entry form instead of PayPal login
+      payUrl = `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}&funding=card`;
     } else if (paymentMethod === "razorpay") {
       const rzpUrl = (process.env.RAZORPAY_PAYMENT_URL ?? `${paymentBaseUrl}/grb/stripe`).replace(/\/$/, "");
       payUrl = `${rzpUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
