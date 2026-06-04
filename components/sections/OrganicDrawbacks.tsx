@@ -48,11 +48,17 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
   const subheading = data.subheading || `While organic ${platform} reviews are useful for establishing credibility, relying solely on them can present several challenges that may slow your company's growth. Here are some major drawbacks:`;
   const cards = (data.cards || defaultCards) as DrawbackCard[];
 
-  // Start with the middle card (index 1) active so adjacent cards are cut off on both sides
-  const [currentIdx, setCurrentIdx] = useState(1);
+  // Clones configuration for infinite loop
+  const cloneCount = Math.min(3, cards.length);
+  const clonedCards = cards.length > 0
+    ? [...cards.slice(-cloneCount), ...cards, ...cards.slice(0, cloneCount)]
+    : [];
 
-  // Compute a safe active index at render time to avoid setting state in effect when cards are deleted
-  const activeIdx = cards.length > 0 ? Math.min(currentIdx, cards.length - 1) : 0;
+  const [currentIdx, setCurrentIdx] = useState(cloneCount);
+  const [transitionEnabled, setTransitionEnabled] = useState(true);
+
+  // Compute activeDotIdx to highlight correct indicator dot
+  const activeDotIdx = cards.length > 0 ? (currentIdx - cloneCount + cards.length) % cards.length : 0;
 
   const [mediaPicker, setMediaPicker] = useState<{
     isOpen: boolean;
@@ -63,6 +69,44 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
     setMediaPicker({ isOpen: true, onSelect });
   };
 
+  // Sync / Reset index if cards length changes in editing mode
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentIdx(cloneCount);
+      setTransitionEnabled(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [cards.length, cloneCount]);
+
+  // Handle clone boundary jumps after transitions complete
+  useEffect(() => {
+    if (cards.length === 0) return;
+    if (currentIdx >= cards.length + cloneCount) {
+      const timer = setTimeout(() => {
+        setTransitionEnabled(false);
+        setCurrentIdx(currentIdx - cards.length);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+    if (currentIdx < cloneCount) {
+      const timer = setTimeout(() => {
+        setTransitionEnabled(false);
+        setCurrentIdx(currentIdx + cards.length);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIdx, cards.length, cloneCount]);
+
+  // Re-enable transition immediately in the next animation frame
+  useEffect(() => {
+    if (!transitionEnabled) {
+      const raf = requestAnimationFrame(() => {
+        setTransitionEnabled(true);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [transitionEnabled]);
+
   // Swipe controls for mobile
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -72,11 +116,7 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
     if (isEditing) return;
     if (cards.length === 0) return;
     const interval = setInterval(() => {
-      setCurrentIdx((prev) => {
-        if (cards.length === 0) return 0;
-        const active = Math.min(prev, cards.length - 1);
-        return (active + 1) % cards.length;
-      });
+      setCurrentIdx((prev) => prev + 1);
     }, 6000);
     return () => clearInterval(interval);
   }, [cards.length, isEditing]);
@@ -115,11 +155,11 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
 
-    if (isLeftSwipe && activeIdx < cards.length - 1) {
-      setCurrentIdx(activeIdx + 1);
+    if (isLeftSwipe) {
+      setCurrentIdx((prev) => prev + 1);
     }
-    if (isRightSwipe && activeIdx > 0) {
-      setCurrentIdx(activeIdx - 1);
+    if (isRightSwipe) {
+      setCurrentIdx((prev) => prev - 1);
     }
     setTouchStart(null);
     setTouchEnd(null);
@@ -233,10 +273,12 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
       <div className={`slider-track-${id} relative w-full overflow-visible flex flex-col items-center`}>
         {/* Track wrapper */}
         <div
-          className="flex items-stretch transition-transform duration-500 ease-in-out w-full"
+          className={`flex items-stretch w-full ${
+            transitionEnabled ? "transition-transform duration-500 ease-in-out" : ""
+          }`}
           style={{
-            transform: cards.length > 0
-              ? `translateX(calc(50% - (var(--slide-width) / 2) - ${activeIdx} * (var(--slide-width) + var(--slide-gap))))`
+            transform: clonedCards.length > 0
+              ? `translateX(calc(50% - (var(--slide-width) / 2) - ${currentIdx} * (var(--slide-width) + var(--slide-gap))))`
               : 'none',
             gap: "var(--slide-gap)",
           }}
@@ -244,14 +286,15 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {cards.length === 0 ? (
+          {clonedCards.length === 0 ? (
             <div className="text-center p-8 bg-slate-50 border border-dashed border-slate-200 rounded-[28px] w-full max-w-lg mx-auto shrink-0 select-none">
               <p className="text-sm font-bold text-slate-700">No drawback cards added yet</p>
               <p className="text-xs text-slate-400 mt-1">Use the properties sidebar on the right to add card slides.</p>
             </div>
           ) : (
-            cards.map((card: DrawbackCard, cardIdx: number) => {
-              const isActive = cardIdx === activeIdx;
+            clonedCards.map((card: DrawbackCard, cardIdx: number) => {
+              const isActive = cardIdx === currentIdx;
+              const originalIdx = cards.length > 0 ? (cardIdx - cloneCount + cards.length) % cards.length : 0;
             return (
               <div
                 key={cardIdx}
@@ -274,8 +317,8 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
                     if (isEditing) {
                       e.stopPropagation();
                       openMediaPicker((url) => {
-                        handleCardChange(cardIdx, "iconType", "custom");
-                        handleCardChange(cardIdx, "iconImage", url);
+                        handleCardChange(originalIdx, "iconType", "custom");
+                        handleCardChange(originalIdx, "iconImage", url);
                       });
                     }
                   }}
@@ -295,7 +338,7 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
                   <input
                     className="text-xl md:text-2xl font-bold text-gray-800 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-1 mb-4"
                     value={card.title || ""}
-                    onChange={(e) => handleCardChange(cardIdx, "title", e.target.value)}
+                    onChange={(e) => handleCardChange(originalIdx, "title", e.target.value)}
                     onClick={(e) => e.stopPropagation()}
                     placeholder="Card Title"
                   />
@@ -312,7 +355,7 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
                           className="text-xs md:text-sm leading-relaxed text-gray-600 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
                           rows={3}
                           value={p || ""}
-                          onChange={(e) => handleParagraphChange(cardIdx, pIdx, e.target.value)}
+                          onChange={(e) => handleParagraphChange(originalIdx, pIdx, e.target.value)}
                           onClick={(e) => e.stopPropagation()}
                           placeholder="Card Paragraph..."
                         />
@@ -331,11 +374,14 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
         {/* Indicator dots */}
         <div className="flex justify-center items-center gap-2.5 mt-10">
           {cards.map((_: DrawbackCard, idx: number) => {
-            const isActive = idx === activeIdx;
+            const isActive = idx === activeDotIdx;
             return (
               <button
                 key={idx}
-                onClick={() => setCurrentIdx(idx)}
+                onClick={() => {
+                  setTransitionEnabled(true);
+                  setCurrentIdx(idx + cloneCount);
+                }}
                 aria-label={`Go to slide ${idx + 1}`}
                 className={`transition-all duration-300 focus:outline-none ${
                   isActive
