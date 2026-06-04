@@ -281,9 +281,9 @@ export default function CartPage() {
   const { data: session, status } = useSession();
   const { items, removeItem, updateQty, clearCart, total } = useCart();
   const router = useRouter();
-  const [loading, setLoading] = useState<"card" | "paypal" | "razorpay" | "zoho" | null>(null);
+  const [loading, setLoading] = useState<"paypal" | "razorpay" | null>(null);
 
-  async function handlePayment(method: "card" | "paypal" | "razorpay" | "zoho") {
+  async function handlePayment(method: "paypal" | "razorpay") {
     setLoading(method);
     try {
       const res = await fetch("/api/orders/create", {
@@ -292,11 +292,7 @@ export default function CartPage() {
         body: JSON.stringify({ items, paymentMethod: method }),
       });
       let data: any;
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error("Server error — please try again.");
-      }
+      try { data = await res.json(); } catch { throw new Error("Server error — please try again."); }
       if (!res.ok) throw new Error(data?.error ?? "Failed to create order");
       clearCart();
       window.location.href = data.payUrl;
@@ -532,34 +528,6 @@ export default function CartPage() {
                           />
                         )}
                       </button>
-
-                      {/* Debit or Credit Card Button */}
-                      <button
-                        onClick={() => handlePayment("zoho")}
-                        disabled={!!loading}
-                        className="w-full h-[52px] flex items-center justify-center gap-2.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-[14px] font-semibold px-4 rounded-[6px] transition-all disabled:opacity-60 cursor-pointer"
-                      >
-                        {loading === "zoho" ? (
-                          <>
-                            <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="12" cy="12" r="10" strokeOpacity="0.3"/>
-                              <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
-                            </svg>
-                            <span>Processing...</span>
-                          </>
-                        ) : (
-                          <>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                              <line x1="1" y1="10" x2="23" y2="10"/>
-                            </svg>
-                            <span>Debit or Credit Card</span>
-                          </>
-                        )}
-                      </button>
-
-                      {/* Powered by PayPal */}
-                      <p className="text-center text-[12px] text-[#888] pb-1">Powered by <span className="font-semibold text-[#003087]">PayPal</span></p>
 
                       {/* Razorpay Button */}
                       <button
