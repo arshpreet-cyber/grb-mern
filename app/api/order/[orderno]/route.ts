@@ -54,7 +54,7 @@ export async function GET(
         is_recurring:     0,
         created_at:       (order.createdAt ?? new Date()).toISOString(),
         order_detail:     order.orderDetails.map((d) => ({
-          id:          d.id,
+          // No `id` field — let PHP's grb_order_details auto-increment assign its own PK
           order_id:    order.id,
           item_name:   d.itemName ?? d.platform ?? "",
           item_id:     d.itemId ?? d.platform ?? "",
