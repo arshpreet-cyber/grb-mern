@@ -173,18 +173,34 @@ export default function AdminDashboard() {
       .finally(() => { setInitialLoading(false); setLoadingData(false); });
   }, [selectedMonth]);
 
+  // Update ticket status
+  const updateTicketStatus = async (ticketId: string, status: string) => {
+    setRecentTickets(prev => prev.map(t => t.ticketId === ticketId ? { ...t, status } : t));
+    await fetch(`/api/support/tickets/${ticketId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+  };
+
   // Columns for Tickets
   const ticketColumns: Column<Ticket>[] = [
     { key: "ticketId", header: "Ticket ID", render: (r) => <span className="text-gray-600 dark:text-white font-medium text-[15px]">#{r.ticketId}</span> },
     { key: "title", header: "Subject", render: (r) => <span className="text-[#111827] dark:text-white font-medium text-[15px]">{r.title || "No Subject"}</span> },
     { key: "status", header: "Status", render: (r) => (
-      <StatusPill value={r.status || "Pending"} colorMap={{
-        "Complete": "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
-        "Completed": "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
-        "Solved": "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
-        "Pending": "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
-        "In Progress": "border-[#fef08a] text-[#ca8a04] bg-[#fefce8] dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400"
-      }} />
+      <select
+        value={r.status || "Open"}
+        onChange={(e) => updateTicketStatus(r.ticketId, e.target.value)}
+        className={`text-[11px] font-semibold px-2 py-1 rounded border cursor-pointer outline-none ${
+          r.status === "Closed" ? "bg-green-100 text-green-700 border-green-300" :
+          r.status === "Hold" ? "bg-yellow-100 text-yellow-700 border-yellow-300" :
+          "bg-red-100 text-red-700 border-red-300"
+        }`}
+      >
+        <option value="Open">Open</option>
+        <option value="Closed">Closed</option>
+        <option value="Hold">Hold</option>
+      </select>
     ) },
     { key: "createdAt", header: "Created On", render: (r) => <span className="text-gray-600 dark:text-white text-[15px] font-medium">{new Date(r.createdAt).toLocaleDateString()}</span> },
     { key: "updatedAt", header: "Recent Update", render: (r) => <span className="text-gray-600 dark:text-white text-[15px] font-medium">{r.updatedAt ? new Date(r.updatedAt).toLocaleDateString() : new Date(r.createdAt).toLocaleDateString()}</span> },

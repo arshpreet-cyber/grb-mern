@@ -131,9 +131,8 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
 
           
           <div className="w-full lg:w-[45%] flex flex-col" id="prod-gmbpots">
-            
-            {/* Google Verified Badge */}
-            <div className="inline-flex items-center gap-1.5 bg-[#FFE26E3D] px-2.5 py-1.5 rounded-[20px] w-fit mb-4">
+                        {/* Google Verified Badge */}
+            <div className="inline-flex items-center gap-1.5 bg-[#FFE26E3D] px-2.5 py-1.5 rounded-[20px] w-fit mx-auto lg:mx-0 mb-4">
               <img 
                 src="https://beta.getreviews.buzz/storage/app/blog/0280225001779423808_Vector.svg" 
                 alt="Icon" 
@@ -145,8 +144,8 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               </span>
             </div>
 
-<h1 className="text-[#000000] text-[28px] md:text-[40px] font-[300] leading-[1.25] tracking-[-0.5px] mb-4">
-  Buy Real{" "}
+<h1 className="text-center lg:text-left text-[#000000] text-[28px] md:text-[40px] font-[300] leading-[1.25] tracking-[-0.5px] mb-4">
+  Buy{" "}
   <span className="font-[500]">
     {title || "Google Reviews"}
   </span>{" "}
@@ -155,7 +154,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
 
             <div 
               onClick={() => setIsExpanded(!isExpanded)}
-              className={`text-[15px] text-[#4A4A48] mb-2 cursor-pointer transition-all duration-200 hover:opacity-85 ${
+              className={`text-[15px] text-[#4A4A48] mb-2 cursor-pointer transition-all duration-200 hover:opacity-85 text-center lg:text-left ${
                 isExpanded ? "" : "line-clamp-2"
               }`}
               style={{ lineHeight: "1.55" }}
@@ -165,7 +164,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               )}
             </div>
 
-<div className="flex flex-wrap items-center gap-x-4 gap-y-3 mt-4 mb-6 text-[15px] sm:text-[16px] font-400 text-[#1A1A1A]">
+<div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-3 mt-4 mb-6 text-[15px] sm:text-[16px] font-400 text-[#1A1A1A]">
               {/* Stars & Fully Underlined Ratings */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-[2.5px] text-[#FFC107]">
@@ -205,7 +204,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
 {/* CONDITIONALLY RENDER PACKAGES OR IMAGE-MATCHED TEXT PRICE */}
             {isGoogleProduct ? (
               <div>
-                <span className="text-[15px] font-medium text-[#000000] uppercase tracking-[0.8px] mb-6 block">
+                <span className="text-[15px] font-medium text-[#000000] uppercase tracking-[0.8px] mb-6 block text-center lg:text-left">
                   Select Package
                 </span>
                 
@@ -274,7 +273,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               </div>
             ) : (
               /* MATCHES UPLOADED SCREENSHOT EXACTLY FOR NON-GOOGLE CHANNELS */
-              <div className="mb-6 select-none">
+              <div className="mb-6 select-none text-center lg:text-left">
                 <div className="text-[28px] text-[#1A1A1A] tracking-tight">
                   <span className="font-semibold text-[30px]">${currentPrice.toFixed(2)}</span>
                   <span className="font-normal text-[15px] text-[#1A1A1A]"> / Per Review</span>
@@ -283,7 +282,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             )}
             
              {/* Mode Switches */}
-            <div className="inline-flex bg-white border border-[#0000000F] rounded-[9px] p-1 w-fit mb-8 gap-0.5">
+            <div className="inline-flex bg-white border border-[#0000000F] rounded-[9px] p-1 w-fit mx-auto lg:mx-0 mb-8 gap-0.5">
               <button
                 type="button"
                 onClick={() => setPlan("one-time")}
@@ -306,7 +305,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             </div>
 
             {/* Quantity Strips Counter & Cart Buttons */}
-            <span className="text-[15px] font-medium text-[#000000] uppercase tracking-[0.8px] mb-3 block">
+            <span className="text-[15px] font-medium text-[#000000] uppercase tracking-[0.8px] mb-3 block text-center lg:text-left">
               Quantity (Min: 5)
             </span>
             
