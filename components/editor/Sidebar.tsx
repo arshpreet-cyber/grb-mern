@@ -552,6 +552,49 @@ export default function Sidebar() {
                   className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
                 />
               </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Description</label>
+                <textarea 
+                  value={selectedSection.data.description || ''}
+                  onChange={(e) => handleDataChange('description', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">CTA Title</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.ctaTitle || ''}
+                  onChange={(e) => handleDataChange('ctaTitle', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">CTA Description</label>
+                <textarea 
+                  value={selectedSection.data.ctaDescription || ''}
+                  onChange={(e) => handleDataChange('ctaDescription', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">CTA Button Text</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.ctaButtonText || ''}
+                  onChange={(e) => handleDataChange('ctaButtonText', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">CTA Button Link</label>
+                <input 
+                  type="text"
+                  value={selectedSection.data.ctaButtonLink || ''}
+                  onChange={(e) => handleDataChange('ctaButtonLink', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
               <div className="space-y-4 pt-4">
                 <div className="flex items-center justify-between">
                   <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Questions & Answers</label>
