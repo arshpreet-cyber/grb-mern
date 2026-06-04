@@ -85,6 +85,7 @@ export default function DemoDashboard() {
             id: o.id,
             orderNumber: o.orderNumber,
             paymentId: o.paymentId ?? "—",
+            amount: o.amount ?? 0,
             createdAt: o.date ?? o.createdAt,
             paymentMethod: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
             payUrl: o.payUrl,
