@@ -1,4 +1,6 @@
 "use client";
+import React, { useState } from "react";
+import MediaPickerModal from "../../editor/MediaPickerModal";
 
 interface Props {
   label: string;
@@ -82,13 +84,24 @@ export function SectionCard({ title, children }: { title: string; children: Reac
 }
 
 export function ImageUpload({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+
   return (
     <div className="space-y-2">
-      <Input
-        placeholder={label}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
+      <div className="flex gap-2">
+        <Input
+          placeholder={label}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <button
+          type="button"
+          onClick={() => setMediaPickerOpen(true)}
+          className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap animate-none"
+        >
+          Browse
+        </button>
+      </div>
       {value && (
         <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 h-32 flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -96,6 +109,14 @@ export function ImageUpload({ label, value, onChange }: { label: string; value: 
           <span className="absolute bottom-2 right-2 text-[10px] bg-black/50 text-white px-2 py-0.5 rounded-full">Preview</span>
         </div>
       )}
+      <MediaPickerModal
+        isOpen={mediaPickerOpen}
+        onClose={() => setMediaPickerOpen(false)}
+        onSelect={(url) => {
+          onChange(url);
+          setMediaPickerOpen(false);
+        }}
+      />
     </div>
   );
 }

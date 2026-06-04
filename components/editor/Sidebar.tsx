@@ -1,9 +1,10 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { updateSectionData, updateSectionSettings, setSelectedSectionId, updatePageMeta, setTitle, setSlug } from '@/lib/redux/features/pageEditorSlice';
-import { X, Layout, Type, Image as ImageIcon, Settings as SettingsIcon, ShoppingCart, Globe } from 'lucide-react';
+import { X, Layout, Type, Image as ImageIcon, ShoppingCart, Globe } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
+import MediaPickerModal from './MediaPickerModal';
 
 export default function Sidebar() {
   const dispatch = useAppDispatch();
@@ -12,11 +13,21 @@ export default function Sidebar() {
   const { title, slug, meta } = useAppSelector((state) => state.pageEditor);
   const selectedSection = sections.find((s) => s.id === selectedSectionId);
 
+  const [mediaPicker, setMediaPicker] = useState<{
+    isOpen: boolean;
+    onSelect: (url: string) => void;
+  } | null>(null);
+
+  const openMediaPicker = (onSelect: (url: string) => void) => {
+    setMediaPicker({ isOpen: true, onSelect });
+  };
+
   const inputCls = "w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0]/40 focus:border-[#fc0] text-sm font-medium text-[#1a1a1a] transition placeholder:text-black/20";
   const labelCls = "text-[11px] font-black text-[#1a1a1a]/40 uppercase tracking-[0.15em] block mb-2";
 
   if (!selectedSection) {
     return (
+      <>
       <div className="w-full flex flex-col h-full overflow-hidden bg-white font-[Poppins]">
         <div className="p-6 border-b border-black/5 flex items-center gap-3 bg-white/50 backdrop-blur-md sticky top-0 z-10">
           <span className="p-2 bg-[#fc0] text-[#1a1a1a] rounded-xl shadow-lg shadow-[#fc0]/20">
@@ -108,7 +119,16 @@ export default function Sidebar() {
           {/* OG Image */}
           <div>
             <label className={labelCls}>OG Image URL</label>
-            <input type="url" value={meta.opengraphImage} onChange={(e) => dispatch(updatePageMeta({ opengraphImage: e.target.value }))} placeholder="https://..." className={inputCls} />
+            <div className="flex gap-2">
+              <input type="url" value={meta.opengraphImage} onChange={(e) => dispatch(updatePageMeta({ opengraphImage: e.target.value }))} placeholder="https://..." className={inputCls} />
+              <button
+                type="button"
+                onClick={() => openMediaPicker((url) => dispatch(updatePageMeta({ opengraphImage: url })))}
+                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+              >
+                Browse
+              </button>
+            </div>
             {meta.opengraphImage && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={meta.opengraphImage} alt="og" className="mt-2 w-full h-20 object-cover rounded-lg border border-black/5" onError={(e) => (e.currentTarget.style.display = 'none')} />
@@ -121,6 +141,12 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
+      <MediaPickerModal 
+        isOpen={mediaPicker?.isOpen || false} 
+        onClose={() => setMediaPicker(null)} 
+        onSelect={(url) => { mediaPicker?.onSelect(url); setMediaPicker(null); }} 
+      />
+      </>
     );
   }
 
@@ -133,6 +159,7 @@ export default function Sidebar() {
   };
 
   return (
+    <>
     <div className="w-full flex flex-col h-full overflow-hidden bg-white font-[Poppins]">
       <div className="p-6 border-b border-black/5 flex items-center justify-between bg-white/50 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-3">
@@ -225,12 +252,21 @@ export default function Sidebar() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Image URL</label>
-                <input 
-                  type="text"
-                  value={selectedSection.data.image || ''}
-                  onChange={(e) => handleDataChange('image', e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="flex gap-2">
+                  <input 
+                    type="text"
+                    value={selectedSection.data.image || ''}
+                    onChange={(e) => handleDataChange('image', e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => openMediaPicker((url) => handleDataChange('image', url))}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                  >
+                    Browse
+                  </button>
+                </div>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Image Position</label>
@@ -402,13 +438,22 @@ export default function Sidebar() {
             <>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Image URL</label>
-                <input 
-                  type="text"
-                  value={selectedSection.data.imageUrl || ''}
-                  onChange={(e) => handleDataChange('imageUrl', e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/image.jpg"
-                />
+                <div className="flex gap-2">
+                  <input 
+                    type="text"
+                    value={selectedSection.data.imageUrl || ''}
+                    onChange={(e) => handleDataChange('imageUrl', e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => openMediaPicker((url) => handleDataChange('imageUrl', url))}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                  >
+                    Browse
+                  </button>
+                </div>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Alt Text</label>
@@ -445,17 +490,30 @@ export default function Sidebar() {
                 <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Features List</label>
                 {(selectedSection.data.features || []).map((feature: any, idx: number) => (
                   <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
-                    <input 
-                      type="text"
-                      placeholder="Icon URL"
-                      value={feature.icon || ''}
-                      onChange={(e) => {
-                        const newFeatures = [...selectedSection.data.features];
-                        newFeatures[idx] = { ...newFeatures[idx], icon: e.target.value };
-                        handleDataChange('features', newFeatures);
-                      }}
-                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
-                    />
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Icon URL"
+                        value={feature.icon || ''}
+                        onChange={(e) => {
+                          const newFeatures = [...selectedSection.data.features];
+                          newFeatures[idx] = { ...newFeatures[idx], icon: e.target.value };
+                          handleDataChange('features', newFeatures);
+                        }}
+                        className="flex-1 min-w-0 px-3 py-2 text-xs border border-black/5 rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => openMediaPicker((url) => {
+                          const newFeatures = [...selectedSection.data.features];
+                          newFeatures[idx] = { ...newFeatures[idx], icon: url };
+                          handleDataChange('features', newFeatures);
+                        })}
+                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium text-[10px] transition-colors border border-slate-200 whitespace-nowrap"
+                      >
+                        Browse
+                      </button>
+                    </div>
                     <input 
                       type="text"
                       placeholder="Title"
@@ -924,12 +982,21 @@ export default function Sidebar() {
               </div>
               <div className="space-y-3">
                 <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Center Image URL</label>
-                <input
-                  type="text"
-                  value={selectedSection.data.centerImage || ''}
-                  onChange={(e) => handleDataChange('centerImage', e.target.value)}
-                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={selectedSection.data.centerImage || ''}
+                    onChange={(e) => handleDataChange('centerImage', e.target.value)}
+                    className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => openMediaPicker((url) => handleDataChange('centerImage', url))}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                  >
+                    Browse
+                  </button>
+                </div>
               </div>
               <div className="space-y-4 pt-2">
                 <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Benefits Cards (Max 4)</label>
@@ -1050,12 +1117,21 @@ export default function Sidebar() {
                     </div>
                     <div className="space-y-3">
                       <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Showcase Image URL</label>
-                      <input
-                        type="text"
-                        value={slide.image || ''}
-                        onChange={(e) => handleActiveSlideChange('image', e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
-                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={slide.image || ''}
+                          onChange={(e) => handleActiveSlideChange('image', e.target.value)}
+                          className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => openMediaPicker((url) => handleActiveSlideChange('image', url))}
+                          className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                        >
+                          Browse
+                        </button>
+                      </div>
                     </div>
 
                     {/* Features list edits */}
@@ -1085,62 +1161,184 @@ export default function Sidebar() {
             </>
           )}
 
-          {selectedSection.type === 'organic-drawbacks' && (
-            <>
-              <div className="space-y-3">
-                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
-                <input
-                  type="text"
-                  value={selectedSection.data.heading ?? ''}
-                  onChange={(e) => handleDataChange('heading', e.target.value)}
-                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
-                  placeholder="Section Heading"
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
-                <textarea
-                  value={selectedSection.data.subheading ?? ''}
-                  onChange={(e) => handleDataChange('subheading', e.target.value)}
-                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
-                  placeholder="Section Subheading..."
-                />
-              </div>
-              <div className="space-y-4 pt-2">
-                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Drawback Cards</label>
-                {(selectedSection.data.cards || []).map((card: any, cardIdx: number) => (
-                  <div key={cardIdx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
-                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Card #{cardIdx + 1}</span>
-                    <input
-                      placeholder="Title"
-                      value={card.title || ''}
-                      onChange={(e) => {
-                        const updated = [...selectedSection.data.cards];
-                        updated[cardIdx] = { ...updated[cardIdx], title: e.target.value };
-                        handleDataChange('cards', updated);
-                      }}
-                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
-                    />
-                    {(card.paragraphs || []).map((p: string, pIdx: number) => (
-                      <textarea
-                        key={pIdx}
-                        placeholder={`Paragraph ${pIdx + 1}`}
-                        value={p || ''}
-                        onChange={(e) => {
-                          const updatedCards = [...selectedSection.data.cards];
-                          const updatedParagraphs = [...(card.paragraphs || [])];
-                          updatedParagraphs[pIdx] = e.target.value;
-                          updatedCards[cardIdx] = { ...updatedCards[cardIdx], paragraphs: updatedParagraphs };
-                          handleDataChange('cards', updatedCards);
-                        }}
-                        className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+          {selectedSection.type === 'organic-drawbacks' && (() => {
+            interface DrawbackCard {
+              title: string;
+              iconType: string;
+              iconImage?: string;
+              paragraphs: string[];
+            }
+            const cards = (selectedSection.data.cards || []) as DrawbackCard[];
+            return (
+              <>
+                <div className="space-y-3">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                  <input
+                    type="text"
+                    value={selectedSection.data.heading ?? ''}
+                    onChange={(e) => handleDataChange('heading', e.target.value)}
+                    className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                    placeholder="Section Heading"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                  <textarea
+                    value={selectedSection.data.subheading ?? ''}
+                    onChange={(e) => handleDataChange('subheading', e.target.value)}
+                    className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                    placeholder="Section Subheading..."
+                  />
+                </div>
+                <div className="space-y-4 pt-2">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Drawback Cards</label>
+                  {cards.map((card: DrawbackCard, cardIdx: number) => (
+                    <div key={cardIdx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Card #{cardIdx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = cards.filter((_: DrawbackCard, i: number) => i !== cardIdx);
+                            handleDataChange('cards', updated);
+                          }}
+                          className="text-xs text-red-500 hover:text-red-700 font-bold cursor-pointer"
+                        >
+                          Delete Card
+                        </button>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase tracking-wider block">Title</label>
+                        <input
+                          placeholder="Title"
+                          value={card.title || ''}
+                          onChange={(e) => {
+                            const updated = [...cards];
+                            updated[cardIdx] = { ...updated[cardIdx], title: e.target.value };
+                            handleDataChange('cards', updated);
+                          }}
+                          className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold bg-white"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase tracking-wider block">Icon Type</label>
+                        <select
+                          value={card.iconType || 'warning'}
+                          onChange={(e) => {
+                            const updated = [...cards];
+                            updated[cardIdx] = { ...updated[cardIdx], iconType: e.target.value };
+                            handleDataChange('cards', updated);
+                          }}
+                          className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg bg-white"
+                        >
+                          <option value="warning">Warning / Shield</option>
+                          <option value="chart">Growth Chart</option>
+                          <option value="competition">Competition Graph</option>
+                          <option value="custom">Custom PNG Image</option>
+                        </select>
+                      </div>
+
+                      {card.iconType === 'custom' && (
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase tracking-wider block">Custom PNG Icon</label>
+                          <div className="flex gap-2 w-full">
+                            <input
+                              className="flex-1 min-w-0 px-3 py-2 bg-white text-gray-800 rounded-lg text-xs border border-black/5 outline-none focus:ring-2 focus:ring-[#fc0]"
+                              value={card.iconImage || ''}
+                              onChange={(e) => {
+                                const updated = [...cards];
+                                updated[cardIdx] = { ...updated[cardIdx], iconImage: e.target.value };
+                                handleDataChange('cards', updated);
+                              }}
+                              placeholder="Image URL..."
+                            />
+                            <button
+                              type="button"
+                              onClick={() => openMediaPicker((url) => {
+                                const updated = [...cards];
+                                updated[cardIdx] = { ...updated[cardIdx], iconImage: url };
+                                handleDataChange('cards', updated);
+                              })}
+                              className="px-3 py-2 bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 rounded-lg font-bold text-xs transition shrink-0 cursor-pointer"
+                            >
+                              Browse
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase tracking-wider block">Paragraphs</label>
+                        {(card.paragraphs || []).map((p: string, pIdx: number) => (
+                          <textarea
+                            key={pIdx}
+                            placeholder={`Paragraph ${pIdx + 1}`}
+                            value={p || ''}
+                            onChange={(e) => {
+                              const updatedCards = [...cards];
+                              const updatedParagraphs = [...(card.paragraphs || [])];
+                              updatedParagraphs[pIdx] = e.target.value;
+                              updatedCards[cardIdx] = { ...updatedCards[cardIdx], paragraphs: updatedParagraphs };
+                              handleDataChange('cards', updatedCards);
+                            }}
+                            className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px] bg-white"
+                          />
+                        ))}
+                        
+                        <div className="flex justify-between gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedCards = [...cards];
+                              const updatedParagraphs = [...(card.paragraphs || [])];
+                              updatedParagraphs.push("");
+                              updatedCards[cardIdx] = { ...updatedCards[cardIdx], paragraphs: updatedParagraphs };
+                              handleDataChange('cards', updatedCards);
+                            }}
+                            className="text-[10px] text-[#fc0] hover:text-[#e6bb00] font-black cursor-pointer"
+                          >
+                            + Add Paragraph
+                          </button>
+                          {(card.paragraphs || []).length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updatedCards = [...cards];
+                                const updatedParagraphs = (card.paragraphs || []).slice(0, -1);
+                                updatedCards[cardIdx] = { ...updatedCards[cardIdx], paragraphs: updatedParagraphs };
+                                handleDataChange('cards', updatedCards);
+                              }}
+                              className="text-[10px] text-red-500 hover:text-red-700 font-bold cursor-pointer"
+                            >
+                              - Remove Paragraph
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = [...cards];
+                      updated.push({
+                        title: "New Drawback Card",
+                        iconType: "warning",
+                        paragraphs: ["Drawback description paragraph."]
+                      });
+                      handleDataChange('cards', updated);
+                    }}
+                    className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition border border-slate-200 cursor-pointer"
+                  >
+                    + Add Drawback Card
+                  </button>
+                </div>
+              </>
+            );
+          })()}
 
           {selectedSection.type === 'customer-reviews' && (
             <>
@@ -1213,7 +1411,29 @@ export default function Sidebar() {
                 {(selectedSection.data.icons || []).map((icon: any, idx: number) => (
                   <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
                     <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Icon {idx + 1}</span>
-                    <input placeholder="Image URL" value={icon.src || ''} onChange={(e) => { const u = [...selectedSection.data.icons]; u[idx] = { ...u[idx], src: e.target.value }; handleDataChange('icons', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                    <div className="flex gap-2">
+                      <input 
+                        placeholder="Image URL" 
+                        value={icon.src || ''} 
+                        onChange={(e) => { 
+                          const u = [...selectedSection.data.icons]; 
+                          u[idx] = { ...u[idx], src: e.target.value }; 
+                          handleDataChange('icons', u); 
+                        }} 
+                        className="flex-1 min-w-0 px-3 py-2 text-xs border border-black/5 rounded-lg" 
+                      />
+                      <button
+                        type="button"
+                        onClick={() => openMediaPicker((url) => {
+                          const u = [...selectedSection.data.icons];
+                          u[idx] = { ...u[idx], src: url };
+                          handleDataChange('icons', u);
+                        })}
+                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium text-[10px] transition-colors border border-slate-200 whitespace-nowrap"
+                      >
+                        Browse
+                      </button>
+                    </div>
                     <input placeholder="Position class (e.g. top-20 left-10)" value={icon.className || ''} onChange={(e) => { const u = [...selectedSection.data.icons]; u[idx] = { ...u[idx], className: e.target.value }; handleDataChange('icons', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
                   </div>
                 ))}
@@ -1254,13 +1474,22 @@ export default function Sidebar() {
               </div>
               <div className="space-y-3">
                 <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Image URL</label>
-                <input
-                  type="text"
-                  value={selectedSection.data.image || ''}
-                  onChange={(e) => handleDataChange('image', e.target.value)}
-                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
-                  placeholder="https://..."
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={selectedSection.data.image || ''}
+                    onChange={(e) => handleDataChange('image', e.target.value)}
+                    className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                    placeholder="https://..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => openMediaPicker((url) => handleDataChange('image', url))}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                  >
+                    Browse
+                  </button>
+                </div>
               </div>
               <div className="space-y-3">
                 <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Rating Text</label>
@@ -1381,21 +1610,38 @@ export default function Sidebar() {
                     >
                       <X size={14} />
                     </button>
-                    <input 
-                      type="text"
-                      placeholder="Icon Image URL"
-                      value={stat.img || ''}
-                      onChange={(e) => {
-                        const newStats = [...(selectedSection.data.stats || [
-                          { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
-                          { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
-                          { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
-                        ])];
-                        newStats[idx] = { ...newStats[idx], img: e.target.value };
-                        handleDataChange('stats', newStats);
-                      }}
-                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
-                    />
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Icon Image URL"
+                        value={stat.img || ''}
+                        onChange={(e) => {
+                          const newStats = [...(selectedSection.data.stats || [
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                          ])];
+                          newStats[idx] = { ...newStats[idx], img: e.target.value };
+                          handleDataChange('stats', newStats);
+                        }}
+                        className="flex-1 min-w-0 px-3 py-2 text-xs border border-black/5 rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => openMediaPicker((url) => {
+                          const newStats = [...(selectedSection.data.stats || [
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
+                            { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                          ])];
+                          newStats[idx] = { ...newStats[idx], img: url };
+                          handleDataChange('stats', newStats);
+                        })}
+                        className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium text-[10px] transition-colors border border-slate-200 whitespace-nowrap"
+                      >
+                        Browse
+                      </button>
+                    </div>
                     <div className="grid grid-cols-2 gap-2">
                       <input 
                         type="text"
@@ -1660,5 +1906,11 @@ export default function Sidebar() {
         </div>
       </div>
     </div>
+    <MediaPickerModal 
+      isOpen={mediaPicker?.isOpen || false} 
+      onClose={() => setMediaPicker(null)} 
+      onSelect={(url) => { mediaPicker?.onSelect(url); setMediaPicker(null); }} 
+    />
+    </>
   );
 }

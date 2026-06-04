@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { updatePageMeta, setTitle, setSlug } from '@/lib/redux/features/pageEditorSlice';
-import { X, Search, Code, Image as ImageIcon, Settings } from 'lucide-react';
+import { X, Search, Code, Settings } from 'lucide-react';
+import MediaPickerModal from './MediaPickerModal';
 
 interface Props { onClose: () => void; }
 
@@ -12,6 +13,15 @@ export default function PageSettingsPanel({ onClose }: Props) {
   const dispatch = useAppDispatch();
   const { title, slug, meta } = useAppSelector((s) => s.pageEditor);
   const [tab, setTab] = useState<Tab>('general');
+
+  const [mediaPicker, setMediaPicker] = useState<{
+    isOpen: boolean;
+    onSelect: (url: string) => void;
+  } | null>(null);
+
+  const openMediaPicker = (onSelect: (url: string) => void) => {
+    setMediaPicker({ isOpen: true, onSelect });
+  };
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'general', label: 'General', icon: <Settings size={16} /> },
@@ -24,6 +34,7 @@ export default function PageSettingsPanel({ onClose }: Props) {
   const textareaCls = `${inputCls} min-h-[100px] resize-none`;
 
   return (
+    <>
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col" style={{ maxHeight: '85vh' }}>
         
@@ -86,7 +97,16 @@ export default function PageSettingsPanel({ onClose }: Props) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={labelCls}>Title Image URL</label>
-                  <input type="url" value={meta.titleImage} onChange={(e) => dispatch(updatePageMeta({ titleImage: e.target.value }))} placeholder="https://..." className={inputCls} />
+                  <div className="flex gap-2">
+                    <input type="url" value={meta.titleImage} onChange={(e) => dispatch(updatePageMeta({ titleImage: e.target.value }))} placeholder="https://..." className={inputCls} />
+                    <button
+                      type="button"
+                      onClick={() => openMediaPicker((url) => dispatch(updatePageMeta({ titleImage: url })))}
+                      className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                    >
+                      Browse
+                    </button>
+                  </div>
                   {meta.titleImage && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={meta.titleImage} alt="title" className="mt-2 w-full h-20 object-cover rounded-lg border border-black/5" onError={(e) => (e.currentTarget.style.display = 'none')} />
@@ -94,7 +114,16 @@ export default function PageSettingsPanel({ onClose }: Props) {
                 </div>
                 <div>
                   <label className={labelCls}>OG Image URL</label>
-                  <input type="url" value={meta.opengraphImage} onChange={(e) => dispatch(updatePageMeta({ opengraphImage: e.target.value }))} placeholder="https://..." className={inputCls} />
+                  <div className="flex gap-2">
+                    <input type="url" value={meta.opengraphImage} onChange={(e) => dispatch(updatePageMeta({ opengraphImage: e.target.value }))} placeholder="https://..." className={inputCls} />
+                    <button
+                      type="button"
+                      onClick={() => openMediaPicker((url) => dispatch(updatePageMeta({ opengraphImage: url })))}
+                      className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                    >
+                      Browse
+                    </button>
+                  </div>
                   {meta.opengraphImage && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={meta.opengraphImage} alt="og" className="mt-2 w-full h-20 object-cover rounded-lg border border-black/5" onError={(e) => (e.currentTarget.style.display = 'none')} />
@@ -180,5 +209,14 @@ export default function PageSettingsPanel({ onClose }: Props) {
         </div>
       </div>
     </div>
+    <MediaPickerModal
+      isOpen={mediaPicker?.isOpen || false}
+      onClose={() => setMediaPicker(null)}
+      onSelect={(url) => {
+        mediaPicker?.onSelect(url);
+        setMediaPicker(null);
+      }}
+    />
+    </>
   );
 }

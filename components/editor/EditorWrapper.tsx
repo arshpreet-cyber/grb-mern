@@ -326,9 +326,10 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
         data = {
           slides: [
             {
-              heading: "How We Provide Safe And Authentic Google Reviews",
+              heading: "How We Provide Safe<br/>And <strong>Authentic Google Reviews</strong>",
               subheading: "We take a strategic, secure approach to Google reputation management that improves your profile while keeping reviews authentic.",
               listTitle: "Here's how we keep Google reviews safe and authentic:",
+              layout: "checklist",
               features: [
                 {
                   title: "Accounts That Are Both Legitimate and Active",
@@ -346,41 +347,40 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
               image: "/uploads/media/safe_reviews_graphic.png"
             },
             {
-              heading: "Targeted Geolocation Profiles",
-              subheading: "We assign reviews to profiles that match the geographic location of your business for maximum local SEO impact.",
-              listTitle: "How we ensure localized profile matching:",
+              heading: "Achieve Business Growth<br/>When <strong>You Manage Google Reviews</strong>",
+              layout: "paragraphs",
               features: [
                 {
-                  title: "IP-Verified Routing",
-                  desc: "Reviews are posted using residential IPs matching your business's target cities and neighborhoods."
+                  desc: "Buying Google reviews online is not only a good way to improve your brand's image, but it also helps to attract more customers to your store, both online and offline. Our Google review management services help your brand stand out in the crowded digital landscape."
                 },
                 {
-                  title: "Realistic Activity Patterns",
-                  desc: "Reviewers have historical check-ins and reviews in your region, making their profiles fully organic and relevant."
+                  desc: "By using our buy Google reviews service, you can get genuine feedback from local profiles at a low cost to help your business succeed."
                 },
                 {
-                  title: "SEO-Optimized Content",
-                  desc: "Our custom reviews contain regional keywords to boost your local map pack search visibility ranking."
+                  desc: "We help professional service providers rank higher in local searches by buying Google 5-star reviews for their Google Business Profiles. High-quality Google reviews ensure customer satisfaction and maximize your brand's influence in the target market."
                 }
               ],
+              button: {
+                text: "Get a Quote",
+                link: "/contact-us"
+              },
               image: "/uploads/media/safe_reviews_graphic.png"
             },
             {
-              heading: "Active Anti-Drop Refill Guarantee",
-              subheading: "We implement rigorous quality controls and follow up with a 30-day warranty to keep your rating intact.",
-              listTitle: "Our reliability and safety features include:",
+              heading: "Should You Proactively Get Reviews<br/>or <strong>Rely on Organic Google Reviews?</strong>",
+              layout: "paragraphs",
               features: [
                 {
-                  title: "Strict Account Verification",
-                  desc: "All review profiles pass continuous checks to confirm active status on local directories."
+                  desc: "Are you unsure whether to pay for Google reviews or wait for them to appear organically? Organic reviews are valuable but slow, while a structured plan to generate Google reviews delivers consistent results."
                 },
                 {
-                  title: "30-Day Free Replacements",
-                  desc: "If any reviews are filtered or dropped, our automated system replaces them free of charge within 24 hours."
+                  desc: "This delay can have an impact on your company's growth, particularly if you're in a competitive market. Buying Google reviews instantly boosts your business's credibility, improves search rankings, and attracts more customers to your GMB profile."
                 },
                 {
-                  title: "Safe, Compliant Billing",
-                  desc: "Billing info is completely separated and kept private from directory crawler bots to guarantee profile safety."
+                  desc: "Unlike organic reviews, buying reviews guarantees consistent and strategic positive feedback, higher ratings, and a strong online presence."
+                },
+                {
+                  desc: "Many businesses choose to buy Google 5-star reviews to increase brand trust and stay ahead of competitors. When done correctly with high-quality, real-looking reviews, this approach improves your reputation and reinforces customer confidence."
                 }
               ],
               image: "/uploads/media/safe_reviews_graphic.png"

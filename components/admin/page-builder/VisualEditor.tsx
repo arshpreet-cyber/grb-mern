@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import MediaPickerModal from "../../editor/MediaPickerModal";
 
 interface VisualField {
   key: string;
@@ -152,6 +153,15 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
   const [values, setValues] = useState<Record<string, string>>(parseValues(value, fields));
   const [activeField, setActiveField] = useState<string | null>(null);
   
+  const [mediaPicker, setMediaPicker] = useState<{
+    isOpen: boolean;
+    onSelect: (url: string) => void;
+  } | null>(null);
+
+  const openMediaPicker = (onSelect: (url: string) => void) => {
+    setMediaPicker({ isOpen: true, onSelect });
+  };
+  
   const fieldRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const handleSave = () => {
@@ -214,6 +224,7 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
   };
 
   return (
+    <>
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden" style={{ height: "90vh" }}>
 
@@ -362,15 +373,24 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
                             </div>
                           ) : field.type === "image" ? (
                             <div className="space-y-3">
-                              <input
-                                type="url"
-                                value={values[field.key] || ""}
-                                onChange={(e) => set(field.key, e.target.value)}
-                                placeholder={field.placeholder}
-                                className={`w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition ${
-                                  isActive ? "border-[#fc0] bg-white ring-2 ring-amber-100" : "border-slate-200 bg-slate-50 focus:border-[#fc0] focus:bg-white"
-                                }`}
-                              />
+                              <div className="flex gap-2">
+                                <input
+                                  type="url"
+                                  value={values[field.key] || ""}
+                                  onChange={(e) => set(field.key, e.target.value)}
+                                  placeholder={field.placeholder}
+                                  className={`flex-1 min-w-0 rounded-xl border px-4 py-2.5 text-sm outline-none transition ${
+                                    isActive ? "border-[#fc0] bg-white ring-2 ring-amber-100" : "border-slate-200 bg-slate-50 focus:border-[#fc0] focus:bg-white"
+                                  }`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => openMediaPicker((url) => set(field.key, url))}
+                                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                                >
+                                  Browse
+                                </button>
+                              </div>
                               {values[field.key] && (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={values[field.key]} alt="preview"
@@ -445,5 +465,14 @@ export default function VisualEditor({ value, sectionType, onChange, onClose, ti
         </div>
       </div>
     </div>
+    <MediaPickerModal
+      isOpen={mediaPicker?.isOpen || false}
+      onClose={() => setMediaPicker(null)}
+      onSelect={(url) => {
+        mediaPicker?.onSelect(url);
+        setMediaPicker(null);
+      }}
+    />
+    </>
   );
 }
