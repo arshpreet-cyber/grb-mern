@@ -30,8 +30,13 @@ export async function POST(req: NextRequest) {
       .update(orderNumber + (process.env.NEXTAUTH_SECRET ?? ""))
       .digest("hex");
 
+    const userId = parseInt(session.user.id ?? "");
+    if (isNaN(userId)) {
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    }
+
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(session.user.id) },
+      where: { id: userId },
       select: { email: true, name: true },
     });
 
@@ -100,12 +105,17 @@ export async function POST(req: NextRequest) {
 
     const paymentBaseUrl = (process.env.PAYMENT_URL ?? "").replace(/\/$/, "");
 
+    const paypalBase = (process.env.PAYPAL_PAYMENT_URL ?? "").replace(/\/$/, "");
+
     let payUrl = "";
     if (paymentMethod === "paypal") {
-      payUrl = `${process.env.PAYPAL_PAYMENT_URL}?orderno=${order.id}&tokenCode=${tokenCode}&return_url=${encodeURIComponent(callbackUrl)}&success_url=${encodeURIComponent(callbackUrl)}&redirect_url=${encodeURIComponent(callbackUrl)}`;
+      payUrl = `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}`;
+    } else if (paymentMethod === "card") {
+      // PayPal card flow — forces card entry form instead of PayPal login
+      payUrl = `${paypalBase}?orderno=${order.id}&tokenCode=${tokenCode}&funding=card`;
     } else if (paymentMethod === "razorpay") {
-      // PHP grb_payment fetches order via /api/order/{orderno} then handles Razorpay
-      payUrl = `${paymentBaseUrl}/grb/payment?orderno=${order.id}`;
+      const rzpUrl = (process.env.RAZORPAY_PAYMENT_URL ?? `${paymentBaseUrl}/grb/stripe`).replace(/\/$/, "");
+      payUrl = `${rzpUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
     } else {
       payUrl = `${paymentBaseUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
     }
