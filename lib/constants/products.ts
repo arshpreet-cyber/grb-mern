@@ -9,8 +9,7 @@ export type Product = {
   minimumQuantity: number;
 };
 
-const logo = (domain: string) =>
-  `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=128`;
+const logo = (domain: string) => `https://icon.horse/icon/${domain}`;
 
 const products: Product[] = [
   { id: "buy-google-reviews",            platform: "Google Reviews",            image: logo("google.com"),              desc: "Boost your Google Business rating with real, verified 5-star reviews from genuine accounts.",                           oneTimePrice: 15,  subscribePrice: 15,  badge: "Most Popular", minimumQuantity: 5 },

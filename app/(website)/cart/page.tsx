@@ -447,7 +447,12 @@ export default function CartPage() {
                         <div className="flex flex-1 items-start">
                           {/* Image Box */}
                           <div className="w-[65px] h-[65px] bg-[#f8f9fa] rounded-lg flex items-center justify-center mr-[25px] p-2 shrink-0">
-                            <img src={item.image} alt={item.platform} className="max-w-full max-h-full object-contain" />
+                            <img
+                              src={item.image}
+                              alt={item.platform}
+                              className="max-w-full max-h-full object-contain"
+                              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                            />
                           </div>
 
                           {/* Info Box */}
