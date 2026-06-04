@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import Wrapper from "@/components/ui/Wrapper";
 import { SectionProps } from '@/types/section';
@@ -38,26 +39,28 @@ export default function ImageTextSection({ data, settings }: SectionProps) {
       <Wrapper>
         <div className="w-full mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className={`max-w-xl ${imagePosition === 'left' ? 'lg:order-2' : 'lg:order-1'}`}>
+            <div className={`max-w-xl mx-auto lg:mx-0 ${imagePosition === 'left' ? 'lg:order-2 lg:ml-auto lg:mr-0' : 'lg:order-1 lg:mr-auto lg:ml-0'}`}>
               <h2 
-                className="text-[38px] lg:text-[40px] leading-tight mb-6"
+                className="text-[38px] lg:text-[40px] leading-tight mb-6 text-center lg:text-left"
                 style={titleStyles}
                 dangerouslySetInnerHTML={{ __html: title }} 
               />
               
               <div 
-                className="leading-[2] mb-6 text-justify"
-                style={contentStyles}
+                className="leading-[2] mb-6 text-justify [&_p]:text-justify [&_div]:text-justify"
+                style={{ ...contentStyles, textAlign: 'justify' }}
                 dangerouslySetInnerHTML={{ __html: content }} 
               />
               
               {showButton !== false && buttonText && (
-                <a 
-                  href={buttonLink} 
-                  className="inline-block bg-[#fcd535] text-gray-900 px-8 py-4 rounded-md font-bold text-sm tracking-wider hover:bg-black hover:text-white transition-all uppercase"
-                >
-                  {buttonText}
-                </a>
+                <div className="text-center lg:text-left w-full">
+                  <a 
+                    href={buttonLink} 
+                    className="inline-block bg-[#fcd535] text-gray-900 px-8 py-4 rounded-md font-bold text-sm tracking-wider hover:bg-black hover:text-white transition-all uppercase"
+                  >
+                    {buttonText}
+                  </a>
+                </div>
               )}
             </div>
 

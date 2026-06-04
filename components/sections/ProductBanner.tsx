@@ -146,7 +146,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             </div>
 
 <h1 className="text-[#000000] text-[28px] md:text-[40px] font-[300] leading-[1.25] tracking-[-0.5px] mb-4">
-  Buy Real{" "}
+  Buy{" "}
   <span className="font-[500]">
     {title || "Google Reviews"}
   </span>{" "}
