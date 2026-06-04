@@ -491,7 +491,7 @@ export default function CartPage() {
                     <div className="space-y-[15px] mb-5">
                       {items.map((item) => (
                         <div key={item.id} className="sum-row flex justify-between text-[14px] leading-relaxed">
-                          <span className="text-[#6c757d]">{item.platform} Reviews</span>
+                          <span className="text-[#6c757d]">{item.platform}</span>
                           <span className="text-[#333] font-medium">${(item.pricePerUnit * item.qty).toFixed(2)}</span>
                         </div>
                       ))}
