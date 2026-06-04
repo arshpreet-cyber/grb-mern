@@ -618,6 +618,9 @@ export default function CartPage() {
                         )}
                       </button>
 
+                      {/* Powered by PayPal */}
+                      <p className="text-center text-[12px] text-[#888] pb-1">Powered by <span className="font-semibold text-[#003087]">PayPal</span></p>
+
                       {/* Razorpay Button */}
                       <button
                         onClick={() => handlePayment("razorpay")}
