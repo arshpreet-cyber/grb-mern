@@ -36,12 +36,21 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
     },
   ];
 
+  interface DrawbackCard {
+    title: string;
+    iconType: string;
+    paragraphs: string[];
+  }
+
   const heading = data.heading || `The Drawbacks Of Relying Solely On Organic ${platform} Reviews`;
   const subheading = data.subheading || `While organic ${platform} reviews are useful for establishing credibility, relying solely on them can present several challenges that may slow your company's growth. Here are some major drawbacks:`;
-  const cards = data.cards || defaultCards;
+  const cards = (data.cards || defaultCards) as DrawbackCard[];
 
   // Start with the middle card (index 1) active so adjacent cards are cut off on both sides
   const [currentIdx, setCurrentIdx] = useState(1);
+
+  // Compute a safe active index at render time to avoid setting state in effect when cards are deleted
+  const activeIdx = cards.length > 0 ? Math.min(currentIdx, cards.length - 1) : 0;
 
   // Swipe controls for mobile
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -50,18 +59,23 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
   // Auto-play effect: changes cards every 6 seconds, disabled in editing mode
   useEffect(() => {
     if (isEditing) return;
+    if (cards.length === 0) return;
     const interval = setInterval(() => {
-      setCurrentIdx((prev) => (prev + 1) % cards.length);
+      setCurrentIdx((prev) => {
+        if (cards.length === 0) return 0;
+        const active = Math.min(prev, cards.length - 1);
+        return (active + 1) % cards.length;
+      });
     }, 6000);
     return () => clearInterval(interval);
   }, [cards.length, isEditing]);
 
-  const handleDataChange = (field: string, value: any) => {
+  const handleDataChange = (field: string, value: unknown) => {
     dispatch(updateSectionData({ id, data: { ...data, [field]: value } }));
   };
 
-  const handleCardChange = (cardIndex: number, field: string, value: any) => {
-    const updated = cards.map((c: any, idx: number) =>
+  const handleCardChange = (cardIndex: number, field: string, value: unknown) => {
+    const updated = cards.map((c: DrawbackCard, idx: number) =>
       idx === cardIndex ? { ...c, [field]: value } : c
     );
     handleDataChange("cards", updated);
@@ -90,11 +104,11 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
 
-    if (isLeftSwipe && currentIdx < cards.length - 1) {
-      setCurrentIdx(currentIdx + 1);
+    if (isLeftSwipe && activeIdx < cards.length - 1) {
+      setCurrentIdx(activeIdx + 1);
     }
-    if (isRightSwipe && currentIdx > 0) {
-      setCurrentIdx(currentIdx - 1);
+    if (isRightSwipe && activeIdx > 0) {
+      setCurrentIdx(activeIdx - 1);
     }
     setTouchStart(null);
     setTouchEnd(null);
@@ -200,15 +214,23 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
         <div
           className="flex items-stretch transition-transform duration-500 ease-in-out w-full"
           style={{
-            transform: `translateX(calc(50% - (var(--slide-width) / 2) - ${currentIdx} * (var(--slide-width) + var(--slide-gap))))`,
+            transform: cards.length > 0
+              ? `translateX(calc(50% - (var(--slide-width) / 2) - ${activeIdx} * (var(--slide-width) + var(--slide-gap))))`
+              : 'none',
             gap: "var(--slide-gap)",
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {cards.map((card: any, cardIdx: number) => {
-            const isActive = cardIdx === currentIdx;
+          {cards.length === 0 ? (
+            <div className="text-center p-8 bg-slate-50 border border-dashed border-slate-200 rounded-[28px] w-full max-w-lg mx-auto shrink-0 select-none">
+              <p className="text-sm font-bold text-slate-700">No drawback cards added yet</p>
+              <p className="text-xs text-slate-400 mt-1">Use the properties sidebar on the right to add card slides.</p>
+            </div>
+          ) : (
+            cards.map((card: DrawbackCard, cardIdx: number) => {
+              const isActive = cardIdx === activeIdx;
             return (
               <div
                 key={cardIdx}
@@ -261,13 +283,14 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
                 </div>
               </div>
             );
-          })}
+          })
+        )}
         </div>
 
         {/* Indicator dots */}
         <div className="flex justify-center items-center gap-2.5 mt-10">
-          {cards.map((_: any, idx: number) => {
-            const isActive = idx === currentIdx;
+          {cards.map((_: DrawbackCard, idx: number) => {
+            const isActive = idx === activeIdx;
             return (
               <button
                 key={idx}
