@@ -1,3 +1,4 @@
+// Trigger Next.js dev server restart to reload generated Prisma Client
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {

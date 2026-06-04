@@ -21,6 +21,9 @@ import RatingCalculator from './RatingCalculator';
 import RatingStatsBar from './RatingStatsBar';
 import RatingCTA from './RatingCTA';
 import SitemapSection from './SitemapSection';
+import BenefitsSection from './BenefitsSection';
+import SafeReviewsCarousel from './SafeReviewsCarousel';
+import OrganicDrawbacks from './OrganicDrawbacks';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -47,6 +50,9 @@ const sectionMap: Record<string, React.FC<any>> = {
   'rating-stats-bar': RatingStatsBar,
   'rating-cta': RatingCTA,
   sitemap: SitemapSection,
+  'benefits-section': BenefitsSection,
+  'safe-reviews-carousel': SafeReviewsCarousel,
+  'organic-drawbacks': OrganicDrawbacks,
 };
 
 interface PageRendererProps {

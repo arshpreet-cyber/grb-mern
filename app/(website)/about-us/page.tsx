@@ -20,6 +20,7 @@ const IMGS = {
   repIcon4:   "https://beta.getreviews.buzz/storage/app/blog/0908509001780030587_Group-1000006811.svg",
   comparison: "https://beta.getreviews.buzz/storage/app/blog/0301140001780030844_Group-1000006797.svg",
   ctaImage:   "https://beta.getreviews.buzz/storage/app/blog/0707270001780033172_Group-1000008234.webp",
+
 };
 
 const TIMELINE_YEARS = ["2017-2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026"];
@@ -93,6 +94,65 @@ const STEPS = [
       "We help you maintain a strong online reputation through consistent review growth and stronger customer trust.",
       "As your ratings climb, your visibility grows, and your customer confidence compounds over time, making your business a trusted choice.",
     ],
+  },
+];
+
+const IconContracts = () => (
+<img
+  src="/uploads/media/1780466564675-1f2c2fc5-57d1-45ad-bc47-a3cb63949326-Group-1000009006.svg"
+  alt="Icon"
+  width={70}
+  height={70}
+/>
+);
+
+const IconDashboard = () => (
+  <img
+  src="/uploads/media/1780466729258-e5459164-db0f-439f-bb5a-b1e7db3e582f-Group-1000009012.svg"
+  alt="Icon"
+  width={70}
+  height={70}
+/>
+);
+
+const IconPractices = () => (
+  <img
+  src="/uploads/media/1780466738929-5e30ea01-5072-42e1-b0f9-5052cb94d10b-well-founded-16469108-1.svg"
+  alt="Icon"
+  width={70}
+  height={70}
+/>
+);
+
+const IconCommitment = () => (
+<img
+  src="/uploads/media/1780466761331-8bb9ce0b-8342-4694-9cce-1e2b50f576a6-business-report-18415027-1-1.svg"
+  alt="Icon"
+  width={70}
+  height={70}
+/>
+);
+
+const COMMITMENT_CARDS_DATA = [
+  {
+    icon: <IconContracts />,
+    title: "No Long-Term Contracts",
+    desc: "Cancel anytime. Month-to-month engagement only. We earn your business every single month—or you walk away—with no penalties and no pressure.",
+  },
+  {
+    icon: <IconDashboard />,
+    title: "Full Transparency Dashboard",
+    desc: "Track your campaign progress in real time, including review activity, rating improvements, and campaign updates. You’ll never wonder what we’re doing or why.",
+  },
+  {
+    icon: <IconPractices />,
+    title: "Platform-Safe Practices",
+    desc: "Every review we generate is authentic and compliant with platform guidelines. Your profiles stay safe. Your reputation stays protected. No shortcuts. No risks.",
+  },
+  {
+    icon: <IconCommitment />,
+    title: "Results-Backed Commitment",
+    desc: "Our strategies are built around measurable growth, structured delivery, and transparent progress tracking, designed to support long-term reputation management.",
   },
 ];
 
@@ -370,7 +430,7 @@ function OurCommitmentSection() {
           </div>
         ))}
         {/* Floating graphic — hidden on mobile */}
-        <div className="hidden lg:block absolute right-10 top-[130px] w-[360px] h-[300px] z-10">
+        <div className="hidden lg:block absolute right-10 top-[130px] w-[380px] h-[360px] z-10">
           <img src={IMGS.commitment} alt="Our team" className="w-full h-full mt-6 object-cover" />
         </div>
         {/* Mobile graphic */}
@@ -456,20 +516,43 @@ function ReputationStrategiesSection() {
 // ─── SECTION: 4 COMMITMENTS CARDS ─────────────────────────────────────────────
 function CommitmentsGridSection() {
   return (
-    <section className="w-full max-w-[1500px] mx-auto my-16 md:my-20 px-5">
-      <h2 className="w-full max-w-[732px] mx-auto text-center text-[28px] md:text-[40px] font-normal leading-[1.3] tracking-[-0.5px] text-[#111] mb-12">
-        Four Risk-Reversal <span className="font-semibold">Commitments</span>
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-        {COMMITMENT_CARDS.map((card) => (
-          <div
-            key={card.title}
-            className="bg-[#f9f9f9] rounded-[20px] p-8 md:p-10 min-h-[280px] flex flex-col justify-end transition-all duration-300 hover:bg-[#FFE065] hover:-translate-y-1"
-          >
-            <h3 className="text-[20px] md:text-[22px] font-semibold mb-3 text-black">{card.title}</h3>
-            <p className="text-[15px] leading-[1.7] text-[#444]">{card.desc}</p>
+    <section className="w-full bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] py-16 md:py-24 px-5">
+      <div className="w-full max-w-[1500px] mx-auto">
+        <h2 className="w-full max-w-[732px] mx-auto text-center text-[28px] md:text-[40px] font-[400] leading-[1.3] tracking-[-0.5px] text-[#111] mb-12 md:mb-16">
+          Four Risk-Reversal <span className="font-[600]">Commitments</span>
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6 items-start">
+          {/* Left Column: Image wrapper with sticky positioning */}
+          <div className="md:sticky md:top-42">
+            <img
+              src="/uploads/media/1780464814337-3faaff7e-c755-4f04-a4d9-12b452e1140f-Rectangle-10325.webp"
+              alt="Illustration"
+              className="w-[720px] h-[450px] sm:w-full sm:max-w-[676px] sm:h-[726px] rounded-[15px] object-contain"
+            />
           </div>
-        ))}
+
+          {/* Right Column: Vertical stack of four cards */}
+          <div className="flex flex-col gap-6 md:gap-8">
+            {COMMITMENT_CARDS_DATA.map((card) => (
+              <div
+                key={card.title}
+                className="bg-white rounded-[20px] p-8 lg:p-10 flex flex-col items-start transition-all duration-300"
+              >
+                {/* Icon */}
+                <div className="mb-14 w-12 h-12 flex items-center justify-center">
+                  {card.icon}
+                </div>
+                <h3 className="text-[22px] md:text-[22px] font-500 mb-3 text-black">
+                  {card.title}
+                </h3>
+                <p className="text-[15px] leading-[1.7] text-[#444]">
+                  {card.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

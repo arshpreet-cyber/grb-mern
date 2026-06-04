@@ -130,9 +130,17 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
 
   const renderDescription = () => {
     if (Array.isArray(description)) {
-      return description.map((p, i) => <p key={i}>{p}</p>);
+      return description.map((p, i) => {
+        if (typeof p === "string" && (p.includes("<") || p.includes(">"))) {
+          return <p key={i} dangerouslySetInnerHTML={{ __html: p }} />;
+        }
+        return <p key={i}>{p}</p>;
+      });
     }
     if (typeof description === "string") {
+      if (description.includes("<") || description.includes(">")) {
+        return <div dangerouslySetInnerHTML={{ __html: description }} />;
+      }
       return <p>{description}</p>;
     }
     return description;

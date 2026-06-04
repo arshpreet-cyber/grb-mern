@@ -17,7 +17,7 @@ import HeroBanner from "@/components/home/HeroBanner";
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await prisma.page.findUnique({ where: { slug: 'home' } });
+  const page = await prisma.page.findFirst({ where: { slug: 'home' } });
   if (!page) return { title: "Home | GetReviews.buzz" };
   return {
     title: page.metaTitle || "Home | GetReviews.buzz",
@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 async function getHomePage() {
   try {
-    return await prisma.page.findUnique({
+    return await prisma.page.findFirst({
       where: { slug: 'home' },
     }) as any;
   } catch (error) {
