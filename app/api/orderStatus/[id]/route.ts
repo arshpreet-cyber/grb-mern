@@ -10,7 +10,7 @@ import { sendEmailNotification, buildOrderPaidEmail } from "@/server/email";
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { searchParams } = new URL(req.url);
   const apiToken = searchParams.get("api_token");
@@ -19,7 +19,8 @@ export async function GET(
     return NextResponse.json({ message: "error", error: "Unauthorized" }, { status: 401 });
   }
 
-  const id = parseInt(params.id);
+  const { id: idStr } = await params;
+  const id = parseInt(idStr);
   if (isNaN(id)) {
     return NextResponse.json({ message: "error", error: "Invalid ID" }, { status: 400 });
   }

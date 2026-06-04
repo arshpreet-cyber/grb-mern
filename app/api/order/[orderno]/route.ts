@@ -9,7 +9,7 @@ import prisma from "@/lib/prisma";
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { orderno: string } }
+  { params }: { params: Promise<{ orderno: string }> }
 ) {
   const apiToken = new URL(req.url).searchParams.get("api_token");
 
@@ -17,7 +17,8 @@ export async function GET(
     return NextResponse.json({ message: "error", error: "Unauthorized" }, { status: 401 });
   }
 
-  const id = parseInt(params.orderno);
+  const { orderno } = await params;
+  const id = parseInt(orderno);
   if (isNaN(id)) {
     return NextResponse.json({ message: "error", error: "Invalid order ID" }, { status: 400 });
   }
