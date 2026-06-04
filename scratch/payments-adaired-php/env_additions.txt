@@ -1,0 +1,18 @@
+# Add these to .env on payments.adaired.com
+
+GRV_URL=https://getreviews.buzz/
+
+# Also add to config/app.php (inside the return array):
+# 'grv_url' => env('GRV_URL', 'https://getreviews.buzz/'),
+
+# ---------------------------------------------------------------
+# NOTE: GRB_API_TOKEN is defined TWICE in your current .env file.
+# PHP uses the LAST value, which is currently: abc123xyz789whatever
+# Fix this by keeping only ONE entry:
+#
+# GRB_API_TOKEN=9rQiDGhOhakoUbNi5MxIEQGox4lSpwF2FlaYPtyKekHSE2cZd5wpXVzHBpuC
+#
+# And update RAZORPAY_WEBHOOK_SECRET to your real webhook secret from
+# the Razorpay dashboard (currently it's set to the literal string
+# "RAZORPAY_WEBHOOK_SECRET" which will cause webhook verification to fail).
+# ---------------------------------------------------------------
