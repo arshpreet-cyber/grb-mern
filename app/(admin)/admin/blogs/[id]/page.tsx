@@ -6,6 +6,7 @@ import TipTapEditor from "@/components/admin/TipTapEditor";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
+import MediaPickerModal from "@/components/editor/MediaPickerModal";
 
 export default function EditBlog({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -28,6 +29,8 @@ export default function EditBlog({ params }: { params: Promise<{ id: string }> }
     about_author: "",
     status: 2, // Default Draft
   });
+
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -68,16 +71,6 @@ export default function EditBlog({ params }: { params: Promise<{ id: string }> }
       fetchBlog();
     }
   }, [id, router]);
-
-  const generateSlug = (text: string) => {
-    return text
-      .toString()
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/[^\w\-]+/g, "")
-      .replace(/\-\-+/g, "-");
-  };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
@@ -298,14 +291,23 @@ export default function EditBlog({ params }: { params: Promise<{ id: string }> }
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Featured Image URL</label>
-                  <input
-                    type="text"
-                    name="media"
-                    value={formData.media}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-400 outline-none"
-                    placeholder="https://..."
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="media"
+                      value={formData.media}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-400 outline-none"
+                      placeholder="https://..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setMediaPickerOpen(true)}
+                      className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                    >
+                      Browse
+                    </button>
+                  </div>
                   {formData.media && (
                     <div className="mt-2 relative h-32 rounded overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -341,6 +343,14 @@ export default function EditBlog({ params }: { params: Promise<{ id: string }> }
           </div>
         </div>
       </form>
+      <MediaPickerModal
+        isOpen={mediaPickerOpen}
+        onClose={() => setMediaPickerOpen(false)}
+        onSelect={(url) => {
+          setFormData((f) => ({ ...f, media: url }));
+          setMediaPickerOpen(false);
+        }}
+      />
     </div>
   );
 }

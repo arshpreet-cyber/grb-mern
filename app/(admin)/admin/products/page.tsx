@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react";
 import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
 import { ShoppingBag, Plus, Edit2, Trash2, Package, Image as ImageIcon, Upload, X, Award } from "lucide-react";
+import MediaPickerModal from "@/components/editor/MediaPickerModal";
 
 type Product = {
   id: string;          
@@ -42,6 +43,7 @@ export default function AdminProductsPage() {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -336,11 +338,21 @@ export default function AdminProductsPage() {
                     )}
                   </div>
                   <div className="flex flex-col gap-2 flex-1">
-                    <label className="cursor-pointer bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-700 dark:text-white hover:border-[#fc0] hover:text-[#D8A720] transition-all flex items-center gap-2 w-fit">
-                      <Upload size={14} />
-                      {uploading ? "Uploading..." : (form.media ? "Change Image" : "Upload Image")}
-                      <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
-                    </label>
+                    <div className="flex gap-2">
+                      <label className="cursor-pointer bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-700 dark:text-white hover:border-[#fc0] hover:text-[#D8A720] transition-all flex items-center gap-2 w-fit">
+                        <Upload size={14} />
+                        {uploading ? "Uploading..." : (form.media ? "Upload New" : "Upload Image")}
+                        <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setMediaPickerOpen(true)}
+                        className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-700 dark:text-white hover:border-[#fc0] hover:text-[#D8A720] transition-all flex items-center gap-2 w-fit"
+                      >
+                        <ImageIcon size={14} />
+                        Choose from Media
+                      </button>
+                    </div>
                     {form.media && (
                       <button 
                         type="button" 
@@ -374,6 +386,14 @@ export default function AdminProductsPage() {
           </div>
         </div>
       )}
+      <MediaPickerModal
+        isOpen={mediaPickerOpen}
+        onClose={() => setMediaPickerOpen(false)}
+        onSelect={(url) => {
+          setForm(f => ({ ...f, media: url }));
+          setMediaPickerOpen(false);
+        }}
+      />
     </div>
   );
 }
