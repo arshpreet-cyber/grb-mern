@@ -1,8 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Wrapper from "@/components/ui/Wrapper";
 import { SectionProps } from "@/types/section";
 import { useCart } from "@/context/CartContext";
@@ -24,13 +23,13 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
   const resolvedImage = image || "https://beta.getreviews.buzz/storage/app/blog/0539654001776770835_0702272001776065346_left-img.png";
   const resolvedPlatform = product?.platform || (typeof title === "string" ? title : "Product");
 
-  const router = useRouter();
   const { addItem, updateQty } = useCart();
 
   const [quantity, setQuantity] = useState(5);
   const [plan, setPlan] = useState<"one-time" | "monthly">("one-time");
   const [spinKey, setSpinKey] = useState(0);
   const [activePkgIdx, setActivePkgIdx] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Configuration for individual package values
   const variantLabels = [
@@ -67,49 +66,6 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
   const currentPrice = getCurrentPrice();
   const total = quantity * currentPrice;
 
-  const mediaColumnRef = useRef<HTMLDivElement>(null);
-  const containerGridRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const topOffsetGap = 40;
-
-    function handleScrollFollower() {
-      const mediaColumn = mediaColumnRef.current;
-      const container = containerGridRef.current;
-
-      if (!mediaColumn || !container) return;
-
-      if (window.innerWidth > 991) {
-        const containerRect = container.getBoundingClientRect();
-        const mediaHeight = mediaColumn.offsetHeight;
-        const containerHeight = container.offsetHeight;
-        const maxScrollableDistance = containerHeight - mediaHeight;
-
-        if (containerRect.top < topOffsetGap) {
-          let targetMargin = Math.abs(containerRect.top) + topOffsetGap;
-          if (targetMargin > maxScrollableDistance) {
-            targetMargin = maxScrollableDistance;
-          }
-          mediaColumn.style.marginTop = `${targetMargin}px`;
-        } else {
-          mediaColumn.style.marginTop = "0px";
-        }
-      } else {
-        mediaColumn.style.marginTop = "0px";
-      }
-    }
-
-    window.addEventListener("scroll", handleScrollFollower, { passive: true });
-    window.addEventListener("resize", handleScrollFollower, { passive: true });
-    
-    const timeoutId = setTimeout(handleScrollFollower, 200);
-
-    return () => {
-      window.removeEventListener("scroll", handleScrollFollower);
-      window.removeEventListener("resize", handleScrollFollower);
-      clearTimeout(timeoutId);
-    };
-  }, []);
 
   const handleAddToCart = () => {
     const pkgSuffix = isGoogleProduct ? `-${variantLabels[activePkgIdx].label.replace(/\s+/g, "").toLowerCase()}` : "";
@@ -153,14 +109,12 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
     >
       <Wrapper>
         <div 
-          ref={containerGridRef}
           className="max-w-[1500px] mx-auto px-5 lg:px-10 flex flex-col lg:flex-row gap-14 items-start"
         >
           
 
           <div 
-            ref={mediaColumnRef}
-            className="w-full lg:w-[55%] flex flex-col relative transition-all duration-200 will-change-[margin-top] lg:max-w-none"
+            className="w-full max-w-[600px] lg:max-w-none mx-auto lg:w-[55%] flex flex-col relative lg:sticky lg:top-10 lg:self-start"
             id="sticky-scroll-media-frame"
           >
             <div className="relative bg-transparent flex items-center justify-center w-full">
@@ -185,8 +139,8 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                 width="18" 
                 height="18" 
               />
-              <span className="text-[13px] font-400 tracking-[0.8px] uppercase">
-                GOOGLE VERIFIED SERVICES
+              <span className="text-[12px] font-400 tracking-[0.8px] uppercase">
+                VERIFIED SERVICES
               </span>
             </div>
 
@@ -198,30 +152,36 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
   That Build Trust
 </h1>
 
-            <div className="text-[15px] text-[#4A4A48] line-height-[1.55] mb-2">
+            <div 
+              onClick={() => setIsExpanded(!isExpanded)}
+              className={`text-[15px] text-[#4A4A48] mb-2 cursor-pointer transition-all duration-200 hover:opacity-85 ${
+                isExpanded ? "" : "line-clamp-2"
+              }`}
+              style={{ lineHeight: "1.55" }}
+            >
               {description ? renderDescription() : (
-                <p>Improve your business's online reputation with 100% real, authentic, and long-lasting Google reviews.</p>
+                <p>Improve your business&apos;s online reputation with 100% real, authentic, and long-lasting Google reviews.</p>
               )}
             </div>
 
-<div className="flex items-center gap-4 mt-4 mb-6 text-[16px] font-400 text-[#1A1A1A]">
+<div className="flex flex-wrap items-center gap-x-4 gap-y-3 mt-4 mb-6 text-[15px] sm:text-[16px] font-400 text-[#1A1A1A]">
               {/* Stars & Fully Underlined Ratings */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-[2.5px] text-[#FFC107]">
                   {[...Array(5)].map((_, i) => (
-                    <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <svg key={i} width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                     </svg>
                   ))}
                 </div>
                 
                 {/* Entire block wrapped inside the link to get a single continuous underline */}
-                <a href="#" className="text-[#1A1A1A] underline decoration-1 underline-offset-4 hover:opacity-80 transition-opacity">
+                <a href="#" className="text-[#1A1A1A] underline decoration-1 underline-offset-4 hover:opacity-80 transition-opacity whitespace-nowrap">
                   {ratingText.includes("4.9") ? ratingText : `4.9 · ${ratingText}`}
                 </a>
               </div>
               <div 
-                className="h-[32px] w-[1px] self-center mx-1" 
+                className="hidden sm:block h-[24px] w-[1px] self-center mx-1" 
                 style={{
                   background: 'linear-gradient(to bottom, #FDFCF6 0%, #A7A7A7 50%, #FDFCF6 100%)'
                 }}
@@ -234,7 +194,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                     className="w-[20px] h-[20px] object-contain"
                   />
                 </div>
-                <span>24/7 Customer Service</span>
+                <span className="whitespace-nowrap">24/7 Customer Service</span>
               </div>
             </div>
             <div className="w-full h-[1px] bg-[#EBE9E1] mb-8"></div>
@@ -248,7 +208,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                   Select Package
                 </span>
                 
-                <div className="flex flex-row gap-4 mb-8" id="variant-cards-wrap">
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3 gap-3 md:gap-4 mb-8" id="variant-cards-wrap">
                   {variantLabels.map((pkg, idx) => {
                     const isCurrentActive = activePkgIdx === idx;
                     
@@ -274,7 +234,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                       <div
                         key={idx}
                         onClick={() => setActivePkgIdx(idx)}
-                        className={`flex-1 rounded-[10px] cursor-pointer text-left relative transition-all p-[18px_20px] ${
+                        className={`w-full rounded-[10px] cursor-pointer text-left relative transition-all p-[18px_20px] ${
                           isCurrentActive 
                             ? "border-[1.5px] border-[#FFDF43] bg-[#FFFdf2]" 
                             : "border border-[#EBE9E1] bg-white"
@@ -315,7 +275,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               /* MATCHES UPLOADED SCREENSHOT EXACTLY FOR NON-GOOGLE CHANNELS */
               <div className="mb-6 select-none">
                 <div className="text-[28px] text-[#1A1A1A] tracking-tight">
-                  <span className="font-bold">Price: ${currentPrice.toFixed(2)}</span>
+                  <span className="font-semibold text-[30px]">${currentPrice.toFixed(2)}</span>
                   <span className="font-normal text-[15px] text-[#1A1A1A]"> / Per Review</span>
                 </div>
               </div>
@@ -349,8 +309,8 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               Quantity (Min: 5)
             </span>
             
-            <div className="flex items-center gap-4 mb-9 w-full">
-              <div className="flex items-center border border-[#E5E5E5] rounded-[10px] h-[49px] w-[180px] overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-center gap-4 mb-9 w-full">
+              <div className="flex items-center border border-[#E5E5E5] rounded-[10px] h-[49px] w-full sm:w-[180px] flex-shrink-0 overflow-hidden">
                 <button 
                   type="button" 
                   onClick={() => setQuantity(q => (q > 5 ? q - 1 : 5))}
@@ -385,7 +345,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               <button 
                 type="button" 
                 onClick={handleAddToCart}
-                className={`inline-flex items-center justify-center gap-2 flex-1 h-[49px] text-[16px] font-500 rounded-[8px] border-none no-underline cursor-pointer tracking-[0.2px] hover:opacity-90 transition-all ${
+                className={`inline-flex items-center justify-center gap-2 w-full sm:w-auto sm:flex-1 h-[49px] text-[16px] font-500 rounded-[8px] border-none no-underline cursor-pointer tracking-[0.2px] hover:opacity-90 transition-all ${
                   plan === "monthly" ? "!bg-[#fc0] text-[#1a1a1a]" : "!bg-black text-white"
                 }`}
               >
@@ -419,13 +379,13 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             </div>
 
             {/* Bottom Stats Grid */}
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
               {(stats && Array.isArray(stats) ? stats : [
                 { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
                 { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
                 { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
-              ]).map((stat: any, idx: number) => (
-                <div key={idx} className="flex-1 bg-white border border-[#EBE9E1] rounded-[16px] p-[24px_28px] flex flex-col items-baseline justify-center text-center">
+              ]).map((stat: { img?: string; val: string; lbl: string }, idx: number) => (
+                <div key={idx} className="w-full bg-white border border-[#EBE9E1] rounded-[16px] p-4 sm:p-5 lg:p-4 xl:p-[24px_28px] flex flex-col items-baseline justify-center text-center">
                   <div className="mb-3.5 flex items-center justify-start w-full">
                     {stat.img && <img src={stat.img} alt="Stat Asset Wrapper" />}
                   </div>
