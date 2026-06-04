@@ -35,21 +35,25 @@ export async function GET(
   const [firstName, ...rest] = (order.firstName ?? "").split(" ");
   const lastName = order.lastName ?? rest.join(" ") ?? "";
 
+  // IMPORTANT: created_at must come BEFORE order_detail in this object.
+  // PHP grb_payment loops fields and breaks on "created_at" — if order_detail
+  // (an array) appears first, Eloquent crashes trying to save it as a DB column.
   return NextResponse.json({
     message: "success",
     orders: [
       {
-        id:             order.id,
-        order_number:   order.orderNumber,
-        first_name:     firstName || order.firstName || "Customer",
-        last_name:      lastName,
-        email:          order.email ?? "",
-        amount:         order.amount ?? 0,
-        currency:       order.currency ?? "USD",
-        payment_status: parseInt(order.paymentStatus ?? "1"),
+        id:               order.id,
+        order_number:     order.orderNumber,
+        first_name:       firstName || order.firstName || "Customer",
+        last_name:        lastName,
+        email:            order.email ?? "",
+        amount:           order.amount ?? 0,
+        currency:         order.currency ?? "USD",
+        payment_status:   parseInt(order.paymentStatus ?? "1"),
         stripe_session_id: null,
-        is_recurring:   0,
-        order_detail:   order.orderDetails.map((d) => ({
+        is_recurring:     0,
+        created_at:       (order.createdAt ?? new Date()).toISOString(),
+        order_detail:     order.orderDetails.map((d) => ({
           id:          d.id,
           order_id:    order.id,
           item_name:   d.itemName ?? d.platform ?? "",
