@@ -37,6 +37,7 @@ type ApiOrder = {
   amount: number;
   date: string;
   createdAt?: string;
+  paymentId?: string | null;
   paymentMethod: string;
   payUrl?: string | null;
   detailsFilled?: boolean;
@@ -83,8 +84,7 @@ export default function DemoDashboard() {
           const mappedOrders: Order[] = data.map((o: ApiOrder) => ({
             id: o.id,
             orderNumber: o.orderNumber,
-            paymentId: String(o.id),
-            amount: o.amount,
+            paymentId: o.paymentId ?? "—",
             createdAt: o.date ?? o.createdAt,
             paymentMethod: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
             payUrl: o.payUrl,
