@@ -217,7 +217,7 @@ function HeroSection() {
             </p>
             <a
               href="/contact-us"
-              className="inline-block mt-6 px-6 py-3 bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] text-black font-normal rounded-lg transition hover:opacity-90"
+              className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-[#FFE26E] to-[#FFCD05] text-black font-normal rounded-lg transition hover:opacity-90"
             >
               Get Started Today →
             </a>
@@ -398,7 +398,7 @@ function BrandReputationSection() {
         <div className="text-center mt-14">
           <a
             href="/contact-us"
-            className="inline-block bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] text-[#111] px-8 py-4 rounded-[10px] font-semibold text-[15px] transition hover:opacity-90"
+            className="inline-block bg-gradient-to-r from-[#FFE26E] to-[#FFCD05] text-[#111] px-8 py-4 rounded-[10px] font-semibold text-[15px] transition hover:opacity-90"
           >
             Ready to improve your presence? Connect with us today! →
           </a>
@@ -445,7 +445,7 @@ function OurCommitmentSection() {
         <div className="text-center mt-14">
           <a
             href="/contact-us"
-            className="inline-block bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] text-[#111] px-9 py-4 rounded-[10px] font-medium text-[14px] transition hover:opacity-90"
+            className="inline-block bg-gradient-to-r from-[#FFE26E] to-[#FFCD05] text-[#111] px-9 py-4 rounded-[10px] font-medium text-[14px] transition hover:opacity-90"
           >
             Ready for a partner who keeps their promises? <strong className="font-bold">Let's get started! →</strong>
           </a>
