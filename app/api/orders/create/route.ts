@@ -98,33 +98,16 @@ export async function POST(req: NextRequest) {
 
     const callbackUrl = `${appUrl}/api/orders/payment-callback?orderId=${order.id}&tokenCode=${tokenCode}`;
 
+    const paymentBaseUrl = (process.env.PAYMENT_URL ?? "").replace(/\/$/, "");
+
     let payUrl = "";
     if (paymentMethod === "paypal") {
-      // Pass callback under multiple common param names so the gateway picks it up
       payUrl = `${process.env.PAYPAL_PAYMENT_URL}?orderno=${order.id}&tokenCode=${tokenCode}&return_url=${encodeURIComponent(callbackUrl)}&success_url=${encodeURIComponent(callbackUrl)}&redirect_url=${encodeURIComponent(callbackUrl)}`;
     } else if (paymentMethod === "razorpay") {
-      payUrl = `${process.env.PAYMENT_URL}stripe?orderno=${order.id}&tokenCode=${tokenCode}`;
-    } else if (paymentMethod === "zoho") {
-      try {
-        const zohoUrl = await createZohoInvoice({
-          email: user?.email ?? "",
-          name: user?.name ?? "",
-          orderNumber,
-          items: items.map((item: any) => ({
-            platform: item.platform,
-            pricePerUnit: item.pricePerUnit,
-            qty: item.qty,
-            type: item.type,
-          })),
-          returnPaymentUrl: true,
-        });
-        payUrl = zohoUrl as string;
-      } catch (err: any) {
-        console.error("[Zoho Invoice]", err.message);
-        return NextResponse.json({ error: `Zoho payment failed: ${err.message}` }, { status: 502 });
-      }
+      // PHP grb_payment fetches order via /api/order/{orderno} then handles Razorpay
+      payUrl = `${paymentBaseUrl}/grb/payment?orderno=${order.id}`;
     } else {
-      payUrl = `${process.env.PAYMENT_URL}?orderno=${order.id}&tokenCode=${tokenCode}`;
+      payUrl = `${paymentBaseUrl}?orderno=${order.id}&tokenCode=${tokenCode}`;
     }
 
     await prisma.order.update({
@@ -132,8 +115,8 @@ export async function POST(req: NextRequest) {
       data: { payUrl },
     });
 
-    // For non-Zoho payments, create Zoho Books invoice silently in background
-    if (paymentMethod !== "zoho") createZohoInvoice({
+    // Create Zoho Books invoice silently in background for all orders
+    createZohoInvoice({
       email: user?.email ?? "",
       name: user?.name ?? "",
       orderNumber,
