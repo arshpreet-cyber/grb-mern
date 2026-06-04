@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { SectionProps } from "@/types/section";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { updateSectionData } from "@/lib/redux/features/pageEditorSlice";
+import MediaPickerModal from "../editor/MediaPickerModal";
 
 export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }: SectionProps) {
   const dispatch = useAppDispatch();
@@ -39,6 +40,7 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
   interface DrawbackCard {
     title: string;
     iconType: string;
+    iconImage?: string;
     paragraphs: string[];
   }
 
@@ -51,6 +53,15 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
 
   // Compute a safe active index at render time to avoid setting state in effect when cards are deleted
   const activeIdx = cards.length > 0 ? Math.min(currentIdx, cards.length - 1) : 0;
+
+  const [mediaPicker, setMediaPicker] = useState<{
+    isOpen: boolean;
+    onSelect: (url: string) => void;
+  } | null>(null);
+
+  const openMediaPicker = (onSelect: (url: string) => void) => {
+    setMediaPicker({ isOpen: true, onSelect });
+  };
 
   // Swipe controls for mobile
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -114,7 +125,17 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
     setTouchEnd(null);
   };
 
-  const renderIcon = (type: string) => {
+  const renderIcon = (type: string, customUrl?: string) => {
+    if (type === "custom" && customUrl) {
+      return (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={customUrl}
+          alt="Custom Icon"
+          className="w-12 h-12 object-contain"
+        />
+      );
+    }
     switch (type) {
       case "chart":
         return (
@@ -245,8 +266,28 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
                 }`}
               >
                 {/* Icon Container */}
-                <div className="mb-6 flex justify-start items-center h-12">
-                  {renderIcon(card.iconType)}
+                <div
+                  className={`mb-6 flex justify-start items-center h-12 relative group/icon ${
+                    isEditing ? "cursor-pointer hover:opacity-80" : ""
+                  }`}
+                  onClick={(e) => {
+                    if (isEditing) {
+                      e.stopPropagation();
+                      openMediaPicker((url) => {
+                        handleCardChange(cardIdx, "iconType", "custom");
+                        handleCardChange(cardIdx, "iconImage", url);
+                      });
+                    }
+                  }}
+                >
+                  {renderIcon(card.iconType, card.iconImage)}
+                  {isEditing && (
+                    <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover/icon:opacity-100 transition-opacity">
+                      <span className="text-[10px] text-white font-bold px-1.5 py-0.5 bg-black/60 rounded">
+                        Edit Icon
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Title */}
@@ -306,6 +347,14 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
           })}
         </div>
       </div>
+      <MediaPickerModal
+        isOpen={mediaPicker?.isOpen || false}
+        onClose={() => setMediaPicker(null)}
+        onSelect={(url) => {
+          mediaPicker?.onSelect(url);
+          setMediaPicker(null);
+        }}
+      />
     </section>
   );
 }

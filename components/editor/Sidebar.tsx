@@ -1165,6 +1165,7 @@ export default function Sidebar() {
             interface DrawbackCard {
               title: string;
               iconType: string;
+              iconImage?: string;
               paragraphs: string[];
             }
             const cards = (selectedSection.data.cards || []) as DrawbackCard[];
@@ -1235,8 +1236,38 @@ export default function Sidebar() {
                           <option value="warning">Warning / Shield</option>
                           <option value="chart">Growth Chart</option>
                           <option value="competition">Competition Graph</option>
+                          <option value="custom">Custom PNG Image</option>
                         </select>
                       </div>
+
+                      {card.iconType === 'custom' && (
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase tracking-wider block">Custom PNG Icon</label>
+                          <div className="flex gap-2 w-full">
+                            <input
+                              className="flex-1 min-w-0 px-3 py-2 bg-white text-gray-800 rounded-lg text-xs border border-black/5 outline-none focus:ring-2 focus:ring-[#fc0]"
+                              value={card.iconImage || ''}
+                              onChange={(e) => {
+                                const updated = [...cards];
+                                updated[cardIdx] = { ...updated[cardIdx], iconImage: e.target.value };
+                                handleDataChange('cards', updated);
+                              }}
+                              placeholder="Image URL..."
+                            />
+                            <button
+                              type="button"
+                              onClick={() => openMediaPicker((url) => {
+                                const updated = [...cards];
+                                updated[cardIdx] = { ...updated[cardIdx], iconImage: url };
+                                handleDataChange('cards', updated);
+                              })}
+                              className="px-3 py-2 bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 rounded-lg font-bold text-xs transition shrink-0 cursor-pointer"
+                            >
+                              Browse
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="space-y-2">
                         <label className="text-[9px] font-bold text-[#1a1a1a]/40 uppercase tracking-wider block">Paragraphs</label>
