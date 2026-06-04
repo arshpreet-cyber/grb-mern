@@ -368,28 +368,33 @@ function BrandReputationSection() {
             We replace the guesswork with a proven process. From a damaged rating to a trusted online presence, here's exactly how we get it done.
           </p>
         </div>
+        
         {/* Steps grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 border-x border-[#e6e6e6]">
           {STEPS.map((step, i) => (
             <div
               key={step.label}
-              className={`flex flex-col bg-white ${i < STEPS.length - 1 ? "border-b md:border-b-0 md:border-r border-[#e6e6e6]" : ""}`}
+              // 1. Added 'group' class here to trigger hover state on children
+              className={`group flex flex-col bg-white cursor-default transition-all duration-300 ${i < STEPS.length - 1 ? "border-b md:border-b-0 md:border-r border-[#e6e6e6]" : ""}`}
             >
               <div className="bg-[#fafafa] p-6 flex justify-center items-center min-h-[240px]">
                 <img src={step.img} alt={step.title} className="w-full max-w-[180px] h-auto" />
               </div>
               <div className="p-8 md:p-10 flex-grow">
-                <span className={`inline-block text-[11px] font-semibold tracking-[1.5px] mb-5 ${step.active ? "bg-[#f4c400] text-[#111] px-2.5 py-1 rounded font-bold" : "text-[#666]"}`}>
+                {/* 2. Replaced conditional logic with group-hover classes and added base styling to match image_5ce3bb.png */}
+                <span className="inline-block text-[11px] tracking-[1.5px] mb-5 px-2.5 py-1 rounded bg-[#f4f4f4] text-[#666] font-semibold transition-colors duration-300 group-hover:bg-[#f4c400] group-hover:text-[#111] group-hover:font-bold">
                   {step.label}
                 </span>
+                
                 <h3 className="text-[20px] font-semibold text-[#111] mb-5 tracking-[0.5px]">{step.title}</h3>
                 {step.paras.map((p, j) => (
-                  <p key={j} className="text-black leading-[1.8] mb-4 text-[15px]">{p}</p>
+                  <p key={j} className="text-gray-600 leading-[1.8] mb-4 text-[15px]">{p}</p>
                 ))}
               </div>
             </div>
           ))}
         </div>
+        
         <div className="text-center mt-14">
           <a
             href="/contact-us"
@@ -516,7 +521,7 @@ function ReputationStrategiesSection() {
 // ─── SECTION: 4 COMMITMENTS CARDS ─────────────────────────────────────────────
 function CommitmentsGridSection() {
   return (
-    <section className="w-full bg-gradient-to-b from-[#FFE26E] to-[#FFCD05] py-16 md:py-24 px-5">
+    <section className="w-full bg-gradient-to-b from-[#FFE26E] to-[#FFCD05]  py-16 md:py-24 px-5">
       <div className="w-full max-w-[1500px] mx-auto">
         <h2 className="w-full max-w-[732px] mx-auto text-center text-[28px] md:text-[40px] font-[400] leading-[1.3] tracking-[-0.5px] text-[#111] mb-12 md:mb-16">
           Four Risk-Reversal <span className="font-[600]">Commitments</span>
@@ -560,6 +565,8 @@ function CommitmentsGridSection() {
 
 // ─── SECTION: REPUTATION IMPACT ───────────────────────────────────────────────
 function ReputationSection() {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  
   return (
     <section className="w-full max-w-[1500px] mx-auto my-16 md:my-20 px-5">
       <h2 className="w-full max-w-[732px] mx-auto text-center text-[28px] md:text-[40px] font-normal leading-[1.3] tracking-[-0.5px] text-[#111] mb-12">
@@ -568,11 +575,19 @@ function ReputationSection() {
           Impacts Every Decision<span className="text-[#fcd561] font-extrabold">.</span>
         </span>
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {REPUTATION_CARDS.map((card) => (
+      <div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+        onMouseLeave={() => setHoveredIndex(null)}
+      >
+        {REPUTATION_CARDS.map((card, index) => (
           <div
             key={card.title}
-            className="bg-[rgba(245,245,245,0.6)] rounded-[20px] p-8 min-h-[340px] flex flex-col justify-between transition-all duration-300 hover:bg-[#fcd561] hover:-translate-y-1"
+            onMouseEnter={() => setHoveredIndex(index)}
+            className={`rounded-[20px] p-8 min-h-[340px] flex flex-col justify-between transition-all duration-300 ${
+              (hoveredIndex === null ? index === 0 : hoveredIndex === index)
+                ? "bg-[#fcd561] -translate-y-1"
+                : "bg-[rgba(245,245,245,0.6)]"
+            }`}
           >
             <div className="flex items-center mb-4">
               <img src={card.icon} alt={card.title} className={card.iconStyle} />
