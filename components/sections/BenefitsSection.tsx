@@ -68,13 +68,13 @@ export default function BenefitsSection({ id, data = {}, settings, isEditing }: 
         <div className="text-center max-w-3xl mb-16">
           {isEditing ? (
             <input
-              className="text-3xl md:text-4xl font-semibold text-center text-gray-900 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-1 mb-3"
+              className="text-[40px] md:text-4xl font-semibold text-center text-gray-900 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-1 mb-3"
               value={heading}
               onChange={(e) => handleChange("heading", e.target.value)}
               placeholder="Benefits of Buying Reviews"
             />
           ) : (
-            <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 leading-tight">
+            <h2 className="text-[40px] md:text-4xl font-semibold text-gray-900 leading-tight">
               {heading}
             </h2>
           )}
@@ -114,13 +114,13 @@ export default function BenefitsSection({ id, data = {}, settings, isEditing }: 
                 <div className="flex items-center justify-between">
                   {isEditing ? (
                     <input
-                      className="w-12 h-10 bg-[#2A2A2D] text-white rounded-xl text-center text-sm font-bold outline-none"
+                      className="w-14 h-14 bg-[#2A2A2D] text-white rounded-xl text-center text-sm font-bold outline-none"
                       value={item.badge}
                       onChange={(e) => handleBenefitChange(idx, "badge", e.target.value)}
                       placeholder={`0${idx + 1}`}
                     />
                   ) : (
-                    <span className="w-12 h-10 bg-[#2A2A2D] text-white rounded-xl flex items-center justify-center text-sm font-bold">
+                    <span className="w-14 h-14 bg-[#2A2A2D] text-white rounded-xl flex items-center justify-center text-[35px] font-semibold">
                       {item.badge}
                     </span>
                   )}
@@ -129,13 +129,13 @@ export default function BenefitsSection({ id, data = {}, settings, isEditing }: 
                 {/* Title */}
                 {isEditing ? (
                   <input
-                    className="font-bold text-sm tracking-wider text-gray-800 uppercase mt-6 mb-3 w-full bg-transparent outline-none border-b border-dashed border-[#fc0] pb-0.5"
+                    className="font-semibold text-[20px] tracking-wider text-[#323232CC] uppercase mt-6 mb-3 w-full bg-transparent outline-none border-b border-dashed border-[#fc0] pb-0.5"
                     value={item.title}
                     onChange={(e) => handleBenefitChange(idx, "title", e.target.value)}
                     placeholder="Benefit Title"
                   />
                 ) : (
-                  <h3 className="font-bold text-sm tracking-wider text-gray-800 uppercase mt-6 mb-3">
+                  <h3 className="font-semibold text-[20px] tracking-wider text-[#323232CC] uppercase mt-6 mb-3">
                     {item.title}
                   </h3>
                 )}
@@ -143,14 +143,14 @@ export default function BenefitsSection({ id, data = {}, settings, isEditing }: 
                 {/* Description */}
                 {isEditing ? (
                   <textarea
-                    className="text-[13px] leading-relaxed text-gray-600 w-full bg-transparent outline-none border-b border-dashed border-[#fc0] resize-none flex-1 mt-1 min-h-[80px]"
+                    className="text-[15px] leading-relaxed text-gray-600 w-full bg-transparent outline-none border-b border-dashed border-[#fc0] resize-none flex-1 mt-1 min-h-[80px]"
                     rows={3}
                     value={item.description}
                     onChange={(e) => handleBenefitChange(idx, "description", e.target.value)}
                     placeholder="Benefit description..."
                   />
                 ) : (
-                  <p className="text-[13px] leading-relaxed text-gray-600 flex-1">
+                  <p className="text-[15px] leading-relaxed text-gray-600 flex-1">
                     {item.description}
                   </p>
                 )}
