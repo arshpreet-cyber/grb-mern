@@ -154,7 +154,7 @@ export function ProductCard({
     return (
       <li
         className="product-card-redesign most-popular-card google-refill-card ssr-card relative bg-white flex flex-col font-sans cursor-pointer transition-all duration-200 w-full h-full rounded-[16px]"
-        onClick={() => { const s = String(product.slug || product.id); router.push(`/products/${s.startsWith('buy-') ? s : `buy-${s}`}/reviews/`); }}
+        onClick={() => { router.push(`/products/${String(product.slug || product.id)}/`); }}
         style={{
           border: "2px solid transparent",
           backgroundImage: "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)",
@@ -282,7 +282,7 @@ export function ProductCard({
   return (
     <li
       className="product-card-redesign ssr-card relative bg-white flex flex-col font-sans cursor-pointer transition-all duration-200 w-full h-full rounded-[16px]"
-      onClick={() => { const s = String(product.slug || product.id); router.push(`/products/${s.startsWith('buy-') ? s : `buy-${s}`}/reviews/`); }}
+      onClick={() => { router.push(`/products/${String(product.slug || product.id)}/`); }}
       style={{
         border: "2px solid transparent",
         backgroundImage: "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)",
