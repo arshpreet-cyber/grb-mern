@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import Wrapper from "@/components/ui/Wrapper";
 import type { Product } from "@/lib/constants/products";
 import { useRouter } from "next/navigation";
@@ -110,18 +110,18 @@ export function ProductCard({
 
   const effectiveMode = selectedMode || "onetime";
   const isMonthly = effectiveMode === "monthly";
-  
+
   const isGoogleReviews = Number(product.id) === 2 || product.platform?.toLowerCase() === "google reviews";
   const styleKey = Number(product.styleId ?? product.id);
 
-const designRule =
-  PRODUCT_STYLE_RULES[styleKey] || {
-    headerBg: "#fffcf2",
-    badgeColor: "#c99c15",
-  };
+  const designRule =
+    PRODUCT_STYLE_RULES[styleKey] || {
+      headerBg: "#fffcf2",
+      badgeColor: "#c99c15",
+    };
 
   const price30 = isGoogleReviews ? 15 : (product.oneTimePrice || 20);
-  const price15 = isGoogleReviews ? 10 : (Math.round(price30 * 0.5) || 10); 
+  const price15 = isGoogleReviews ? 10 : (Math.round(price30 * 0.5) || 10);
   const price7 = isGoogleReviews ? 7 : (Math.round(price30 * 0.35) || 7);
 
   const packages = [
@@ -140,7 +140,7 @@ const designRule =
     e.stopPropagation();
     addItem({
       id: `${productIdToUse}-${effectiveMode}`,
-      platform: product.platform, 
+      platform: product.platform,
       icon: "🌟",
       image: product.image,
       type: isMonthly ? "subscribe" : "one-time",
@@ -169,14 +169,14 @@ const designRule =
           e.currentTarget.style.boxShadow = "none";
         }}
       >
-        <div 
+        <div
           className="card-header p-[24px_28px] flex justify-between items-center rounded-[16px_16px_0_0]"
           style={{ backgroundColor: designRule.headerBg }}
         >
           <div className="card-title-wrapper flex items-center gap-[12px]">
             <h4 className="card-title text-[17px] font-semibold text-black m-0 leading-[1.2]">Google Reviews</h4>
           </div>
-          <div 
+          <div
             className="secure-badge bg-white text-[11px] font-semibold p-[4px_11px] rounded-[20px] flex items-center gap-[6px] tracking-[0.3px] shadow-[0_2px_5px_rgba(0,0,0,0.04)] whitespace-nowrap"
             style={{ color: designRule.badgeColor }}
           >
@@ -205,21 +205,19 @@ const designRule =
                     e.stopPropagation();
                     setActivePkgIndex(index);
                   }}
-                  className={`warranty-box flex flex-col items-start p-[10px_6px_8px_6px] rounded-[8px] cursor-pointer border-[1.5px] border-transparent transition-all min-h-[70px] max-[359px]:w-full max-[359px]:flex-row max-[359px]:items-center max-[359px]:justify-between max-[359px]:p-[10px_12px] ${
-                    isActive 
-                      ? "border-[#ffd737] bg-[#FFF9E6]" 
+                  className={`warranty-box flex flex-col items-start p-[10px_6px_8px_6px] rounded-[8px] cursor-pointer border-[1.5px] border-transparent transition-all min-h-[70px] max-[359px]:w-full max-[359px]:flex-row max-[359px]:items-center max-[359px]:justify-between max-[359px]:p-[10px_12px] ${isActive
+                      ? "border-[#ffd737] bg-[#FFF9E6]"
                       : "bg-white hover:border-[#ffd737] hover:bg-[#FFF9E6]"
-                  }`}
+                    }`}
                 >
                   <div className="warranty-price flex items-baseline gap-[1px] mb-[2px] max-[359px]:mb-0 max-[359px]:mr-[8px]">
                     <span className="amount text-[14px] font-semibold text-[#1a1a1a] max-[359px]:text-[18px]">${pkg.price}</span>
                     <span className="Review text-[8px] text-black/70 ml-[1px] whitespace-nowrap">/ per Review</span>
                   </div>
                   <div className="warranty-min text-[10px] text-black/50">Min. 5 reviews</div>
-                  <div 
-                    className={`warranty-label text-[6px] font-semibold tracking-wide relative mb-[5px] leading-[1.3] max-[359px]:mb-0 max-[359px]:ml-auto max-[359px]:text-right ${
-                      isActive ? "text-[#b07b00] font-medium" : "text-[#FFC107]"
-                    }`}
+                  <div
+                    className={`warranty-label text-[6px] font-semibold tracking-wide relative mb-[5px] leading-[1.3] max-[359px]:mb-0 max-[359px]:ml-auto max-[359px]:text-right ${isActive ? "text-[#b07b00] font-medium" : "text-[#FFC107]"
+                      }`}
                   >
                     <span>{pkg.label}</span> &nbsp;
                     <span className="tooltip-question relative inline-flex items-center justify-center w-[10px] h-[10px] border border-black text-black rounded-full cursor-pointer group" onClick={(e) => e.stopPropagation()}>
@@ -243,22 +241,20 @@ const designRule =
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onSelect("onetime"); }}
-                className={`card-toggle-btn relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${
-                  !isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
-                }`}
+                className={`card-toggle-btn relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${!isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
+                  }`}
               >
                 One–time
               </button>
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onSelect("monthly"); }}
-                className={`card-toggle-btn monthly-btn-icon flex items-center justify-center gap-[6px] relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${
-                  isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
-                }`}
+                className={`card-toggle-btn monthly-btn-icon flex items-center justify-center gap-[6px] relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
+                  }`}
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="max-[768px]:w-[14px] max-[768px]:h-[14px] max-[768px]:mr-[4px]">
-                  <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
-                  <path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                  <path d="M21 2v6h-6" /><path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                  <path d="M3 22v-6h6" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
                 </svg>
                 Monthly
               </button>
@@ -266,9 +262,8 @@ const designRule =
 
             <button
               onClick={handleAdd}
-              className={`card-cart-btn flex items-center justify-center gap-[8px] h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${
-                isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
-              }`}
+              className={`card-cart-btn flex items-center justify-center gap-[8px] h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
+                }`}
               style={{ backgroundColor: isMonthly ? '#fc0' : 'white' }}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] shrink-0">
@@ -301,14 +296,14 @@ const designRule =
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundImage = "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)",
-        e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.boxShadow = "none";
       }}
     >
-      <div 
+      <div
         className="s-header-redesign p-[24px_24px_10px_24px] flex flex-col items-start border-b-none rounded-[16px_16px_0_0]"
         style={{ backgroundColor: designRule.headerBg }}
       >
-        <div 
+        <div
           className="s-secure-badge inline-flex items-center gap-[6px] bg-white text-[11px] font-semibold p-[4px_11px] rounded-[20px] uppercase tracking-[0.5px] shadow-[0_2px_4px_rgba(0,0,0,0.03)] mb-[45px]"
           style={{ color: designRule.badgeColor }}
         >
@@ -339,21 +334,19 @@ const designRule =
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onSelect("onetime"); }}
-              className={`card-toggle-btn relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${
-                !isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
-              }`}
+              className={`card-toggle-btn relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${!isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
+                }`}
             >
               One-time
             </button>
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onSelect("monthly"); }}
-              className={`card-toggle-btn flex items-center justify-center gap-[6px] relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${
-                isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
-              }`}
+              className={`card-toggle-btn flex items-center justify-center gap-[6px] relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
+                }`}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="max-[768px]:w-[14px] max-[768px]:h-[14px] max-[768px]:mr-[4px]">
-                <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                <path d="M21 2v6h-6" /><path d="M3 12a9 9 0 0 1 15-6.7L21 8" /><path d="M3 22v-6h6" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
               </svg>
               Monthly
             </button>
@@ -361,9 +354,8 @@ const designRule =
 
           <button
             onClick={handleAdd}
-            className={`card-cart-btn flex items-center justify-center gap-[8px] h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${
-              isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
-            }`}
+            className={`card-cart-btn flex items-center justify-center gap-[8px] h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
+              }`}
             style={{ backgroundColor: isMonthly ? '#fc0' : 'white' }}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] shrink-0">
@@ -379,8 +371,8 @@ const designRule =
 }
 
 export function BuyReviewsSection() {
-  const [products, setProducts] = useState<LocalProduct[]>([]); 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [products, setProducts] = useState<LocalProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(8);
   const [selection, setSelection] = useState<Record<string, "onetime" | "monthly">>({});
@@ -395,7 +387,7 @@ export function BuyReviewsSection() {
           throw new Error(errorPayload.error || `HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        
+
         const baseFiltered = data.filter((d: any) => d.id !== 138 && d.id !== 201);
 
         const sortedProducts = [...baseFiltered].sort((a: any, b: any) => {
@@ -420,7 +412,7 @@ export function BuyReviewsSection() {
   };
 
   const filtered = products.filter((p) =>
-    p.platform?.toLowerCase().includes(search.toLowerCase()) || 
+    p.platform?.toLowerCase().includes(search.toLowerCase()) ||
     (p.slug && p.slug.toLowerCase().includes(search.toLowerCase()))
   );
 
@@ -432,7 +424,7 @@ export function BuyReviewsSection() {
       <Wrapper>
         <div className="product_sect max-w-[1500px] w-full mx-auto px-4 sm:px-6 transition-all duration-300">
           <div className="rgt_prod w-full overflow-visible" id="product_container">
-            
+
             <div className="filter-search-row sticky top-[70px] z-[99] bg-[#fcfcf2] flex items-center justify-between pt-[15px] pb-[15px] m-[0_0_28px_0] gap-[20px] will-change-transform max-[992px]:top-0 max-[992px]:flex-col max-[992px]:items-start max-[992px]:p-[10px_0] max-[992px]:m-[0_40px_20px_40px] max-[768px]:m-[0_20px_20px_20px] max-[768px]:gap-[12px] max-[480px]:m-[0_15px_15px_15px]">
               <div className="search-wrap relative w-full max-w-[700px] h-[55px] mx-auto max-[992px]:max-w-full max-[768px]:w-full max-[768px]:h-[50px]">
                 <input
@@ -444,23 +436,23 @@ export function BuyReviewsSection() {
                   onChange={(e) => { setSearch(e.target.value); setVisibleCount(8); }}
                   className="srch-input-field w-full h-full p-[16px_55px_16px_22px] text-[15px] border-2 border-[#e5e5e5] rounded-[50px] outline-none bg-white text-black/70 transition-all focus:border-[#bbb] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] box-border placeholder:text-black/60 max-[480px]:text-[16px]"
                 />
-                
+
                 {search.length > 0 && (
-                  <button 
-                    id="js-search-clear" 
-                    onClick={clearSearch} 
+                  <button
+                    id="js-search-clear"
+                    onClick={clearSearch}
                     className="absolute right-[18px] top-1/2 -translate-y-1/2 bg-black/5 border-none cursor-pointer p-[6px] rounded-full w-[26px] h-[26px] flex items-center justify-center z-[20] pointer-events-auto"
                     aria-label="Clear search"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.5">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
                 )}
 
                 {search.length === 0 && (
                   <svg className="search-icon-svg absolute right-[18px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] pointer-events-none opacity-40" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="rgba(0,0,0,0.4)">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                   </svg>
                 )}
               </div>
@@ -470,8 +462,8 @@ export function BuyReviewsSection() {
               {isLoading ? (
                 /* === SKELETON PLACEHOLDER CARDS FOR INSTANT REFRESH VISUAL FEEDBACK === */
                 Array.from({ length: 4 }).map((_, i) => (
-                  <li 
-                    key={`skeleton-card-${i}`} 
+                  <li
+                    key={`skeleton-card-${i}`}
                     className="relative bg-white flex flex-col w-full min-h-[410px] rounded-[16px] border-2 border-neutral-100/80 animate-pulse overflow-hidden shadow-sm"
                   >
                     {/* Top Header Placeholder */}
@@ -515,15 +507,15 @@ export function BuyReviewsSection() {
 
             {hasMore && !isLoading && (
               <div id="js-show-more-wrapper" className="show-more-wrapper flex justify-center p-[20px_0_100px_0] w-full">
-                <button 
-                  type="button" 
-                  onClick={() => setVisibleCount((c) => c + 8)} 
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((c) => c + 8)}
                   className="show-more-btn flex items-center gap-[8px] p-[12px_28px] bg-white text-[#333] border border-[#333] rounded-[10px] text-[14px] font-medium cursor-pointer transition-all font-sans hover:bg-[#F5F5F5]"
                   id="js-load-more-btn"
                 >
                   <span>View More Platforms</span>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-[16px] h-[16px]">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
                   </svg>
                 </button>
               </div>
