@@ -75,7 +75,7 @@ export default function SitemapStaticPage() {
       { label: 'Google GPS Reviews', url: '/products/buy-google-gps-reviews/' },
       { label: 'Google Local Guide Reviews', url: '/products/buy-google-local-guide-reviews/' },
       { label: 'Google LSA Reviews', url: '/products/buy-google-lsa-reviews/' },
-      { label: 'Google Playstore Reviews', url: '/products/buy-google-play-store-reviews/' },
+      { label: 'Google Playstore Reviews', url: '/products/buy-google-playstore-reviews/' },
       { label: 'Google Reviews', url: '/products/buy-google-review/' },
       { label: 'Healthgrades Reviews', url: '/products/buy-healthgrades-reviews/' },
       { label: 'HelloPeter.com Reviews', url: '/products/buy-hellopeter-reviews/' },

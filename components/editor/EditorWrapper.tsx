@@ -237,7 +237,7 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
             { label: 'Google GPS Reviews', url: '/products/google-gps-reviews/' },
             { label: 'Google Local Guide Reviews', url: '/products/buy-google-local-guide-reviews/' },
             { label: 'Google LSA Reviews', url: '/products/google-lsa-reviews/' },
-            { label: 'Google Playstore Reviews', url: '/products/buy-google-play-store-reviews/' },
+            { label: 'Google Playstore Reviews', url: '/products/buy-google-playstore-reviews/' },
             { label: 'Google Reviews', url: '/products/buy-google-review/' },
             { label: 'Healthgrades Reviews', url: '/products/healthgrades-reviews/' },
             { label: 'HelloPeter.com Reviews', url: '/products/hellopeter-reviews/' },
