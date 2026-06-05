@@ -152,6 +152,20 @@ export default async function ProductReviewsPage({
   const { edit, preview } = await searchParams;
   const isEditMode = edit === 'true';
   const isPreviewMode = preview === 'true';
+
+  const product = await getProductBySlug(slug);
+  if (!product) {
+    if (isEditMode) {
+      return (
+        <div className="flex h-screen items-center justify-center flex-col gap-4">
+          <p className="text-xl font-bold text-gray-700">Page not found in database.</p>
+          <p className="text-sm text-gray-500">Slug: <code>{slug}</code></p>
+        </div>
+      );
+    }
+    notFound();
+  }
+
   let page = await getPageBySlug(slug);
 
   if (page) {
@@ -178,10 +192,10 @@ export default async function ProductReviewsPage({
     );
   }
 
-  const product = await getProductBySlug(slug);
+  const productForPage = product;
 
-  if (product) {
-    page = await autoCreateProductPage(slug, product);
+  if (productForPage) {
+    page = await autoCreateProductPage(slug, productForPage);
 
     if (page) {
       const sections = Array.isArray(page.sections) ? (page.sections as any[]) : [];
