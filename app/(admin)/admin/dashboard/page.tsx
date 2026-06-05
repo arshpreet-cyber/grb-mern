@@ -20,7 +20,6 @@ import {
 import {
   CalendarDays,
   ChevronDown,
-  MoreVertical,
   ArrowUpRight,
   Eye,
   TrendingUp,
@@ -85,9 +84,6 @@ function StatCard({ title, value, change, bg, text, pillBg, isDown, href }: { ti
       <div className="p-5 pb-4">
         <div className="flex items-center justify-between">
           <p className={`text-[14px] font-semibold ${text}`}>{title}</p>
-          <button className="text-gray-400 dark:text-white hover:text-gray-600 dark:text-white dark:hover:text-slate-300 transition-colors">
-            <MoreVertical size={16} />
-          </button>
         </div>
         <p className="mt-3 text-[30px] font-bold text-[#111827] dark:text-white">{value}</p>
       </div>
@@ -185,7 +181,7 @@ export default function AdminDashboard() {
 
   // Columns for Tickets
   const ticketColumns: Column<Ticket>[] = [
-    { key: "ticketId", header: "Ticket ID", render: (r) => <span className="text-gray-600 dark:text-white font-medium text-[15px]">#{r.ticketId}</span> },
+    { key: "id", header: "ID", render: (r) => <span className="text-gray-600 dark:text-white font-medium text-[15px]">#{r.id}</span> },
     { key: "title", header: "Subject", render: (r) => <span className="text-[#111827] dark:text-white font-medium text-[15px]">{r.title || "No Subject"}</span> },
     { key: "status", header: "Status", render: (r) => (
       <select
