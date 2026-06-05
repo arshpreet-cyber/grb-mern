@@ -20,9 +20,7 @@ async function getProductBySlug(slug: string) {
   try {
     const dbProduct = await prisma.product.findFirst({
       where: {
-        slug: {
-          in: [slug, slug.replace(/^buy-/, '')]
-        },
+        slug,
         deletedAt: null
       },
     });
