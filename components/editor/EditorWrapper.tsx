@@ -135,7 +135,7 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
       const response = await fetch(`/api/page/${encodeURIComponent(pageSlug)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, sections: serializeData(sections), title, publish, meta }),
+        body: JSON.stringify({ id, sections: serializeData(sections), title, publish, meta, slug }),
       });
       if (!response.ok) {
         let errorMessage = 'Failed to save';

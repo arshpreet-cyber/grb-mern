@@ -23,15 +23,19 @@ export async function PUT(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = await params;
+    const { slug: routeSlug } = await params;
     const body = await request.json();
-    const { sections, title, publish, id, meta } = body;
-    
+    const { sections, title, publish, id, meta, slug: newSlug } = body;
+
     const updateData: any = {
       title: title || 'Untitled',
       draftSections: Array.isArray(sections) ? sections : [],
       updatedAt: new Date()
     };
+
+    if (newSlug && newSlug !== routeSlug) {
+      updateData.slug = newSlug;
+    }
 
     // Persist SEO/meta fields if provided
     if (meta) {
@@ -56,11 +60,20 @@ export async function PUT(
     } else {
     }
 
-    const updatedPage = await prisma.page.upsert({
-      where: { slug },
-      update: JSON.parse(JSON.stringify(updateData, (k, v) => typeof v === 'bigint' ? v.toString() : v)),
-      create: {
-        slug,
+    const serialized = JSON.parse(JSON.stringify(updateData, (k, v) => typeof v === 'bigint' ? v.toString() : v));
+
+    let updatedPage;
+    if (id) {
+      updatedPage = await prisma.page.update({
+        where: { id: parseInt(id) },
+        data: serialized,
+      });
+    } else {
+      updatedPage = await prisma.page.upsert({
+        where: { slug: routeSlug },
+        update: serialized,
+        create: {
+          slug: routeSlug,
         title: updateData.title,
         sections: publish ? updateData.sections : [],
         draftSections: updateData.draftSections,
@@ -77,15 +90,17 @@ export async function PUT(
         headerScript: updateData.headerScript || '',
         bodyScript: updateData.bodyScript || '',
         footerScript: updateData.footerScript || '',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    });
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+    }
 
 
     // Only revalidate the public path if we are publishing live
     if (publish) {
-      revalidatePath(`/${slug === 'home' ? '' : slug}`);
+      const finalSlug = newSlug || routeSlug;
+      revalidatePath(`/${finalSlug === 'home' ? '' : finalSlug}`);
       revalidatePath(`/(website)/[slug]`, 'page');
     }
 
