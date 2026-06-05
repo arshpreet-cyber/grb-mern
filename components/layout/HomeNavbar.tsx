@@ -23,7 +23,7 @@ const buyReviewsLinks = [
   { id: 13, href: "/products/buy-bbb-reviews/", label: "BBB", bg: "#E4F7FF99" },
   { id: 14, href: "/products/buy-indeed-reviews/", label: "Indeed", bg: "#EFF4FF" },
   { id: 15, href: "/products/buy-google-playstore-reviews/", label: "Google Playstore", bg: "#EFFCFF" },
-  { id: 16, href: "/products/buy-homestars-reviews/", label: "Home Star", bg: "#F0FAFF" },
+  { id: 16, href: "/products/buy-home-star-reviews/", label: "Home Star", bg: "#F0FAFF" },
   { id: 17, href: "/products/buy-product-reviews/", label: "Product Reviews", bg: "#F6FFE8" },
   { id: 18, href: "/products/buy-booking-com-reviews/", label: "Booking", bg: "#C8DFFF33" },
   { id: 19, href: "/products/buy-weddingwire-reviews/", label: "WeddingWire", bg: "#13B3BA17" },

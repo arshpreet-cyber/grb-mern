@@ -242,7 +242,7 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
             { label: 'Healthgrades Reviews', url: '/products/healthgrades-reviews/' },
             { label: 'HelloPeter.com Reviews', url: '/products/hellopeter-reviews/' },
             { label: 'Home Advisor Reviews', url: '/products/buy-home-advisor-reviews/' },
-            { label: 'Home Star Reviews', url: '/products/homestars-reviews/' },
+            { label: 'Home Star Reviews', url: '/products/buy-home-star-reviews/' },
             { label: 'HomeToGo Reviews', url: '/products/hometogo-reviews/' },
             { label: 'Homelight Reviews', url: '/products/buy-homelight-reviews/' },
             { label: 'Hotels Reviews', url: '/products/hotels-com-reviews/' },
