@@ -2,8 +2,17 @@
 import React, { useState } from 'react';
 import Wrapper from "@/components/ui/Wrapper";
 import { SectionProps } from '@/types/section';
+import { useAppDispatch } from '@/lib/redux/hooks';
+import { updateSectionData } from '@/lib/redux/features/pageEditorSlice';
 
-export default function FaqSection({ data = {}, settings = {} as any }: SectionProps) {
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+export default function FaqSection({ id, data = {}, settings, isEditing }: SectionProps) {
+  const dispatch = useAppDispatch();
+
   const {
     title = "Frequently <strong class='font-semibold'>Asked<br />Questions</strong>",
     description = "Find clear answers to common questions about our services, process, and delivery timelines, and how we support your online reputation.",
@@ -23,7 +32,15 @@ export default function FaqSection({ data = {}, settings = {} as any }: SectionP
       { q: "How do I get started?", a: "Getting started is really simple. Share your requirements with us, and our team will create a customized strategy based on your business goals, needs, and targeted platforms." },
       { q: "Can I customize my review strategy?", a: "Every strategy is tailored to your business needs. With this, you can reach the right target audience, drive growth, and help your business become more visible." },
     ]
-  } = data;
+  } = data as {
+    title?: string;
+    description?: string;
+    ctaTitle?: string;
+    ctaDescription?: string;
+    ctaButtonText?: string;
+    ctaButtonLink?: string;
+    faqs?: FaqItem[];
+  };
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -31,10 +48,14 @@ export default function FaqSection({ data = {}, settings = {} as any }: SectionP
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const handleChange = (field: string, value: string) => {
+    dispatch(updateSectionData({ id, data: { [field]: value } }));
+  };
+
   const styles: React.CSSProperties = {
-    padding: settings.padding || '50px 0',
-    margin: settings.margin || '0',
-    backgroundColor: settings.backgroundColor || '#faf8f7',
+    padding: settings?.padding || '50px 0',
+    margin: settings?.margin || '0',
+    backgroundColor: settings?.backgroundColor || '#faf8f7',
   };
 
   return (
@@ -43,36 +64,104 @@ export default function FaqSection({ data = {}, settings = {} as any }: SectionP
         <div className="w-full px-4 sm:px-5 lg:px-[30px]">
           <div className="grid grid-cols-1 lg:grid-cols-[490px_1fr] gap-[28px] lg:gap-[150px] items-start">
 
-            <div className="lg:sticky lg:top-[100px] flex flex-col md:flex-row lg:flex-col flex-wrap lg:flex-nowrap items-start gap-[16px] md:gap-[24px] lg:gap-[40px]">
-              <div className="flex-1 min-w-[280px]">
-                <h2 className="text-[21px] md:text-[30px] lg:text-[36px] font-normal text-[#111] leading-[1.3] lg:leading-[1.25] mb-[14px]"
-                    dangerouslySetInnerHTML={{ __html: title }} />
-                <p className="text-[13px] md:text-[14px] lg:text-[18px] text-[#323232] leading-[1.5] m-0"
-                   dangerouslySetInnerHTML={{ __html: description }} />
+            <div className="lg:sticky lg:top-[100px] flex flex-col md:flex-row lg:flex-col flex-wrap lg:flex-nowrap items-start gap-[16px] md:gap-[24px] lg:gap-[40px] w-full">
+              <div className="flex-1 min-w-[280px] w-full">
+                {isEditing ? (
+                  <div className="space-y-4 w-full">
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Main Title</label>
+                      <textarea
+                        className="text-[21px] md:text-[30px] lg:text-[36px] font-normal text-[#111] leading-[1.3] lg:leading-[1.25] w-full bg-transparent outline-none border-b border-dashed border-[#fc0] resize-none"
+                        value={title}
+                        onChange={(e) => handleChange("title", e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Description</label>
+                      <textarea
+                        className="text-[13px] md:text-[14px] lg:text-[18px] text-[#323232] leading-[1.5] w-full bg-transparent outline-none border-b border-dashed border-[#fc0] resize-none"
+                        value={description}
+                        onChange={(e) => handleChange("description", e.target.value)}
+                        rows={4}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <h2 className="text-[21px] md:text-[30px] lg:text-[36px] font-normal text-[#111] leading-[1.3] lg:leading-[1.25] mb-[14px]"
+                        dangerouslySetInnerHTML={{ __html: title }} />
+                    <p className="text-[13px] md:text-[14px] lg:text-[18px] text-[#323232] leading-[1.5] m-0"
+                       dangerouslySetInnerHTML={{ __html: description }} />
+                  </>
+                )}
               </div>
 
-              <div className="flex-1 min-w-[220px] flex flex-col gap-[8px] max-md:p-4 max-md:border max-md:border-[#eee] max-md:rounded-[10px]">
-                <p className="text-[16px] lg:text-[20px] font-semibold text-[#111] m-0">{ctaTitle}</p>
-                <p className="text-[14px] lg:text-[18px] text-[#666] leading-[1.6] m-0">
-                  {ctaDescription}
-                </p>
-                <a
-                  href={ctaButtonLink}
-                  className="inline-flex items-center gap-[6px] mt-[16px] py-[10px] px-[16px] lg:px-[22px] border-[1.5px] border-[#111] rounded-[8px] lg:rounded-[10px] text-[14px] lg:text-[16px] font-normal text-[#111] w-fit hover:bg-[#111] hover:text-white transition-colors duration-200"
-                >
-                  {ctaButtonText}
-                  <span className="shrink-0">
-                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
-                      <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                      <path d="M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                </a>
+              <div className="flex-1 min-w-[220px] w-full flex flex-col gap-[8px] max-md:p-4 max-md:border max-md:border-[#eee] max-md:rounded-[10px]">
+                {isEditing ? (
+                  <div className="space-y-4 w-full">
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">CTA Title</label>
+                      <input
+                        type="text"
+                        className="text-[16px] lg:text-[20px] font-semibold text-[#111] w-full bg-transparent outline-none border-b border-dashed border-[#fc0]"
+                        value={ctaTitle}
+                        onChange={(e) => handleChange("ctaTitle", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">CTA Description</label>
+                      <textarea
+                        className="text-[14px] lg:text-[18px] text-[#666] leading-[1.6] w-full bg-transparent outline-none border-b border-dashed border-[#fc0] resize-none"
+                        value={ctaDescription}
+                        onChange={(e) => handleChange("ctaDescription", e.target.value)}
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">CTA Button Text</label>
+                      <input
+                        type="text"
+                        className="text-[14px] lg:text-[16px] text-[#111] w-full bg-transparent outline-none border-b border-dashed border-[#fc0]"
+                        value={ctaButtonText}
+                        onChange={(e) => handleChange("ctaButtonText", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">CTA Button Link</label>
+                      <input
+                        type="text"
+                        className="text-[14px] lg:text-[16px] text-[#111] w-full bg-transparent outline-none border-b border-dashed border-[#fc0]"
+                        value={ctaButtonLink}
+                        onChange={(e) => handleChange("ctaButtonLink", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-[16px] lg:text-[20px] font-semibold text-[#111] m-0">{ctaTitle}</p>
+                    <p className="text-[14px] lg:text-[18px] text-[#666] leading-[1.6] m-0">
+                      {ctaDescription}
+                    </p>
+                    <a
+                      href={ctaButtonLink}
+                      className="inline-flex items-center gap-[6px] mt-[16px] py-[10px] px-[16px] lg:px-[22px] border-[1.5px] border-[#111] rounded-[8px] lg:rounded-[10px] text-[14px] lg:text-[16px] font-normal text-[#111] w-fit hover:bg-[#111] hover:text-white transition-colors duration-200"
+                    >
+                      {ctaButtonText}
+                      <span className="shrink-0">
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
+                          <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <path d="M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                    </a>
+                  </>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col gap-[10px]">
-              {faqs.map((faq: any, index: number) => {
+              {faqs.map((faq: FaqItem, index: number) => {
                 const isActive = openIndex === index;
                 return (
                   <div
