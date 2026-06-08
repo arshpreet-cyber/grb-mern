@@ -360,7 +360,7 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
                 </div>
 
                 {/* Right Side: Showcase Illustration Card */}
-                <div className="w-full lg:w-[48%] flex items-center justify-center bg-white rounded-[24px] border border-gray-150 p-6 shadow-sm min-h-[300px] lg:min-h-[450px] relative group overflow-hidden shrink-0">
+                <div className="w-full lg:w-[48%] flex items-center justify-center bg-white rounded-[24px] border border-white p-6 shadow-sm min-h-[300px] lg:min-h-[450px] relative group overflow-hidden shrink-0">
                   {isEditing ? (
                     <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-6 text-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 gap-2">
                       <span className="text-xs font-semibold">Showcase Image</span>
@@ -385,7 +385,7 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
                   <img
                     src={slide.image}
                     alt="Safe Reviews Step Illustration"
-                    className="max-w-full max-h-[400px] object-contain transition-transform duration-700 group-hover:scale-105"
+                    className="max-w-full max-h-[400px] object-contain transition-transform duration-700 group-hover:scale-105 "
                   />
                 </div>
               </div>

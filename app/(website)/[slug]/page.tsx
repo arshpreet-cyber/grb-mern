@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import EditorWrapper from "@/components/editor/EditorWrapper";
 import PageRenderer from "@/components/sections/PageRenderer";
 import PageScripts from "@/components/layout/PageScripts";
-import { getDefaultProductSections, getDefaultProductMeta } from "@/lib/constants/productPageDefaults";
+import { getDefaultProductSections } from "@/lib/constants/productPageDefaults";
 
 // ─── Data fetchers ───────────────────────────────────────────
 
@@ -55,72 +55,7 @@ async function getProductBySlug(slug: string) {
   }
 }
 
-/**
- * Auto-create a Page record in the DB for a product that doesn't have one yet.
- * Uses the default sections JSON from productPageDefaults so the page is
- * immediately editable in the admin CMS editor.
- */
-async function autoCreateProductPage(slug: string, product: {
-  id: number | string;
-  slug: string;
-  platform: string;
-  image: string;
-  desc: string;
-  oneTimePrice: number;
-  subscribePrice: number;
-  minimumQuantity: number;
-  metaTitle?: string;
-  metaDescription?: string;
-  keywords?: string;
-}) {
-  const productForDefaults = {
-    id: String(product.slug || product.id),
-    platform: product.platform,
-    image: product.image,
-    desc: product.desc || '',
-    oneTimePrice: product.oneTimePrice,
-    subscribePrice: product.subscribePrice,
-    badge: null,
-    minimumQuantity: product.minimumQuantity,
-  };
 
-  const defaultSections = getDefaultProductSections(productForDefaults);
-  const meta = getDefaultProductMeta(productForDefaults);
-
-  try {
-    const createdPage = await prisma.page.create({
-      data: {
-        slug,
-        title: meta.title,
-        sections: defaultSections as any,
-        draftSections: defaultSections as any,
-        status: 'Published',
-        metaTitle: product.metaTitle || meta.metaTitle,
-        metaDescription: product.metaDescription || meta.metaDescription || '',
-        keywords: product.keywords || meta.keywords || '',
-        canonicalLink: '',
-        robotsText: meta.robotsText,
-        inSitemap: meta.inSitemap,
-        titleImage: '',
-        opengraphImage: '',
-        schemaCode: '',
-        headerScript: '',
-        bodyScript: '',
-        footerScript: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-    return createdPage as any;
-  } catch (error: any) {
-    // Handle race condition: if another request created it first, just fetch it
-    if (error?.code === 'P2002') {
-      return await getPageBySlug(slug);
-    }
-    console.error(`Failed to auto-create page for product slug "${slug}"`, error);
-    return null;
-  }
-}
 
 // ─── Metadata ────────────────────────────────────────────────
 
@@ -199,37 +134,54 @@ export default async function SlugPage({
   }
 
   // ══════════════════════════════════════════════════════════
-  // PATH 2: No DB page — try product → auto-create page
+  // PATH 2: No DB page — product exists → render defaults on-the-fly (no DB save)
   // ══════════════════════════════════════════════════════════
   const product = await getProductBySlug(slug);
 
   if (product) {
-    // Auto-create a Page record in the DB with default JSON sections
-    page = await autoCreateProductPage(slug, product);
+    const productForDefaults = {
+      id: String(product.slug || product.id),
+      platform: product.platform,
+      image: product.image,
+      desc: product.desc || '',
+      oneTimePrice: product.oneTimePrice,
+      subscribePrice: product.subscribePrice,
+      badge: null,
+      minimumQuantity: product.minimumQuantity,
+    };
 
-    if (page) {
-      const sections = Array.isArray(page.sections) ? (page.sections as any[]) : [];
+    const sections = getDefaultProductSections(productForDefaults);
 
-      if (isEditMode) {
-        const pageCopy = {
-          ...page,
-          sections,
-          draftSections: Array.isArray(page.draftSections) && page.draftSections.length > 0
-            ? page.draftSections
-            : sections,
-        };
-        return <EditorWrapper initialPage={pageCopy} />;
-      }
-
-      return (
-        <>
-          <PageScripts headerScript={page.headerScript} bodyScript={page.bodyScript} footerScript={page.footerScript} />
-          <div className="min-h-screen bg-white text-slate-900">
-            <PageRenderer sections={sections.filter((s: any) => s.settings?.visibility !== false)} />
-          </div>
-        </>
-      );
+    if (isEditMode) {
+      // Build a virtual page object for the editor without persisting
+      const virtualPage = {
+        id: 0,
+        slug,
+        title: product.platform,
+        sections,
+        draftSections: sections,
+        status: 'Published',
+        metaTitle: product.metaTitle || `Buy ${product.platform} - Real & Authentic | GetReviews.buzz`,
+        metaDescription: product.metaDescription || product.desc,
+        keywords: product.keywords || '',
+        canonicalLink: '',
+        robotsText: 'index, follow',
+        inSitemap: true,
+        titleImage: '',
+        opengraphImage: '',
+        schemaCode: '',
+        headerScript: '',
+        bodyScript: '',
+        footerScript: '',
+      };
+      return <EditorWrapper initialPage={virtualPage} />;
     }
+
+    return (
+      <div className="min-h-screen bg-white text-slate-900">
+        <PageRenderer sections={sections.filter((s: any) => s.settings?.visibility !== false)} />
+      </div>
+    );
   }
 
   // ══════════════════════════════════════════════════════════

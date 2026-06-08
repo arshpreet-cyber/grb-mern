@@ -112,7 +112,7 @@ export default function YouMayAlsoLike({ data = {} }: SectionProps) {
         </h2>
         <Link
           href="/"
-          className="group flex items-center gap-2.5 px-6 py-2 border border-black rounded-[14px] text-sm font-semibold text-black bg-transparent transition-all duration-300 hover:bg-black hover:text-white"
+          className="group flex items-center gap-2.5 px-8 py-3 border border-black rounded-[10px] text-sm font-semibold text-black bg-transparent transition-all duration-300 hover:bg-black hover:text-white"
         >
           View More
           <svg
