@@ -76,8 +76,8 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
     addItem({
       id: cartId,
       platform: resolvedPlatform,
-      icon: product?.image || image || "",
-      image: product?.image || image || "",
+      icon: image || product?.image || "",
+      image: image || product?.image || "",
       type: plan === "monthly" ? "subscribe" : "one-time",
       pricePerUnit: currentPrice,
     });

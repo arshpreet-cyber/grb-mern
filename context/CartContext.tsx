@@ -32,6 +32,42 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<CartItem[]>([]);
   const [hasHydrated, setHasHydrated] = useState(false);
+  const [dbProducts, setDbProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchDbProducts() {
+      try {
+        const res = await fetch("/api/products");
+        if (res.ok) {
+          const data = await res.json();
+          setDbProducts(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products in CartContext:", err);
+      }
+    }
+    fetchDbProducts();
+  }, []);
+
+  const getProductIdentifier = (cartItemId: string) => {
+    const patterns = ["-onetime", "-monthly", "-subscribe", "-one-time"];
+    for (const pattern of patterns) {
+      const idx = cartItemId.indexOf(pattern);
+      if (idx !== -1) {
+        return cartItemId.substring(0, idx);
+      }
+    }
+    return cartItemId;
+  };
+
+  const getResolvedImage = (item: CartItem) => {
+    if (dbProducts.length === 0) return item.image;
+    const identifier = getProductIdentifier(item.id);
+    const dbProduct = dbProducts.find(
+      (p) => p.id?.toString() === identifier || p.slug === identifier
+    );
+    return dbProduct?.image || item.image;
+  };
 
   useEffect(() => {
     try {
@@ -53,9 +89,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = (item: Omit<CartItem, "qty">) => {
     setItems((prev) => {
+      const identifier = getProductIdentifier(item.id);
+      const dbProduct = dbProducts.find(
+        (p) => p.id?.toString() === identifier || p.slug === identifier
+      );
+      const resolvedImage = dbProduct?.image || item.image;
+
       const existing = prev.find((i) => i.id === item.id);
       if (existing) return prev.map((i) => i.id === item.id ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { ...item, qty: MIN_QTY }];
+      return [...prev, { ...item, image: resolvedImage, qty: MIN_QTY }];
     });
     setIsOpen(true);
   };
@@ -75,11 +117,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const closeCart = () => setIsOpen(false);
   const toggleCart = () => setIsOpen((prev) => !prev);
 
-  const total = items.reduce((sum, i) => sum + i.pricePerUnit * i.qty, 0);
-  const count = items.length;
+  const itemsWithLatestImages = items.map((item) => ({
+    ...item,
+    image: getResolvedImage(item),
+  }));
+
+  const total = itemsWithLatestImages.reduce((sum, i) => sum + i.pricePerUnit * i.qty, 0);
+  const count = itemsWithLatestImages.length;
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQty, clearCart, isOpen, openCart, closeCart, toggleCart, total, count }}>
+    <CartContext.Provider value={{ items: itemsWithLatestImages, addItem, removeItem, updateQty, clearCart, isOpen, openCart, closeCart, toggleCart, total, count }}>
       {children}
     </CartContext.Provider>
   );
