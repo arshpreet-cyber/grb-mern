@@ -276,7 +276,9 @@ export function buildOrderPaidEmail(payload: {
   total: number;
 }) {
   const content = `
-    <p style="margin:0 0 14px;font-size:15px;color:#333">New order has been placed successfully.</p>
+    <p style="margin:0 0 14px;font-size:15px;color:#333">Thank you for your order. We’ve received your request successfully. 
+
+</p>
     <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
     <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
     ${buildUnifiedOrderTable({
@@ -289,7 +291,7 @@ export function buildOrderPaidEmail(payload: {
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
-    subject: "New order has been placed successfully!",
+    subject: "Your order has been received. ",
     html: emailWrapper(content),
   };
 }
@@ -406,7 +408,7 @@ export function buildOrderCreatedEmail(payload: {
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
-    subject: "New order has been generated!",
+    subject: " Your order is awaiting payment. ",
     html: emailWrapper(content),
   };
 }
@@ -521,7 +523,7 @@ export function buildOrderInfoRequiredEmail(payload: {
   const content = `
     <p style="margin:0 0 14px;font-size:15px;color:#333">Hi <strong>${payload.name}</strong>,</p>
     <p style="margin:0 0 20px;font-size:15px;color:#333">Thank you for placing your order <strong>#${payload.orderNumber}</strong> with us.</p>
-    <p style="margin:0 0 20px;font-size:14px;color:#555">We noticed that the required order details are still missing. To start working on your order, please share the necessary information at your earliest convenience.</p>
+    <p style="margin:0 0 20px;font-size:14px;color:#555">We’re excited to get started. Kindly provide your business details.</p>
     <p style="margin:0 0 20px;font-size:14px;color:#555">Kindly click on the button below to fill out the details form:</p>
     <p style="margin:20px 0">
       <a href="${payload.detailsUrl}" style="display:inline-block;padding:12px 24px;background:#000;color:#fff;text-decoration:none;border-radius:5px;font-size:14px;font-weight:600">Fill Order Details →</a>
@@ -531,7 +533,9 @@ export function buildOrderInfoRequiredEmail(payload: {
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
   return {
-    subject: `Order #${payload.orderNumber} – Information Required`,
+    // subject: `Order #${payload.orderNumber} – Information Required`,
+    subject: "Share your business details",
+
     html: emailWrapper(content),
   };
 }

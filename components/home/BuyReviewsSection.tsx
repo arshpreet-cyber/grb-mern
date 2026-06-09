@@ -130,21 +130,29 @@ export function ProductCard({
     { dbId: 138, variant: "7 Day", price: price7, label: "7 Days Warranty" },
   ];
 
-  const [activePkgIndex, setActivePkgIndex] = useState(0);
-  const selectedPkg = packages[activePkgIndex];
+  const [activePkgIndex, setActivePkgIndex] = useState(-1);
+  const effectivePkgIndex = activePkgIndex >= 0 ? activePkgIndex : 0;
+  const selectedPkg = packages[effectivePkgIndex];
 
   const finalPrice = isGoogleReviews ? selectedPkg.price : (product.oneTimePrice || 20);
   const productIdToUse = isGoogleReviews ? selectedPkg.dbId : product.id;
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+    // Auto-select the first package if none is selected
+    if (isGoogleReviews && activePkgIndex < 0) {
+      setActivePkgIndex(0);
+    }
+    const usedPkg = packages[activePkgIndex >= 0 ? activePkgIndex : 0];
+    const usedPrice = isGoogleReviews ? usedPkg.price : (product.oneTimePrice || 20);
+    const usedId = isGoogleReviews ? usedPkg.dbId : product.id;
     addItem({
-      id: `${productIdToUse}-${effectiveMode}`,
+      id: `${usedId}-${effectiveMode}`,
       platform: product.platform,
       icon: "🌟",
       image: product.image,
       type: isMonthly ? "subscribe" : "one-time",
-      pricePerUnit: finalPrice,
+      pricePerUnit: usedPrice,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -197,7 +205,7 @@ export function ProductCard({
 
           <div className="warranty-grid border-[1.5px] border-[#ffebaf] rounded-[12px] p-[30px_10px_10px_10px] grid grid-cols-3 gap-[8px] mb-[18px] max-[359px]:flex max-[359px]:flex-col max-[359px]:gap-[10px]" onClick={(e) => e.stopPropagation()}>
             {packages.map((pkg, index) => {
-              const isActive = activePkgIndex === index;
+              const isActive = activePkgIndex >= 0 && activePkgIndex === index;
               return (
                 <div
                   key={pkg.variant}
