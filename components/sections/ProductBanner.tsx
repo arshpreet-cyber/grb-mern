@@ -28,7 +28,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
   const [quantity, setQuantity] = useState(5);
   const [plan, setPlan] = useState<"one-time" | "monthly">("one-time");
   const [spinKey, setSpinKey] = useState(0);
-  const [activePkgIdx, setActivePkgIdx] = useState(0);
+  const [activePkgIdx, setActivePkgIdx] = useState(-1);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Configuration for individual package values
@@ -45,9 +45,12 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
     (!title && !product?.platform);
 
   // Determine current unit price based on active configuration
+  // Use the selected package price, or fall back to the first package when none is selected
+  const effectivePkgIdx = activePkgIdx >= 0 ? activePkgIdx : 0;
+
   const getCurrentPrice = () => {
     if (isGoogleProduct) {
-      const targetBase = variantLabels[activePkgIdx]?.oneTimePrice ?? pricePerReview;
+      const targetBase = variantLabels[effectivePkgIdx]?.oneTimePrice ?? pricePerReview;
       if (plan === "monthly") {
         // Apply relative subscription modifier matching context ratio structure
         const contextOneTime = product?.oneTimePrice ?? pricePerReview;
@@ -68,7 +71,12 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
 
 
   const handleAddToCart = () => {
-    const pkgSuffix = isGoogleProduct ? `-${variantLabels[activePkgIdx].label.replace(/\s+/g, "").toLowerCase()}` : "";
+    // Auto-select the first package if none is selected
+    if (isGoogleProduct && activePkgIdx < 0) {
+      setActivePkgIdx(0);
+    }
+    const usedIdx = activePkgIdx >= 0 ? activePkgIdx : 0;
+    const pkgSuffix = isGoogleProduct ? `-${variantLabels[usedIdx].label.replace(/\s+/g, "").toLowerCase()}` : "";
     const cartId = productId
       ? `${productId}-${plan === "monthly" ? "monthly" : "onetime"}${pkgSuffix}`
       : `${title || "product"}-${plan}${pkgSuffix}`;
@@ -76,8 +84,8 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
     addItem({
       id: cartId,
       platform: resolvedPlatform,
-      icon: product?.image || image || "",
-      image: product?.image || image || "",
+      icon: image || product?.image || "",
+      image: image || product?.image || "",
       type: plan === "monthly" ? "subscribe" : "one-time",
       pricePerUnit: currentPrice,
     });
@@ -210,7 +218,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3 gap-3 md:gap-4 mb-8" id="variant-cards-wrap">
                   {variantLabels.map((pkg, idx) => {
-                    const isCurrentActive = activePkgIdx === idx;
+                    const isCurrentActive = activePkgIdx >= 0 && activePkgIdx === idx;
                     
                     // Evaluate individual item package configuration pricing values dynamically
                     let displayItemPrice = pkg.oneTimePrice;

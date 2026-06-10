@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
-import { Users, Search, Edit2, Shield, User as UserIcon, Phone, Mail, X } from "lucide-react";
+import { Users, Search, Edit2, Shield, User as UserIcon, Phone, Mail, X, Eye } from "lucide-react";
 
 type User = {
   id: string;
@@ -122,6 +122,11 @@ export default function AdminUsersPage() {
   ];
 
   const actions = [
+    {
+      label: "View User",
+      icon: <Eye size={14} />,
+      onClick: (u: User) => { window.location.href = `/admin/users/${u.id}`; },
+    },
     {
       label: "Edit User",
       icon: <Edit2 size={14} />,

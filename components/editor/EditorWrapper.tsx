@@ -135,7 +135,7 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
       const response = await fetch(`/api/page/${encodeURIComponent(pageSlug)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, sections: serializeData(sections), title, publish, meta }),
+        body: JSON.stringify({ id, sections: serializeData(sections), title, publish, meta, slug }),
       });
       if (!response.ok) {
         let errorMessage = 'Failed to save';
@@ -237,12 +237,12 @@ export default function EditorWrapper({ initialPage }: EditorWrapperProps) {
             { label: 'Google GPS Reviews', url: '/products/google-gps-reviews/' },
             { label: 'Google Local Guide Reviews', url: '/products/buy-google-local-guide-reviews/' },
             { label: 'Google LSA Reviews', url: '/products/google-lsa-reviews/' },
-            { label: 'Google Playstore Reviews', url: '/products/buy-google-play-store-reviews/' },
+            { label: 'Google Playstore Reviews', url: '/products/buy-google-playstore-reviews/' },
             { label: 'Google Reviews', url: '/products/buy-google-review/' },
             { label: 'Healthgrades Reviews', url: '/products/healthgrades-reviews/' },
             { label: 'HelloPeter.com Reviews', url: '/products/hellopeter-reviews/' },
             { label: 'Home Advisor Reviews', url: '/products/buy-home-advisor-reviews/' },
-            { label: 'Home Star Reviews', url: '/products/homestars-reviews/' },
+            { label: 'Home Star Reviews', url: '/products/buy-home-star-reviews/' },
             { label: 'HomeToGo Reviews', url: '/products/hometogo-reviews/' },
             { label: 'Homelight Reviews', url: '/products/buy-homelight-reviews/' },
             { label: 'Hotels Reviews', url: '/products/hotels-com-reviews/' },

@@ -2,10 +2,10 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ClipboardList, Eye, Trash2, Mail, Search } from "lucide-react";
+import { ClipboardList, Eye, Trash2, Mail, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 
 type Order = {
   id: string;
@@ -39,8 +39,8 @@ const TABS = [
 
 const STATUS_OPTIONS = [
   { value: "1", label: "Pending" },
-  { value: "2", label: "Processing" },
-  { value: "3", label: "Complete" },
+  { value: "2", label: "Complete" },
+  { value: "3", label: "Processing" },
   { value: "4", label: "Hold" },
   { value: "5", label: "Cancelled" },
   { value: "6", label: "Refund" },
@@ -77,6 +77,8 @@ const PAYMENT_COLORS: Record<string, string> = {
   "4": "bg-gray-100 text-gray-600 border-gray-300",
 };
 
+const PAGE_SIZE_OPTIONS = [25, 50, 100];
+
 function StatusDropdown({
   value, options, colors, orderId, field, onChange
 }: {
@@ -111,30 +113,65 @@ export default function AdminOrdersPage() {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [sendingEmail, setSendingEmail] = useState<string | null>(null);
 
-  const fetchOrders = async (filter: string, q = "") => {
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchOrders = useCallback(async (filter: string, q = "", pg = 1, ps = 25) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/orders?filter=${filter}&search=${encodeURIComponent(q)}`);
+      const res = await fetch(
+        `/api/orders?filter=${filter}&search=${encodeURIComponent(q)}&page=${pg}&pageSize=${ps}`
+      );
       const data = await res.json();
-      setOrders(Array.isArray(data) ? data : []);
+      if (data.orders) {
+        setOrders(Array.isArray(data.orders) ? data.orders : []);
+        setTotal(data.total ?? 0);
+        setTotalPages(data.totalPages ?? 1);
+        setPage(data.page ?? 1);
+      } else {
+        // Fallback for unexpected response
+        setOrders(Array.isArray(data) ? data : []);
+        setTotal(0);
+        setTotalPages(1);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const fetchCounts = async () => {
-    const keys = TABS.map(t => t.key);
-    const results = await Promise.all(keys.map(k => fetch(`/api/orders?filter=${k}`).then(r => r.json())));
-    const c: Record<string, number> = {};
-    keys.forEach((k, i) => { c[k] = Array.isArray(results[i]) ? results[i].length : 0; });
-    setCounts(c);
+    try {
+      const res = await fetch(`/api/orders?countsOnly=1`);
+      const data = await res.json();
+      if (data.counts) setCounts(data.counts);
+    } catch {
+      // Silently ignore count fetch errors
+    }
   };
 
-  useEffect(() => { fetchCounts(); fetchOrders("all"); }, []);
+  useEffect(() => { fetchCounts(); fetchOrders("all", "", 1, pageSize); }, []);
   useEffect(() => {
-    const t = setTimeout(() => fetchOrders(activeTab, search), 400);
+    const t = setTimeout(() => {
+      setPage(1);
+      fetchOrders(activeTab, search, 1, pageSize);
+    }, 400);
     return () => clearTimeout(t);
   }, [search, activeTab]);
+
+  const goToPage = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setPage(newPage);
+    fetchOrders(activeTab, search, newPage, pageSize);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setPage(1);
+    fetchOrders(activeTab, search, 1, newSize);
+  };
 
   const updateField = async (id: string, field: string, value: string) => {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, [field]: value } : o));
@@ -149,6 +186,7 @@ export default function AdminOrdersPage() {
     if (!confirm("Delete this order?")) return;
     await fetch(`/api/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ deletedAt: new Date().toISOString() }) });
     setOrders(prev => prev.filter(o => o.id !== id));
+    setTotal(prev => prev - 1);
   };
 
   const handleSendUnpaidEmail = async (id: string) => {
@@ -166,6 +204,26 @@ export default function AdminOrdersPage() {
       setSendingEmail(null);
     }
   };
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (page > 3) pages.push("...");
+      for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
+        pages.push(i);
+      }
+      if (page < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
+  const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const endItem = Math.min(page * pageSize, total);
 
   return (
     <div className="space-y-5">
@@ -185,7 +243,7 @@ export default function AdminOrdersPage() {
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
         {TABS.map(tab => (
-          <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearch(""); }}
+          <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearch(""); setPage(1); }}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${
               activeTab === tab.key
                 ? "bg-[#fc0] text-slate-900 border-[#fc0] shadow-lg shadow-amber-500/10"
@@ -201,9 +259,9 @@ export default function AdminOrdersPage() {
 
       {/* Table Card */}
       <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
-        {/* Search */}
-        <div className="p-4 border-b border-gray-100 dark:border-slate-800">
-          <div className="relative max-w-sm">
+        {/* Search + Page Size */}
+        <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between gap-4 flex-wrap">
+          <div className="relative max-w-sm flex-1 min-w-[200px]">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -212,6 +270,18 @@ export default function AdminOrdersPage() {
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-8 pr-4 py-2 text-[13px] border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-white outline-none focus:border-[#fc0]"
             />
+          </div>
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
+            <span>Rows per page:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(parseInt(e.target.value, 10))}
+              className="border border-gray-200 dark:border-slate-700 rounded-lg bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-white px-2 py-1 text-xs outline-none cursor-pointer"
+            >
+              {PAGE_SIZE_OPTIONS.map(size => (
+                <option key={size} value={size}>{size}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -231,8 +301,19 @@ export default function AdminOrdersPage() {
               ) : orders.length === 0 ? (
                 <tr><td colSpan={9} className="px-4 py-12 text-center text-gray-400">No orders found</td></tr>
               ) : orders.map(o => {
-                const pm = PM_MAP[o.paymentMethod ?? ""] ?? { label: o.paymentMethod ?? "—", color: "bg-gray-200 text-gray-700" };
-                const customerName = o.firstName ? `${o.firstName} ${o.lastName ?? ""}`.trim() : (o.user?.name ?? "—");
+                const isNull = (val: string | null | undefined) => !val || val === "NULL" || val === "null";
+                
+                const pm = PM_MAP[o.paymentMethod ?? ""] ?? { label: isNull(o.paymentMethod) ? "—" : o.paymentMethod, color: "bg-gray-200 text-gray-700" };
+                
+                const fName = isNull(o.firstName) ? "" : o.firstName;
+                const lName = isNull(o.lastName) ? "" : o.lastName;
+                let customerName = `${fName} ${lName}`.trim();
+                if (!customerName) {
+                  customerName = isNull(o.user?.name) ? "—" : (o.user?.name || "—");
+                }
+                
+                const displayPaymentId = isNull(o.paymentId) ? "—" : o.paymentId;
+
                 return (
                   <tr key={o.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                     {/* Order No */}
@@ -243,18 +324,18 @@ export default function AdminOrdersPage() {
                     </td>
                     {/* User */}
                     <td className="px-4 py-3">
-                      {o.userId ? (
+                      {o.userId && o.userId !== "NULL" ? (
                         <Link href={`/admin/users/${o.userId}`} className="font-semibold text-gray-900 dark:text-white hover:text-[#D8A720] dark:hover:text-yellow-400 hover:underline transition-colors">
                           {customerName}
                         </Link>
                       ) : (
                         <div className="font-semibold text-gray-900 dark:text-white">{customerName}</div>
                       )}
-                      <div className="text-gray-400 text-[11px]">{o.email ?? o.user?.email ?? ""}</div>
+                      <div className="text-gray-400 text-[11px]">{isNull(o.email) ? (isNull(o.user?.email) ? "—" : o.user?.email) : o.email}</div>
                     </td>
                     {/* Payment ID */}
-                    <td className="px-4 py-3 font-mono text-gray-500 dark:text-slate-400 max-w-[120px]">
-                      <span className="truncate block">{o.paymentId ? o.paymentId.slice(0, 12) + "..." : "—"}</span>
+                    <td className="px-4 py-3 font-mono text-gray-500 dark:text-slate-400">
+                      <span className="block whitespace-nowrap">{displayPaymentId}</span>
                     </td>
                     {/* Amount */}
                     <td className="px-4 py-3 font-bold text-gray-900 dark:text-white whitespace-nowrap">
@@ -327,6 +408,73 @@ export default function AdminOrdersPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {!loading && totalPages >= 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-900/50">
+            <div className="text-xs text-gray-500 dark:text-slate-400">
+              Showing <span className="font-semibold text-gray-700 dark:text-white">{startItem}</span>–<span className="font-semibold text-gray-700 dark:text-white">{endItem}</span> of <span className="font-semibold text-gray-700 dark:text-white">{total}</span> orders
+            </div>
+            <div className="flex items-center gap-1">
+              {/* First Page */}
+              <button
+                onClick={() => goToPage(1)}
+                disabled={page === 1}
+                className="p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="First page"
+              >
+                <ChevronsLeft size={16} />
+              </button>
+              {/* Previous Page */}
+              <button
+                onClick={() => goToPage(page - 1)}
+                disabled={page === 1}
+                className="p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Previous page"
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              {/* Page Numbers */}
+              {getPageNumbers().map((p, i) =>
+                p === "..." ? (
+                  <span key={`ellipsis-${i}`} className="px-2 text-gray-400 text-xs select-none">…</span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => goToPage(p as number)}
+                    className={`min-w-[32px] h-8 rounded-lg text-xs font-semibold transition-all ${
+                      page === p
+                        ? "bg-[#fc0] text-slate-900 shadow-md shadow-amber-500/20"
+                        : "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
+
+              {/* Next Page */}
+              <button
+                onClick={() => goToPage(page + 1)}
+                disabled={page === totalPages}
+                className="p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Next page"
+              >
+                <ChevronRight size={16} />
+              </button>
+              {/* Last Page */}
+              <button
+                onClick={() => goToPage(totalPages)}
+                disabled={page === totalPages}
+                className="p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Last page"
+              >
+                <ChevronsRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

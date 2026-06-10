@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 const STATUS_LABELS: Record<string, string> = {
-  "1": "Pending", "2": "Processing", "3": "Complete",
+  "1": "Pending", "2": "Complete", "3": "Processing",
   "4": "Hold", "5": "Cancelled", "6": "Refund",
 };
 const PAYMENT_LABELS: Record<string, string> = {

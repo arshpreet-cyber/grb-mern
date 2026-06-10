@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   ShoppingBag, BadgeCheck, History, BadgeX,
   ChevronDown, ChevronLeft, ChevronRight,
-  Eye, SlidersHorizontal
+  Eye, ChevronsLeft, ChevronsRight, Search
 } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation"; 
+import Link from "next/link";
 
 // --- Types ---
 const PM_LABELS: Record<string, string> = {
@@ -25,8 +26,8 @@ interface Order {
   payUrl?: string | null;
   detailsFilled?: boolean;
   isRecurring?: number | null;
-  status: "Pending" | "Complete" | "Processing" | "Cancelled";
-  paymentStatus: "Pending" | "Complete" | "Unpaid" | "Paid";
+  status: string;
+  paymentStatus: string;
   user?: { name: string; email: string };
 }
 
@@ -54,103 +55,118 @@ const TABS = [
   { label: "Cancelled", value: "deleted" }, 
 ];
 
-// Fallback data if API fails
-const STATIC_ORDERS: Order[] = [
-  { id: "1", orderNumber: "#1771509416", paymentId: "123456", amount: 100.00, createdAt: "2028-02-19T00:00:00.000Z", paymentMethod: "", status: "Pending", paymentStatus: "Pending" },
-  { id: "2", orderNumber: "#1771509416", paymentId: "123456", amount: 100.00, createdAt: "2025-02-19T00:00:00.000Z", paymentMethod: "Credit Card", status: "Complete", paymentStatus: "Complete" },
-];
+const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 export default function DemoDashboard() {
   const router = useRouter();
 
   // --- State ---
-  const [allOrders, setAllOrders] = useState<Order[]>([]); // Source of truth from DB
-  const [orders, setOrders] = useState<Order[]>([]); // Filtered state for UI
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [paymentDropdownOpen, setPaymentDropdownOpen] = useState<string | null>(null);
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10; 
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  
+  // Counts State
+  const [counts, setCounts] = useState<Record<string, number>>({});
 
   // --- Data Fetching ---
-  useEffect(() => {
+  const fetchCounts = async () => {
+    try {
+      const res = await fetch(`/api/orders?countsOnly=1`);
+      const data = await res.json();
+      if (data.counts) setCounts(data.counts);
+    } catch {
+      // ignore
+    }
+  };
+
+  const fetchOrders = useCallback(async (filter: string, q = "", pg = 1, ps = 10) => {
     setLoading(true);
-    fetch("/api/orders")
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          const mappedOrders: Order[] = data.map((o: ApiOrder) => ({
-            id: o.id,
-            orderNumber: o.orderNumber,
-            paymentId: o.paymentId ?? "—",
-            amount: o.amount ?? 0,
-            createdAt: o.date ?? o.createdAt,
-            paymentMethod: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
-            payUrl: o.payUrl,
-            detailsFilled: o.detailsFilled,
-            isRecurring: o.isRecurring,
-            status: orderStatusLabel(o.status) as Order["status"],
-            paymentStatus: paymentStatusLabel(o.paymentStatus) as Order["paymentStatus"],
-          }));
-          setAllOrders(mappedOrders);
-          setOrders(mappedOrders);
-        } else {
-          setAllOrders(STATIC_ORDERS);
-          setOrders(STATIC_ORDERS);
-        }
-      })
-      .catch(() => {
-        setAllOrders(STATIC_ORDERS);
-        setOrders(STATIC_ORDERS);
-      })
-      .finally(() => setLoading(false));
+    try {
+      const res = await fetch(`/api/orders?filter=${filter}&search=${encodeURIComponent(q)}&page=${pg}&pageSize=${ps}`);
+      const data = await res.json();
+      
+      if (data.orders) {
+        const isNullStr = (v: any) => !v || v === "NULL" || v === "null";
+        
+        const mappedOrders: Order[] = data.orders.map((o: ApiOrder) => ({
+          id: o.id,
+          orderNumber: o.orderNumber,
+          paymentId: isNullStr(o.paymentId) ? "—" : o.paymentId,
+          amount: o.amount ?? 0,
+          createdAt: o.date ?? o.createdAt,
+          paymentMethod: isNullStr(o.paymentMethod) ? "—" : (PM_LABELS[o.paymentMethod] ?? o.paymentMethod),
+          payUrl: o.payUrl,
+          detailsFilled: o.detailsFilled,
+          isRecurring: o.isRecurring,
+          status: orderStatusLabel(o.status),
+          paymentStatus: paymentStatusLabel(o.paymentStatus),
+        }));
+        setOrders(mappedOrders);
+        setTotal(data.total ?? 0);
+        setTotalPages(data.totalPages ?? 1);
+        setCurrentPage(data.page ?? 1);
+      } else {
+        setOrders([]);
+        setTotal(0);
+        setTotalPages(1);
+      }
+    } catch {
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // --- Filtering Logic ---
   useEffect(() => {
-    if (allOrders.length === 0) return;
+    fetchCounts();
+  }, []);
 
-    setCurrentPage(1); 
-    
+  useEffect(() => {
     const delay = setTimeout(() => {
-      let filtered = [...allOrders];
-
-      if (activeTab === "completed") {
-        filtered = filtered.filter(o => o.status === "Complete");
-      } else if (activeTab === "pending") {
-        filtered = filtered.filter(o => o.status === "Pending" || o.status === "Processing");
-      } else if (activeTab === "deleted") {
-        filtered = filtered.filter(o => o.status === "Cancelled");
-      }
-
-      if (searchQuery.trim() !== "") {
-        const query = searchQuery.toLowerCase();
-        filtered = filtered.filter(o => 
-          o.orderNumber.toLowerCase().includes(query) || 
-          (o.paymentId && o.paymentId.toLowerCase().includes(query))
-        );
-      }
-
-      setOrders(filtered);
-    }, 300);
-
+      setCurrentPage(1);
+      fetchOrders(activeTab, searchQuery, 1, pageSize);
+    }, 400);
     return () => clearTimeout(delay);
-  }, [activeTab, searchQuery, allOrders]);
+  }, [activeTab, searchQuery, pageSize, fetchOrders]);
 
-  // --- Calculations for Pagination ---
-  const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE) || 1;
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedOrders = orders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  const showingFrom = orders.length === 0 ? 0 : startIndex + 1;
-  const showingTo = Math.min(startIndex + ITEMS_PER_PAGE, orders.length);
+  const goToPage = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    fetchOrders(activeTab, searchQuery, newPage, pageSize);
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+      }
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
+  const showingFrom = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const showingTo = Math.min(currentPage * pageSize, total);
 
   const stats = [
-    { title: "TOTAL ORDERS", value: allOrders.length.toString(), icon: ShoppingBag, bgColor: "bg-[#FAEDE2]", iconColor: "text-[#D98A2C]" },
-    { title: "COMPLETED ORDERS", value: allOrders.filter(o => o.status === "Complete").length.toString(), icon: BadgeCheck, bgColor: "bg-[#EBF7E5]", iconColor: "text-[#5AC328]" },
-    { title: "PENDING ORDERS", value: allOrders.filter(o => o.status === "Pending" || o.status === "Processing").length.toString(), icon: History, bgColor: "bg-[#FDF9E7]", iconColor: "text-[#DBA32A]" },
-    { title: "CANCELLED ORDERS", value: allOrders.filter(o => o.status === "Cancelled").length.toString(), icon: BadgeX, bgColor: "bg-[#FBEBEB]", iconColor: "text-[#D32F2F]" },
+    { title: "TOTAL ORDERS", value: (counts["all"] ?? 0).toString(), icon: ShoppingBag, bgColor: "bg-[#FAEDE2]", iconColor: "text-[#D98A2C]" },
+    { title: "COMPLETED ORDERS", value: (counts["completed"] ?? 0).toString(), icon: BadgeCheck, bgColor: "bg-[#EBF7E5]", iconColor: "text-[#5AC328]" },
+    { title: "PENDING ORDERS", value: (counts["pending"] ?? 0).toString(), icon: History, bgColor: "bg-[#FDF9E7]", iconColor: "text-[#DBA32A]" },
+    { title: "CANCELLED ORDERS", value: (counts["deleted"] ?? 0).toString(), icon: BadgeX, bgColor: "bg-[#FBEBEB]", iconColor: "text-[#D32F2F]" },
   ];
 
   return (
@@ -196,13 +212,49 @@ export default function DemoDashboard() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-[13px] text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-800 whitespace-nowrap transition-colors">
-              Sort By <ChevronDown size={16} className="text-gray-400" />
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-[13px] text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
-              Filter <SlidersHorizontal size={14} />
-            </button>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search orders..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="pl-8 pr-4 py-2 text-[13px] border border-gray-200 dark:border-slate-700 rounded-lg bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-white outline-none focus:border-[#fc0] w-48"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
+              <span>Rows:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(parseInt(e.target.value, 10))}
+                className="border border-gray-200 dark:border-slate-700 rounded-lg bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-white px-2 py-1.5 text-xs outline-none cursor-pointer"
+              >
+                {PAGE_SIZE_OPTIONS.map(size => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="relative hidden sm:block">
+              <button
+                onClick={() => setPaymentDropdownOpen(v => v === "header" ? null : "header")}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-[13px] text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-800 whitespace-nowrap transition-colors"
+              >
+                Payment Option <ChevronDown size={16} className="text-gray-400" />
+              </button>
+              {paymentDropdownOpen === "header" && (
+                <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-44 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
+                  <a href="https://www.paypal.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-3 text-[13px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">
+                    <span className="font-bold text-[#003087]">Pay</span><span className="font-bold text-[#009cde]">Pal</span>
+                  </a>
+                  <a href="https://razorpay.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-3 text-[13px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors border-t border-gray-100 dark:border-slate-800">
+                    <span className="font-bold text-[#2D8CFF]">Razorpay</span>
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -225,8 +277,8 @@ export default function DemoDashboard() {
             <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
               {loading ? (
                 <tr><td colSpan={10} className="text-center py-12 text-gray-500 dark:text-slate-400">Loading orders...</td></tr>
-              ) : paginatedOrders.length > 0 ? (
-                paginatedOrders.map((order) => (
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="px-5 py-5 text-center">
                       <div className="inline-flex flex-col items-center gap-1">
@@ -238,16 +290,18 @@ export default function DemoDashboard() {
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 text-center">{order.paymentId || "N/A"}</td>
+                    <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 text-center">{order.paymentId || "—"}</td>
                     <td className="px-5 py-5 text-[13px] text-gray-800 dark:text-slate-200 font-bold text-center">${order.amount.toFixed(2)}</td>
                     <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 font-mono text-center">{new Date(order.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>
                     <td className="px-5 py-5 text-center">
-                      {order.paymentMethod ? (
+                      {order.paymentMethod && order.paymentMethod !== "—" ? (
                         <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-normal text-amber-600 dark:text-amber-400 whitespace-nowrap">
                           <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                           {order.paymentMethod}
                         </span>
-                      ) : null}
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
                     </td>
 
                     <td className="px-5 py-5 text-center">
@@ -265,33 +319,49 @@ export default function DemoDashboard() {
                     </td>
                     <td className="px-5 py-5 text-center">
                       {order.paymentStatus === "Paid" && !order.detailsFilled && (
-                        <button
-                          onClick={() => router.push(`/order/${order.id}/details`)}
-                          className="rounded-[5px] bg-[#1E3A8A] dark:bg-blue-600 px-3 py-1.5 text-[10px] font-medium text-white shadow-sm hover:bg-blue-900 dark:hover:bg-blue-500 transition-colors whitespace-nowrap"
+                        <Link
+                          href={`/order/${order.id}/details`}
+                          className="rounded-[5px] bg-[#1E3A8A] dark:bg-blue-600 px-3 py-1.5 text-[10px] font-medium text-white shadow-sm hover:bg-blue-900 dark:hover:bg-blue-500 transition-colors whitespace-nowrap inline-block"
                         >
                           Input Details
-                        </button>
+                        </Link>
                       )}
                     </td>
                     <td className="px-5 py-5 text-center">
-                      {order.paymentStatus !== "Paid" && order.payUrl && (
-                        <a
-                          href={order.payUrl}
-                          className="inline-flex items-center justify-center rounded-[5px] bg-[#0084FF] hover:bg-blue-700 px-4 py-1.5 text-[11px] font-medium text-white transition-colors whitespace-nowrap"
-                        >
-                          Pay by Card
-                        </a>
+                      {order.paymentStatus !== "Paid" && (
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() => setPaymentDropdownOpen(v => v === order.id ? null : order.id)}
+                            className="inline-flex items-center gap-1.5 rounded-[5px] bg-[#0084FF] hover:bg-blue-700 px-3 py-1.5 text-[11px] font-medium text-white transition-colors whitespace-nowrap"
+                          >
+                            Pay Now <ChevronDown size={12} />
+                          </button>
+                          {paymentDropdownOpen === order.id && (
+                            <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-36 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
+                              {order.payUrl && (
+                                <a href={order.payUrl} className="block px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors font-medium">
+                                  <span className="font-bold text-[#003087]">Pay</span><span className="font-bold text-[#009cde]">Pal</span>
+                                </a>
+                              )}
+                              {order.payUrl && (
+                                <a href={order.payUrl} className="block px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors border-t border-gray-100 dark:border-slate-800 font-medium">
+                                  <span className="font-bold text-[#2D8CFF]">Razorpay</span>
+                                </a>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </td>
 
                     <td className="px-5 py-5 text-center">
-                      <button
-                        onClick={() => router.push(`/dashboard/orders/${order.id}`)}
+                      <Link
+                        href={`/dashboard/orders/${order.id}`}
                         className="p-2 rounded-lg text-gray-400 dark:text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all duration-200 inline-flex items-center justify-center"
                         title="View Order Details"
                       >
                         <Eye size={18} />
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))
@@ -303,65 +373,65 @@ export default function DemoDashboard() {
         </div>
 
         {/* Pagination Footer */}
-        {orders.length > 0 && (
+        {!loading && totalPages >= 1 && (
           <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100 dark:border-slate-800 bg-gray-50/30 dark:bg-slate-800/30 transition-colors">
             <p className="text-[14px] text-gray-600 dark:text-slate-400">
-              Showing {showingFrom} to {showingTo} of {orders.length} Entries
+              Showing {showingFrom} to {showingTo} of {total} Entries
             </p>
             <div className="flex items-center gap-1">
-              <button 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              <button
+                onClick={() => goToPage(1)}
                 disabled={currentPage === 1}
                 className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors text-gray-600 dark:text-slate-400"
+                title="First page"
               >
-                <ChevronLeft size={18} />
+                <ChevronsLeft size={16} />
+              </button>
+              <button 
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors text-gray-600 dark:text-slate-400"
+                title="Previous page"
+              >
+                <ChevronLeft size={16} />
               </button>
               
-              {Array.from({ length: totalPages }).map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentPage(idx + 1)}
-                  className={`w-7 h-7 rounded-full text-[13px] font-medium transition-colors ${
-                    currentPage === idx + 1 ? "bg-black dark:bg-white text-white dark:text-black shadow-sm" : "text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800"
-                  }`}
-                >
-                  {idx + 1}
-                </button>
+              {getPageNumbers().map((p, idx) => (
+                p === "..." ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 text-xs select-none">…</span>
+                ) : (
+                  <button
+                    key={`page-${p}`}
+                    onClick={() => goToPage(p as number)}
+                    className={`w-7 h-7 rounded-full text-[13px] font-medium transition-colors ${
+                      currentPage === p ? "bg-black dark:bg-white text-white dark:text-black shadow-sm" : "text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
               ))}
 
               <button 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors text-gray-600 dark:text-slate-400"
+                title="Next page"
               >
-                <ChevronRight size={18} />
+                <ChevronRight size={16} />
+              </button>
+              <button
+                onClick={() => goToPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors text-gray-600 dark:text-slate-400"
+                title="Last page"
+              >
+                <ChevronsRight size={16} />
               </button>
             </div>
           </div>
         )}
       </div>
     </div>
-  );
-}
-
-function StatusPill({ status }: { status: string }) {
-  const isComplete = status === "Complete" || status === "Paid";
-  const colorClasses = isComplete 
-    ? "border-[#4CAF50] text-[#4CAF50] bg-[#EBF7E5] dark:border-emerald-900/50 dark:text-emerald-400 dark:bg-emerald-900/20" 
-    : status === "Cancelled" 
-      ? "border-[#F44336] text-[#F44336] bg-[#FBEBEB] dark:border-rose-900/50 dark:text-rose-400 dark:bg-rose-900/20" 
-      : "border-[#D98A2C] text-[#D98A2C] bg-[#FDF9E7] dark:border-amber-900/50 dark:text-amber-400 dark:bg-amber-900/20"; 
-  
-  const dotColor = isComplete 
-    ? "bg-[#4CAF50]" 
-    : status === "Cancelled" 
-      ? "bg-[#F44336]" 
-      : "bg-[#D98A2C]";
-
-  return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-[12px] font-medium w-max transition-colors ${colorClasses}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`}></span>
-      {status}
-    </span>
   );
 }

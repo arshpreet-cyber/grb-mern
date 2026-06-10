@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { 
   ChevronsRight, 
+  ChevronsLeft,
   User, 
   LogOut, 
-  Search, 
   Sun, 
   Moon, 
   MessageSquareText, 
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
-export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
+export default function AdminNavbar({ onToggle, isOpen }: { onToggle?: () => void; isOpen?: boolean }) {
   const { data: session } = useSession();
 
   // State to manage dropdown open/close
@@ -101,27 +101,15 @@ export default function AdminNavbar({ onToggle }: { onToggle?: () => void }) {
     <header className="sticky top-4 z-40 mx-6 bg-white dark:bg-[#1a1f2c] shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.2)] border border-slate-50 dark:border-slate-800 rounded-[15px] px-5 py-4 transition-all">
       <div className="flex items-center justify-between gap-4">
         
-        {/* Toggle + Pill-shaped Search */}
-        <div className="flex items-center gap-3 flex-1 min-w-0">
+        {/* Toggle only (search removed) */}
+        <div className="flex items-center gap-3">
           <button
             onClick={onToggle}
             className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-white transition shrink-0"
             aria-label="Toggle Sidebar"
           >
-            <ChevronsRight size={20} />
+            {isOpen ? <ChevronsLeft size={20} /> : <ChevronsRight size={20} />}
           </button>
-
-          <div className="relative hidden sm:block flex-1 min-w-0">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white"
-              size={18}
-            />
-            <input
-              type="search"
-              placeholder="Search here.."
-              className="w-full rounded-full bg-[#f4f5f7] dark:bg-[#252b3b] py-2.5 pl-12 pr-4 text-sm text-slate-700 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 transition"
-            />
-          </div>
         </div>
 
         {/* Actions & Profile */}
