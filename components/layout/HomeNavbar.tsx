@@ -104,7 +104,7 @@ export default function HomeNavbar() {
             <nav className="hidden lg:flex items-center gap-10 ml-[25%]">
               <div className="group static">
                 <Link
-                  href="/buy-reviews"
+                  href="/"
                   className={`${navLinkClass(buyReviewsActive)} ${activeUnderline(buyReviewsActive)} flex items-center gap-1`}
                 >
                   Get Reviews
@@ -120,7 +120,7 @@ export default function HomeNavbar() {
                 ><Wrapper>
                     <div className="mx-auto w-full px-10 pt-8 pb-5">
 
-                     <div className="grid grid-cols-5 gap-3">
+                      <div className="grid grid-cols-5 gap-3">
                         {buyReviewsLinks.map((item) => (
                           <Link
                             key={item.href}
