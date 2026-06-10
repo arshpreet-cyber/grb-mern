@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SectionProps } from "@/types/section";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { updateSectionData } from "@/lib/redux/features/pageEditorSlice";
@@ -102,16 +102,60 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
 
   const rawSlides = (data.slides || defaultSlides) as CarouselSlide[];
 
-  const [currentIdx, setCurrentIdx] = useState(0);
+  // Clone the first slide and add it to the end, plus the last slide to the beginning for an elegant loop track
+  const loopSlides = [rawSlides[rawSlides.length - 1], ...rawSlides, rawSlides[0]];
 
-  // Auto-play effect: changes slides every 6 seconds, disabled in editing mode
+  // Start at index 1 because index 0 is the cloned last item
+  const [currentIdx, setCurrentIdx] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-play interval engine
   useEffect(() => {
     if (isEditing) return;
     const interval = setInterval(() => {
-      setCurrentIdx((prev) => (prev + 1) % rawSlides.length);
-    }, 6000);
+      handleNext();
+    }, 4000);
     return () => clearInterval(interval);
   }, [rawSlides.length, isEditing]);
+
+  const handleNext = () => {
+    if (!isTransitioning) return;
+    setCurrentIdx((prev) => prev + 1);
+  };
+
+  const handlePrev = () => {
+    if (!isTransitioning) return;
+    setCurrentIdx((prev) => prev - 1);
+  };
+
+  // Watch indices to perform instant jump swaps without flashes
+  useEffect(() => {
+    if (currentIdx === loopSlides.length - 1) {
+      timeoutRef.current = setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIdx(1);
+      }, 500); // Must match transition duration below (duration-500)
+    } else if (currentIdx === 0) {
+      timeoutRef.current = setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIdx(loopSlides.length - 2);
+      }, 500);
+    }
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [currentIdx, loopSlides.length]);
+
+  // Re-enable transition configurations smoothly after the index swap
+  useEffect(() => {
+    if (!isTransitioning) {
+      const frame = requestAnimationFrame(() => {
+        setIsTransitioning(true);
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [isTransitioning]);
 
   const handleSlideChange = (slideIndex: number, field: string, value: unknown) => {
     const updated = rawSlides.map((s: CarouselSlide, idx: number) =>
@@ -142,7 +186,7 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
         {/* Left Arrow Button */}
         <button
           type="button"
-          onClick={() => setCurrentIdx((prev) => (prev - 1 + rawSlides.length) % rawSlides.length)}
+          onClick={handlePrev}
           className="absolute left-2 md:-left-10 lg:-left-16 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-b from-[#FFC107] to-[#E49D56] hover:from-[#ffca28] hover:to-[#e08e3c] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all active:scale-95 focus:outline-none cursor-pointer"
           aria-label="Previous slide"
         >
@@ -165,7 +209,7 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
         {/* Right Arrow Button */}
         <button
           type="button"
-          onClick={() => setCurrentIdx((prev) => (prev + 1) % rawSlides.length)}
+          onClick={handleNext}
           className="absolute right-2 md:-right-10 lg:-right-16 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-b from-[#FFC107] to-[#E49D56] hover:from-[#ffca28] hover:to-[#e08e3c] text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all active:scale-95 focus:outline-none cursor-pointer"
           aria-label="Next slide"
         >
@@ -187,215 +231,208 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
 
         {/* Overflow-hidden container for slide track */}
         <div className="w-full overflow-hidden rounded-[32px]">
-          <div 
-            className="flex flex-row transition-transform duration-500 ease-in-out w-full"
+          <div
+            className={`flex flex-row w-full ${isTransitioning ? "transition-transform duration-500 ease-in-out" : "transition-none"}`}
             style={{ transform: `translateX(-${currentIdx * 100}%)` }}
           >
-            {rawSlides.map((slide: CarouselSlide, slideIdx: number) => {
+            {loopSlides.map((slide: CarouselSlide, loopIdx: number) => {
+              // Convert loop indexes back to match the original slide configuration array index for state adjustments
+              let originalSlideIdx = loopIdx - 1;
+              if (loopIdx === 0) originalSlideIdx = rawSlides.length - 1;
+              if (loopIdx === loopSlides.length - 1) originalSlideIdx = 0;
+
               return (
                 <div
-                  key={slideIdx}
+                  key={loopIdx}
                   className="w-full shrink-0"
                 >
-                  <div className="w-full bg-[#FFFDF6] border border-[#FFE799] rounded-[32px] p-8 md:p-12 lg:p-16 flex flex-col lg:flex-row items-center gap-12">
-                {/* Left Side: Description & Feature List */}
-                <div className="flex-1 w-full flex flex-col text-left">
-                  {/* Heading */}
-                  {isEditing ? (
-                    <input
-                      className="text-3xl md:text-4xl font-semibold text-gray-900 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-1 mb-4"
-                      value={slide.heading || ""}
-                      onChange={(e) => handleSlideChange(slideIdx, "heading", e.target.value)}
-                      placeholder="Slide Heading"
-                    />
-                  ) : (
-                    <h2 
-                      className="text-3xl md:text-4xl font-normal text-gray-900 leading-tight mb-4 animate-fade-in"
-                      dangerouslySetInnerHTML={{ __html: slide.heading || "" }}
-                    />
-                  )}
-
-                  {/* Subheading */}
-                  {(slide.subheading || isEditing) && (
-                    isEditing ? (
-                      <textarea
-                        className="text-gray-600 text-sm leading-relaxed w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none mb-4"
-                        rows={2}
-                        value={slide.subheading || ""}
-                        onChange={(e) => handleSlideChange(slideIdx, "subheading", e.target.value)}
-                        placeholder="Slide subheading..."
-                      />
-                    ) : (
-                      <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                        {slide.subheading}
-                      </p>
-                    )
-                  )}
-
-                  {/* Feature Title */}
-                  {(slide.listTitle || isEditing) && (
-                    isEditing ? (
-                      <input
-                        className="text-gray-800 text-sm font-semibold w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-0.5 mb-6"
-                        value={slide.listTitle || ""}
-                        onChange={(e) => handleSlideChange(slideIdx, "listTitle", e.target.value)}
-                        placeholder="List Title"
-                      />
-                    ) : (
-                      <p className="text-gray-800 text-sm font-bold tracking-tight mb-6">
-                        {slide.listTitle}
-                      </p>
-                    )
-                  )}
-
-                  {/* Features List */}
-                  <div className="space-y-6">
-                    {slide.layout === "paragraphs" ? (
-                      (slide.features || []).map((feature: CarouselFeature, featIdx: number) => (
-                        <div key={featIdx} className="text-gray-600 text-sm leading-relaxed">
-                          {isEditing ? (
-                            <textarea
-                              className="text-gray-600 text-sm leading-relaxed w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
-                              rows={3}
-                              value={feature.desc || ""}
-                              onChange={(e) => handleFeatureChange(slideIdx, featIdx, "desc", e.target.value)}
-                              placeholder="Paragraph text..."
-                            />
-                          ) : (
-                            <p>{feature.desc}</p>
-                          )}
-                        </div>
-                      ))
-                    ) : (
-                      (slide.features || []).map((feature: CarouselFeature, featIdx: number) => (
-                        <div key={featIdx} className="flex items-start gap-4">
-                          {/* Golden/Yellow Checked Icon */}
-                          <div className="shrink-0 w-5 h-5 rounded-full bg-[#FFF3CD] border border-[#FFE799] flex items-center justify-center text-[#A87E2C] mt-0.5 shadow-sm">
-                            <svg
-                              width="10"
-                              height="8"
-                              viewBox="0 0 10 8"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <polyline points="9 1 3.5 6.5 1 4" />
-                            </svg>
-                          </div>
-                          {/* Text description */}
-                          <div className="flex-1">
-                            {isEditing ? (
-                              <>
-                                <input
-                                  className="font-semibold text-sm text-gray-800 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-0.5 mb-1"
-                                  value={feature.title || ""}
-                                  onChange={(e) => handleFeatureChange(slideIdx, featIdx, "title", e.target.value)}
-                                  placeholder="Feature Title"
-                                />
-                                <textarea
-                                  className="text-[13px] leading-relaxed text-gray-600 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
-                                  rows={2}
-                                  value={feature.desc || ""}
-                                  onChange={(e) => handleFeatureChange(slideIdx, featIdx, "desc", e.target.value)}
-                                  placeholder="Feature description..."
-                                />
-                              </>
-                            ) : (
-                              <>
-                                <h4 className="font-bold text-sm text-gray-800 mb-1">{feature.title}</h4>
-                                <p className="text-[13px] leading-relaxed text-gray-600">{feature.desc}</p>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  {/* Optional Button */}
-                  {(slide.button?.text || isEditing) && slide.layout === "paragraphs" && (
-                    <div className="mt-8">
+                  <div className="w-full bg-[#FFE26E1A] border border-[#FFE799] rounded-[32px] p-8 md:p-12 lg:p-16 flex flex-col lg:flex-row items-center gap-12">
+                    {/* Left Side: Description & Feature List */}
+                    <div className="flex-1 w-full flex flex-col text-left">
+                      {/* Heading */}
                       {isEditing ? (
-                        <div className="flex gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl max-w-sm">
-                          <input
-                            className="text-xs px-3 py-1.5 border border-slate-200 rounded-lg flex-1"
-                            value={slide.button?.text || ""}
-                            onChange={(e) => {
-                              handleSlideChange(slideIdx, "button", { ...(slide.button || {}), text: e.target.value });
-                            }}
-                            placeholder="Button Text"
-                          />
-                          <input
-                            className="text-xs px-3 py-1.5 border border-slate-200 rounded-lg flex-1"
-                            value={slide.button?.link || ""}
-                            onChange={(e) => {
-                              handleSlideChange(slideIdx, "button", { ...(slide.button || {}), link: e.target.value });
-                            }}
-                            placeholder="Button Link"
-                          />
-                        </div>
+                        <input
+                          className="text-3xl md:text-4xl font-semibold text-gray-900 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-1 mb-4"
+                          value={slide.heading || ""}
+                          onChange={(e) => handleSlideChange(originalSlideIdx, "heading", e.target.value)}
+                          placeholder="Slide Heading"
+                        />
                       ) : (
-                        slide.button?.text && (
-                          <a
-                            href={slide.button.link || "#"}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 font-bold rounded-xl text-sm transition shadow-sm"
-                          >
-                            {slide.button.text}
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                            </svg>
-                          </a>
+                        <h2
+                          className="text-3xl md:text-4xl font-normal text-gray-900 leading-tight mb-4"
+                          dangerouslySetInnerHTML={{ __html: slide.heading || "" }}
+                        />
+                      )}
+
+                      {/* Subheading */}
+                      {(slide.subheading || isEditing) && (
+                        isEditing ? (
+                          <textarea
+                            className="text-gray-600 text-sm leading-relaxed w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none mb-4"
+                            rows={2}
+                            value={slide.subheading || ""}
+                            onChange={(e) => handleSlideChange(originalSlideIdx, "subheading", e.target.value)}
+                            placeholder="Slide subheading..."
+                          />
+                        ) : (
+                          <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                            {slide.subheading}
+                          </p>
                         )
                       )}
-                    </div>
-                  )}
-                </div>
 
-                {/* Right Side: Showcase Illustration Card */}
-                <div className="w-full lg:w-[48%] flex items-center justify-center bg-white rounded-[24px] border border-white p-6 shadow-sm min-h-[300px] lg:min-h-[450px] relative group overflow-hidden shrink-0">
-                  {isEditing ? (
-                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-6 text-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 gap-2">
-                      <span className="text-xs font-semibold">Showcase Image</span>
-                      <div className="flex gap-2 w-full">
-                        <input
-                          className="flex-1 min-w-0 px-3 py-2 bg-white text-gray-800 rounded-md text-xs outline-none focus:ring-2 focus:ring-[#fc0]"
-                          value={slide.image || ""}
-                          onChange={(e) => handleSlideChange(slideIdx, "image", e.target.value)}
-                          placeholder="Image URL..."
-                        />
-                        <button
-                          type="button"
-                          onClick={() => openMediaPicker((url) => handleSlideChange(slideIdx, "image", url))}
-                          className="px-3 py-2 bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 rounded-md font-bold text-xs transition shrink-0 cursor-pointer"
-                        >
-                          Browse
-                        </button>
+                      {/* Feature Title */}
+                      {(slide.listTitle || isEditing) && (
+                        isEditing ? (
+                          <input
+                            className="text-gray-800 text-sm font-semibold w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-0.5 mb-6"
+                            value={slide.listTitle || ""}
+                            onChange={(e) => handleSlideChange(originalSlideIdx, "listTitle", e.target.value)}
+                            placeholder="List Title"
+                          />
+                        ) : (
+                          <p className="text-gray-800 text-sm font-bold tracking-tight mb-6">
+                            {slide.listTitle}
+                          </p>
+                        )
+                      )}
+
+                      {/* Features List */}
+                      <div className="space-y-6">
+                        {slide.layout === "paragraphs" ? (
+                          (slide.features || []).map((feature: CarouselFeature, featIdx: number) => (
+                            <div key={featIdx} className="text-gray-600 text-sm leading-relaxed">
+                              {isEditing ? (
+                                <textarea
+                                  className="text-gray-600 text-sm leading-relaxed w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
+                                  rows={3}
+                                  value={feature.desc || ""}
+                                  onChange={(e) => handleFeatureChange(originalSlideIdx, featIdx, "desc", e.target.value)}
+                                  placeholder="Paragraph text..."
+                                />
+                              ) : (
+                                <p>{feature.desc}</p>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          (slide.features || []).map((feature: CarouselFeature, featIdx: number) => (
+                            <div key={featIdx} className="flex items-start gap-4">
+                              <div className="shrink-0 w-5 h-5 mt-0.5 flex items-center justify-center">
+                                <img
+                                  src="/uploads/media/1781092791889-945ad0e4-c2ef-4799-a273-d0e6381326d2-Vector.svg"
+                                  alt="check"
+                                  className="w-full h-full object-contain"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                {isEditing ? (
+                                  <>
+                                    <input
+                                      className="font-semibold text-sm text-gray-800 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-0.5 mb-1"
+                                      value={feature.title || ""}
+                                      onChange={(e) => handleFeatureChange(originalSlideIdx, featIdx, "title", e.target.value)}
+                                      placeholder="Feature Title"
+                                    />
+                                    <textarea
+                                      className="text-[13px] leading-relaxed text-gray-600 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
+                                      rows={2}
+                                      value={feature.desc || ""}
+                                      onChange={(e) => handleFeatureChange(originalSlideIdx, featIdx, "desc", e.target.value)}
+                                      placeholder="Feature description..."
+                                    />
+                                  </>
+                                ) : (
+                                  <>
+                                    <h4 className="font-bold text-sm text-gray-800 mb-1">{feature.title}</h4>
+                                    <p className="text-[13px] leading-relaxed text-gray-600">{feature.desc}</p>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        )}
                       </div>
+
+                      {/* Optional Button */}
+                      {(slide.button?.text || isEditing) && slide.layout === "paragraphs" && (
+                        <div className="mt-8">
+                          {isEditing ? (
+                            <div className="flex gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl max-w-sm">
+                              <input
+                                className="text-xs px-3 py-1.5 border border-slate-200 rounded-lg flex-1"
+                                value={slide.button?.text || ""}
+                                onChange={(e) => {
+                                  handleSlideChange(originalSlideIdx, "button", { ...(slide.button || {}), text: e.target.value });
+                                }}
+                                placeholder="Button Text"
+                              />
+                              <input
+                                className="text-xs px-3 py-1.5 border border-slate-200 rounded-lg flex-1"
+                                value={slide.button?.link || ""}
+                                onChange={(e) => {
+                                  handleSlideChange(originalSlideIdx, "button", { ...(slide.button || {}), link: e.target.value });
+                                }}
+                                placeholder="Button Link"
+                              />
+                            </div>
+                          ) : (
+                            slide.button?.text && (
+                              <a
+                                href={slide.button.link || "#"}
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 font-bold rounded-xl text-sm transition shadow-sm"
+                              >
+                                {slide.button.text}
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                </svg>
+                              </a>
+                            )
+                          )}
+                        </div>
+                      )}
                     </div>
-                  ) : null}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={slide.image}
-                    alt="Safe Reviews Step Illustration"
-                    className="max-w-full max-h-[400px] object-contain transition-transform duration-700 group-hover:scale-105 "
-                  />
+
+                    {/* Right Side: Showcase Illustration Card */}
+                    <div className="w-full lg:w-[48%] flex items-center justify-center bg-white rounded-[24px] border border-white p-6 shadow-sm min-h-[300px] lg:min-h-[450px] relative group overflow-hidden shrink-0">
+                      {isEditing && (
+                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-6 text-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 gap-2">
+                          <span className="text-xs font-semibold">Showcase Image</span>
+                          <div className="flex gap-2 w-full">
+                            <input
+                              className="flex-1 min-w-0 px-3 py-2 bg-white text-gray-800 rounded-md text-xs outline-none focus:ring-2 focus:ring-[#fc0]"
+                              value={slide.image || ""}
+                              onChange={(e) => handleSlideChange(originalSlideIdx, "image", e.target.value)}
+                              placeholder="Image URL..."
+                            />
+                            <button
+                              type="button"
+                              onClick={() => openMediaPicker((url) => handleSlideChange(originalSlideIdx, "image", url))}
+                              className="px-3 py-2 bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 rounded-md font-bold text-xs transition shrink-0 cursor-pointer"
+                            >
+                              Browse
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <img
+                        src={slide.image}
+                        alt="Safe Reviews Step Illustration"
+                        className="max-w-full max-h-[400px] object-contain transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
         </div>
-      </div>
-
-
       </div>
       <MediaPickerModal
         isOpen={mediaPicker?.isOpen || false}

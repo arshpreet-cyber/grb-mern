@@ -24,11 +24,13 @@ export default function HomeFooter() {
           <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 pb-10">
             {/* Left: Logo, Description & Social Icons */}
             <div className="max-w-[320px]">
-              <img
-                src="/uploads/media/1778825516692-e449b40f-8cea-4a36-bfc7-28122f585ab2-logo-black-bg.png"
-                alt="logo"
-                className="w-[180px] mb-4"
-              />
+              <Link href="/">
+                <img
+                  src="/uploads/media/1778825516692-e449b40f-8cea-4a36-bfc7-28122f585ab2-logo-black-bg.png"
+                  alt="logo"
+                  className="w-[180px] mb-4 cursor-pointer"
+                />
+              </Link>
               <p className="text-[#ffffff] text-[15px] font-[300] leading-[22px] mb-5">
                 We are a team of Internet Marketing and Online
                 Reputation Management.
@@ -203,20 +205,15 @@ export default function HomeFooter() {
 
             {/* COLUMN 5: Industries */}
             <div>
-              <h3 className="text-white font-semibold text-[22px] mb-6">Industries</h3> {/* Kept 'Industries' header styling */}
-              {/* <span className="text-white font-semibold text-[16px] block mb-6 -mt-[44px]">Industries</span> */}
-              <ul className="space-y-3.5 text-[#bdbdbd] text-[16px] font-light">
+              <ul className="space-y-3.5 text-[#bdbdbd] text-[16px] font-light lg:pt-0 pt-0">
                 {[
-                  { label: "Restaurants & Cafes", href: "/industries/restaurants" },
-                  { label: "Healthcare Clinics", href: "/industries/healthcare" },
-                  { label: "Real Estate", href: "/industries/real-estate" },
-                  { label: "E-commerce Businesses", href: "/industries/ecommerce" },
-                  { label: "Hotels & Hospitality", href: "/industries/hotels" },
-                  { label: "Local Service Providers", href: "/industries/local-services" },
-                  { label: "Education & Coaching", href: "/industries/education" },
-                  { label: "Beauty & Wellness", href: "/industries/beauty" },
-                ].map((item) => (
-                  <li key={item.label}>
+                  { label: "Google-reviews", href: "/products/buy-google-reviews" },
+                  { label: "Google Local Guide", href: "/products/buy-google-local-guide" },
+                  { label: "TrustPilot", href: "/products/buy-trustpilot-reviews" },
+                  { label: "Glassdoor Reviews", href: "/products/buy-glassdoor-reviews" },
+                  { label: "Facebook Reviews", href: "/products/buy-facebook-reviews" },
+                ].map((item, idx) => (
+                  <li key={idx}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">
                       {item.label}
                     </Link>

@@ -325,20 +325,18 @@ export default function DataTable<T extends Record<string, any>>({
                     <button
                       key={tab.value}
                       onClick={() => setActiveTab(tab.value)}
-                      className={`flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
-                        activeTab === tab.value
+                      className={`flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] font-medium rounded-lg transition-all ${activeTab === tab.value
                           ? "bg-gray-900 dark:bg-white text-white dark:text-black shadow-sm"
                           : "text-gray-500 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-800 dark:text-white dark:hover:text-slate-200"
-                      }`}
+                        }`}
                     >
                       {tab.label}
                       {tab.count != null && (
                         <span
-                          className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
-                            activeTab === tab.value
+                          className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${activeTab === tab.value
                               ? "bg-white/20 text-white"
                               : "bg-gray-100 text-gray-500 dark:text-white"
-                          }`}
+                            }`}
                         >
                           {tab.count}
                         </span>
@@ -370,16 +368,15 @@ export default function DataTable<T extends Record<string, any>>({
       )}
 
       {/* ── Table ── */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto min-h-[240px]">
         <table className="w-full text-left border-collapse min-w-[800px]">
           <thead>
             <tr className="border-b border-gray-100 dark:border-slate-800 bg-gray-50/60 dark:bg-slate-800/50">
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`${headerPx} text-[15px] font-semibold text-gray-700 dark:text-white whitespace-nowrap select-none ${
-                    col.sortable ? "cursor-pointer hover:text-gray-900 dark:text-white dark:hover:text-white transition-colors" : ""
-                  } ${col.headerClassName ?? ""}`}
+                  className={`${headerPx} text-[15px] font-semibold text-gray-700 dark:text-white whitespace-nowrap select-none ${col.sortable ? "cursor-pointer hover:text-gray-900 dark:text-white dark:hover:text-white transition-colors" : ""
+                    } ${col.headerClassName ?? ""}`}
                   style={col.minWidth ? { minWidth: col.minWidth } : undefined}
                   onClick={col.sortable ? () => handleSort(col.key) : undefined}
                 >
@@ -428,6 +425,7 @@ export default function DataTable<T extends Record<string, any>>({
               paginatedData.map((row, idx) => {
                 const key = getKey(row, idx);
                 const globalIdx = (currentPage - 1) * pageSize + idx;
+                const openUpward = paginatedData.length > 2 && idx >= 2 && idx >= paginatedData.length - 2;
 
                 return (
                   <tr
@@ -465,7 +463,11 @@ export default function DataTable<T extends Record<string, any>>({
                             />
                             <div
                               ref={dropdownRef}
-                              className="absolute right-4 top-12 z-[9999] w-40 rounded-xl bg-white dark:bg-[#1a1f2c] shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100 dark:border-slate-800 overflow-hidden animate-in fade-in slide-in-from-top-1"
+                              className={`absolute right-4 z-[9999999999999999] w-40 rounded-xl bg-white dark:bg-[#1a1f2c] shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100 dark:border-slate-800 overflow-hidden animate-in fade-in ${
+                                openUpward
+                                  ? `${compact ? "bottom-10" : "bottom-12"} origin-bottom slide-in-from-bottom-1`
+                                  : "top-12 origin-top slide-in-from-top-1"
+                              }`}
                             >
                               {actions
                                 .filter((a) => !a.visible || a.visible(row))
@@ -476,9 +478,8 @@ export default function DataTable<T extends Record<string, any>>({
                                       action.onClick(row);
                                       setOpenActionId(null);
                                     }}
-                                    className={`group w-full flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors ${
-                                      action.className || "text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
-                                    }`}
+                                    className={`group w-full flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors ${action.className || "text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
+                                      }`}
                                   >
                                     {action.icon && (
                                       <span className={action.className ? "" : "text-gray-400 dark:text-white"}>
@@ -528,11 +529,10 @@ export default function DataTable<T extends Record<string, any>>({
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 rounded-lg text-[15px] font-medium transition-colors ${
-                    currentPage === page
+                  className={`w-8 h-8 rounded-lg text-[15px] font-medium transition-colors ${currentPage === page
                       ? "bg-gray-900 dark:bg-slate-100 text-white dark:text-gray-900 dark:text-white shadow-sm"
                       : "text-gray-600 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800"
-                  }`}
+                    }`}
                 >
                   {page}
                 </button>

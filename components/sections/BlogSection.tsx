@@ -45,7 +45,7 @@ export default function BlogSection({ data, settings }: SectionProps) {
     <section style={styles} className="font-['Poppins',sans-serif]">
       <Wrapper>
         <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-[40px] gap-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-[40px] gap-6">
             <div className="max-w-2xl">
               <h2 className="text-[28px] md:text-[36px] font-semibold text-[#111] leading-tight mb-3">
                 {title}
@@ -54,28 +54,31 @@ export default function BlogSection({ data, settings }: SectionProps) {
                 {description}
               </p>
             </div>
-            <Link 
-              href={buttonLink} 
-              className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-[15px] font-medium text-gray-800 hover:bg-black hover:text-white hover:border-black transition-colors whitespace-nowrap"
-            >
-              {buttonText} <ArrowRight size={18} />
-            </Link>
-          </div>
 
+            {/* Wrapper handles horizontal centering on mobile, while parent handles vertical centering on tablet/desktop */}
+            <div className="w-full md:w-auto flex justify-center md:justify-end">
+              <Link
+                href={buttonLink}
+                className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-[15px] font-medium text-gray-800 hover:bg-black hover:text-white hover:border-black transition-colors whitespace-nowrap"
+              >
+                {buttonText} <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
             {loading ? (
-               // Simple loading state
-               [1, 2, 3].map(i => (
-                 <div key={i} className="h-[350px] bg-slate-100 animate-pulse rounded-xl" />
-               ))
+              // Simple loading state
+              [1, 2, 3].map(i => (
+                <div key={i} className="h-[350px] bg-slate-100 animate-pulse rounded-xl" />
+              ))
             ) : (
               blogs.map((blog) => (
                 <Link href={`/blog/${blog.slug}`} key={blog.id} className="group flex flex-col bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                   <div className="relative aspect-[1.5] overflow-hidden bg-gray-100">
                     {blog.media ? (
-                      <img 
-                        src={blog.media} 
-                        alt={blog.title} 
+                      <img
+                        src={blog.media}
+                        alt={blog.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (

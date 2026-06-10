@@ -205,9 +205,9 @@ function HeroSection() {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10 px-4">
           {/* Left */}
           <div className="w-full lg:w-1/2 text-center lg:text-left">
-            <h1 className="text-[28px] md:text-[36px] lg:text-[40px] font-normal leading-[1.2] text-[#111]">
+            <h1 className="text-[28px] md:text-[36px] lg:text-[40px] font-normal leading-[1.2] max-w-[500px]text-[#111]">
               Your Online Reputation<br />
-              <span className="font-semibold text-[#FFCD05]">
+              <span className="font-semibold text-[#FFCD05] ">
                 <i>Shapes Every Customer Decision.</i>
               </span>
             </h1>
@@ -525,11 +525,11 @@ function CommitmentsGridSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6 items-start">
           {/* Left Column: Image wrapper with sticky positioning */}
-          <div className="md:sticky md:top-42">
+          <div className="md:sticky md:top-30 lg:top-40">
             <img
               src="/uploads/media/1780464814337-3faaff7e-c755-4f04-a4d9-12b452e1140f-Rectangle-10325.webp"
               alt="Illustration"
-              className="w-[720px] h-[450px] sm:w-full sm:max-w-[676px] sm:h-[726px] rounded-[15px] object-contain"
+              className="w-full max-w-[676px] h-auto md:max-h-[500px] lg:h-[726px] rounded-[15px] object-contain"
             />
           </div>
 
