@@ -317,8 +317,8 @@ export function buildSubscriptionAdminEmail(payload: { email: string; orderNumbe
 // ─── EVT-0006 to 0011: User – Order Status Change ────────────────────────────
 const STATUS_LABELS: Record<string, { label: string; color: string; message: string }> = {
   "1": { label: "Pending",    color: "#f59e0b", message: "Your order has been received and is pending review." },
-  "2": { label: "Processing", color: "#3b82f6", message: "Great news! We are currently processing your order." },
-  "3": { label: "Completed",  color: "#10b981", message: "Your order has been completed successfully. Thank you for choosing Get Reviews Buzz!" },
+  "2": { label: "Completed",  color: "#10b981", message: "Your order has been completed successfully. Thank you for choosing Get Reviews Buzz!" },
+  "3": { label: "Processing", color: "#3b82f6", message: "Great news! We are currently processing your order." },
   "4": { label: "Hold",       color: "#f97316", message: "Your order has been placed on hold. Our team will reach out to you shortly." },
   "5": { label: "Cancelled",  color: "#ef4444", message: "Your order has been cancelled. Please contact us if you have any questions." },
   "6": { label: "Refunded",   color: "#8b5cf6", message: "A refund has been initiated for your order. Please allow 5–7 business days for it to reflect." },
@@ -335,7 +335,7 @@ export function buildOrderStatusEmail(payload: {
   amountPaid?: number;
 }) {
   const s = STATUS_LABELS[payload.status] ?? { label: payload.status, color: "#6b7280", message: "Your order status has been updated." };
-  const isPaid = ["3"].includes(payload.status);
+  const isPaid = ["2"].includes(payload.status);
   const content = `
     <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.5">Status of your order Order No. - ${payload.orderNumber} has been changed to ${s.label}.</p>
     ${payload.total !== undefined ? buildUnifiedOrderTable({
