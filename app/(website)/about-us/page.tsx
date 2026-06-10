@@ -4,22 +4,22 @@ import Wrapper from "@/components/ui/Wrapper";
 
 // ─── IMAGE CONSTANTS ───────────────────────────────────────────────────────────
 const IMGS = {
-  hero:       "https://beta.getreviews.buzz/storage/app/blog/0438974001779955185_Group-1000006774.webp",
-  whoWeAre:   "https://beta.getreviews.buzz/storage/app/blog/0470557001779956136_Rectangle-10048.webp",
-  journey:    "https://beta.getreviews.buzz/storage/app/blog/0540134001779962686_Rectangle-10202.webp",
-  checkIcon:  "https://beta.getreviews.buzz/storage/app/blog/0280225001779423808_Vector.svg",
-  step1:      "https://beta.getreviews.buzz/storage/app/blog/0450574001779966320_Group-1000006827.svg",
-  step2:      "https://beta.getreviews.buzz/storage/app/blog/0901246001779966329_Group-1000006839.svg",
-  step3:      "https://beta.getreviews.buzz/storage/app/blog/0835612001779966338_Group-1000006841.svg",
+  hero: "https://beta.getreviews.buzz/storage/app/blog/0438974001779955185_Group-1000006774.webp",
+  whoWeAre: "https://beta.getreviews.buzz/storage/app/blog/0470557001779956136_Rectangle-10048.webp",
+  journey: "https://beta.getreviews.buzz/storage/app/blog/0540134001779962686_Rectangle-10202.webp",
+  checkIcon: "https://beta.getreviews.buzz/storage/app/blog/0280225001779423808_Vector.svg",
+  step1: "https://beta.getreviews.buzz/storage/app/blog/0450574001779966320_Group-1000006827.svg",
+  step2: "https://beta.getreviews.buzz/storage/app/blog/0901246001779966329_Group-1000006839.svg",
+  step3: "https://beta.getreviews.buzz/storage/app/blog/0835612001779966338_Group-1000006841.svg",
   commitment: "https://beta.getreviews.buzz/storage/app/blog/0521250001779968416_Group-1000008309.webp",
-  strategy1:  "https://beta.getreviews.buzz/storage/app/blog/0227050001779970212_Rectangle-10206.webp",
-  strategy2:  "https://beta.getreviews.buzz/storage/app/blog/0662120001779970220_Rectangle-10207.webp",
-  stars:      "https://beta.getreviews.buzz/storage/app/blog/0939832001780030318_Group-1000006809.svg",
-  repIcon2:   "https://beta.getreviews.buzz/storage/app/blog/0469065001780030502_Awful-Review.svg",
-  repIcon3:   "https://beta.getreviews.buzz/storage/app/blog/0733721001780030574_Group-1000006810.svg",
-  repIcon4:   "https://beta.getreviews.buzz/storage/app/blog/0908509001780030587_Group-1000006811.svg",
+  strategy1: "https://beta.getreviews.buzz/storage/app/blog/0227050001779970212_Rectangle-10206.webp",
+  strategy2: "https://beta.getreviews.buzz/storage/app/blog/0662120001779970220_Rectangle-10207.webp",
+  stars: "https://beta.getreviews.buzz/storage/app/blog/0939832001780030318_Group-1000006809.svg",
+  repIcon2: "https://beta.getreviews.buzz/storage/app/blog/0469065001780030502_Awful-Review.svg",
+  repIcon3: "https://beta.getreviews.buzz/storage/app/blog/0733721001780030574_Group-1000006810.svg",
+  repIcon4: "https://beta.getreviews.buzz/storage/app/blog/0908509001780030587_Group-1000006811.svg",
   comparison: "https://beta.getreviews.buzz/storage/app/blog/0301140001780030844_Group-1000006797.svg",
-  ctaImage:   "https://beta.getreviews.buzz/storage/app/blog/0707270001780033172_Group-1000008234.webp",
+  ctaImage: "https://beta.getreviews.buzz/storage/app/blog/0707270001780033172_Group-1000008234.webp",
 
 };
 
@@ -98,39 +98,39 @@ const STEPS = [
 ];
 
 const IconContracts = () => (
-<img
-  src="/uploads/media/1780466564675-1f2c2fc5-57d1-45ad-bc47-a3cb63949326-Group-1000009006.svg"
-  alt="Icon"
-  width={70}
-  height={70}
-/>
+  <img
+    src="/uploads/media/1780466564675-1f2c2fc5-57d1-45ad-bc47-a3cb63949326-Group-1000009006.svg"
+    alt="Icon"
+    width={70}
+    height={70}
+  />
 );
 
 const IconDashboard = () => (
   <img
-  src="/uploads/media/1780466729258-e5459164-db0f-439f-bb5a-b1e7db3e582f-Group-1000009012.svg"
-  alt="Icon"
-  width={70}
-  height={70}
-/>
+    src="/uploads/media/1780466729258-e5459164-db0f-439f-bb5a-b1e7db3e582f-Group-1000009012.svg"
+    alt="Icon"
+    width={70}
+    height={70}
+  />
 );
 
 const IconPractices = () => (
   <img
-  src="/uploads/media/1780466738929-5e30ea01-5072-42e1-b0f9-5052cb94d10b-well-founded-16469108-1.svg"
-  alt="Icon"
-  width={70}
-  height={70}
-/>
+    src="/uploads/media/1780466738929-5e30ea01-5072-42e1-b0f9-5052cb94d10b-well-founded-16469108-1.svg"
+    alt="Icon"
+    width={70}
+    height={70}
+  />
 );
 
 const IconCommitment = () => (
-<img
-  src="/uploads/media/1780466761331-8bb9ce0b-8342-4694-9cce-1e2b50f576a6-business-report-18415027-1-1.svg"
-  alt="Icon"
-  width={70}
-  height={70}
-/>
+  <img
+    src="/uploads/media/1780466761331-8bb9ce0b-8342-4694-9cce-1e2b50f576a6-business-report-18415027-1-1.svg"
+    alt="Icon"
+    width={70}
+    height={70}
+  />
 );
 
 const COMMITMENT_CARDS_DATA = [
@@ -157,9 +157,9 @@ const COMMITMENT_CARDS_DATA = [
 ];
 
 const COMMITMENTS_LIST = [
-  { title: "1. No Guesswork, Only Research",      desc: "We analyze your brand, customers, and competitors before making recommendations, so every strategy is backed by evidence, not assumptions." },
-  { title: "2. No Templates, Only Custom Plans",  desc: "Your business is unique. We design custom solutions for every campaign around your specific goals and market realities." },
-  { title: "3. No Secrets, Only Transparency",    desc: "You'll always know what we're doing, why we're doing it, and what results it's producing. We report progress, not just promises." },
+  { title: "1. No Guesswork, Only Research", desc: "We analyze your brand, customers, and competitors before making recommendations, so every strategy is backed by evidence, not assumptions." },
+  { title: "2. No Templates, Only Custom Plans", desc: "Your business is unique. We design custom solutions for every campaign around your specific goals and market realities." },
+  { title: "3. No Secrets, Only Transparency", desc: "You'll always know what we're doing, why we're doing it, and what results it's producing. We report progress, not just promises." },
   { title: "4. No Short-Term Fixes, Only Growth", desc: "We play the long game. Our strategies compound over time, building sustainable trust, visibility, and revenue for your business." },
 ];
 
@@ -184,17 +184,17 @@ const STRATEGIES = [
 ];
 
 const COMMITMENT_CARDS = [
-  { title: "No Long-Term Contracts",       desc: "Cancel anytime. Month-to-month engagement only. We earn your business every single month—or you walk away—with no penalties and no pressure." },
-  { title: "Full Transparency Dashboard",  desc: "Track your campaign progress in real time, including review activity, rating improvements, and campaign updates. You'll never wonder what we're doing or why." },
-  { title: "Platform-Safe Practices",      desc: "Every review we generate is authentic and compliant with platform guidelines. Your profiles stay safe. Your reputation stays protected. No shortcuts. No risks." },
-  { title: "Results-Backed Commitment",    desc: "Our strategies are built around measurable growth, structured delivery, and transparent progress tracking, designed to support long-term reputation management." },
+  { title: "No Long-Term Contracts", desc: "Cancel anytime. Month-to-month engagement only. We earn your business every single month—or you walk away—with no penalties and no pressure." },
+  { title: "Full Transparency Dashboard", desc: "Track your campaign progress in real time, including review activity, rating improvements, and campaign updates. You'll never wonder what we're doing or why." },
+  { title: "Platform-Safe Practices", desc: "Every review we generate is authentic and compliant with platform guidelines. Your profiles stay safe. Your reputation stays protected. No shortcuts. No risks." },
+  { title: "Results-Backed Commitment", desc: "Our strategies are built around measurable growth, structured delivery, and transparent progress tracking, designed to support long-term reputation management." },
 ];
 
 const REPUTATION_CARDS = [
-  { icon: IMGS.stars,    iconStyle: "w-[212px] h-[35px]", title: "Low Star Ratings",             desc: "A rating like 3 or 3.5 can instantly reduce customer trust and push buyers toward competitors." },
-  { icon: IMGS.repIcon2, iconStyle: "w-[60px] h-[60px]",  title: "Negative Reviews",              desc: "Unmanaged negative reviews can damage your brand image and influence buying decisions." },
-  { icon: IMGS.repIcon3, iconStyle: "w-[60px] h-[60px]",  title: "Low Visibility & Poor Presence",desc: "Poor review presence makes it harder for customers to find and trust your business." },
-  { icon: IMGS.repIcon4, iconStyle: "w-[60px] h-[60px]",  title: "Lack of Social Proof",          desc: "Without consistent reviews and engagement, customers may question your credibility." },
+  { icon: IMGS.stars, iconStyle: "w-[212px] h-[35px]", title: "Low Star Ratings", desc: "A rating like 3 or 3.5 can instantly reduce customer trust and push buyers toward competitors." },
+  { icon: IMGS.repIcon2, iconStyle: "w-[60px] h-[60px]", title: "Negative Reviews", desc: "Unmanaged negative reviews can damage your brand image and influence buying decisions." },
+  { icon: IMGS.repIcon3, iconStyle: "w-[60px] h-[60px]", title: "Low Visibility & Poor Presence", desc: "Poor review presence makes it harder for customers to find and trust your business." },
+  { icon: IMGS.repIcon4, iconStyle: "w-[60px] h-[60px]", title: "Lack of Social Proof", desc: "Without consistent reviews and engagement, customers may question your credibility." },
 ];
 
 // ─── SECTION: HERO ─────────────────────────────────────────────────────────────
@@ -291,16 +291,16 @@ function JourneySection() {
         <div className="relative mb-[60px] md:mb-[100px] max-w-[1000px] mx-auto px-4 md:px-0 select-none">
           {/* Base track (rail) */}
           <div className="absolute top-[36px] left-[5.55555%] w-[88.88888%] h-[2px] bg-[#d9d9d9]" />
-          
+
           {/* Sliding yellow track (progress bar) */}
-          <div 
-            className="absolute top-[36px] left-[5.55555%] h-[2px] bg-[#F4B000] transition-all duration-500 ease-out" 
-            style={{ width: `${activeIdx * 11.11111}%` }} 
+          <div
+            className="absolute top-[36px] left-[5.55555%] h-[2px] bg-[#F4B000] transition-all duration-500 ease-out"
+            style={{ width: `${activeIdx * 11.11111}%` }}
           />
-          
+
           {/* Sliding handle (slider knob) with pulse ring */}
-          <div 
-            className="absolute top-[29px] w-[16px] h-[16px] bg-[#F4B000] rounded-full shadow-lg transition-all duration-500 ease-out -translate-x-1/2 flex items-center justify-center cursor-pointer z-20" 
+          <div
+            className="absolute top-[29px] w-[16px] h-[16px] bg-[#F4B000] rounded-full shadow-lg transition-all duration-500 ease-out -translate-x-1/2 flex items-center justify-center cursor-pointer z-20"
             style={{ left: `${5.55555 + activeIdx * 11.11111}%` }}
           >
             {/* Pulsating ring */}
@@ -331,10 +331,10 @@ function JourneySection() {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10 min-h-[350px] mt-10">
           <div className="w-full lg:w-[45%]">
             <div className="w-full max-w-[500px] h-[330px] rounded-[18px] overflow-hidden shadow-lg border border-black/5 mx-auto lg:mx-0">
-              <img 
-                src={TIMELINE_CONTENT[activeIdx].img} 
-                alt={TIMELINE_CONTENT[activeIdx].title} 
-                className="w-full h-full object-cover transition-all duration-500 ease-in-out transform hover:scale-105" 
+              <img
+                src={TIMELINE_CONTENT[activeIdx].img}
+                alt={TIMELINE_CONTENT[activeIdx].title}
+                className="w-full h-full object-cover transition-all duration-500 ease-in-out transform hover:scale-105"
               />
             </div>
           </div>
@@ -368,7 +368,7 @@ function BrandReputationSection() {
             We replace the guesswork with a proven process. From a damaged rating to a trusted online presence, here's exactly how we get it done.
           </p>
         </div>
-        
+
         {/* Steps grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 border-x border-[#e6e6e6]">
           {STEPS.map((step, i) => (
@@ -385,7 +385,7 @@ function BrandReputationSection() {
                 <span className="inline-block text-[11px] tracking-[1.5px] mb-5 px-2.5 py-1 rounded bg-[#f4f4f4] text-[#666] font-semibold transition-colors duration-300 group-hover:bg-[#f4c400] group-hover:text-[#111] group-hover:font-bold">
                   {step.label}
                 </span>
-                
+
                 <h3 className="text-[20px] font-semibold text-[#111] mb-5 tracking-[0.5px]">{step.title}</h3>
                 {step.paras.map((p, j) => (
                   <p key={j} className="text-gray-600 leading-[1.8] mb-4 text-[15px]">{p}</p>
@@ -394,7 +394,7 @@ function BrandReputationSection() {
             </div>
           ))}
         </div>
-        
+
         <div className="text-center mt-14">
           <a
             href="/contact-us"
@@ -465,7 +465,7 @@ function ReputationStrategiesSection() {
           <h2 className="text-[32px] md:text-[40px] font-normal leading-[1.3] text-[#111] mb-6 tracking-[-0.5px]">
             Reputation Strategies{" "}
             <span className="font-semibold">Designed For <br />Real Business Growth</span>
-            <span className="text-[#f4c400] font-extrabold">.</span>
+            {/* <span className="text-[#f4c400] font-extrabold">.</span> */}
           </h2>
           <p className="text-[#555] text-[16px] max-w-[870px] mx-auto leading-[1.7] mb-2">
             Not all reviews are created equal. Not all strategies deliver the same results. It takes a specialized team like ours to make your business stand out from the competitors.
@@ -566,16 +566,16 @@ function CommitmentsGridSection() {
 // ─── SECTION: REPUTATION IMPACT ───────────────────────────────────────────────
 function ReputationSection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  
+
   return (
     <section className="w-full max-w-[1500px] mx-auto my-16 md:my-20 px-5">
       <h2 className="w-full max-w-[732px] mx-auto text-center text-[28px] md:text-[40px] font-normal leading-[1.3] tracking-[-0.5px] text-[#111] mb-12">
         Your Online Reputation{" "}
-        <span className="font-semibold">
+        {/* <span className="font-semibold">
           Impacts Every Decision<span className="text-[#fcd561] font-extrabold">.</span>
-        </span>
+        </span> */}
       </h2>
-      <div 
+      <div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
         onMouseLeave={() => setHoveredIndex(null)}
       >
@@ -583,11 +583,10 @@ function ReputationSection() {
           <div
             key={card.title}
             onMouseEnter={() => setHoveredIndex(index)}
-            className={`rounded-[20px] p-8 min-h-[340px] flex flex-col justify-between transition-all duration-300 ${
-              (hoveredIndex === null ? index === 0 : hoveredIndex === index)
+            className={`rounded-[20px] p-8 min-h-[340px] flex flex-col justify-between transition-all duration-300 ${(hoveredIndex === null ? index === 0 : hoveredIndex === index)
                 ? "bg-[#fcd561] -translate-y-1"
                 : "bg-[rgba(245,245,245,0.6)]"
-            }`}
+              }`}
           >
             <div className="flex items-center mb-4">
               <img src={card.icon} alt={card.title} className={card.iconStyle} />
@@ -610,9 +609,9 @@ function TransformationsSection() {
       <div className="flex flex-col lg:flex-row items-center justify-between gap-10 mb-12">
         <div className="w-full lg:max-w-[525px] text-center lg:text-left">
           <h2 className="text-[28px] md:text-[40px] font-normal leading-[1.25] mb-5 tracking-[-0.5px] text-[#111]">
-            Real Businesses<span className="text-[#fcd561] font-extrabold">.</span>{" "}
+            Real Businesses{" "}
             <span className="font-semibold">
-              Real Transformations<span className="text-[#fcd561] font-extrabold">.</span>
+              Real Transformations
             </span>
           </h2>
           <p className="text-[#323232] text-[16px] leading-[1.7] mb-8">

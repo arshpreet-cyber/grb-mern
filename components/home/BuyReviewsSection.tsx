@@ -214,8 +214,8 @@ export function ProductCard({
                     setActivePkgIndex(index);
                   }}
                   className={`warranty-box flex flex-col items-start p-[10px_6px_8px_6px] rounded-[8px] cursor-pointer border-[1.5px] border-transparent transition-all min-h-[70px] max-[359px]:w-full max-[359px]:flex-row max-[359px]:items-center max-[359px]:justify-between max-[359px]:p-[10px_12px] ${isActive
-                      ? "border-[#ffd737] bg-[#FFF9E6]"
-                      : "bg-white hover:border-[#ffd737] hover:bg-[#FFF9E6]"
+                    ? "border-[#ffd737] bg-[#FFF9E6]"
+                    : "bg-white hover:border-[#ffd737] hover:bg-[#FFF9E6]"
                     }`}
                 >
                   <div className="warranty-price flex items-baseline gap-[1px] mb-[2px] max-[359px]:mb-0 max-[359px]:mr-[8px]">
@@ -442,7 +442,7 @@ export function BuyReviewsSection() {
                   value={search}
                   autoComplete="off"
                   onChange={(e) => { setSearch(e.target.value); setVisibleCount(8); }}
-                  className="srch-input-field w-full h-full p-[16px_55px_16px_22px] text-[15px] border-2 border-[#e5e5e5] rounded-[50px] outline-none bg-white text-black/70 transition-all focus:border-[#bbb] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] box-border placeholder:text-black/60 max-[480px]:text-[16px]"
+                  className="srch-input-field w-full h-full p-[16px_45px_16px_22px] text-[15px] border border-[#e5e5e5] rounded-[50px] outline-none bg-white text-black/70 transition-all focus:border-[#bbb] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] box-border placeholder:text-black/60 max-[480px]:text-[14px]"
                 />
 
                 {search.length > 0 && (
