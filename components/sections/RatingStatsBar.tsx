@@ -52,7 +52,7 @@ export default function RatingStatsBar({ id, data, settings, isEditing }: Sectio
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat: any, index: number) => (
-            <div key={index} className="text-left pt-6 border-t-2 border-[#e2e8f0] transition-colors hover:border-[#0a0e1a]">
+            <div key={index} className="text-left pt-6 transition-colors hover:border-[#0a0e1a]">
               <div className="text-[44px] md:text-[50px] font-light leading-none tracking-[-0.03em] mb-2" style={statNumStyle}>
                 {stat.num}<span className="text-[#ffcd05] text-[50px]">{stat.suffix}</span>
               </div>

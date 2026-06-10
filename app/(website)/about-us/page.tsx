@@ -288,9 +288,9 @@ function JourneySection() {
           Our Journey So Far
         </h2>
         {/* Timeline */}
-        <div className="relative mb-[60px] md:mb-[100px] max-w-[1000px] mx-auto px-4 md:px-0 select-none">
+        <div className="relative mb-[60px] md:mb-[100px] w-full mx-auto px-4 md:px-0 select-none">
           {/* Base track (rail) */}
-          <div className="absolute top-[36px] left-[5.55555%] w-[88.88888%] h-[2px] bg-[#d9d9d9]" />
+          <div className="absolute top-[36px] left-[5.55555%] w-[88.88888%] h-[2px] bg-[#f0f0f0]" />
 
           {/* Sliding yellow track (progress bar) */}
           <div
@@ -298,15 +298,13 @@ function JourneySection() {
             style={{ width: `${activeIdx * 11.11111}%` }}
           />
 
-          {/* Sliding handle (slider knob) with pulse ring */}
+          {/* Sliding handle (slider knob) */}
           <div
-            className="absolute top-[29px] w-[16px] h-[16px] bg-[#F4B000] rounded-full shadow-lg transition-all duration-500 ease-out -translate-x-1/2 flex items-center justify-center cursor-pointer z-20"
+            className="absolute top-[26px] w-[22px] h-[22px] border border-[#F4B000] bg-white rounded-full transition-all duration-500 ease-out -translate-x-1/2 flex items-center justify-center cursor-pointer z-20"
             style={{ left: `${5.55555 + activeIdx * 11.11111}%` }}
           >
-            {/* Pulsating ring */}
-            <span className="absolute w-[28px] h-[28px] bg-[#F4B000]/30 rounded-full animate-ping pointer-events-none" />
             {/* Inner core */}
-            <span className="w-[8px] h-[8px] bg-white rounded-full" />
+            <span className="w-[10px] h-[10px] bg-[#F4B000] rounded-full" />
           </div>
 
           <div className="flex justify-between items-start relative w-full pb-4">
@@ -319,9 +317,9 @@ function JourneySection() {
                 onClick={() => setActiveIdx(i)}
               >
                 <div className="h-12" />
-                <h3 className={`text-[12px] md:text-[20px] font-black transition-all duration-300 ${activeIdx === i ? "text-[#F4B000] scale-110" : "text-[#d5d5d5] hover:text-black/60"}`}>
+                <h1 className={`text-[32px] md:text-[32px] transition-all duration-300 ${activeIdx === i ? "font-bold text-[#F4B000]" : "font-medium text-[#d5d5d5] hover:text-black/60"}`}>
                   {year}
-                </h3>
+                </h1>
               </div>
             ))}
           </div>
@@ -339,9 +337,7 @@ function JourneySection() {
             </div>
           </div>
           <div className="w-full lg:w-[50%] flex flex-col justify-center text-center lg:text-left">
-            <span className="text-xs font-black text-[#F4B000] tracking-[0.2em] uppercase mb-2 block animate-pulse">
-              Milestone {TIMELINE_YEARS[activeIdx]}
-            </span>
+
             <h3 className="text-[28px] md:text-[36px] font-bold text-[#111] mb-6 leading-tight">
               {TIMELINE_CONTENT[activeIdx].title}
             </h3>
@@ -584,8 +580,8 @@ function ReputationSection() {
             key={card.title}
             onMouseEnter={() => setHoveredIndex(index)}
             className={`rounded-[20px] p-8 min-h-[340px] flex flex-col justify-between transition-all duration-300 ${(hoveredIndex === null ? index === 0 : hoveredIndex === index)
-                ? "bg-[#fcd561] -translate-y-1"
-                : "bg-[rgba(245,245,245,0.6)]"
+              ? "bg-[#fcd561] -translate-y-1"
+              : "bg-[rgba(245,245,245,0.6)]"
               }`}
           >
             <div className="flex items-center mb-4">

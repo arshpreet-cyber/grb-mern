@@ -8,7 +8,7 @@ export default function Wrapper({
   className?: string;
 }) {
   return (
-    <div className={`max-w-[1500px] mx-auto w-full relative ${className}`}>
+    <div className={`max-w-[1500px] mx-auto w-full relative ${className} px-6`}>
       {children}
     </div>
   );

@@ -302,10 +302,10 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
                   if (!isActive) setCurrentIdx(cardIdx);
                 }}
                 style={{ width: "var(--slide-width)" }}
-                className={`shrink-0 bg-[#FFFDF6]/40 border rounded-[28px] p-8 md:p-12 flex flex-col text-left transition-all duration-500 shadow-sm hover:shadow-md ${
+                className={`shrink-0 border-[#FFE799] border rounded-[28px] p-8 md:p-12 flex flex-col text-left transition-all duration-500 shadow-sm hover:shadow-md ${
                   isActive
-                    ? "opacity-100 scale-100 border-[#FFE799] bg-[#FFFDF6] cursor-default"
-                    : "opacity-40 scale-90 border-gray-150 bg-white/70 cursor-pointer hover:opacity-60"
+                    ? "cursor-default"
+                    : "cursor-pointer hover:bg-[#fff9e6]"
                 }`}
               >
                 {/* Icon Container */}

@@ -66,8 +66,7 @@ export default function HomeNavbar() {
   const buyReviewsActive = isActive("/services/buy-reviews-online") || isActive("/products");
 
   const navLinkClass = (active: boolean) =>
-    `relative text-[15px] font-medium transition-colors duration-150 hover:text-[#ffcc00] ${active ? "text-[#ffcc00]" : "text-[#212121]"
-    }`;
+    `relative text-[15px] font-medium transition-colors duration-150 text-[#212121]`;
 
   const activeUnderline = (active: boolean) =>
     active
@@ -87,7 +86,7 @@ export default function HomeNavbar() {
     <header ref={headerRef} className="w-full bg-white z-[1001]">
 
       <div className="mx-auto w-full px-5">
-        <div className="flex items-center justify-between py-3 gap-6">
+        <div className="flex items-center justify-between py-2 gap-6">
           {/* Logo */}
           <Link href="/" aria-label="GetReviews.Buzz Home" className="shrink-0">
             <img
@@ -115,26 +114,24 @@ export default function HomeNavbar() {
 
                 {/* Mega dropdown */}
                 <div
-                  className="fixed right-0 left-0 z-[1000] invisible border-t border-[rgba(0,0,0,0.1)] bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100"
-                  style={{ top: `${headerHeight}px` }}
+                  className="fixed right-0 left-0 z-[1000] invisible border-t border-[rgba(0,0,0,0.1)] bg-white opacity-0 shadow-[0_8px_30px_rgba(0,0,0,0.10)] rounded-b-xl transition-all duration-200 delay-150 group-hover:visible group-hover:opacity-100 group-hover:delay-0 top-[140px]"
+                  
                 ><Wrapper>
-                    <div className="mx-auto w-full px-10 pt-8 pb-5">
+                    <div className="mx-auto w-full px-[20px] pt-[25px] pb-[10px]">
 
-                      <div className="grid grid-cols-5 gap-3">
+                     <div className="grid grid-cols-5 gap-y-6 gap-x-6">
                         {buyReviewsLinks.map((item) => (
                           <Link
                             key={item.href}
                             href={item.href}
-                            style={{ backgroundColor: item.bg }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = "#fff6a8";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = item.bg;
-                            }}
-                            className="flex items-center gap-2 p-2.5 rounded-[9px] transition-all duration-300"
+                            className="flex items-center w-full rounded-[9px]"
                           >
-                            <span className="text-base text-[#212121]">
+                            <span 
+                              className="text-base text-[#212121] w-full px-[22px] py-4 rounded-md transition-colors duration-300"
+                              style={{ backgroundColor: item.bg }}
+                              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#fff6a8"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = item.bg; }}
+                            >
                               {item.label}
                             </span>
                           </Link>
@@ -167,21 +164,19 @@ export default function HomeNavbar() {
           <div className="hidden lg:flex items-center gap-3 ml-auto">
             <a
               href="mailto:marketing@getreviews.buzz"
-              className="inline-flex h-12.5 w-12.5 items-center justify-center rounded-[10px] border border-[#ddd] bg-white transition-colors hover:border-[#ffcc00]"
+              className="inline-flex h-12 w-12 items-center justify-center rounded-[10px] border border-[#dddddd62] bg-white transition-colors hover:border-[#ffcc00]"
             >
               <img src=" https://getreviews.buzz/storage/app/blog/0031902001777623735_email.svg" alt="Email Us" width={22} height={22} />
             </a>
 
-            <div className="relative" ref={phoneRef}>
+            <div className="relative group">
               <button
-                onClick={() => setPhoneDropOpen((v) => !v)}
-                className="inline-flex h-12.5 w-12.5 items-center justify-center rounded-[10px] border border-[#ddd] bg-white transition-colors hover:border-[#ffcc00]"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-[10px] border border-[#dddddd62] bg-white transition-colors group-hover:border-[#ffcc00]"
               >
                 <img src="https://getreviews.buzz/storage/app/blog/0028106001777623735_phone.svg" alt="Call Us" width={22} height={22} />
               </button>
 
-              {phoneDropOpen && (
-                <div className="absolute top-[calc(100%+8px)] right-0 z-[9999] w-87.5 overflow-hidden rounded-lg bg-white shadow-[0_5px_20px_rgba(0,0,0,0.2)]">
+                <div className="absolute top-[calc(100%+8px)] right-[-150px] z-[9999] w-[350px] overflow-hidden rounded-lg bg-white shadow-[0_5px_20px_rgba(0,0,0,0.2)] invisible opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
                   <h5 className="m-0 rounded-t-lg bg-[#FFE57F] px-4 py-3 text-[15px] font-medium text-black">Contacts</h5>
                   <div className="flex items-stretch">
                     <div className="w-16 flex items-center justify-center py-4">
@@ -229,14 +224,13 @@ export default function HomeNavbar() {
                     </div>
                   </div>
                 </div>
-              )}
             </div>
 
             {status === "loading" ? (
-              <div className="h-12.5 w-30 animate-pulse rounded-[10px] bg-slate-100" />
+              <div className="h-12 w-[120px] animate-pulse rounded-[10px] bg-slate-100" />
             ) : session ? (
               <div className="relative group">
-                <button className="inline-flex h-12.5 w-30 items-center justify-center gap-2 rounded-[10px] border border-[#ddd] bg-white text-sm font-medium text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
+                <button className="inline-flex h-12 w-[120px] items-center justify-center gap-2 rounded-[10px] border border-[#dddddd62] bg-white text-[16px] font-normal text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
                   <img src="https://getreviews.buzz/storage/app/blog/0020717001777623735_login-1.svg" alt="login icon" width={22} height={22} />
                   <span>{userInitials}</span>
                 </button>
@@ -247,7 +241,7 @@ export default function HomeNavbar() {
                 </div>
               </div>
             ) : (
-              <Link href="/login" className="inline-flex h-12.5 w-30 items-center justify-center gap-2 rounded-[10px] border border-[#ddd] bg-white text-sm font-medium text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
+              <Link href="/login" className="inline-flex h-12 w-[120px] items-center justify-center gap-2 rounded-[10px] border border-[#dddddd62] bg-white text-[16px] font-normal text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
                 <img src="https://getreviews.buzz/storage/app/blog/0020717001777623735_login-1.svg" alt="login icon" width={20} height={20} />
                 <span>Login</span>
               </Link>
@@ -255,7 +249,7 @@ export default function HomeNavbar() {
 
             <Link
               href="/schedule-appointment/"
-              className="inline-flex h-12.5 w-40 items-center justify-center gap-2 rounded-[10px] bg-black text-sm font-medium text-white transition-colors hover:bg-[#222] hover:text-[#ffcc00] font-[Poppins]"
+              className="inline-flex h-12 w-[160px] items-center justify-center gap-2 rounded-[10px] bg-black text-base font-medium text-white transition-colors hover:bg-[#222] hover:text-[#ffcc00] font-[Poppins]"
             >
               Book a Call
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

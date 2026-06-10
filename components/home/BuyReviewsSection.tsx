@@ -107,6 +107,7 @@ export function ProductCard({
   const { addItem } = useCart();
   const router = useRouter();
   const [added, setAdded] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const effectiveMode = selectedMode || "onetime";
   const isMonthly = effectiveMode === "monthly";
@@ -130,29 +131,25 @@ export function ProductCard({
     { dbId: 138, variant: "7 Day", price: price7, label: "7 Days Warranty" },
   ];
 
-  const [activePkgIndex, setActivePkgIndex] = useState(-1);
-  const effectivePkgIndex = activePkgIndex >= 0 ? activePkgIndex : 0;
-  const selectedPkg = packages[effectivePkgIndex];
+  const [activePkgIndex, setActivePkgIndex] = useState<number | null>(null);
+  const selectedPkg = activePkgIndex !== null ? packages[activePkgIndex] : null;
 
-  const finalPrice = isGoogleReviews ? selectedPkg.price : (product.oneTimePrice || 20);
-  const productIdToUse = isGoogleReviews ? selectedPkg.dbId : product.id;
+  const finalPrice = isGoogleReviews ? (selectedPkg?.price ?? product.oneTimePrice ?? 20) : (product.oneTimePrice || 20);
+  const productIdToUse = isGoogleReviews ? (selectedPkg?.dbId ?? product.id) : product.id;
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Auto-select the first package if none is selected
-    if (isGoogleReviews && activePkgIndex < 0) {
-      setActivePkgIndex(0);
+    if (isGoogleReviews && activePkgIndex === null) {
+      setShowModal(true);
+      return;
     }
-    const usedPkg = packages[activePkgIndex >= 0 ? activePkgIndex : 0];
-    const usedPrice = isGoogleReviews ? usedPkg.price : (product.oneTimePrice || 20);
-    const usedId = isGoogleReviews ? usedPkg.dbId : product.id;
     addItem({
-      id: `${usedId}-${effectiveMode}`,
+      id: `${productIdToUse}-${effectiveMode}`,
       platform: product.platform,
       icon: "🌟",
       image: product.image,
       type: isMonthly ? "subscribe" : "one-time",
-      pricePerUnit: usedPrice,
+      pricePerUnit: finalPrice,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -205,7 +202,7 @@ export function ProductCard({
 
           <div className="warranty-grid border-[1.5px] border-[#ffebaf] rounded-[12px] p-[30px_10px_10px_10px] grid grid-cols-3 gap-[8px] mb-[18px] max-[359px]:flex max-[359px]:flex-col max-[359px]:gap-[10px]" onClick={(e) => e.stopPropagation()}>
             {packages.map((pkg, index) => {
-              const isActive = activePkgIndex >= 0 && activePkgIndex === index;
+              const isActive = activePkgIndex === index;
               return (
                 <div
                   key={pkg.variant}
@@ -249,7 +246,7 @@ export function ProductCard({
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onSelect("onetime"); }}
-                className={`card-toggle-btn relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${!isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
+                className={`card-toggle-btn relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:flex-1 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${selectedMode === "onetime" ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
                   }`}
               >
                 One–time
@@ -257,7 +254,7 @@ export function ProductCard({
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onSelect("monthly"); }}
-                className={`card-toggle-btn monthly-btn-icon flex items-center justify-center gap-[6px] relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
+                className={`card-toggle-btn monthly-btn-icon flex items-center justify-center gap-[6px] relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:flex-1 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${selectedMode === "monthly" ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
                   }`}
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="max-[768px]:w-[14px] max-[768px]:h-[14px] max-[768px]:mr-[4px]">
@@ -270,19 +267,40 @@ export function ProductCard({
 
             <button
               onClick={handleAdd}
-              className={`card-cart-btn flex items-center justify-center gap-[8px] h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
+              className={`group card-cart-btn flex items-center justify-center h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
                 }`}
               style={{ backgroundColor: isMonthly ? '#fc0' : 'white' }}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] shrink-0">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
-              <span>{added ? "Added to Cart" : isMonthly ? "Subscribe" : "Add to Cart"}</span>
+              <div className="flex items-center justify-center gap-[8px] transition-transform duration-300 group-hover:-translate-y-[2px]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] shrink-0">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span>{added ? "Added to Cart" : isMonthly ? "Subscribe" : "Add to Cart"}</span>
+              </div>
             </button>
           </div>
         </div>
+        {showModal && (
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40" onClick={(e) => { e.stopPropagation(); setShowModal(false); }}>
+            <div className="bg-white rounded-[12px] p-[40px_30px] w-[90%] max-w-[420px] flex flex-col items-center text-center shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
+              <div className="w-[85px] h-[85px] rounded-full border-[3px] border-[#2cb1e1] flex items-center justify-center mb-[25px]">
+                <span className="text-[#2cb1e1] text-[45px] font-serif italic font-bold leading-none">i</span>
+              </div>
+              <h2 className="text-[28px] font-bold text-[#4a4a4a] mb-[15px] font-sans tracking-tight">Select a Package</h2>
+              <p className="text-[17px] text-[#666] mb-[30px] font-sans leading-[1.5]">
+                Please select a warranty package before adding to cart.
+              </p>
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowModal(false); }}
+                className="bg-[#ffc107] hover:bg-[#ffb300] text-white font-semibold py-[12px] px-[35px] rounded-[6px] text-[16px] transition-colors"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </li>
     );
   }
@@ -299,12 +317,10 @@ export function ProductCard({
         overflow: "visible",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundImage = "linear-gradient(#fff, #fff), linear-gradient(to right, #FFC107, #E49D56)";
         e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundImage = "linear-gradient(#fff, #fff), linear-gradient(#E5E5E5, #ffffff)",
-          e.currentTarget.style.boxShadow = "none";
+        e.currentTarget.style.boxShadow = "none";
       }}
     >
       <div
@@ -342,7 +358,7 @@ export function ProductCard({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onSelect("onetime"); }}
-              className={`card-toggle-btn relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${!isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
+              className={`card-toggle-btn relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:flex-1 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${selectedMode === "onetime" ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
                 }`}
             >
               One-time
@@ -350,7 +366,7 @@ export function ProductCard({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onSelect("monthly"); }}
-              className={`card-toggle-btn flex items-center justify-center gap-[6px] relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:shrink-0 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${isMonthly ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
+              className={`card-toggle-btn flex items-center justify-center gap-[6px] relative p-[6px_20px] font-sans text-[14px] font-medium rounded-[8px] border-none cursor-pointer transition-all text-center max-[768px]:flex-1 max-[768px]:p-[6px_14px] max-[768px]:text-[13px] max-[400px]:p-[5px_10px] max-[400px]:text-[12px] ${selectedMode === "monthly" ? "bg-[#f3f3f3] text-black/70 active" : "bg-white text-black/60 hover:text-black hover:bg-[#f3f3f3]"
                 }`}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="max-[768px]:w-[14px] max-[768px]:h-[14px] max-[768px]:mr-[4px]">
@@ -362,18 +378,39 @@ export function ProductCard({
 
           <button
             onClick={handleAdd}
-            className={`card-cart-btn flex items-center justify-center gap-[8px] h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
+            className={`group card-cart-btn flex items-center justify-center h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
               }`}
             style={{ backgroundColor: isMonthly ? '#fc0' : 'white' }}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] shrink-0">
-              <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            <span>{added ? "Added to Cart" : isMonthly ? "Subscribe" : "Add to Cart"}</span>
+            <div className="flex items-center justify-center gap-[8px] transition-transform duration-300 group-hover:-translate-y-[2px]">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] shrink-0">
+                <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span>{added ? "Added to Cart" : isMonthly ? "Subscribe" : "Add to Cart"}</span>
+            </div>
           </button>
         </div>
       </div>
+      {showModal && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40" onClick={(e) => { e.stopPropagation(); setShowModal(false); }}>
+          <div className="bg-white rounded-[12px] p-[40px_30px] w-[90%] max-w-[420px] flex flex-col items-center text-center shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
+            <div className="w-[85px] h-[85px] rounded-full border-[3px] border-[#2cb1e1] flex items-center justify-center mb-[25px]">
+              <span className="text-[#2cb1e1] text-[45px] font-serif italic font-bold leading-none">i</span>
+            </div>
+            <h2 className="text-[28px] font-bold text-[#4a4a4a] mb-[15px] font-sans tracking-tight">Select a Package</h2>
+            <p className="text-[17px] text-[#666] mb-[30px] font-sans leading-[1.5]">
+              Please select a warranty package before adding to cart.
+            </p>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowModal(false); }}
+              className="bg-[#ffc107] hover:bg-[#ffb300] text-white font-semibold py-[12px] px-[35px] rounded-[6px] text-[16px] transition-colors"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </li>
   );
 }
@@ -431,7 +468,7 @@ export function BuyReviewsSection() {
     <section className="pad-100 c w-full bg-[#fcfcf2] overflow-visible" style={{ backgroundColor: "#fcfcf2" }}>
       <Wrapper>
         <div className="product_sect max-w-[1500px] w-full mx-auto px-4 sm:px-6 transition-all duration-300">
-          <div className="rgt_prod w-full overflow-visible" id="product_container">
+          <div className="rgt_prod w-full overflow-visible pb-[100px]" id="product_container">
 
             <div className="filter-search-row sticky top-[70px] z-[99] bg-[#fcfcf2] flex items-center justify-between pt-[15px] pb-[15px] m-[0_0_28px_0] gap-[20px] will-change-transform max-[992px]:top-0 max-[992px]:flex-col max-[992px]:items-start max-[992px]:p-[10px_0] max-[992px]:m-[0_40px_20px_40px] max-[768px]:m-[0_20px_20px_20px] max-[768px]:gap-[12px] max-[480px]:m-[0_15px_15px_15px]">
               <div className="search-wrap relative w-full max-w-[700px] h-[55px] mx-auto max-[992px]:max-w-full max-[768px]:w-full max-[768px]:h-[50px]">
@@ -507,14 +544,14 @@ export function BuyReviewsSection() {
                     key={productItem.id}
                     product={productItem}
                     selectedMode={selection[productItem.id] || null}
-                    onSelect={(mode) => setSelection(prev => ({ ...prev, [productItem.id]: mode }))}
+                    onSelect={(mode) => setSelection({ [productItem.id]: mode })}
                   />
                 ))
               )}
             </ul>
 
             {hasMore && !isLoading && (
-              <div id="js-show-more-wrapper" className="show-more-wrapper flex justify-center p-[20px_0_100px_0] w-full">
+              <div id="js-show-more-wrapper" className="show-more-wrapper flex justify-center pt-[20px] w-full">
                 <button
                   type="button"
                   onClick={() => setVisibleCount((c) => c + 8)}

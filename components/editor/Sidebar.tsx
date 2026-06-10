@@ -924,6 +924,252 @@ export default function Sidebar() {
             </div>
           )}
 
+          {selectedSection.type === 'refund-policy-section' && (
+            <>
+              {/* When Refunds May Apply */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">When Refunds May Apply</label>
+                  <button 
+                    onClick={() => {
+                      const newItems = [...(selectedSection.data.whenRefunds || []), { title: 'New Title', body: 'New Description' }];
+                      handleDataChange('whenRefunds', newItems);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Item
+                  </button>
+                </div>
+                {(selectedSection.data.whenRefunds || []).map((item: any, idx: number) => (
+                  <div key={`wr-${idx}`} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button 
+                      onClick={() => {
+                        const newItems = selectedSection.data.whenRefunds.filter((_: any, i: number) => i !== idx);
+                        handleDataChange('whenRefunds', newItems);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <input 
+                      type="text"
+                      placeholder="Title"
+                      value={item.title || ''}
+                      onChange={(e) => {
+                        const newItems = [...selectedSection.data.whenRefunds];
+                        newItems[idx] = { ...newItems[idx], title: e.target.value };
+                        handleDataChange('whenRefunds', newItems);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                    />
+                    <textarea 
+                      placeholder="Body text"
+                      value={item.body || ''}
+                      onChange={(e) => {
+                        const newItems = [...selectedSection.data.whenRefunds];
+                        newItems[idx] = { ...newItems[idx], body: e.target.value };
+                        handleDataChange('whenRefunds', newItems);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Not Eligible List */}
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Situations Where Refunds May Not Apply</label>
+                  <button 
+                    onClick={() => {
+                      const newItems = [...(selectedSection.data.notEligible || []), 'New condition'];
+                      handleDataChange('notEligible', newItems);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Item
+                  </button>
+                </div>
+                {(selectedSection.data.notEligible || []).map((item: string, idx: number) => (
+                  <div key={`ne-${idx}`} className="flex items-center gap-2 relative group/item">
+                    <input 
+                      type="text"
+                      value={item || ''}
+                      onChange={(e) => {
+                        const newItems = [...selectedSection.data.notEligible];
+                        newItems[idx] = e.target.value;
+                        handleDataChange('notEligible', newItems);
+                      }}
+                      className="flex-1 px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    />
+                    <button 
+                      onClick={() => {
+                        const newItems = selectedSection.data.notEligible.filter((_: any, i: number) => i !== idx);
+                        handleDataChange('notEligible', newItems);
+                      }}
+                      className="p-2 text-red-400 hover:text-red-600"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Compliance List */}
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Acceptable Use & Compliance</label>
+                  <button 
+                    onClick={() => {
+                      const newItems = [...(selectedSection.data.compliance || []), 'New rule'];
+                      handleDataChange('compliance', newItems);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Rule
+                  </button>
+                </div>
+                {(selectedSection.data.compliance || []).map((item: string, idx: number) => (
+                  <div key={`c-${idx}`} className="flex items-center gap-2 relative group/item">
+                    <input 
+                      type="text"
+                      value={item || ''}
+                      onChange={(e) => {
+                        const newItems = [...selectedSection.data.compliance];
+                        newItems[idx] = e.target.value;
+                        handleDataChange('compliance', newItems);
+                      }}
+                      className="flex-1 px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    />
+                    <button 
+                      onClick={() => {
+                        const newItems = selectedSection.data.compliance.filter((_: any, i: number) => i !== idx);
+                        handleDataChange('compliance', newItems);
+                      }}
+                      className="p-2 text-red-400 hover:text-red-600"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Steps */}
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">How to Request Steps</label>
+                  <button 
+                    onClick={() => {
+                      const newSteps = [...(selectedSection.data.steps || []), { step: 'Step X', title: 'New Step', desc: 'Step description' }];
+                      handleDataChange('steps', newSteps);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Step
+                  </button>
+                </div>
+                {(selectedSection.data.steps || []).map((s: any, idx: number) => (
+                  <div key={`s-${idx}`} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button 
+                      onClick={() => {
+                        const newSteps = selectedSection.data.steps.filter((_: any, i: number) => i !== idx);
+                        handleDataChange('steps', newSteps);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Step Prefix (e.g. Step 1)"
+                        value={s.step || ''}
+                        onChange={(e) => {
+                          const newSteps = [...selectedSection.data.steps];
+                          newSteps[idx] = { ...newSteps[idx], step: e.target.value };
+                          handleDataChange('steps', newSteps);
+                        }}
+                        className="w-1/3 px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                      />
+                      <input 
+                        type="text"
+                        placeholder="Title"
+                        value={s.title || ''}
+                        onChange={(e) => {
+                          const newSteps = [...selectedSection.data.steps];
+                          newSteps[idx] = { ...newSteps[idx], title: e.target.value };
+                          handleDataChange('steps', newSteps);
+                        }}
+                        className="w-2/3 px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                      />
+                    </div>
+                    <textarea 
+                      placeholder="Description"
+                      value={s.desc || ''}
+                      onChange={(e) => {
+                        const newSteps = [...selectedSection.data.steps];
+                        newSteps[idx] = { ...newSteps[idx], desc: e.target.value };
+                        handleDataChange('steps', newSteps);
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Contact Info */}
+              <div className="space-y-4 pt-4">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Contact & Footer Settings</label>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input 
+                      type="text"
+                      placeholder="Contact Image URL"
+                      value={selectedSection.data.contactImage || ''}
+                      onChange={(e) => handleDataChange('contactImage', e.target.value)}
+                      className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openMediaPicker((url) => handleDataChange('contactImage', url))}
+                      className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap"
+                    >
+                      Browse
+                    </button>
+                  </div>
+                  <input 
+                    type="text"
+                    placeholder="Contact Email"
+                    value={selectedSection.data.contactEmail || ''}
+                    onChange={(e) => handleDataChange('contactEmail', e.target.value)}
+                    className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                  />
+                  <input 
+                    type="text"
+                    placeholder="Contact Phone"
+                    value={selectedSection.data.contactPhone || ''}
+                    onChange={(e) => handleDataChange('contactPhone', e.target.value)}
+                    className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                  />
+                  <input 
+                    type="text"
+                    placeholder="Average Response Time"
+                    value={selectedSection.data.contactTime || ''}
+                    onChange={(e) => handleDataChange('contactTime', e.target.value)}
+                    className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                  />
+                  <input 
+                    type="text"
+                    placeholder="Footer Date (e.g. Last Updated: May 2026)"
+                    value={selectedSection.data.footerDate || ''}
+                    onChange={(e) => handleDataChange('footerDate', e.target.value)}
+                    className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
           {selectedSection.type === 'how-it-work-card' && (
             <>
               <div className="space-y-3">
