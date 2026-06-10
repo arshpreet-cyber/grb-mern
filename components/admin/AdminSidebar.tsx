@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Globe, LayoutDashboard, RefreshCw, FileText, PanelTopDashed, Menu, Code, FileEdit, Blocks, Handshake, Package, Upload, ShoppingBag, CircleDollarSign, Tag, ReceiptText, UserPlus, Users, Clipboard, Settings, User, BarChart, Bell, Image as ImageIcon, PenTool, HelpCircle, Headphones, MessageSquare, History, LogOut, ChevronsLeft, ChevronDown, ArrowLeftRight,
+import { Globe, LayoutDashboard, RefreshCw, FileText, PanelTopDashed, Menu, Code, FileEdit, Blocks, Handshake, Package, Upload, ShoppingBag, CircleDollarSign, Tag, ReceiptText, UserPlus, Users, Clipboard, Settings, User, BarChart, Bell, Image as ImageIcon, PenTool, HelpCircle, Headphones, MessageSquare, History, LogOut, ChevronDown, ArrowLeftRight,
 } from "lucide-react";
 
 type MenuChild = { label: string; href: string };
@@ -158,144 +158,142 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
   }, [currentUrl]);
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 w-64 h-screen overflow-y-auto flex flex-col shrink-0 bg-[#fafafa] dark:bg-[#0f1117] border-r border-gray-200 dark:border-slate-800 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
-      
-      {/* Logo & Toggle Button Container */}
-      <div className="px-5 py-6 flex items-center justify-between">
-        <Link href="/">
-          <img
-            src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
-            alt="GetReviews.Buzz"
-            className="w-[140px] h-auto dark:brightness-0 dark:invert"
-          />
-        </Link>
-        <button
-          onClick={onToggle}
-          className="p-1.5 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 rounded-md transition-colors"
-          aria-label="Collapse Sidebar"
-        >
-          <ChevronsLeft size={20} />
-        </button>
-      </div>
+    <aside className={`fixed inset-y-0 left-0 z-50 h-screen flex flex-col shrink-0 bg-[#fafafa] dark:bg-[#0f1117] transition-all duration-300 ease-in-out overflow-hidden ${
+      isOpen 
+        ? "w-64 translate-x-0 border-r border-gray-200 dark:border-slate-800" 
+        : "w-0 -translate-x-full border-r-0 pointer-events-none"
+    }`}>
+      <div className="w-64 h-full flex flex-col shrink-0 overflow-y-auto">
+        {/* Logo Container */}
+        <div className="px-5 py-6">
+          <Link href="/">
+            <img
+              src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+              alt="GetReviews.Buzz"
+              className="w-[140px] h-auto dark:brightness-0 dark:invert"
+            />
+          </Link>
+        </div>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-4 space-y-6 text-sm pb-5">
-        {menuSections.map((section, sectionIndex) => (
-          <div key={sectionIndex}>
-            {section.title && (
-              <p className="text-[10px] font-semibold text-gray-400 dark:text-slate-500 uppercase mb-2">
-                {section.title}
-              </p>
-            )}
-            <ul className="space-y-1">
-              {section.items.map((item) => {
-                const isChildActive = item.children?.some((child) => child.href === currentUrl) ?? false;
-                const isActive = item.href ? pathname === item.href : isChildActive;
-                const isOpen = openMenus[item.label] ?? isChildActive;
-                const IconComponent = item.icon;
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto px-4 space-y-6 text-sm pb-5">
+          {menuSections.map((section, sectionIndex) => (
+            <div key={sectionIndex}>
+              {section.title && (
+                <p className="text-[10px] font-semibold text-gray-400 dark:text-slate-500 uppercase mb-2">
+                  {section.title}
+                </p>
+              )}
+              <ul className="space-y-1">
+                {section.items.map((item) => {
+                  const isChildActive = item.children?.some((child) => child.href === currentUrl) ?? false;
+                  const isActive = item.href ? pathname === item.href : isChildActive;
+                  const isOpen = openMenus[item.label] ?? isChildActive;
+                  const IconComponent = item.icon;
 
-                // Render Dropdown item
-                if (item.children?.length) {
+                  // Render Dropdown item
+                  if (item.children?.length) {
+                    return (
+                      <li key={item.label} className="space-y-1">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOpenMenus((previous) => ({
+                              ...previous,
+                              [item.label]: !isOpen,
+                            }))
+                          }
+                          className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                            isActive
+                              ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 font-medium"
+                              : "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 dark:hover:text-white"
+                          }`}
+                        >
+                          {/* <IconComponent /> */}
+                          <span className="flex-1 text-left">{item.label}</span>
+                          <ChevronDown 
+                            size={16} 
+                            className={`transition-transform text-gray-400 dark:text-slate-500 ${isOpen ? "rotate-180" : ""}`} 
+                          />
+                        </button>
+
+                        {isOpen && (
+                          <div className="ml-6 mt-1 space-y-1 border-l border-gray-200 dark:border-slate-700 pl-3">
+                            {item.children.map((child) => {
+                              const isCurrentChild = child.href === currentUrl;
+                              return (
+                                <Link
+                                  key={child.href}
+                                  href={child.href}
+                                  className={`block rounded-md px-3 py-2 text-sm transition-colors ${
+                                    isCurrentChild
+                                      ? "bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 font-medium"
+                                      : "text-gray-500 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-white"
+                                  }`}
+                                >
+                                  {child.label}
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </li>
+                    );
+                  }
+
+                  // Render Standard link item
                   return (
-                    <li key={item.label} className="space-y-1">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setOpenMenus((previous) => ({
-                            ...previous,
-                            [item.label]: !isOpen,
-                          }))
-                        }
-                        className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    <li key={item.label}>
+                      <Link
+                        href={item.href!}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
                           isActive
                             ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 font-medium"
                             : "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 dark:hover:text-white"
                         }`}
                       >
                         {/* <IconComponent /> */}
-                        <span className="flex-1 text-left">{item.label}</span>
-                        <ChevronDown 
-                          size={16} 
-                          className={`transition-transform text-gray-400 dark:text-slate-500 ${isOpen ? "rotate-180" : ""}`} 
-                        />
-                      </button>
-
-                      {isOpen && (
-                        <div className="ml-6 mt-1 space-y-1 border-l border-gray-200 dark:border-slate-700 pl-3">
-                          {item.children.map((child) => {
-                            const isCurrentChild = child.href === currentUrl;
-                            return (
-                              <Link
-                                key={child.href}
-                                href={child.href}
-                                className={`block rounded-md px-3 py-2 text-sm transition-colors ${
-                                  isCurrentChild
-                                    ? "bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 font-medium"
-                                    : "text-gray-500 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-white"
-                                }`}
-                              >
-                                {child.label}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      )}
+                        <span className="flex-1">{item.label}</span>
+                        
+                        {(item.badge || (item.label === "Tickets" && ticketCount !== null)) && (
+                          <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold ${
+                            isActive ? "bg-yellow-200 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400" : "bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400"
+                          }`}>
+                            {item.label === "Tickets" && ticketCount !== null ? ticketCount : item.badge}
+                          </span>
+                        )}
+                      </Link>
                     </li>
                   );
-                }
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
 
-                // Render Standard link item
-                return (
-                  <li key={item.label}>
-                    <Link
-                      href={item.href!}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
-                        isActive
-                          ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 font-medium"
-                          : "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 dark:hover:text-white"
-                      }`}
-                    >
-                      {/* <IconComponent /> */}
-                      <span className="flex-1">{item.label}</span>
-                      
-                      {(item.badge || (item.label === "Tickets" && ticketCount !== null)) && (
-                        <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold ${
-                          isActive ? "bg-yellow-200 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400" : "bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400"
-                        }`}>
-                          {item.label === "Tickets" && ticketCount !== null ? ticketCount : item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+        {/* User Footer */}
+        <div className="px-4 py-4 border-t border-gray-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 rounded-md bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 shadow-sm px-3 py-3 mb-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-yellow-400 to-yellow-500 text-xs font-bold text-white shadow-inner">
+              {initials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold text-gray-800 dark:text-white">{userName}</p>
+              <p className="truncate text-[10px] text-gray-500 dark:text-slate-400">{userEmail}</p>
+              {role && (
+                <p className="truncate text-[10px] text-yellow-600 dark:text-yellow-400 font-semibold uppercase mt-0.5">{role}</p>
+              )}
+            </div>
           </div>
-        ))}
-      </nav>
 
-      {/* User Footer */}
-      <div className="px-4 py-4 border-t border-gray-200 dark:border-slate-800">
-        <div className="flex items-center gap-3 rounded-md bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 shadow-sm px-3 py-3 mb-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-yellow-400 to-yellow-500 text-xs font-bold text-white shadow-inner">
-            {initials}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-semibold text-gray-800 dark:text-white">{userName}</p>
-            <p className="truncate text-[10px] text-gray-500 dark:text-slate-400">{userEmail}</p>
-            {role && (
-              <p className="truncate text-[10px] text-yellow-600 dark:text-yellow-400 font-semibold uppercase mt-0.5">{role}</p>
-            )}
-          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+          >
+            <LogOut size={18} />
+            <span className="font-medium">Logout</span>
+          </button>
         </div>
-
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-        >
-          <LogOut size={18} />
-          <span className="font-medium">Logout</span>
-        </button>
       </div>
     </aside>
   );

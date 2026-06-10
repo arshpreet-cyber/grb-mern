@@ -29,12 +29,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         />
       )}
 
-      <Suspense fallback={<div className="hidden lg:block w-64 shrink-0 bg-[#fafafa] dark:bg-[#0f1117]" />}>
+      <Suspense fallback={<div className="fixed inset-y-0 left-0 z-50 w-64 h-screen bg-[#fafafa] dark:bg-[#0f1117] border-r border-gray-200 dark:border-slate-800 hidden lg:block" />}>
         <AdminSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
       </Suspense>
 
-      <div className="flex flex-1 flex-col min-w-0">
-        <AdminNavbar onToggle={() => setIsSidebarOpen((v) => !v)} />
+      <div className={`flex flex-1 flex-col min-w-0 transition-all duration-300 ease-in-out ${
+        isSidebarOpen ? "lg:pl-64" : "lg:pl-0"
+      }`}>
+        <AdminNavbar onToggle={() => setIsSidebarOpen((v) => !v)} isOpen={isSidebarOpen} />
         <main className="flex-1 p-4 md:p-6 overflow-auto">{children}</main>
       </div>
     </div>

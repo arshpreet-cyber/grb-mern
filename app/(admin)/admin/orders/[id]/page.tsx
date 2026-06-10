@@ -49,7 +49,7 @@ type ItemNote = {
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  "1": "Pending", "2": "Processing", "3": "Complete", "4": "Hold", "5": "Cancelled", "6": "Refund",
+  "1": "Pending", "2": "Complete", "3": "Processing", "4": "Hold", "5": "Cancelled", "6": "Refund",
 };
 const PAYMENT_LABELS: Record<string, string> = {
   "1": "Unpaid", "2": "Paid", "3": "Unconfirmed", "4": "Cancelled",
@@ -146,8 +146,8 @@ export default function AdminOrderDetailPage() {
         </div>
         <div className="ml-auto flex gap-2 flex-wrap">
           <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
-            order.status === "2" ? "bg-blue-100 text-blue-700 border-blue-300"
-            : order.status === "3" ? "bg-green-100 text-green-700 border-green-300"
+            order.status === "2" ? "bg-green-100 text-green-700 border-green-300"
+            : order.status === "3" ? "bg-blue-100 text-blue-700 border-blue-300"
             : "bg-yellow-100 text-yellow-700 border-yellow-300"
           }`}>
             {STATUS_LABELS[order.status ?? "1"] ?? "—"}

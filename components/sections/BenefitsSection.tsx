@@ -63,7 +63,7 @@ export default function BenefitsSection({ id, data = {}, settings, isEditing }: 
         backgroundColor: settings?.backgroundColor || "#FFFFFF",
       }}
     >
-      <div className="max-w-[1500px] mx-auto px-6 md:px-12 lg:px-16 flex flex-col items-center">
+      <div className="max-w-[1500px] mx-auto px-6 flex flex-col items-center">
         {/* Header Area */}
         <div className="text-center max-w-3xl mb-16">
           {isEditing ? (
@@ -95,7 +95,7 @@ export default function BenefitsSection({ id, data = {}, settings, isEditing }: 
         </div>
 
         {/* 3-Column Content Layout */}
-        <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-12 items-stretch">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-8 items-stretch">
           
           {benefits.map((item: BenefitItem, idx: number) => {
             // Determine explicit desktop grid positioning based on index

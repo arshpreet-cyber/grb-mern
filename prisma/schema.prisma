@@ -3,7 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider     = "postgresql"
+  relationMode = "prisma"
 }
 
 model Review {
@@ -36,6 +37,8 @@ model User {
 
   orders    Order[]
   tickets   Ticket[]
+
+  @@index([createdAt])
 }
 
 model Order {
@@ -86,6 +89,9 @@ model Order {
   notes               String?
   user                User?         @relation(fields: [userId], references: [id])
   orderDetails        OrderDetail[]
+
+  @@index([createdAt])
+  @@index([paymentStatus, deletedAt])
 }
 
 model OrderDetail {
@@ -102,6 +108,8 @@ model OrderDetail {
   profileUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([platform])
 }
 
 model Ticket {
@@ -133,6 +141,7 @@ model Ticket {
   deleted_at     DateTime?       @db.Timestamp(6)
   threads        TicketThread[]
 
+  @@index([createdAt])
   @@map("Ticket")
 }
 
