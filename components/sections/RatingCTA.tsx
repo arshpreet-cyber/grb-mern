@@ -35,11 +35,11 @@ export default function RatingCTA({ id, data, settings, isEditing }: SectionProp
   };
 
   return (
-    <section style={sectionStyle} className="relative overflow-hidden font-[Poppins]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(255,205,5,0.1),transparent_70%)] pointer-events-none"></div>
+    <section style={sectionStyle} className="relative overflow-hidden font-[Poppins] ">
+      <div className="absolute inset-0 bg-[#FFFDF0] pointer-events-none"></div>
       
       <Wrapper>
-        <div className="bg-white rounded-[40px] py-10 px-8 text-center relative overflow-hidden">
+        <div className="bg-[#FFFDF0] rounded-[40px] py-10 px-8 text-center relative overflow-hidden">
           {/* Decorative Stars */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 text-base text-[#ffcd05] tracking-[12px] opacity-40 whitespace-nowrap">
             ★ ★ ★ ★ ★

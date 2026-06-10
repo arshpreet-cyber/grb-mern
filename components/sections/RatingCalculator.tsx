@@ -86,6 +86,41 @@ export default function RatingCalculator({ id, data, settings, isEditing }: Sect
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const newErrors: Record<string, string> = {};
+    const max = selectedPlatform ? selectedPlatform.max : 5;
+
+    if (platformSearch.trim() && !selectedPlatform && !isDropdownOpen) {
+      newErrors.platform = "Please select a platform from the dropdown";
+    }
+
+    if (currentAvg) {
+      const avgNum = parseFloat(currentAvg);
+      if (isNaN(avgNum) || avgNum < 0 || avgNum > max) {
+        newErrors.avg = `Rating must be between 0 and ${max}`;
+      }
+    }
+
+    if (currentCount) {
+      const countNum = parseInt(currentCount);
+      if (isNaN(countNum) || countNum < 0) {
+        newErrors.count = "Review count must be 0 or greater";
+      }
+    }
+
+    if (targetAvg) {
+      const targetNum = parseFloat(targetAvg);
+      const avgNum = parseFloat(currentAvg);
+      if (isNaN(targetNum) || targetNum <= 0 || targetNum >= max) {
+        newErrors.target = `Target must be between 0.1 and ${max - 0.1}`;
+      } else if (currentAvg && !isNaN(avgNum) && targetNum <= avgNum) {
+        newErrors.target = "Target must be higher than current rating";
+      }
+    }
+
+    setErrors(newErrors);
+  }, [currentAvg, currentCount, targetAvg, selectedPlatform, platformSearch, isDropdownOpen]);
+
   const filteredPlatforms = platformSearch.trim() 
     ? platforms.filter(p => p.name.toLowerCase().includes(platformSearch.toLowerCase())).slice(0, 10)
     : [];

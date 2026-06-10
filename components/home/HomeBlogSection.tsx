@@ -44,7 +44,7 @@ export default function HomeBlogSection() {
             </div>
             <Link 
               href="/blog" 
-              className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-[15px] font-medium text-gray-800 hover:bg-gray-50 transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-[15px] font-medium text-gray-800 hover:bg-black hover:text-white hover:border-black transition-colors whitespace-nowrap"
             >
               View All Blogs <ArrowRight size={18} />
             </Link>

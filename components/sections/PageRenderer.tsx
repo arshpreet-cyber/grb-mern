@@ -24,6 +24,7 @@ import SitemapSection from './SitemapSection';
 import BenefitsSection from './BenefitsSection';
 import SafeReviewsCarousel from './SafeReviewsCarousel';
 import OrganicDrawbacks from './OrganicDrawbacks';
+import RefundPolicySection from './RefundPolicySection';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -53,6 +54,7 @@ const sectionMap: Record<string, React.FC<any>> = {
   'benefits-section': BenefitsSection,
   'safe-reviews-carousel': SafeReviewsCarousel,
   'organic-drawbacks': OrganicDrawbacks,
+  'refund-policy-section': RefundPolicySection,
 };
 
 interface PageRendererProps {

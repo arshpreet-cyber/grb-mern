@@ -29,6 +29,29 @@ export default function ContactClient() {
       setError("Please fill in all required fields.");
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (formData.phone) {
+      const phoneRegex = /^[\d\s()+-]{7,20}$/;
+      if (!phoneRegex.test(formData.phone)) {
+        setError("Please enter a valid phone number.");
+        return;
+      }
+    }
+
+    if (formData.website) {
+      const urlRegex = /^(https?:\/\/)?([\w\-]+(\.[\w\-]+)+)([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?$/;
+      if (!urlRegex.test(formData.website)) {
+        setError("Please enter a valid website URL.");
+        return;
+      }
+    }
+
     // if (!turnstileToken) {
     //   setError("Please complete the captcha verification.");
     //   return;

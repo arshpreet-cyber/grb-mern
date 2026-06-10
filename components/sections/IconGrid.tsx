@@ -91,7 +91,7 @@ export default function IconGrid({ id, data, settings, isEditing }: SectionProps
             {features.map((feature: any, index: number) => (
               <div
                 key={index}
-                className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md"
+                className="bg-white p-8 rounded-xl border border-gray-100 text-left transition-transform duration-300 hover:-translate-y-2"
               >
                 <img src={feature.icon} alt={feature.title} className="w-[78px] h-[98px] mb-4 object-contain" />
                 {isEditing ? (

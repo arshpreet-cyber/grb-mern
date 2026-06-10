@@ -134,15 +134,10 @@ export default function YouMayAlsoLike({ data = {} }: SectionProps) {
         <ul className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 list-none p-0 m-0 items-stretch">
           {finalProducts.map((product: any, index: number) => (
             <ProductCard
-              key={`${pathname}-${product.slug}-${index}`}
+              key={`${pathname}-${product.id || index}`}
               product={product}
-              selectedMode={selection[product.slug] || null}
-              onSelect={(mode) =>
-                setSelection((prev) => ({
-                  ...prev,
-                  [product.slug]: mode,
-                }))
-              }
+              selectedMode={selection[product.id] || null}
+              onSelect={(mode) => setSelection({ [product.id]: mode })}
             />
           ))}
         </ul>
