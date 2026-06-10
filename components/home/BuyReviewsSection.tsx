@@ -149,7 +149,7 @@ export function ProductCard({
       icon: "🌟",
       image: product.image,
       type: isMonthly ? "subscribe" : "one-time",
-      pricePerUnit: usedPrice,
+      pricePerUnit: finalPrice,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -202,7 +202,7 @@ export function ProductCard({
 
           <div className="warranty-grid border-[1.5px] border-[#ffebaf] rounded-[12px] p-[30px_10px_10px_10px] grid grid-cols-3 gap-[8px] mb-[18px] max-[359px]:flex max-[359px]:flex-col max-[359px]:gap-[10px]" onClick={(e) => e.stopPropagation()}>
             {packages.map((pkg, index) => {
-              const isActive = activePkgIndex >= 0 && activePkgIndex === index;
+              const isActive = activePkgIndex === index;
               return (
                 <div
                   key={pkg.variant}
