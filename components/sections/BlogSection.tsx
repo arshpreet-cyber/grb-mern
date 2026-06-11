@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from "next/link";
 import Wrapper from "@/components/ui/Wrapper";
+import BlogCover from "@/components/ui/BlogCover";
 import { ArrowRight, Calendar } from "lucide-react";
 import { SectionProps } from '@/types/section';
 
@@ -75,17 +76,11 @@ export default function BlogSection({ data, settings }: SectionProps) {
               blogs.map((blog) => (
                 <Link href={`/blog/${blog.slug}`} key={blog.id} className="group flex flex-col bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                   <div className="relative aspect-[1.5] overflow-hidden bg-gray-100">
-                    {blog.media ? (
-                      <img
-                        src={blog.media}
-                        alt={blog.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-                        No Image
-                      </div>
-                    )}
+                    <BlogCover
+                      src={blog.media}
+                      alt={blog.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
                     <div className="flex items-center gap-2 text-gray-500 text-sm mb-4">

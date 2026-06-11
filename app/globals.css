@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -188,4 +189,39 @@ input[type="number"] {
 }
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #475569;
+}
+
+/* Blog article tables — render imported tables as clear, bordered grids */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  font-size: 0.95em;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+.prose thead {
+  background: #f8fafc;
+}
+.prose th {
+  text-align: left;
+  font-weight: 600;
+  color: #0f172a;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+.prose td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  vertical-align: top;
+  color: #334155;
+}
+.prose tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+.prose table p {
+  margin: 0;
 }

@@ -1,13 +1,16 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Wrapper from "@/components/ui/Wrapper";
+import BlogCover from "@/components/ui/BlogCover";
 import { Calendar, User } from "lucide-react";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
+  const slug = resolvedParams.slug.replace(/\/+$/, "");
   const blog = await prisma.blog.findFirst({
-    where: { slug: resolvedParams.slug, status: 1, deleted_at: null },
+    // Tolerate slugs stored with a trailing slash (legacy imports).
+    where: { slug: { in: [slug, `${slug}/`] }, status: 1, deleted_at: null },
   });
 
   if (!blog) return { title: "Blog Not Found" };
@@ -24,13 +27,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function SingleBlogPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
+  const slug = resolvedParams.slug.replace(/\/+$/, "");
   const blog = await prisma.blog.findFirst({
-    where: { slug: resolvedParams.slug, status: 1, deleted_at: null },
+    // Tolerate slugs stored with a trailing slash (legacy imports).
+    where: { slug: { in: [slug, `${slug}/`] }, status: 1, deleted_at: null },
   });
 
   if (!blog) {
     notFound();
   }
+
+  // Treat junk values (e.g. "' '", "", "''") from legacy imports as empty.
+  const clean = (v: string | null) =>
+    v && !/^['"’‘\s]+$/.test(v.trim()) ? v.trim() : "";
+  const authorName = clean(blog.author) || "Get Reviews Buzz Team";
+  const excerpt = clean(blog.excerpt);
+  const aboutAuthor = clean(blog.about_author);
+  const tag = clean(blog.tag);
+  const category = clean(blog.category);
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
@@ -40,9 +54,9 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl">
               <div className="mb-6 flex items-center gap-4 text-sm text-gray-500">
-                {blog.category && (
+                {category && (
                   <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">
-                    {blog.category}
+                    {category}
                   </span>
                 )}
                 <div className="flex items-center gap-1">
@@ -61,9 +75,9 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
                 {blog.title}
               </h1>
 
-              {blog.excerpt && (
+              {excerpt && (
                 <p className="text-xl text-gray-600 leading-relaxed mb-8">
-                  {blog.excerpt}
+                  {excerpt}
                 </p>
               )}
 
@@ -72,7 +86,7 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
                   <User size={24} />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">{blog.author || "Get Reviews Buzz Team"}</p>
+                  <p className="font-semibold text-gray-900">{authorName}</p>
                   <p className="text-sm text-gray-500">Author</p>
                 </div>
               </div>
@@ -84,26 +98,27 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
       <Wrapper>
         <div className="w-full px-4 sm:px-6 lg:px-8 pb-24">
           <div className="max-w-5xl">
-            {blog.media && (
-              <div className="mb-12 rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={blog.media} alt={blog.title || "Blog cover"} className="w-full h-auto object-cover max-h-[700px]" />
-              </div>
-            )}
+            <div className="mb-12 rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+              <BlogCover
+                src={blog.media}
+                alt={blog.title || "Blog cover"}
+                className="w-full aspect-[1.9] object-cover"
+              />
+            </div>
 
             <article
-              className="prose prose-lg md:prose-xl max-w-none text-gray-800 prose-headings:font-semibold prose-a:text-blue-600 hover:prose-a:text-blue-500"
+              className="prose prose-lg max-w-none text-gray-800 prose-headings:font-semibold prose-headings:text-gray-900 prose-a:text-blue-600 hover:prose-a:text-blue-500 prose-img:rounded-xl prose-table:text-base"
               dangerouslySetInnerHTML={{ __html: blog.content || "" }}
             />
 
             {/* Tags */}
-            {blog.tag && (
+            {tag && (
               <div className="mt-16 pt-8 border-t border-gray-200">
                 <h3 className="text-lg font-semibold mb-4 text-gray-900">Tags:</h3>
                 <div className="flex flex-wrap gap-2">
-                  {blog.tag.split(',').map((tag, i) => (
+                  {tag.split(',').map((t) => t.trim()).filter(Boolean).map((t, i) => (
                     <span key={i} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
-                      {tag.trim()}
+                      {t}
                     </span>
                   ))}
                 </div>
@@ -111,14 +126,14 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
             )}
 
             {/* About Author */}
-            {blog.about_author && (
+            {aboutAuthor && (
               <div className="mt-12 bg-gray-50 p-8 rounded-2xl border border-gray-100 flex gap-6 items-start">
                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-gray-500 flex-shrink-0 shadow-sm">
                   <User size={32} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">About {blog.author || "the Author"}</h3>
-                  <p className="text-gray-600 leading-relaxed">{blog.about_author}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">About {authorName}</h3>
+                  <p className="text-gray-600 leading-relaxed">{aboutAuthor}</p>
                 </div>
               </div>
             )}
