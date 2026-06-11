@@ -62,43 +62,61 @@ export default function HomeFooter() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8 lg:gap-12 xl:pl-10">
 
               {/* Contact Us */}
-              <div className="flex items-center gap-4">
-                <div className="w-[48px] h-[48px] rounded-full border border-gray-700 flex items-center justify-center text-white">
+              <a
+                href="tel:+14302335402"
+                className="flex items-center gap-4 group"
+              >
+                <div className="w-[48px] h-[48px] rounded-full border border-gray-700 flex items-center justify-center text-white group-hover:text-[#f5c518] transition">
                   <FaPhoneAlt size={16} />
                 </div>
-                <div>
-                  <p className="text-[#f5c518] text-[13px] font-medium mb-0.5">Contact Us</p>
-                  <a href="tel:+14302335402" className="text-white text-[14px] hover:text-[#f5c518] transition font-light">
-                    +1 430-233-5402
-                  </a>
-                </div>
-              </div>
 
+                <div>
+                  <p className="text-[#f5c518] text-[13px] font-medium mb-0.5">
+                    Contact Us
+                  </p>
+                  <span className="text-white text-[14px] font-light group-hover:text-[#f5c518] transition">
+                    +1 430-233-5402
+                  </span>
+                </div>
+              </a>
               {/* WhatsApp */}
-              <div className="flex items-center gap-4">
-                <div className="w-[48px] h-[48px] rounded-full border border-gray-700 flex items-center justify-center text-white">
+              <a
+                href="https://api.whatsapp.com/send?phone=13068025402"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 group"
+              >
+                <div className="w-[48px] h-[48px] rounded-full border border-gray-700 flex items-center justify-center text-white group-hover:text-[#f5c518] transition">
                   <FaWhatsapp size={20} />
                 </div>
-                <div>
-                  <p className="text-[#f5c518] text-[13px] font-medium mb-0.5">WhatsApp</p>
-                  <a href="https://api.whatsapp.com/send?phone=13068025402" target="_blank" rel="noopener noreferrer" className="text-white text-[14px] hover:text-[#f5c518] transition font-light">
-                    +1 306 802 5402
-                  </a>
-                </div>
-              </div>
 
+                <div>
+                  <p className="text-[#f5c518] text-[13px] font-medium mb-0.5">
+                    WhatsApp
+                  </p>
+                  <span className="text-white text-[14px] font-light group-hover:text-[#f5c518] transition">
+                    +1 306 802 5402
+                  </span>
+                </div>
+              </a>
               {/* Email */}
-              <div className="flex items-center gap-4">
-                <div className="w-[48px] h-[48px] rounded-full border border-gray-700 flex items-center justify-center text-white">
+              <a
+                href="mailto:marketing@getreviews.buzz"
+                className="flex items-center gap-4 group"
+              >
+                <div className="w-[48px] h-[48px] rounded-full border border-gray-700 flex items-center justify-center text-white group-hover:text-[#f5c518] transition">
                   <FaRegEnvelope size={18} />
                 </div>
+
                 <div>
-                  <p className="text-[#f5c518] text-[13px] font-medium mb-0.5">Email</p>
-                  <a href="mailto:marketing@getreviews.buzz" className="text-white text-[14px] hover:text-[#f5c518] transition font-light">
+                  <p className="text-[#f5c518] text-[13px] font-medium mb-0.5">
+                    Email
+                  </p>
+                  <span className="text-white text-[14px] group-hover:text-[#f5c518] transition font-light">
                     marketing@getreviews.buzz
-                  </a>
+                  </span>
                 </div>
-              </div>
+              </a>
 
             </div>
           </div>
@@ -233,6 +251,7 @@ export default function HomeFooter() {
                   { label: "Refund Policy", href: "/refund-policy" },
                   { label: "FAQ's", href: "/faq" },
                   { label: "Login / Signup", href: "/login" },
+                  { label: "Site Map", href: "/sitemap" },
                 ].map((item) => (
                   <li key={item.label}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">

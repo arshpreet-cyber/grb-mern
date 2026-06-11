@@ -522,14 +522,13 @@ function CommitmentsGridSection() {
         <h2 className="w-full max-w-[732px] mx-auto text-center text-[28px] md:text-[40px] font-[400] leading-[1.3] tracking-[-0.5px] text-[#111] mb-12 md:mb-16">
           Four Risk-Reversal <span className="font-[600]">Commitments</span>
         </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
           {/* Left Column: Image wrapper with sticky positioning */}
-          <div className="md:sticky md:top-30 lg:top-40">
+          <div className="md:sticky md:top-24 lg:top-40 w-full flex justify-center lg:justify-start">
             <img
               src="/uploads/media/1780464814337-3faaff7e-c755-4f04-a4d9-12b452e1140f-Rectangle-10325.webp"
               alt="Illustration"
-              className="w-full max-w-[676px] h-auto md:max-h-[500px] lg:h-[726px] rounded-[15px] object-contain"
+              className="w-full max-w-[676px] h-auto md:h-[500px] lg:h-[726px] rounded-[15px] object-cover"
             />
           </div>
 
