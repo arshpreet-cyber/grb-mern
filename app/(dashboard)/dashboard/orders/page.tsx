@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   ShoppingBag, BadgeCheck, History, BadgeX,
   ChevronDown, ChevronLeft, ChevronRight,
-  Eye, ChevronsLeft, ChevronsRight, Search
+  Eye, ChevronsLeft, ChevronsRight
 } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
@@ -64,7 +64,6 @@ export default function DemoDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
   const [paymentDropdownOpen, setPaymentDropdownOpen] = useState<string | null>(null);
 
   // Pagination State
@@ -79,7 +78,7 @@ export default function DemoDashboard() {
   // --- Data Fetching ---
   const fetchCounts = async () => {
     try {
-      const res = await fetch(`/api/orders?countsOnly=1`);
+      const res = await fetch(`/api/orders?countsOnly=1&mine=1`);
       const data = await res.json();
       if (data.counts) setCounts(data.counts);
     } catch {
@@ -90,7 +89,7 @@ export default function DemoDashboard() {
   const fetchOrders = useCallback(async (filter: string, q = "", pg = 1, ps = 10) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/orders?filter=${filter}&search=${encodeURIComponent(q)}&page=${pg}&pageSize=${ps}`);
+      const res = await fetch(`/api/orders?filter=${filter}&search=${encodeURIComponent(q)}&page=${pg}&pageSize=${ps}&mine=1`);
       const data = await res.json();
 
       if (data.orders) {
@@ -130,17 +129,14 @@ export default function DemoDashboard() {
   }, []);
 
   useEffect(() => {
-    const delay = setTimeout(() => {
-      setCurrentPage(1);
-      fetchOrders(activeTab, searchQuery, 1, pageSize);
-    }, 400);
-    return () => clearTimeout(delay);
-  }, [activeTab, searchQuery, pageSize, fetchOrders]);
+    setCurrentPage(1);
+    fetchOrders(activeTab, "", 1, pageSize);
+  }, [activeTab, pageSize, fetchOrders]);
 
   const goToPage = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
     setCurrentPage(newPage);
-    fetchOrders(activeTab, searchQuery, newPage, pageSize);
+    fetchOrders(activeTab, "", newPage, pageSize);
   };
 
   const getPageNumbers = () => {
@@ -170,7 +166,7 @@ export default function DemoDashboard() {
   ];
 
   return (
-    <div className="w-full mx-auto flex flex-col gap-6 px-4 sm:px-6 lg:px-8 max-w-7xl">
+    <div className="w-full mx-auto flex flex-col gap-6 px-4 sm:px-6 lg:px-8">
       <div className="mt-6 md:mt-10">
         <h1 className="text-2xl sm:text-3xl md:text-[36px] font-medium text-gray-900 dark:text-white mb-1 tracking-tight">All Orders</h1>
         <p className="text-xs sm:text-[15px] text-gray-600 dark:text-slate-400 font-normal">Manage and track your entire order history.</p>
@@ -218,17 +214,6 @@ export default function DemoDashboard() {
 
           {/* Filtering Tools Layout */}
           <div className="flex items-center gap-3 flex-wrap w-full lg:w-auto justify-between sm:justify-start">
-            <div className="relative flex-1 sm:flex-initial min-w-[160px]">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search orders..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="pl-8 pr-4 py-2 text-[13px] border border-gray-200 dark:border-slate-700 rounded-lg bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-white outline-none focus:border-[#fc0] w-full sm:w-48"
-              />
-            </div>
-
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-slate-400">
               <span>Rows:</span>
               <select

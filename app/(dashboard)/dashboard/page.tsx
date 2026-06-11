@@ -52,12 +52,13 @@ export default function UserDashboard() {
   const name = session?.user?.name ?? "User";
 
   useEffect(() => {
-    fetch("/api/orders")
+    fetch("/api/orders?mine=1&pageSize=100")
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setAllOrders(data);
-          setOrders(data.map((o: ApiOrder) => ({
+        const list: ApiOrder[] = Array.isArray(data) ? data : (data?.orders ?? []);
+        if (list.length > 0) {
+          setAllOrders(list);
+          setOrders(list.map((o: ApiOrder) => ({
             id: o.id,
             orderNumber: o.orderNumber,
             paymentId: o.paymentId ?? "—",
