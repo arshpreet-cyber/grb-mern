@@ -6,8 +6,10 @@ import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
+  const slug = resolvedParams.slug.replace(/\/+$/, "");
   const blog = await prisma.blog.findFirst({
-    where: { slug: resolvedParams.slug, status: 1, deleted_at: null },
+    // Tolerate slugs stored with a trailing slash (legacy imports).
+    where: { slug: { in: [slug, `${slug}/`] }, status: 1, deleted_at: null },
   });
 
   if (!blog) return { title: "Blog Not Found" };
@@ -24,8 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function SingleBlogPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
+  const slug = resolvedParams.slug.replace(/\/+$/, "");
   const blog = await prisma.blog.findFirst({
-    where: { slug: resolvedParams.slug, status: 1, deleted_at: null },
+    // Tolerate slugs stored with a trailing slash (legacy imports).
+    where: { slug: { in: [slug, `${slug}/`] }, status: 1, deleted_at: null },
   });
 
   if (!blog) {
