@@ -5,19 +5,31 @@ import Link from "next/link";
 import { Edit, Trash2, Eye, Plus, PenTool } from "lucide-react";
 import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
 
+const PAGE_SIZE = 10;
+
 export default function BlogsListing() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
-  const fetchBlogs = async () => {
+  const fetchBlogs = async (pageArg = page, searchArg = debouncedSearch) => {
     try {
       setLoading(true);
-      const res = await fetch("/api/blog");
+      const params = new URLSearchParams({
+        page: String(pageArg),
+        limit: String(PAGE_SIZE),
+        status: "all",
+      });
+      if (searchArg.trim()) params.set("search", searchArg.trim());
+      const res = await fetch(`/api/blog?${params.toString()}`);
       const data = await res.json();
       if (data.success) {
         setBlogs(data.blogs);
+        setTotal(data.pagination?.total ?? data.blogs.length);
       } else {
         setError(data.error || "Failed to fetch blogs");
       }
@@ -28,9 +40,19 @@ export default function BlogsListing() {
     }
   };
 
+  // Debounce the search input so we don't refetch on every keystroke.
   useEffect(() => {
-    fetchBlogs();
-  }, []);
+    const t = setTimeout(() => {
+      setPage(1);
+      setDebouncedSearch(search);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => {
+    fetchBlogs(page, debouncedSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, debouncedSearch]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
@@ -140,10 +162,14 @@ export default function BlogsListing() {
           loading={loading}
           actions={actions}
           searchable
-          searchPlaceholder="Search blogs by title or author..."
+          searchPlaceholder="Search blogs by title or content..."
           searchValue={search}
           onSearchChange={setSearch}
-          pageSize={10}
+          pageSize={PAGE_SIZE}
+          serverSidePagination
+          totalRows={total}
+          currentPage={page}
+          onPageChange={setPage}
         />
       </div>
     </div>
