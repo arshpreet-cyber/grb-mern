@@ -104,7 +104,7 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
             )}
 
             <article
-              className="prose prose-lg md:prose-xl max-w-none text-gray-800 prose-headings:font-semibold prose-a:text-blue-600 hover:prose-a:text-blue-500"
+              className="prose prose-lg max-w-none text-gray-800 prose-headings:font-semibold prose-headings:text-gray-900 prose-a:text-blue-600 hover:prose-a:text-blue-500 prose-img:rounded-xl prose-table:text-base"
               dangerouslySetInnerHTML={{ __html: blog.content || "" }}
             />
 
