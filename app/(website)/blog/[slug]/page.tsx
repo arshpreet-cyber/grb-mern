@@ -36,6 +36,14 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
     notFound();
   }
 
+  // Treat junk values (e.g. "' '", "", "''") from legacy imports as empty.
+  const clean = (v: string | null) =>
+    v && !/^['"’‘\s]+$/.test(v.trim()) ? v.trim() : "";
+  const authorName = clean(blog.author) || "Get Reviews Buzz Team";
+  const excerpt = clean(blog.excerpt);
+  const aboutAuthor = clean(blog.about_author);
+  const tag = clean(blog.tag);
+
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
       {/* Blog Header / Hero */}
@@ -65,9 +73,9 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
                 {blog.title}
               </h1>
 
-              {blog.excerpt && (
+              {excerpt && (
                 <p className="text-xl text-gray-600 leading-relaxed mb-8">
-                  {blog.excerpt}
+                  {excerpt}
                 </p>
               )}
 
@@ -76,7 +84,7 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
                   <User size={24} />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">{blog.author || "Get Reviews Buzz Team"}</p>
+                  <p className="font-semibold text-gray-900">{authorName}</p>
                   <p className="text-sm text-gray-500">Author</p>
                 </div>
               </div>
@@ -101,13 +109,13 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
             />
 
             {/* Tags */}
-            {blog.tag && (
+            {tag && (
               <div className="mt-16 pt-8 border-t border-gray-200">
                 <h3 className="text-lg font-semibold mb-4 text-gray-900">Tags:</h3>
                 <div className="flex flex-wrap gap-2">
-                  {blog.tag.split(',').map((tag, i) => (
+                  {tag.split(',').map((t) => t.trim()).filter(Boolean).map((t, i) => (
                     <span key={i} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
-                      {tag.trim()}
+                      {t}
                     </span>
                   ))}
                 </div>
@@ -115,14 +123,14 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
             )}
 
             {/* About Author */}
-            {blog.about_author && (
+            {aboutAuthor && (
               <div className="mt-12 bg-gray-50 p-8 rounded-2xl border border-gray-100 flex gap-6 items-start">
                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-gray-500 flex-shrink-0 shadow-sm">
                   <User size={32} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">About {blog.author || "the Author"}</h3>
-                  <p className="text-gray-600 leading-relaxed">{blog.about_author}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">About {authorName}</h3>
+                  <p className="text-gray-600 leading-relaxed">{aboutAuthor}</p>
                 </div>
               </div>
             )}
