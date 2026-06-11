@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Wrapper from "@/components/ui/Wrapper";
+import BlogCover from "@/components/ui/BlogCover";
 import { Calendar, User } from "lucide-react";
 import { Metadata } from "next";
 
@@ -43,6 +44,7 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
   const excerpt = clean(blog.excerpt);
   const aboutAuthor = clean(blog.about_author);
   const tag = clean(blog.tag);
+  const category = clean(blog.category);
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
@@ -52,9 +54,9 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl">
               <div className="mb-6 flex items-center gap-4 text-sm text-gray-500">
-                {blog.category && (
+                {category && (
                   <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">
-                    {blog.category}
+                    {category}
                   </span>
                 )}
                 <div className="flex items-center gap-1">
@@ -96,12 +98,13 @@ export default async function SingleBlogPage({ params }: { params: Promise<{ slu
       <Wrapper>
         <div className="w-full px-4 sm:px-6 lg:px-8 pb-24">
           <div className="max-w-5xl">
-            {blog.media && (
-              <div className="mb-12 rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={blog.media} alt={blog.title || "Blog cover"} className="w-full h-auto object-cover max-h-[700px]" />
-              </div>
-            )}
+            <div className="mb-12 rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+              <BlogCover
+                src={blog.media}
+                alt={blog.title || "Blog cover"}
+                className="w-full aspect-[1.9] object-cover"
+              />
+            </div>
 
             <article
               className="prose prose-lg max-w-none text-gray-800 prose-headings:font-semibold prose-headings:text-gray-900 prose-a:text-blue-600 hover:prose-a:text-blue-500 prose-img:rounded-xl prose-table:text-base"

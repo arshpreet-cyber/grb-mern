@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
+import BlogCover from '@/components/ui/BlogCover';
 import { Calendar, User, ArrowRight } from 'lucide-react';
 
 interface BlogCardProps {
@@ -20,17 +21,11 @@ export default function BlogCard({ data }: BlogCardProps) {
     <li className="list-none">
       <Link href={`/blog/${data.slug}`} className="group block bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
         <div className="relative aspect-[16/9] overflow-hidden bg-gray-50">
-          {data.media ? (
-            <img
-              src={data.media} 
-              alt={data.title} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400">
-              No Image
-            </div>
-          )}
+          <BlogCover
+            src={data.media}
+            alt={data.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
         
