@@ -16,6 +16,10 @@ type User = {
   createdAt: string;
 };
 
+// Normalize legacy status codes ("1"/"2") to "active"/"passive".
+const normStatus = (s: string | null | undefined) =>
+  ["1", "active"].includes((s ?? "").toLowerCase()) ? "active" : "passive";
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,11 +109,11 @@ export default function AdminUsersPage() {
       key: "status",
       header: "Account Status",
       render: (u) => (
-        <StatusPill 
-          value={u.status} 
+        <StatusPill
+          value={normStatus(u.status) === "active" ? "Active" : "Passive"}
           colorMap={{
-            active: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
-            passive: "border-gray-200 bg-gray-50 text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white",
+            Active: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
+            Passive: "border-gray-200 bg-gray-50 text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white",
           }}
         />
       ),
@@ -210,8 +214,8 @@ export default function AdminUsersPage() {
 
               <div>
                 <label className="text-xs font-bold text-gray-500 dark:text-white uppercase tracking-wider mb-1.5 block">Account Status</label>
-                <select 
-                  value={editUser.status} 
+                <select
+                  value={normStatus(editUser.status)}
                   onChange={e => setEditUser(u => u ? { ...u, status: e.target.value } : u)}
                   className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-[#fc0] transition-all dark:text-white"
                 >

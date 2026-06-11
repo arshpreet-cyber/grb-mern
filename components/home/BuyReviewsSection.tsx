@@ -221,11 +221,11 @@ export function ProductCard({
                   </div>
                   <div className="warranty-min text-[10px] text-black/50">Min. 5 reviews</div>
                   <div
-                    className={`warranty-label text-[6px] font-semibold tracking-wide relative mb-[5px] leading-[1.3] max-[359px]:mb-0 max-[359px]:ml-auto max-[359px]:text-right ${isActive ? "text-[#b07b00] font-medium" : "text-[#FFC107]"
+                    className={`warranty-label flex items-center gap-[3px] whitespace-nowrap text-[6px] font-semibold tracking-wide relative mb-[5px] leading-[1.3] max-[359px]:mb-0 max-[359px]:ml-auto max-[359px]:text-right ${isActive ? "text-[#b07b00] font-medium" : "text-[#FFC107]"
                       }`}
                   >
-                    <span>{pkg.label}</span> &nbsp;
-                    <span className="tooltip-question relative inline-flex items-center justify-center w-[10px] h-[10px] border border-black text-black rounded-full cursor-pointer group" onClick={(e) => e.stopPropagation()}>
+                    <span>{pkg.label}</span>
+                    <span className="tooltip-question relative inline-flex items-center justify-center w-[10px] h-[10px] shrink-0 border border-black text-black rounded-full cursor-pointer group" onClick={(e) => e.stopPropagation()}>
                       ?
                       <span className={`warranty-tooltip-box absolute bottom-[100%] left-1/2 -translate-x-1/2 pb-[8px] w-max max-w-[280px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all z-[99999] max-[600px]:left-1/2 max-[600px]:-translate-x-1/2 max-[600px]:w-[220px] max-[600px]:max-w-[calc(100vw-20px)]
                         ${index === 2 ? 'max-[600px]:left-auto max-[600px]:right-0 max-[600px]:transform-none' : ''}

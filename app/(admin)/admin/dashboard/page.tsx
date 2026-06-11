@@ -196,6 +196,12 @@ export default function AdminDashboard() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
+  // Role-based widget visibility. MANAGER: tables only (no stats/charts).
+  // SEO: only the Recent Ticket table. Everyone else: full dashboard.
+  const role = (mounted ? (session?.user?.role ?? "") : "").toUpperCase();
+  const showAnalytics = role !== "MANAGER" && role !== "SEO";
+  const showRecentOrders = role !== "SEO";
+
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadingData, setLoadingData] = useState(false);
 
@@ -425,7 +431,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Cards */}
-      {(() => {
+      {showAnalytics && (() => {
         const currentMonthName = MONTHS[new Date().getMonth()];
         const currentYearVal = new Date().getFullYear();
         const isCurrentPeriod = selectedMonth === currentMonthName && selectedYear === currentYearVal;
@@ -446,6 +452,7 @@ export default function AdminDashboard() {
 
 
       {/* Charts Row 1 */}
+      {showAnalytics && (
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
         {/* Earnings Overview */}
         <div className="rounded-[16px] bg-white dark:bg-[#1a1f2c] border border-[#f0f0f0] dark:border-slate-800 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-colors">
@@ -515,8 +522,10 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Charts Row 2 */}
+      {showAnalytics && (
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
         {/* Users Overview */}
         <div className="rounded-[16px] bg-white dark:bg-[#1a1f2c] border border-[#f0f0f0] dark:border-slate-800 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-colors">
@@ -596,6 +605,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      )}
+
       {/* Tables */}
       <DataTable<Ticket>
         title="Recent Ticket"
@@ -608,12 +619,14 @@ export default function AdminDashboard() {
         }}
       />
 
-      <DataTable<Order>
-        title="Recent Order Details"
-        headerRight={<Link href="/admin/orders" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL ORDERS</Link>}
-        data={recentOrders}
-        columns={orderColumns}
-      />
+      {showRecentOrders && (
+        <DataTable<Order>
+          title="Recent Order Details"
+          headerRight={<Link href="/admin/orders" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL ORDERS</Link>}
+          data={recentOrders}
+          columns={orderColumns}
+        />
+      )}
     </div>
   );
 }

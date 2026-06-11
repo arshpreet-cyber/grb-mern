@@ -36,9 +36,14 @@ type Order = {
   notes: string | null;
   payUrl: string | null;
   detailsFilled: boolean;
+  itemName?: string | null;
   orderDetails?: OrderDetail[];
   user?: { name: string | null; email: string; id?: string } | null;
 };
+
+// Treat legacy "NULL"/empty strings as missing.
+const clean = (v: string | null | undefined) =>
+  v && v !== "NULL" && v.trim() !== "" ? v : null;
 
 type ItemNote = {
   itemId: string;
@@ -108,7 +113,14 @@ export default function AdminOrderDetailPage() {
   const sym = order.symbol ?? "$";
 
   const itemsList = Array.isArray(order.orderDetails) ? order.orderDetails : [];
-  const subtotal = itemsList.reduce((s, d) => s + (d.amount ?? 0) * (d.quantity ?? 0), 0);
+  // Fall back to the order's own item/amount when no detail rows exist.
+  const displayItems: OrderDetail[] =
+    itemsList.length > 0
+      ? itemsList
+      : order.amount != null
+        ? [{ id: "order", platform: clean(order.itemName), itemName: clean(order.itemName), quantity: 1, amount: order.amount, type: null, profileUrl: null, image: null }]
+        : [];
+  const subtotal = displayItems.reduce((s, d) => s + (d.amount ?? 0) * (d.quantity ?? 0), 0);
 
   // Parse structured input details (submitted by customer via order details form)
   let itemNotes: ItemNote[] | null = null;
@@ -236,12 +248,12 @@ export default function AdminOrderDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {itemsList.length === 0 ? (
+                {displayItems.length === 0 ? (
                   <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No items available for this order</td></tr>
-                ) : itemsList.map(d => (
+                ) : displayItems.map(d => (
                   <tr key={d.id} className="border-b border-gray-50 dark:border-slate-800">
                     <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
-                      {d.platform ?? d.itemName ?? "—"} Reviews
+                      {(d.platform ?? d.itemName) ? `${d.platform ?? d.itemName} Reviews` : "Order item"}
                     </td>
                     <td className="px-4 py-3 text-gray-600 dark:text-slate-400">{d.quantity ?? "—"}</td>
                     <td className="px-4 py-3 text-gray-600 dark:text-slate-400">

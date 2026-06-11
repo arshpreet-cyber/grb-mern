@@ -18,11 +18,14 @@ function buildWhere(
   search: string,
   isAdmin: boolean,
   userId: number,
-  userEmail: string | null | undefined
+  userEmail: string | null | undefined,
+  forceMine = false
 ) {
   const where: any = { ...(STATUS_MAP[filter] ?? { deletedAt: null }) };
 
-  if (!isAdmin) {
+  // Non-admins are always scoped to their own orders. `forceMine` lets the
+  // customer dashboard self-scope even when the viewer is an admin.
+  if (!isAdmin || forceMine) {
     where.OR = [
       { userId },
       ...(userEmail ? [{ email: userEmail }] : []),
@@ -64,6 +67,7 @@ export async function GET(req: NextRequest) {
     const filter = searchParams.get("filter") ?? "all";
     const search = searchParams.get("search") ?? "";
     const countsOnly = searchParams.get("countsOnly") === "1";
+    const forceMine = searchParams.get("mine") === "1";
 
     // --- Counts-only mode: return counts for every tab in one round-trip ---
     if (countsOnly) {
@@ -71,7 +75,7 @@ export async function GET(req: NextRequest) {
       const countResults = await Promise.all(
         keys.map((k) =>
           prisma.order.count({
-            where: buildWhere(k, "", isAdmin, userId, userEmail),
+            where: buildWhere(k, "", isAdmin, userId, userEmail, forceMine),
           })
         )
       );
@@ -84,7 +88,7 @@ export async function GET(req: NextRequest) {
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
     const pageSize = Math.min(100, Math.max(1, parseInt(searchParams.get("pageSize") ?? "25", 10) || 25));
 
-    const where = buildWhere(filter, search, isAdmin, userId, userEmail);
+    const where = buildWhere(filter, search, isAdmin, userId, userEmail, forceMine);
 
     const [orders, total] = await Promise.all([
       prisma.order.findMany({

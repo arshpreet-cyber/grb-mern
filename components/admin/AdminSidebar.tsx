@@ -108,6 +108,12 @@ const menuSections: MenuSection[] = [
   // },
 ];
 
+// Sidebar sections hidden per role (by section title). ADMIN sees everything.
+const HIDDEN_SECTIONS_BY_ROLE: Record<string, string[]> = {
+  MANAGER: ["Pages", "Products"],
+  SEO: ["Order Management"],
+};
+
 interface AdminSidebarProps {
   isOpen?: boolean;
   onToggle?: () => void;
@@ -136,6 +142,10 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
 
   // Guard all session values behind `mounted` to prevent SSR/CSR hydration mismatch
   const role = mounted ? (session?.user?.role ?? "ADMIN") : "ADMIN";
+  const hiddenSectionTitles = HIDDEN_SECTIONS_BY_ROLE[role.toUpperCase()] ?? [];
+  const visibleSections = menuSections.filter(
+    (s) => !s.title || !hiddenSectionTitles.includes(s.title)
+  );
   const initials = mounted ? (session?.user?.name?.charAt(0)?.toUpperCase() ?? "A") : "A";
   const userName = mounted ? (session?.user?.name ?? "Admin") : "Admin";
   const userEmail = mounted ? (session?.user?.email ?? "") : "";
@@ -177,7 +187,7 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-4 space-y-6 text-sm pb-5">
-          {menuSections.map((section, sectionIndex) => (
+          {visibleSections.map((section, sectionIndex) => (
             <div key={sectionIndex}>
               {section.title && (
                 <p className="text-[10px] font-semibold text-gray-400 dark:text-slate-500 uppercase mb-2">
