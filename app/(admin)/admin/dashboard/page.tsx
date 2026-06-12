@@ -243,13 +243,17 @@ export default function AdminDashboard() {
         onChange={(e) => updateTicketStatus(r.ticketId, e.target.value)}
         className={`text-[11px] font-semibold px-2 py-1 rounded border cursor-pointer outline-none ${
           r.status === "Closed" ? "bg-green-100 text-green-700 border-green-300" :
-          r.status === "Hold" ? "bg-yellow-100 text-yellow-700 border-yellow-300" :
+          r.status === "Hold" || r.status === "Pending" ? "bg-yellow-100 text-yellow-700 border-yellow-300" :
+          r.status === "Awaiting Reply" || r.status === "Answered" ? "bg-blue-100 text-blue-700 border-blue-300" :
           "bg-red-100 text-red-700 border-red-300"
         }`}
       >
         <option value="Open">Open</option>
+        <option value="Awaiting Reply">Awaiting Reply</option>
+        <option value="Answered">Answered</option>
         <option value="Closed">Closed</option>
         <option value="Hold">Hold</option>
+        <option value="Pending">Pending</option>
       </select>
     ) },
     { key: "createdAt", header: "Created On", render: (r) => <span className="text-gray-600 dark:text-white text-[15px] font-medium">{new Date(r.createdAt).toLocaleDateString()}</span> },

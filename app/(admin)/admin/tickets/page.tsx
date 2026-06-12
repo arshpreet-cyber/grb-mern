@@ -63,12 +63,25 @@ export default function AdminTicketsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
+  const [dbCounts, setDbCounts] = useState({ all: 0, open: 0, awaiting: 0, closed: 0, pending: 0 });
 
-  const loadTickets = () => {
+  const loadTickets = (currentFilter: string = filter) => {
     setLoading(true);
-    fetch("/api/support/tickets")
+    const statusQuery = currentFilter === "all" ? "" :
+                        currentFilter === "open" ? "?status=Open" :
+                        currentFilter === "awaiting" ? "?status=Awaiting" :
+                        currentFilter === "closed" ? "?status=Closed" :
+                        currentFilter === "pending" ? "?status=Pending" : "";
+    fetch(`/api/support/tickets${statusQuery}`)
       .then(async (r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((data) => setTickets(sortTickets(data ?? [])))
+      .then((data) => {
+        if (data && typeof data === "object" && !Array.isArray(data)) {
+          setTickets(sortTickets(data.tickets ?? []));
+          setDbCounts(data.counts ?? { all: 0, open: 0, awaiting: 0, closed: 0, pending: 0 });
+        } else {
+          setTickets(sortTickets(data ?? []));
+        }
+      })
       .catch(() => setError("Unable to load tickets."))
       .finally(() => setLoading(false));
   };
@@ -169,13 +182,7 @@ export default function AdminTicketsPage() {
     },
   ];
 
-  const counts = {
-    all: tickets.length,
-    open: tickets.filter(t => t.status === "Open").length,
-    awaiting: tickets.filter(t => t.status === "Awaiting Reply" || t.status === "Answered").length,
-    closed: tickets.filter(t => t.status === "Closed").length,
-    pending: tickets.filter(t => t.status === "Pending").length,
-  };
+  const counts = dbCounts;
   const FILTER_TABS = [
     { key: "all", label: "All", color: "bg-gray-800 text-white" },
     { key: "open", label: "Open", color: "bg-emerald-600 text-white" },
@@ -214,7 +221,10 @@ export default function AdminTicketsPage() {
         {FILTER_TABS.map(tab => (
           <button
             key={tab.key}
-            onClick={() => setFilter(tab.key)}
+            onClick={() => {
+              setFilter(tab.key);
+              loadTickets(tab.key);
+            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${
               filter === tab.key
                 ? `${tab.color} border-transparent shadow-md`

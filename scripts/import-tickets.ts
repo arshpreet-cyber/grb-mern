@@ -62,7 +62,11 @@ async function main() {
         ticket_id: realTicketId,
         by_admin: parseIntNull(t.by_admin) ?? 1,
         ticket_type: parseIntNull(t.ticket_type),
-        status: parseString(t.status) || 'Open',
+        status: t.status === '1' ? 'Open' :
+                t.status === '2' ? 'Closed' :
+                t.status === '5' ? 'Awaiting Reply' :
+                t.status === '4' ? 'Closed' :
+                parseString(t.status) || 'Open',
         read_status: parseIntNull(t.read_status) ?? 1,
         replied_status: parseIntNull(t.replied_status),
         user_read_status: parseIntNull(t.user_read_status),
