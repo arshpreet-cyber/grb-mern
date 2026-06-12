@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ClipboardList, FileText, Info } from "lucide-react";
+import { ArrowLeft, ClipboardList, FileText, Info, Ticket } from "lucide-react";
 
 type OrderDetail = {
   id: string;
@@ -152,24 +152,32 @@ export default function AdminOrderDetailPage() {
             {order.createdAt ? new Date(order.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "—"}
           </p>
         </div>
-        <div className="ml-auto flex gap-2 flex-wrap">
-          <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
-            order.status === "2" || order.status === "9" ? "bg-green-100 text-green-700 border-green-300"
-            : order.status === "5" ? "bg-blue-100 text-blue-700 border-blue-300"
-            : order.status === "3" ? "bg-orange-100 text-orange-700 border-orange-300"
-            : order.status === "4" || order.status === "7" || order.status === "8" ? "bg-red-100 text-red-700 border-red-300"
-            : order.status === "6" ? "bg-purple-100 text-purple-700 border-purple-300"
-            : "bg-yellow-100 text-yellow-700 border-yellow-300"
-          }`}>
-            {STATUS_LABELS[order.status ?? "1"] ?? "—"}
-          </span>
-          <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
-            order.paymentStatus === "2" ? "bg-green-100 text-green-700 border-green-300"
-            : order.paymentStatus === "4" ? "bg-yellow-100 text-yellow-700 border-yellow-300"
-            : "bg-red-100 text-red-700 border-red-300"
-          }`}>
-            {PAYMENT_LABELS[order.paymentStatus ?? "1"] ?? "—"}
-          </span>
+        <div className="ml-auto flex flex-col items-end gap-2">
+          <Link
+            href={`/dashboard/support?subject=${encodeURIComponent(`Order ${order.orderNumber ?? order.id} - `)}`}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 px-3.5 py-1.5 text-[12px] font-bold transition shadow-sm"
+          >
+            <Ticket size={14} /> Create Ticket
+          </Link>
+          <div className="flex gap-2 flex-wrap justify-end">
+            <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
+              order.status === "2" || order.status === "9" ? "bg-green-100 text-green-700 border-green-300"
+              : order.status === "5" ? "bg-blue-100 text-blue-700 border-blue-300"
+              : order.status === "3" ? "bg-orange-100 text-orange-700 border-orange-300"
+              : order.status === "4" || order.status === "7" || order.status === "8" ? "bg-red-100 text-red-700 border-red-300"
+              : order.status === "6" ? "bg-purple-100 text-purple-700 border-purple-300"
+              : "bg-yellow-100 text-yellow-700 border-yellow-300"
+            }`}>
+              {STATUS_LABELS[order.status ?? "1"] ?? "—"}
+            </span>
+            <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
+              order.paymentStatus === "2" ? "bg-green-100 text-green-700 border-green-300"
+              : order.paymentStatus === "4" ? "bg-yellow-100 text-yellow-700 border-yellow-300"
+              : "bg-red-100 text-red-700 border-red-300"
+            }`}>
+              {PAYMENT_LABELS[order.paymentStatus ?? "1"] ?? "—"}
+            </span>
+          </div>
         </div>
       </div>
 
