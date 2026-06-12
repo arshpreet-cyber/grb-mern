@@ -175,14 +175,17 @@ export default function AdminOrderDetailPage() {
         </div>
         <div className="ml-auto flex flex-col items-end gap-2">
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <button
-              onClick={sendIncompleteOrderEmail}
-              disabled={sendingIncomplete}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50 px-3.5 py-1.5 text-[12px] font-bold transition disabled:opacity-60"
-            >
-              {sendingIncomplete ? <Loader2 size={14} className="animate-spin" /> : <MailWarning size={14} />}
-              Incomplete Order
-            </button>
+            {/* Only show when the customer hasn't submitted their input details yet */}
+            {!(itemNotes && itemNotes.length > 0) && (
+              <button
+                onClick={sendIncompleteOrderEmail}
+                disabled={sendingIncomplete}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50 px-3.5 py-1.5 text-[12px] font-bold transition disabled:opacity-60"
+              >
+                {sendingIncomplete ? <Loader2 size={14} className="animate-spin" /> : <MailWarning size={14} />}
+                Incomplete Order
+              </button>
+            )}
             <Link
               href={`/dashboard/support?subject=${encodeURIComponent(`Order ${order.orderNumber ?? order.id} - `)}`}
               className="inline-flex items-center gap-1.5 rounded-lg bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 px-3.5 py-1.5 text-[12px] font-bold transition shadow-sm"
