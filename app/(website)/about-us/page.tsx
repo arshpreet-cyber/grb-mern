@@ -556,7 +556,7 @@ function CommitmentsGridSection() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
           {/* Left Column: Image wrapper with sticky positioning */}
-          <div className="md:sticky md:top-24 lg:top-40 w-full flex justify-center lg:justify-start">
+          <div className="md:sticky md:top-28 lg:top-40 w-full flex justify-center lg:justify-start">
             <img
               src="/uploads/media/1780464814337-3faaff7e-c755-4f04-a4d9-12b452e1140f-Rectangle-10325.webp"
               alt="Illustration"
