@@ -261,8 +261,8 @@ export default function DemoDashboard() {
                       <div className="inline-flex flex-col items-center gap-1">
                         <span className="text-[13px] text-gray-800 dark:text-slate-300 font-medium">{order.orderNumber || order.id}</span>
                         {order.isRecurring === 1 && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide">
-                            ● Subscription
+                          <span className="inline-flex items-center gap-1 rounded-[4px] bg-[#13B3BA] text-white px-2 py-0.5 text-[9px] font-semibold tracking-wide whitespace-nowrap">
+                            Subscription
                           </span>
                         )}
                       </div>
@@ -272,10 +272,24 @@ export default function DemoDashboard() {
                     <td className="px-5 py-5 text-[13px] text-gray-600 dark:text-slate-400 font-mono text-center">{new Date(order.createdAt).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>
                     <td className="px-5 py-5 text-center">
                       {order.paymentMethod && order.paymentMethod !== "—" ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 text-[10px] font-normal text-amber-600 dark:text-amber-400 whitespace-nowrap">
-                          <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                          {order.paymentMethod}
-                        </span>
+                        (() => {
+                          const pm = order.paymentMethod.toLowerCase();
+                          const isPaypal = pm.includes("paypal");
+                          const isRazorpay = pm.includes("razorpay");
+                          const isStripe = pm.includes("stripe");
+                          const bg = isPaypal
+                            ? "bg-[#003087]"
+                            : isRazorpay
+                              ? "bg-[#13B3BA]"
+                              : isStripe
+                                ? "bg-[#635BFF]"
+                                : "bg-[#13B3BA]";
+                          return (
+                            <span className={`inline-flex items-center rounded-[4px] ${bg} px-2.5 py-[3px] text-[10px] font-semibold text-white whitespace-nowrap`}>
+                              {order.paymentMethod}
+                            </span>
+                          );
+                        })()
                       ) : (
                         <span className="text-gray-400">—</span>
                       )}
