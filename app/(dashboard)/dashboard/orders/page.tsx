@@ -401,7 +401,7 @@ export default function DemoDashboard() {
                     )}
 
                     {order.paymentStatus !== "Paid" && (
-                      <PayNowDropdown orderId={order.id} fallbackUrl={order.payUrl} openUpward />
+                      <PayNowDropdown orderId={order.id} fallbackUrl={order.payUrl} />
                     )}
 
                     <Link

@@ -177,7 +177,7 @@ export default function UserOrderDetailPage() {
               <div>
                 <dt className="text-[11px] text-gray-400 uppercase tracking-wide mb-1">Payment</dt>
                 <dd>
-                  <PayNowDropdown orderId={order.id} fallbackUrl={order.payUrl} align="left" />
+                  <PayNowDropdown orderId={order.id} fallbackUrl={order.payUrl} />
                 </dd>
               </div>
             )}
