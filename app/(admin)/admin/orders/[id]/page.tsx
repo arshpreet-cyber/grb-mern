@@ -7,13 +7,12 @@ import { ArrowLeft, ClipboardList, FileText, Info, Ticket } from "lucide-react";
 
 type OrderDetail = {
   id: string;
-  platform: string | null;
   itemName: string | null;
+  bannerTitle: string | null;
   quantity: number | null;
   amount: number | null;
-  type: string | null;
-  profileUrl: string | null;
-  image: string | null;
+  reviewData: string | null;
+  productType: string | null;
 };
 
 type Order = {
@@ -249,25 +248,30 @@ export default function AdminOrderDetailPage() {
             <table className="w-full text-[12px] text-left">
               <thead className="bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800">
                 <tr>
-                  {["Product", "Qty", "Unit Price", "Total", "Profile URL"].map(h => (
+                  {["Product", "Qty", "Unit Price", "Total"].map(h => (
                     <th key={h} className="px-4 py-3 font-semibold text-gray-500 dark:text-slate-400 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {itemsList.length === 0 ? (
-                  <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No items available for this order</td></tr>
-                ) : itemsList.map(d => (
+                  <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400">No items available for this order</td></tr>
+                ) : itemsList.map(d => {
+                  // Parse profileUrl from reviewData JSON
+                  let profileUrl: string | null = null;
+                  if (d.reviewData) {
+                    try { profileUrl = JSON.parse(d.reviewData)?.profileUrl ?? null; } catch {}
+                  }
+                  return (
                   <tr key={d.id} className="border-b border-gray-50 dark:border-slate-800">
                     <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white whitespace-pre-wrap">
                       {(() => {
                         const isNullStr = (v: any) => !v || v === "NULL" || v === "null";
-                        const platform = isNullStr(d.platform) ? "" : d.platform;
                         const itemName = isNullStr(d.itemName) ? "" : d.itemName;
                         
-                        let displayName = platform || itemName || "—";
-                        if (platform && !platform.toLowerCase().includes("reviews")) {
-                          displayName = `${platform} Reviews`;
+                        let displayName = itemName || "—";
+                        if (itemName && !itemName.toLowerCase().includes("reviews")) {
+                          displayName = `${itemName} Reviews`;
                         }
                         return displayName;
                       })()}
@@ -279,13 +283,9 @@ export default function AdminOrderDetailPage() {
                     <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">
                       {d.amount != null && d.quantity != null ? `${sym}${(d.amount * d.quantity).toFixed(2)}` : "—"}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-slate-400 max-w-[180px]">
-                      {d.profileUrl
-                        ? <a href={d.profileUrl} target="_blank" rel="noopener noreferrer" className="text-amber-600 dark:text-[#fc0] hover:text-amber-700 dark:hover:text-amber-400 underline truncate block">{d.profileUrl}</a>
-                        : <span className="text-gray-300">—</span>}
-                    </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -328,7 +328,11 @@ export default function AdminOrderDetailPage() {
             {itemNotes.map((note, i) => {
               const detail = itemsList.find((d) => String(d.id) === String(note.itemId));
               const qty = detail?.quantity ?? 1;
-              const profileUrl = detail?.profileUrl ?? "";
+              // Parse profileUrl from reviewData
+              let profileUrl = "";
+              if (detail?.reviewData) {
+                try { profileUrl = JSON.parse(detail.reviewData)?.profileUrl ?? ""; } catch {}
+              }
 
               return (
                 <div key={i} className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 space-y-5">

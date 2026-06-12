@@ -9,7 +9,6 @@ interface ItemForm {
   platform: string;
   quantity: number;
   amount: number;
-  image?: string;
   profileUrl: string;
   submissionType: "provide" | "expert";
   businessDetails: string;
@@ -23,11 +22,10 @@ interface OrderData {
   amount: number;
   orderDetails: {
     id: string;
-    platform: string;
+    itemName: string;
     quantity: number;
     amount: number;
-    image?: string;
-    profileUrl: string;
+    reviewData: string | null;
   }[];
 }
 
@@ -53,18 +51,24 @@ export default function OrderDetailsPage() {
         if (data.error) { setError(data.error); setLoading(false); return; }
         setOrder(data);
         setItems(
-          data.orderDetails.map((d: OrderData["orderDetails"][number]) => ({
+          data.orderDetails.map((d: OrderData["orderDetails"][number]) => {
+            // Parse profileUrl from reviewData JSON
+            let profileUrl = "";
+            if (d.reviewData) {
+              try { profileUrl = JSON.parse(d.reviewData)?.profileUrl ?? ""; } catch {}
+            }
+            return {
             id: d.id,
-            platform: d.platform,
+            platform: d.itemName,
             quantity: d.quantity,
             amount: d.amount,
-            image: d.image,
-            profileUrl: d.profileUrl ?? "",
-            submissionType: "provide",
+            profileUrl,
+            submissionType: "provide" as const,
             businessDetails: "",
             additionalInstructions: "",
             files: [],
-          }))
+            };
+          })
         );
         setLoading(false);
       })
@@ -228,9 +232,6 @@ function ItemSection({
     <div className="px-[30px] py-[28px] space-y-5">
       {/* Product header */}
       <div className="flex items-center gap-3">
-        {item.image && (
-          <img src={item.image} alt={item.platform} className="w-10 h-10 object-contain rounded" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-        )}
         <h3 className="text-[15px] font-bold text-[#212529]">
           {item.platform} Reviews{" "}
           <span className="font-normal text-[#666]">(Qty:{item.quantity})</span>

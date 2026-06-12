@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
           paymentMethod: "Credit Card",
           status: "Pending",
           paymentStatus: "Pending",
-          date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         },
         {
           orderNumber: "#177150847",
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
           paymentMethod: "PayPal",
           status: "Complete",
           paymentStatus: "Complete",
-          date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         },
         {
           orderNumber: "#177150848",
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
           paymentMethod: "Credit Card",
           status: "Complete",
           paymentStatus: "Complete",
-          date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         },
         {
           orderNumber: "#177150849",
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
           paymentMethod: "Stripe",
           status: "Pending",
           paymentStatus: "Pending",
-          date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
         },
         {
           orderNumber: "#177150850",
@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
           paymentMethod: "Credit Card",
           status: "Complete",
           paymentStatus: "Complete",
-          date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
         },
         {
           orderNumber: "#177150851",
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
           paymentMethod: "PayPal",
           status: "Cancelled",
           paymentStatus: "Failed",
-          date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
         },
         {
           orderNumber: "#177150852",
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
           paymentMethod: "Credit Card",
           status: "Complete",
           paymentStatus: "Complete",
-          date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
         },
         {
           orderNumber: "#177150853",
@@ -128,7 +128,7 @@ export async function GET(req: NextRequest) {
           paymentMethod: "Stripe",
           status: "Pending",
           paymentStatus: "Pending",
-          date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
         },
       ];
 

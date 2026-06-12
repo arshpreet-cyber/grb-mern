@@ -12,7 +12,11 @@ async function main() {
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    console.log("⚠️  User already exists:", email);
+    await prisma.user.update({
+      where: { email },
+      data: { role: "ADMIN", status: "active" }
+    });
+    console.log("✅ User already exists. Role updated to ADMIN:", email);
     return;
   }
 

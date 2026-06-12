@@ -32,8 +32,7 @@ type ApiOrder = {
   displayId?: number | null;
   orderNumber: string;
   amount: number;
-  date: string;
-  createdAt?: string;
+  createdAt: string;
   paymentId?: string | null;
   paymentMethod: string;
   payUrl?: string | null;
@@ -98,7 +97,7 @@ export default function DemoDashboard() {
           orderNumber: o.orderNumber,
           paymentId: isNullStr(o.paymentId) ? "—" : o.paymentId,
           amount: o.amount ?? 0,
-          createdAt: o.date ?? o.createdAt,
+          createdAt: o.createdAt,
           paymentMethod: isNullStr(o.paymentMethod) ? "—" : paymentMethodLabel(o.paymentMethod),
           payUrl: o.payUrl,
           detailsFilled: o.detailsFilled,

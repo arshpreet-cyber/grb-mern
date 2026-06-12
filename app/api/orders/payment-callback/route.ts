@@ -36,7 +36,7 @@ async function markOrderPaid(orderId: string, tokenCode: string, paymentId: stri
         email: order.email,
         orderNumber: order.orderNumber ?? orderId,
         items: order.orderDetails.map((d) => ({
-          platform: d.platform ?? d.itemName ?? "",
+          platform: d.itemName ?? "",
           qty: d.quantity ?? 1,
           pricePerUnit: d.amount ?? 0,
         })),

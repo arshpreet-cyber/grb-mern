@@ -42,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
       if (email) {
         const items = (order.orderDetails ?? []).map((d) => ({
-          platform: d.platform ?? d.itemName ?? "Review",
+          platform: d.itemName ?? "Review",
           qty: d.quantity ?? 1,
           pricePerUnit: d.amount ?? 0,
         }));

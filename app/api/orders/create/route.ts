@@ -63,12 +63,11 @@ export async function POST(req: NextRequest) {
         orderDetails: {
           create: items.map((item: any) => ({
             itemName: item.platform,
+            bannerTitle: item.bannerTitle ?? item.platform,
             itemId: item.id,
             quantity: item.qty,
             amount: item.pricePerUnit,
-            platform: item.platform,
-            type: item.type,
-            image: item.image,
+            productType: item.type === "subscribe" ? "2" : "1",
           })),
         },
       },

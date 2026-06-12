@@ -39,13 +39,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Save profile URL per item
+    // Save profile URL per item in reviewData
     if (items?.length) {
       await Promise.all(
         items.map((item: { id: string; profileUrl: string }) =>
           prisma.orderDetail.update({
             where: { id: parseInt(item.id) },
-            data: { profileUrl: item.profileUrl },
+            data: { reviewData: JSON.stringify({ profileUrl: item.profileUrl }) },
           })
         )
       );
