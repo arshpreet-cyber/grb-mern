@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Wrapper from "@/components/ui/Wrapper";
 
 // ─── IMAGE CONSTANTS ───────────────────────────────────────────────────────────
@@ -281,54 +281,86 @@ function WhoWeAreSection() {
 
 function JourneySection() {
   const [activeIdx, setActiveIdx] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const activeEl = container.querySelector(`[data-index="${activeIdx}"]`);
+    if (activeEl) {
+      const containerWidth = container.offsetWidth;
+      const elementOffset = (activeEl as HTMLElement).offsetLeft;
+      const elementWidth = (activeEl as HTMLElement).offsetWidth;
+
+      container.scrollTo({
+        left: elementOffset - containerWidth / 2 + elementWidth / 2,
+        behavior: "smooth",
+      });
+    }
+  }, [activeIdx]);
+
   return (
     <section className="py-16 md:py-20 px-5 md:px-[70px] bg-gradient-to-b from-[#fffdfd] to-white overflow-hidden">
       <div className="w-full max-w-[1500px] mx-auto">
         <h2 className="text-[32px] md:text-[40px] font-bold text-[#111] mb-[50px] md:mb-[70px] leading-[1.1]">
           Our Journey So Far
         </h2>
-        {/* Timeline */}
-        <div className="relative mb-[60px] md:mb-[100px] w-full mx-auto px-4 md:px-0 select-none">
-          {/* Base track (rail) */}
-          <div className="absolute top-[36px] left-[5.55555%] w-[88.88888%] h-[2px] bg-[#f0f0f0]" />
+        {/* Timeline wrapper with fade mask on scrollable edges */}
+        <div className="relative w-full">
+          {/* Subtle fade overlays to indicate scrollability on mobile */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-30 lg:hidden" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-30 lg:hidden" />
 
-          {/* Sliding yellow track (progress bar) */}
+          {/* Timeline scrollable window */}
           <div
-            className="absolute top-[36px] left-[5.55555%] h-[2px] bg-[#F4B000] transition-all duration-500 ease-out"
-            style={{ width: `${activeIdx * 11.11111}%` }}
-          />
-
-          {/* Sliding handle (slider knob) */}
-          <div
-            className="absolute top-[26px] w-[22px] h-[22px] border border-[#F4B000] bg-white rounded-full transition-all duration-500 ease-out -translate-x-1/2 flex items-center justify-center cursor-pointer z-20"
-            style={{ left: `${5.55555 + activeIdx * 11.11111}%` }}
+            ref={scrollContainerRef}
+            className="w-full overflow-x-auto scrollbar-hide pb-4"
           >
-            {/* Inner core */}
-            <span className="w-[10px] h-[10px] bg-[#F4B000] rounded-full" />
-          </div>
+            <div className="relative min-w-[850px] lg:min-w-0 w-full select-none">
+              {/* Base track (rail) */}
+              <div className="absolute top-[36px] left-[5.55555%] w-[88.88888%] h-[2px] bg-[#f0f0f0]" />
 
-          <div className="flex justify-between items-start relative w-full pb-4">
-            {TIMELINE_YEARS.map((year, i) => (
+              {/* Sliding yellow track (progress bar) */}
               <div
-                key={year}
-                className="flex-grow flex-shrink-0 flex flex-col items-center cursor-pointer z-10"
-                style={{ width: '11.11111%' }}
-                onMouseEnter={() => setActiveIdx(i)}
-                onClick={() => setActiveIdx(i)}
+                className="absolute top-[36px] left-[5.55555%] h-[2px] bg-[#F4B000] transition-all duration-500 ease-out"
+                style={{ width: `${activeIdx * 11.11111}%` }}
+              />
+
+              {/* Sliding handle (slider knob) */}
+              <div
+                className="absolute top-[26px] w-[22px] h-[22px] border border-[#F4B000] bg-white rounded-full transition-all duration-500 ease-out -translate-x-1/2 flex items-center justify-center cursor-pointer z-20"
+                style={{ left: `${5.55555 + activeIdx * 11.11111}%` }}
               >
-                <div className="h-12" />
-                <h1 className={`text-[32px] md:text-[32px] transition-all duration-300 ${activeIdx === i ? "font-bold text-[#F4B000]" : "font-medium text-[#d5d5d5] hover:text-black/60"}`}>
-                  {year}
-                </h1>
+                {/* Inner core */}
+                <span className="w-[10px] h-[10px] bg-[#F4B000] rounded-full" />
               </div>
-            ))}
+
+              <div className="flex justify-between items-start relative w-full pb-4">
+                {TIMELINE_YEARS.map((year, i) => (
+                  <div
+                    key={year}
+                    data-index={i}
+                    className="flex-grow flex-shrink-0 flex flex-col items-center cursor-pointer z-10"
+                    style={{ width: '11.11111%' }}
+                    onMouseEnter={() => setActiveIdx(i)}
+                    onClick={() => setActiveIdx(i)}
+                  >
+                    <div className="h-12" />
+                    <h1 className={`text-[24px] md:text-[32px] transition-all duration-300 ${activeIdx === i ? "font-bold text-[#F4B000]" : "font-medium text-[#d5d5d5] hover:text-black/60"}`}>
+                      {year}
+                    </h1>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Content with dynamic transition */}
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10 min-h-[350px] mt-10">
           <div className="w-full lg:w-[45%]">
-            <div className="w-full max-w-[500px] h-[330px] rounded-[18px] overflow-hidden shadow-lg border border-black/5 mx-auto lg:mx-0">
+            <div className="w-full max-w-[500px] h-[220px] sm:h-[280px] md:h-[330px] rounded-[18px] overflow-hidden shadow-lg border border-black/5 mx-auto lg:mx-0">
               <img
                 src={TIMELINE_CONTENT[activeIdx].img}
                 alt={TIMELINE_CONTENT[activeIdx].title}
