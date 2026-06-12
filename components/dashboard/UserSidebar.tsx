@@ -11,7 +11,6 @@ import {
   AlertCircle, 
   UserCircle, 
   LogOut, 
-  ChevronsLeft, 
   ChevronDown, 
   ChevronUp, 
   Zap 
@@ -95,10 +94,14 @@ export default function UserSidebar({ isOpen = true, onToggle }: UserSidebarProp
   const isActive = (href: string) => pathname === href;
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 w-[260px] h-screen overflow-y-auto flex flex-col shrink-0 font-sans bg-white dark:bg-[#0f1117] border-r border-gray-100 dark:border-slate-800 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
-      
-      {/* Logo & Toggle Button Container */}
-      <div className="px-5 py-6 flex items-center justify-between">
+    <aside className={`fixed inset-y-0 left-0 z-50 h-screen flex flex-col shrink-0 font-sans bg-white dark:bg-[#0f1117] transition-all duration-300 ease-in-out overflow-hidden ${
+      isOpen 
+        ? "w-[260px] translate-x-0 border-r border-gray-100 dark:border-slate-800" 
+        : "w-0 -translate-x-full border-r-0 pointer-events-none"
+    }`}>
+      <div className="w-[260px] h-full flex flex-col shrink-0 overflow-y-auto">
+        {/* Logo Container */}
+        <div className="px-5 py-6">
         <Link href="/">
           <img
             src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
@@ -106,14 +109,6 @@ export default function UserSidebar({ isOpen = true, onToggle }: UserSidebarProp
             className="w-[140px] h-auto dark:brightness-0 dark:invert transition-all"
           />
         </Link>
-        
-        <button 
-          onClick={onToggle}
-          className="p-1.5 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md transition-colors"
-          aria-label="Toggle Sidebar"
-        >
-          <ChevronsLeft size={20} />
-        </button>
       </div>
 
       {/* Nav */}
@@ -251,6 +246,7 @@ export default function UserSidebar({ isOpen = true, onToggle }: UserSidebarProp
           <span className="font-medium">Logout</span>
         </button>
       </div>
-    </aside>
+    </div>
+  </aside>
   );
 }

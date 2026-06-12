@@ -27,7 +27,7 @@ import {
   Loader2,
 } from "lucide-react";
 import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
-import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
+import { orderStatusLabel, paymentStatusLabel, paymentMethodLabel, paymentMethodColor } from "@/lib/status-labels";
 
 // Types
 interface Stats {
@@ -159,12 +159,7 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-const PM_LABELS: Record<string, string> = {
-  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Pay by Card",
-};
-const PM_COLORS: Record<string, string> = {
-  "1": "bg-gray-700", "2": "bg-indigo-600", "3": "bg-blue-500", "4": "bg-blue-700", "5": "bg-gray-700",
-};
+
 
 export default function AdminDashboard() {
   const { data: session } = useSession();
@@ -280,8 +275,8 @@ export default function AdminDashboard() {
     { key: "paymentMethod", header: "Method", render: (r) => {
       const pm = r.paymentMethod ?? "";
       return (
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded text-white ${PM_COLORS[pm] ?? "bg-gray-500"}`}>
-          {PM_LABELS[pm] ?? "—"}
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded text-white ${paymentMethodColor(pm)}`}>
+          {paymentMethodLabel(pm)}
         </span>
       );
     } },
@@ -299,6 +294,9 @@ export default function AdminDashboard() {
         "On Hold":    "border-[#fed7aa] text-[#ea580c] bg-[#fff7ed] dark:border-orange-900/50 dark:bg-orange-900/20 dark:text-orange-400",
         "Cancelled":  "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
         "Refund":     "border-[#e9d5ff] text-[#7c3aed] bg-[#f5f3ff] dark:border-purple-900/50 dark:bg-purple-900/20 dark:text-purple-400",
+        "Failed":     "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
+        "Fraud":      "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
+        "Active":     "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
       }} />
     ) },
     { key: "paymentStatus", header: "Payment", render: (r) => (

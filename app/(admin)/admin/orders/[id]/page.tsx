@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ClipboardList, FileText } from "lucide-react";
+import { ArrowLeft, ClipboardList, FileText, Info } from "lucide-react";
 
 type OrderDetail = {
   id: string;
@@ -36,14 +36,9 @@ type Order = {
   notes: string | null;
   payUrl: string | null;
   detailsFilled: boolean;
-  itemName?: string | null;
   orderDetails?: OrderDetail[];
   user?: { name: string | null; email: string; id?: string } | null;
 };
-
-// Treat legacy "NULL"/empty strings as missing.
-const clean = (v: string | null | undefined) =>
-  v && v !== "NULL" && v.trim() !== "" ? v : null;
 
 type ItemNote = {
   itemId: string;
@@ -53,14 +48,13 @@ type ItemNote = {
   additionalInstructions: string;
 };
 
+import { paymentMethodLabel } from "@/lib/status-labels";
+
 const STATUS_LABELS: Record<string, string> = {
-  "1": "Pending", "2": "Complete", "3": "Processing", "4": "Hold", "5": "Cancelled", "6": "Refund",
+  "1": "Pending", "2": "Complete", "3": "Hold", "4": "Cancelled", "5": "Processing", "6": "Refund", "7": "Failed", "8": "Fraud", "9": "Active",
 };
 const PAYMENT_LABELS: Record<string, string> = {
-  "1": "Unpaid", "2": "Paid", "3": "Unconfirmed", "4": "Cancelled",
-};
-const PM_LABELS: Record<string, string> = {
-  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Card",
+  "1": "Unpaid", "2": "Paid", "3": "Cancelled", "4": "Unconfirmed",
 };
 
 export default function AdminOrderDetailPage() {
@@ -74,10 +68,18 @@ export default function AdminOrderDetailPage() {
     
     fetch(`/api/orders/${id}`)
       .then(async (r) => {
-        if (!r.ok) throw new Error("Fetch failed");
+        console.log("[AdminOrderDetail] fetch status:", r.status);
+        if (!r.ok) {
+          const errBody = await r.text();
+          console.log("[AdminOrderDetail] error body:", errBody);
+          throw new Error("Fetch failed");
+        }
         return r.json();
       })
       .then((d) => { 
+        console.log("[AdminOrderDetail] data keys:", Object.keys(d));
+        console.log("[AdminOrderDetail] orderDetails:", JSON.stringify(d.orderDetails));
+        console.log("[AdminOrderDetail] user:", JSON.stringify(d.user));
         if (d && !d.error) {
           setOrder(d);
         } else {
@@ -85,7 +87,8 @@ export default function AdminOrderDetailPage() {
         }
         setLoading(false); 
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error("[AdminOrderDetail] catch error:", e);
         setOrder(null);
         setLoading(false);
       });
@@ -113,14 +116,7 @@ export default function AdminOrderDetailPage() {
   const sym = order.symbol ?? "$";
 
   const itemsList = Array.isArray(order.orderDetails) ? order.orderDetails : [];
-  // Fall back to the order's own item/amount when no detail rows exist.
-  const displayItems: OrderDetail[] =
-    itemsList.length > 0
-      ? itemsList
-      : order.amount != null
-        ? [{ id: "order", platform: clean(order.itemName), itemName: clean(order.itemName), quantity: 1, amount: order.amount, type: null, profileUrl: null, image: null }]
-        : [];
-  const subtotal = displayItems.reduce((s, d) => s + (d.amount ?? 0) * (d.quantity ?? 0), 0);
+  const subtotal = itemsList.reduce((s, d) => s + (d.amount ?? 0) * (d.quantity ?? 0), 0);
 
   // Parse structured input details (submitted by customer via order details form)
   let itemNotes: ItemNote[] | null = null;
@@ -158,16 +154,19 @@ export default function AdminOrderDetailPage() {
         </div>
         <div className="ml-auto flex gap-2 flex-wrap">
           <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
-            order.status === "2" ? "bg-green-100 text-green-700 border-green-300"
-            : order.status === "3" ? "bg-blue-100 text-blue-700 border-blue-300"
+            order.status === "2" || order.status === "9" ? "bg-green-100 text-green-700 border-green-300"
+            : order.status === "5" ? "bg-blue-100 text-blue-700 border-blue-300"
+            : order.status === "3" ? "bg-orange-100 text-orange-700 border-orange-300"
+            : order.status === "4" || order.status === "7" || order.status === "8" ? "bg-red-100 text-red-700 border-red-300"
+            : order.status === "6" ? "bg-purple-100 text-purple-700 border-purple-300"
             : "bg-yellow-100 text-yellow-700 border-yellow-300"
           }`}>
             {STATUS_LABELS[order.status ?? "1"] ?? "—"}
           </span>
           <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
             order.paymentStatus === "2" ? "bg-green-100 text-green-700 border-green-300"
-            : order.paymentStatus === "1" ? "bg-red-100 text-red-700 border-red-300"
-            : "bg-yellow-100 text-yellow-700 border-yellow-300"
+            : order.paymentStatus === "4" ? "bg-yellow-100 text-yellow-700 border-yellow-300"
+            : "bg-red-100 text-red-700 border-red-300"
           }`}>
             {PAYMENT_LABELS[order.paymentStatus ?? "1"] ?? "—"}
           </span>
@@ -197,7 +196,7 @@ export default function AdminOrderDetailPage() {
             </div>
             <div>
               <dt className="text-[11px] text-gray-400 uppercase tracking-wide">Payment Method</dt>
-              <dd className="font-medium text-gray-700 dark:text-slate-300">{PM_LABELS[order.paymentMethod ?? ""] ?? "—"}</dd>
+              <dd className="font-medium text-gray-700 dark:text-slate-300">{paymentMethodLabel(order.paymentMethod)}</dd>
             </div>
             {order.paymentId && (
               <div>
@@ -248,12 +247,22 @@ export default function AdminOrderDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {displayItems.length === 0 ? (
+                {itemsList.length === 0 ? (
                   <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No items available for this order</td></tr>
-                ) : displayItems.map(d => (
+                ) : itemsList.map(d => (
                   <tr key={d.id} className="border-b border-gray-50 dark:border-slate-800">
-                    <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
-                      {(d.platform ?? d.itemName) ? `${d.platform ?? d.itemName} Reviews` : "Order item"}
+                    <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white whitespace-pre-wrap">
+                      {(() => {
+                        const isNullStr = (v: any) => !v || v === "NULL" || v === "null";
+                        const platform = isNullStr(d.platform) ? "" : d.platform;
+                        const itemName = isNullStr(d.itemName) ? "" : d.itemName;
+                        
+                        let displayName = platform || itemName || "—";
+                        if (platform && !platform.toLowerCase().includes("reviews")) {
+                          displayName = `${platform} Reviews`;
+                        }
+                        return displayName;
+                      })()}
                     </td>
                     <td className="px-4 py-3 text-gray-600 dark:text-slate-400">{d.quantity ?? "—"}</td>
                     <td className="px-4 py-3 text-gray-600 dark:text-slate-400">
@@ -299,74 +308,108 @@ export default function AdminOrderDetailPage() {
 
       {/* Input Details (submitted by customer) */}
       {itemNotes && itemNotes.length > 0 && (
-        <div className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 dark:border-slate-800 flex items-center gap-3">
-            <FileText size={18} className="text-amber-500" />
-            <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide">
+        <div className="space-y-6">
+          <div className="rounded-2xl bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-5 shadow-sm">
+            <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide flex items-center gap-2">
+              <FileText size={18} className="text-[#fc0]" />
               Customer Input Details
             </h2>
-            <span className="ml-auto text-[10px] font-bold bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full">
-              Submitted
-            </span>
           </div>
-          <div className="divide-y divide-gray-50 dark:divide-slate-800">
-            {itemNotes.map((note, i) => (
-              <div key={i} className="p-5 space-y-4">
-                <p className="text-[13px] font-bold text-gray-800 dark:text-white">
-                  {note.platform} Reviews
-                </p>
 
-                {/* Submission type */}
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-gray-400 uppercase tracking-wide">Submission Type</span>
-                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded border ${
-                    note.submissionType === "expert"
-                      ? "bg-[#fffdeb] dark:bg-[#fc0]/10 text-amber-700 dark:text-amber-400 border-[#ffe57f] dark:border-[#fc0]/20"
-                      : "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/50"
-                  }`}>
-                    {note.submissionType === "expert" ? "Expert Write Content" : "Customer Provided Content"}
-                  </span>
-                </div>
+          <div className="space-y-6">
+            {itemNotes.map((note, i) => {
+              const detail = itemsList.find((d) => String(d.id) === String(note.itemId));
+              const qty = detail?.quantity ?? 1;
+              const profileUrl = detail?.profileUrl ?? "";
 
-                {/* Business details */}
-                {note.businessDetails && (
-                  <div>
-                    <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1.5">Business Details</p>
-                    <div className="bg-gray-50 dark:bg-slate-900 rounded-xl p-4 text-[13px] text-gray-700 dark:text-slate-300 whitespace-pre-wrap border border-gray-100 dark:border-slate-800">
-                      {note.businessDetails}
-                    </div>
-                  </div>
-                )}
-
-                {/* Additional instructions */}
-                {note.additionalInstructions && (
-                  <div>
-                    <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1.5">Additional Instructions</p>
-                    <div className="bg-gray-50 dark:bg-slate-900 rounded-xl p-4 text-[13px] text-gray-700 dark:text-slate-300 whitespace-pre-wrap border border-gray-100 dark:border-slate-800">
-                      {note.additionalInstructions}
-                    </div>
-                  </div>
-                )}
-
-                {/* Profile URL from orderDetails */}
-                {(() => {
-                  const detail = itemsList.find((d) => d.id === note.itemId);
-                  return detail?.profileUrl ? (
-                    <div>
-                      <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-1.5">Profile URL</p>
+              return (
+                <div key={i} className="bg-white dark:bg-[#1a1f2c] rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 space-y-5">
+                  {/* Heading */}
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-800 pb-3">
+                    {i + 1}. Review for: {note.platform} Reviews (qty {qty}) <span className="text-gray-400 font-normal text-xs">[ID: {note.itemId}]</span>
+                  </h3>
+                  
+                  {/* Profile Url */}
+                  <div className="space-y-1">
+                    <h4 className="text-[13px] font-bold text-gray-800 dark:text-slate-200">Profile Url:</h4>
+                    {profileUrl ? (
                       <a
-                        href={detail.profileUrl}
+                        href={profileUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-amber-600 dark:text-[#fc0] hover:text-amber-700 dark:hover:text-amber-400 text-[13px] underline break-all"
+                        className="text-blue-600 dark:text-blue-400 hover:underline text-xs break-all"
                       >
-                        {detail.profileUrl}
+                        {profileUrl}
                       </a>
+                    ) : (
+                      <span className="text-gray-400 text-xs">—</span>
+                    )}
+                  </div>
+
+                  {/* Review Type */}
+                  <div className="space-y-1">
+                    <h4 className="text-[13px] font-bold text-gray-800 dark:text-slate-200">Review Type:</h4>
+                    <p className="text-gray-600 dark:text-slate-400 text-xs font-normal">
+                      {note.submissionType === "expert" ? "Expert review" : "Provide review content"}
+                    </p>
+                  </div>
+
+                  {/* Write Reviews Based On These Instructions */}
+                  {note.submissionType === "expert" && note.businessDetails && (
+                    <div className="space-y-1">
+                      <h4 className="text-[13px] font-bold text-gray-800 dark:text-slate-200">Write Reviews Based On These Instructions:</h4>
+                      <p className="text-gray-600 dark:text-slate-400 text-xs font-normal whitespace-pre-wrap leading-relaxed">
+                        {note.businessDetails}
+                      </p>
                     </div>
-                  ) : null;
-                })()}
-              </div>
-            ))}
+                  )}
+
+                  {/* Customer Provided Content or Instructions */}
+                  {note.submissionType !== "expert" && note.additionalInstructions && (
+                    <div className="space-y-1">
+                      <h4 className="text-[13px] font-bold text-gray-800 dark:text-slate-200">Write Reviews Based On These Instructions:</h4>
+                      <p className="text-gray-600 dark:text-slate-400 text-xs font-normal whitespace-pre-wrap leading-relaxed">
+                        {note.additionalInstructions}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Saved Review History */}
+                  <div className="pt-4 border-t border-gray-100 dark:border-slate-800 space-y-3">
+                    <h4 className="text-sm font-semibold text-blue-600 dark:text-blue-400">Saved Review History:</h4>
+                    <div className="overflow-x-auto border border-gray-100 dark:border-slate-800 rounded-lg">
+                      <table className="min-w-full text-left text-[11px] border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50/50 dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider">
+                            <th className="px-4 py-2.5">Review No.</th>
+                            <th className="px-4 py-2.5">Review Rating</th>
+                            <th className="px-4 py-2.5">Review Content</th>
+                            <th className="px-4 py-2.5">Date</th>
+                            <th className="px-4 py-2.5">Profile Name</th>
+                            <th className="px-4 py-2.5">Screenshot (Day 1)</th>
+                            <th className="px-4 py-2.5">
+                              <span className="flex items-center gap-1">
+                                Review Published/Deleted/Wrong Link
+                                <span className="text-cyan-500 hover:text-cyan-600 cursor-help" title="Status of the review publication">
+                                  <Info size={14} className="inline" />
+                                </span>
+                              </span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td colSpan={7} className="px-4 py-8 text-center text-gray-400 dark:text-slate-500 bg-white dark:bg-[#1a1f2c]">
+                              No saved review history yet.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

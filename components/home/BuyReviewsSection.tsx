@@ -139,17 +139,29 @@ export function ProductCard({
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    let indexToUse = activePkgIndex;
     if (isGoogleReviews && activePkgIndex === null) {
-      setShowModal(true);
-      return;
+      if (selectedMode !== null) {
+        indexToUse = 0;
+        setActivePkgIndex(0);
+      } else {
+        setShowModal(true);
+        return;
+      }
     }
+    
+    const pkgToUse = indexToUse !== null ? packages[indexToUse] : null;
+    const priceToUse = isGoogleReviews ? (pkgToUse?.price ?? product.oneTimePrice ?? 20) : (product.oneTimePrice || 20);
+    const idToUse = isGoogleReviews ? (pkgToUse?.dbId ?? product.id) : product.id;
+
     addItem({
-      id: `${productIdToUse}-${effectiveMode}`,
+      id: `${idToUse}-${effectiveMode}`,
       platform: product.platform,
       icon: "🌟",
       image: product.image,
       type: isMonthly ? "subscribe" : "one-time",
-      pricePerUnit: finalPrice,
+      pricePerUnit: priceToUse,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
@@ -211,8 +223,8 @@ export function ProductCard({
                     setActivePkgIndex(index);
                   }}
                   className={`warranty-box flex flex-col items-start p-[10px_6px_8px_6px] rounded-[8px] cursor-pointer border-[1.5px] border-transparent transition-all min-h-[70px] max-[359px]:w-full max-[359px]:flex-row max-[359px]:items-center max-[359px]:justify-between max-[359px]:p-[10px_12px] ${isActive
-                    ? "border-[#ffd737] bg-[#FFF9E6]"
-                    : "bg-white hover:border-[#ffd737] hover:bg-[#FFF9E6]"
+                      ? "border-[#ffd737] bg-[#FFF9E6]"
+                      : "bg-white hover:border-[#ffd737] hover:bg-[#FFF9E6]"
                     }`}
                 >
                   <div className="warranty-price flex items-baseline gap-[1px] mb-[2px] max-[359px]:mb-0 max-[359px]:mr-[8px]">
@@ -221,11 +233,11 @@ export function ProductCard({
                   </div>
                   <div className="warranty-min text-[10px] text-black/50">Min. 5 reviews</div>
                   <div
-                    className={`warranty-label flex items-center gap-[3px] whitespace-nowrap text-[6px] font-semibold tracking-wide relative mb-[5px] leading-[1.3] max-[359px]:mb-0 max-[359px]:ml-auto max-[359px]:text-right ${isActive ? "text-[#b07b00] font-medium" : "text-[#FFC107]"
+                    className={`warranty-label flex items-center gap-[4px] whitespace-nowrap text-[6px] font-semibold tracking-wide relative mb-[5px] leading-[1.3] max-[359px]:mb-0 max-[359px]:ml-auto max-[359px]:text-right ${isActive ? "text-[#b07b00] font-medium" : "text-[#FFC107]"
                       }`}
                   >
                     <span>{pkg.label}</span>
-                    <span className="tooltip-question relative inline-flex items-center justify-center w-[10px] h-[10px] shrink-0 border border-black text-black rounded-full cursor-pointer group" onClick={(e) => e.stopPropagation()}>
+                    <span className="tooltip-question relative inline-flex items-center justify-center w-[10px] h-[10px] border border-black text-black rounded-full cursor-pointer group shrink-0" onClick={(e) => e.stopPropagation()}>
                       ?
                       <span className={`warranty-tooltip-box absolute bottom-[100%] left-1/2 -translate-x-1/2 pb-[8px] w-max max-w-[280px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all z-[99999] max-[600px]:left-1/2 max-[600px]:-translate-x-1/2 max-[600px]:w-[220px] max-[600px]:max-w-[calc(100vw-20px)]
                         ${index === 2 ? 'max-[600px]:left-auto max-[600px]:right-0 max-[600px]:transform-none' : ''}
@@ -479,7 +491,7 @@ export function BuyReviewsSection() {
                   value={search}
                   autoComplete="off"
                   onChange={(e) => { setSearch(e.target.value); setVisibleCount(8); }}
-                  className="srch-input-field w-full h-full p-[16px_45px_16px_22px] text-[15px] border border-[#e5e5e5] rounded-[50px] outline-none bg-white text-black/70 transition-all focus:border-[#bbb] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] box-border placeholder:text-black/60 max-[480px]:text-[14px]"
+                  className="srch-input-field w-full h-full p-[16px_55px_16px_22px] text-[15px] border-2 border-[#e5e5e5] rounded-[50px] outline-none bg-white text-black/70 transition-all focus:border-[#bbb] focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] box-border placeholder:text-black/60 max-[480px]:text-[16px]"
                 />
 
                 {search.length > 0 && (

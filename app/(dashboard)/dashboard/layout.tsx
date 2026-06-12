@@ -31,8 +31,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       <UserSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(false)} />
 
-      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        <UserNavbar onToggle={() => setIsSidebarOpen((v) => !v)} />
+      <div className={`flex flex-1 flex-col min-w-0 transition-all duration-300 ease-in-out ${
+        isSidebarOpen ? "lg:pl-[260px]" : "lg:pl-0"
+      }`}>
+        <UserNavbar onToggle={() => setIsSidebarOpen((v) => !v)} isOpen={isSidebarOpen} />
         <main className="flex-1 p-4 md:p-6 overflow-auto">{children}</main>
         <footer className="bg-[#111111] text-center text-sm text-white py-4">
           Copyright &copy; {new Date().getFullYear()} GetReviews. All rights reserved.

@@ -4,13 +4,8 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PlusCircle, ArrowUpRight, Eye } from "lucide-react";
-import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
+import { orderStatusLabel, paymentStatusLabel, paymentMethodLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
-import PayNowDropdown from "@/components/dashboard/PayNowDropdown";
-
-const PM_LABELS: Record<string, string> = {
-  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Pay by Card",
-};
 
 type Order = {
   id: string;
@@ -53,19 +48,19 @@ export default function UserDashboard() {
   const name = session?.user?.name ?? "User";
 
   useEffect(() => {
-    fetch("/api/orders?mine=1&pageSize=100")
+    fetch("/api/orders")
       .then((r) => r.json())
       .then((data) => {
-        const list: ApiOrder[] = Array.isArray(data) ? data : (data?.orders ?? []);
-        if (list.length > 0) {
-          setAllOrders(list);
-          setOrders(list.map((o: ApiOrder) => ({
+        const ordersList = data?.orders && Array.isArray(data.orders) ? data.orders : (Array.isArray(data) ? data : []);
+        if (ordersList.length > 0) {
+          setAllOrders(ordersList);
+          setOrders(ordersList.map((o: ApiOrder) => ({
             id: o.id,
             orderNumber: o.orderNumber,
             paymentId: o.paymentId ?? "—",
             amount: `$${o.amount?.toFixed(2) ?? "0.00"}`,
             date: new Date(o.date ?? o.createdAt ?? "").toLocaleDateString(),
-            method: PM_LABELS[o.paymentMethod] ?? o.paymentMethod,
+            method: paymentMethodLabel(o.paymentMethod),
             status: orderStatusLabel(o.status),
             paymentStatus: paymentStatusLabel(o.paymentStatus),
             payUrl: o.payUrl,
@@ -229,8 +224,13 @@ export default function UserDashboard() {
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    {o.paymentStatus !== "Paid" && (
-                      <PayNowDropdown orderId={o.id} fallbackUrl={o.payUrl} />
+                    {o.paymentStatus !== "Paid" && o.payUrl && (
+                      <a
+                        href={o.payUrl}
+                        className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-normal text-white transition inline-block"
+                      >
+                        Pay by Card
+                      </a>
                     )}
                   </td>
 

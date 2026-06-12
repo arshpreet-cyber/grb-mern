@@ -19,7 +19,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const allowed = ["status", "paymentStatus", "completedOn", "workStatus", "deletedAt"];
     const data: any = {};
     for (const key of allowed) {
-      if (key in body) data[key] = body[key];
+      if (key in body) {
+        if (key === "workStatus" && body[key] !== undefined && body[key] !== null) {
+          data[key] = parseInt(body[key], 10);
+        } else {
+          data[key] = body[key];
+        }
+      }
     }
 
     const order = await prisma.order.update({
@@ -91,18 +97,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    // 🛡️ SECURITY SAFEGUARD FIX:
-    // If user is NOT an Admin, enforce they can ONLY view their own profile orders.
-    // (Note: Adjust 'session.user.role' depending on your next-auth setup variable)
-    const isAdmin = (session.user as any).role === "ADMIN" || (session.user as any).role === "admin";
-
-    // Owner = order linked by userId OR matched by the account email (guest/legacy
-    // orders have a null userId but the same email).
-    const ownsOrder =
-      order.userId === parseInt(session.user.id) ||
-      (!!order.email && order.email === session.user.email);
-
-    if (!isAdmin && !ownsOrder) {
+    const isAdmin = (session.user as any).role?.toUpperCase() === "ADMIN";
+    const isOwner = order.userId === parseInt(session.user.id) || 
+                    (order.email && session.user.email && order.email.toLowerCase() === session.user.email.toLowerCase());
+    
+    if (!isAdmin && !isOwner) {
       return NextResponse.json({ error: "Unauthorized access to order" }, { status: 403 });
     }
 

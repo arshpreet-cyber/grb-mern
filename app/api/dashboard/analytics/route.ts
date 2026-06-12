@@ -248,8 +248,8 @@ export async function GET(request: Request) {
     const revenueSources = [
       { name: "Complete",  value: Math.round((statusCount("2") / total) * 100), color: "#7c3aed" },
       { name: "Pending",   value: Math.round((statusCount("1") / total) * 100), color: "#f59e0b" },
-      { name: "Cancelled", value: Math.round((statusCount("5") / total) * 100), color: "#ef4444" },
-      { name: "Processing",value: Math.round((statusCount("3") / total) * 100), color: "#3b82f6" },
+      { name: "Cancelled", value: Math.round((statusCount("4") / total) * 100), color: "#ef4444" },
+      { name: "Processing",value: Math.round((statusCount("5") / total) * 100), color: "#3b82f6" },
     ].filter(s => s.value > 0);
     if (revenueSources.length === 0) {
       revenueSources.push({ name: "No Orders", value: 100, color: "#e2e8f0" });

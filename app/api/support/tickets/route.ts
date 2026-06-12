@@ -80,12 +80,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // EVT-0012: send thank-you email to user
-    if (email) {
-      const thankYou = buildTicketCreatedEmail({ name, email, ticketNumber: ticketNumber, subject });
-      sendEmailNotification({ to: email, subject: thankYou.subject, text: `Ticket ${ticketNumber} received. We'll be in touch shortly.`, html: thankYou.html })
-        .catch((err) => console.error("[ticket created email]", err.message));
-    }
+    // Zoho sync handles email notifications (including Zoho ticket number)
 
     // Sync to Zoho Desk in the background (non-blocking)
     syncTicketToZoho(ticket.ticketId).catch((err) => {

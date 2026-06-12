@@ -40,41 +40,41 @@ const TABS = [
 const STATUS_OPTIONS = [
   { value: "1", label: "Pending" },
   { value: "2", label: "Complete" },
-  { value: "3", label: "Processing" },
-  { value: "4", label: "Hold" },
-  { value: "5", label: "Cancelled" },
+  { value: "3", label: "Hold" },
+  { value: "4", label: "Cancelled" },
+  { value: "5", label: "Processing" },
   { value: "6", label: "Refund" },
+  { value: "7", label: "Failed" },
+  { value: "8", label: "Fraud" },
+  { value: "9", label: "Active" },
 ];
 
 const PAYMENT_OPTIONS = [
   { value: "1", label: "Unpaid" },
   { value: "2", label: "Paid" },
-  { value: "3", label: "Unconfirmed" },
-  { value: "4", label: "Cancelled" },
+  { value: "3", label: "Cancelled" },
+  { value: "4", label: "Unconfirmed" },
 ];
 
-const PM_MAP: Record<string, { label: string; color: string }> = {
-  "1": { label: "Card",     color: "bg-gray-800 text-white" },
-  "2": { label: "Stripe",   color: "bg-indigo-600 text-white" },
-  "3": { label: "Razorpay", color: "bg-blue-500 text-white" },
-  "4": { label: "PayPal",   color: "bg-blue-700 text-white" },
-  "5": { label: "Card",     color: "bg-gray-800 text-white" },
-};
+import { paymentMethodLabel, paymentMethodColor } from "@/lib/status-labels";
 
 const STATUS_COLORS: Record<string, string> = {
   "1": "bg-yellow-100 text-yellow-700 border-yellow-300",
-  "2": "bg-blue-100 text-blue-700 border-blue-300",
-  "3": "bg-green-100 text-green-700 border-green-300",
-  "4": "bg-orange-100 text-orange-700 border-orange-300",
-  "5": "bg-red-100 text-red-700 border-red-300",
+  "2": "bg-green-100 text-green-700 border-green-300",
+  "3": "bg-orange-100 text-orange-700 border-orange-300",
+  "4": "bg-red-100 text-red-700 border-red-300",
+  "5": "bg-blue-100 text-blue-700 border-blue-300",
   "6": "bg-purple-100 text-purple-700 border-purple-300",
+  "7": "bg-red-100 text-red-700 border-red-300",
+  "8": "bg-red-100 text-red-700 border-red-300",
+  "9": "bg-emerald-100 text-emerald-700 border-emerald-300",
 };
 
 const PAYMENT_COLORS: Record<string, string> = {
   "1": "bg-red-100 text-red-700 border-red-300",
   "2": "bg-green-100 text-green-700 border-green-300",
-  "3": "bg-yellow-100 text-yellow-700 border-yellow-300",
-  "4": "bg-gray-100 text-gray-600 border-gray-300",
+  "3": "bg-gray-100 text-gray-600 border-gray-300",
+  "4": "bg-yellow-100 text-yellow-700 border-yellow-300",
 };
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
@@ -123,7 +123,7 @@ export default function AdminOrdersPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        `/api/orders?filter=${filter}&search=${encodeURIComponent(q)}&page=${pg}&pageSize=${ps}`
+        `/api/orders?filter=${filter}&search=${encodeURIComponent(q)}&page=${pg}&pageSize=${ps}&adminView=true`
       );
       const data = await res.json();
       if (data.orders) {
@@ -144,7 +144,7 @@ export default function AdminOrdersPage() {
 
   const fetchCounts = async () => {
     try {
-      const res = await fetch(`/api/orders?countsOnly=1`);
+      const res = await fetch(`/api/orders?countsOnly=1&adminView=true`);
       const data = await res.json();
       if (data.counts) setCounts(data.counts);
     } catch {
@@ -302,9 +302,6 @@ export default function AdminOrdersPage() {
                 <tr><td colSpan={9} className="px-4 py-12 text-center text-gray-400">No orders found</td></tr>
               ) : orders.map(o => {
                 const isNull = (val: string | null | undefined) => !val || val === "NULL" || val === "null";
-                
-                const pm = PM_MAP[o.paymentMethod ?? ""] ?? { label: isNull(o.paymentMethod) ? "—" : o.paymentMethod, color: "bg-gray-200 text-gray-700" };
-                
                 const fName = isNull(o.firstName) ? "" : o.firstName;
                 const lName = isNull(o.lastName) ? "" : o.lastName;
                 let customerName = `${fName} ${lName}`.trim();

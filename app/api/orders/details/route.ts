@@ -18,7 +18,10 @@ export async function POST(req: NextRequest) {
       include: { orderDetails: true },
     });
 
-    if (!order || order.userId !== parseInt(session.user.id)) {
+    const isOwner = order.userId === parseInt(session.user.id) || 
+                    (order.email && session.user.email && order.email.toLowerCase() === session.user.email.toLowerCase());
+
+    if (!order || !isOwner) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 

@@ -125,8 +125,10 @@ export function StatusPill({
     Processing: "border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400",
     Cancelled: "border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400",
     Hold: "border-indigo-200 dark:border-indigo-900/50 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400",
+    "On Hold": "border-indigo-200 dark:border-indigo-900/50 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400",
     Refund: "border-orange-200 dark:border-orange-900/50 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400",
     Failed: "border-red-300 dark:border-red-900/50 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400",
+    Fraud: "border-red-300 dark:border-red-900/50 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400",
     Unconfirmed: "border-yellow-200 dark:border-yellow-900/50 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400",
     Open: "border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400",
   };
@@ -142,8 +144,10 @@ export function StatusPill({
     Processing: "bg-blue-500",
     Cancelled: "bg-red-500",
     Hold: "bg-indigo-500",
+    "On Hold": "bg-indigo-500",
     Refund: "bg-orange-500",
     Failed: "bg-red-700",
+    Fraud: "bg-red-700",
     Unconfirmed: "bg-yellow-500",
   };
   const dot = dotMap[label] ?? "bg-gray-400";

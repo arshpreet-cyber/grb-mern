@@ -1,17 +1,20 @@
 export const ORDER_STATUS: Record<string, { label: string; tailwind: string }> = {
   "1": { label: "Pending",    tailwind: "bg-yellow-100 text-yellow-700 border-yellow-300" },
   "2": { label: "Complete",   tailwind: "bg-green-100 text-green-700 border-green-300" },
-  "3": { label: "Processing", tailwind: "bg-blue-100 text-blue-700 border-blue-300" },
-  "4": { label: "On Hold",    tailwind: "bg-orange-100 text-orange-700 border-orange-300" },
-  "5": { label: "Cancelled",  tailwind: "bg-red-100 text-red-700 border-red-300" },
+  "3": { label: "On Hold",    tailwind: "bg-orange-100 text-orange-700 border-orange-300" },
+  "4": { label: "Cancelled",  tailwind: "bg-red-100 text-red-700 border-red-300" },
+  "5": { label: "Processing", tailwind: "bg-blue-100 text-blue-700 border-blue-300" },
   "6": { label: "Refund",     tailwind: "bg-purple-100 text-purple-700 border-purple-300" },
+  "7": { label: "Failed",     tailwind: "bg-red-100 text-red-700 border-red-300" },
+  "8": { label: "Fraud",      tailwind: "bg-red-100 text-red-700 border-red-300" },
+  "9": { label: "Active",     tailwind: "bg-emerald-100 text-emerald-700 border-emerald-300" },
 };
 
 export const PAYMENT_STATUS: Record<string, { label: string; tailwind: string }> = {
   "1": { label: "Unpaid",       tailwind: "bg-red-100 text-red-700 border-red-300" },
   "2": { label: "Paid",         tailwind: "bg-green-100 text-green-700 border-green-300" },
-  "3": { label: "Unconfirmed",  tailwind: "bg-yellow-100 text-yellow-700 border-yellow-300" },
-  "4": { label: "Cancelled",    tailwind: "bg-gray-100 text-gray-600 border-gray-300" },
+  "3": { label: "Cancelled",    tailwind: "bg-gray-100 text-gray-600 border-gray-300" },
+  "4": { label: "Unconfirmed",  tailwind: "bg-yellow-100 text-yellow-700 border-yellow-300" },
 };
 
 export function orderStatusLabel(val: string | null | undefined): string {
@@ -20,4 +23,21 @@ export function orderStatusLabel(val: string | null | undefined): string {
 
 export function paymentStatusLabel(val: string | null | undefined): string {
   return PAYMENT_STATUS[val ?? ""]?.label ?? val ?? "—";
+}
+
+export const PAYMENT_METHODS: Record<string, { label: string; tailwind: string }> = {
+  "1": { label: "Bitcoin",       tailwind: "bg-amber-600 text-white" },
+  "2": { label: "Razorpay",      tailwind: "bg-blue-500 text-white" },
+  "3": { label: "Stripe",        tailwind: "bg-indigo-600 text-white" },
+  "4": { label: "PayPal",        tailwind: "bg-blue-700 text-white" },
+  "5": { label: "Bank Transfer", tailwind: "bg-gray-800 text-white" },
+  "6": { label: "Binance",       tailwind: "bg-yellow-500 text-black" },
+};
+
+export function paymentMethodLabel(val: string | null | undefined): string {
+  return PAYMENT_METHODS[val ?? ""]?.label ?? val ?? "—";
+}
+
+export function paymentMethodColor(val: string | null | undefined): string {
+  return PAYMENT_METHODS[val ?? ""]?.tailwind ?? "bg-gray-200 text-gray-700";
 }
