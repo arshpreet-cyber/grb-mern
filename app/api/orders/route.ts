@@ -6,8 +6,8 @@ import prisma from "@/lib/prisma";
 const STATUS_MAP: Record<string, object> = {
   all:        { deletedAt: null },
   paid:       { deletedAt: null, paymentStatus: "2" },
-  pending:    { deletedAt: null, status: { in: ["1", "3", "4"] } },
-  processing: { deletedAt: null, status: "3" },
+  pending:    { deletedAt: null, status: { in: ["1", "3"] } },
+  processing: { deletedAt: null, status: "5" },
   unpaid:     { deletedAt: null, paymentStatus: "1" },
   completed:  { deletedAt: null, status: "2" },
   deleted:    { deletedAt: { not: null } },
@@ -16,20 +16,20 @@ const STATUS_MAP: Record<string, object> = {
 function buildWhere(
   filter: string,
   search: string,
-  isAdmin: boolean,
+  showAll: boolean,
   userId: number,
-  userEmail: string | null | undefined,
-  forceMine = false
+  userEmail: string | null | undefined
 ) {
   const where: any = { ...(STATUS_MAP[filter] ?? { deletedAt: null }) };
 
-  // Non-admins are always scoped to their own orders. `forceMine` lets the
-  // customer dashboard self-scope even when the viewer is an admin.
-  if (!isAdmin || forceMine) {
+  if (!showAll) {
     where.OR = [
       { userId },
       ...(userEmail ? [{ email: userEmail }] : []),
     ];
+    if (filter === "all") {
+      delete where.deletedAt;
+    }
   }
 
   if (search) {
@@ -59,7 +59,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const isAdmin = (session.user as any).role?.toUpperCase() === "ADMIN";
+    // ADMIN and MANAGER can view every order in the admin Order Management view.
+    const role = (session.user as any).role?.toUpperCase();
+    const canViewAllOrders = role === "ADMIN" || role === "MANAGER";
     const userId = parseInt(session.user.id);
     const userEmail = session.user.email;
 
@@ -67,7 +69,8 @@ export async function GET(req: NextRequest) {
     const filter = searchParams.get("filter") ?? "all";
     const search = searchParams.get("search") ?? "";
     const countsOnly = searchParams.get("countsOnly") === "1";
-    const forceMine = searchParams.get("mine") === "1";
+    const adminView = searchParams.get("adminView") === "1" || searchParams.get("adminView") === "true";
+    const showAll = canViewAllOrders && adminView;
 
     // --- Counts-only mode: return counts for every tab in one round-trip ---
     if (countsOnly) {
@@ -75,7 +78,7 @@ export async function GET(req: NextRequest) {
       const countResults = await Promise.all(
         keys.map((k) =>
           prisma.order.count({
-            where: buildWhere(k, "", isAdmin, userId, userEmail, forceMine),
+            where: buildWhere(k, "", showAll, userId, userEmail),
           })
         )
       );
@@ -88,7 +91,7 @@ export async function GET(req: NextRequest) {
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
     const pageSize = Math.min(100, Math.max(1, parseInt(searchParams.get("pageSize") ?? "25", 10) || 25));
 
-    const where = buildWhere(filter, search, isAdmin, userId, userEmail, forceMine);
+    const where = buildWhere(filter, search, showAll, userId, userEmail);
 
     const [orders, total] = await Promise.all([
       prisma.order.findMany({

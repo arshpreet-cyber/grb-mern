@@ -91,6 +91,7 @@ export default function BlogSection({ data, settings }: SectionProps) {
                           day: 'numeric',
                           year: 'numeric'
                         })}
+                        
                       </span>
                     </div>
                     <h3 className="text-[18px] md:text-[20px] font-semibold text-gray-900 leading-snug group-hover:text-blue-600 transition-colors line-clamp-3">

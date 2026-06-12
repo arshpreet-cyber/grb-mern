@@ -66,6 +66,27 @@ function invoiceItemName(platform: string): string {
   return platform.replace(/Reviews?/i, "Reputation Management").trim();
 }
 
+// Look up the Zoho invoice for an order (matched on reference_number =
+// orderNumber) and return its PDF bytes, or null if there is no invoice.
+export async function getZohoInvoicePdf(orderNumber: string): Promise<ArrayBuffer | null> {
+  if (!process.env.ZOHO_REFRESH_TOKEN || !ZOHO_ORG_ID()) return null;
+
+  const token = await getAccessToken();
+  const listUrl = `${ZOHO_API_BASE}/invoices?organization_id=${ZOHO_ORG_ID()}&reference_number=${encodeURIComponent(orderNumber)}`;
+  const listRes = await fetch(listUrl, { headers: authHeader(token) });
+  const listData = await parseJson(listRes, "Zoho list invoices");
+
+  const invoiceId = listData.invoices?.[0]?.invoice_id;
+  if (!invoiceId) return null;
+
+  const pdfUrl = `${ZOHO_API_BASE}/invoices/${invoiceId}?organization_id=${ZOHO_ORG_ID()}&accept=pdf`;
+  const pdfRes = await fetch(pdfUrl, {
+    headers: { Authorization: `Zoho-oauthtoken ${token}` },
+  });
+  if (!pdfRes.ok) return null;
+  return await pdfRes.arrayBuffer();
+}
+
 export async function createZohoInvoice(params: {
   email: string;
   name: string;

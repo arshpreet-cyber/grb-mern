@@ -95,8 +95,13 @@ export default function UserSidebar({ isOpen = true, onToggle }: UserSidebarProp
   const isActive = (href: string) => pathname === href;
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 lg:relative lg:translate-x-0 w-[260px] h-screen overflow-y-auto flex flex-col shrink-0 font-sans bg-white dark:bg-[#0f1117] border-r border-gray-100 dark:border-slate-800 transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
-      
+    <aside className={`fixed inset-y-0 left-0 z-50 lg:relative h-screen flex flex-col shrink-0 font-sans bg-white dark:bg-[#0f1117] transition-all duration-300 ease-in-out overflow-hidden ${
+      isOpen
+        ? "w-[260px] translate-x-0 border-r border-gray-100 dark:border-slate-800"
+        : "w-0 -translate-x-full border-r-0 pointer-events-none"
+    }`}>
+      <div className="w-[260px] h-full flex flex-col shrink-0 overflow-y-auto">
+
       {/* Logo & Toggle Button Container */}
       <div className="px-5 py-6 flex items-center justify-between">
         <Link href="/">
@@ -250,6 +255,7 @@ export default function UserSidebar({ isOpen = true, onToggle }: UserSidebarProp
           <LogOut size={18} />
           <span className="font-medium">Logout</span>
         </button>
+      </div>
       </div>
     </aside>
   );

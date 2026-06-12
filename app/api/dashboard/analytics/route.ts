@@ -143,14 +143,14 @@ export async function GET(request: Request) {
       // 13. Raw earnings (yearly)
       prisma.$queryRaw<{ month: number; earnings: number }[]>`
         SELECT 
-          EXTRACT(MONTH FROM "createdAt")::integer AS month, 
+          EXTRACT(MONTH FROM "created_at")::integer AS month, 
           SUM(amount)::double precision AS earnings
-        FROM "Order"
-        WHERE "paymentStatus" = '2' 
-          AND "deletedAt" IS NULL 
-          AND "createdAt" >= ${yearStart} 
-          AND "createdAt" <= ${yearEnd}
-        GROUP BY EXTRACT(MONTH FROM "createdAt")
+        FROM "orders"
+        WHERE "payment_status" = '2' 
+          AND "deleted_at" IS NULL 
+          AND "created_at" >= ${yearStart} 
+          AND "created_at" <= ${yearEnd}
+        GROUP BY EXTRACT(MONTH FROM "created_at")
       `,
       // 14. Raw users (yearly)
       prisma.$queryRaw<{ month: number; count: number }[]>`
@@ -170,14 +170,14 @@ export async function GET(request: Request) {
       }),
       // 16. Platform groups (top products)
       prisma.orderDetail.groupBy({
-        by: ["platform"],
+        by: ["itemName"],
         _count: { id: true },
         where: {
           AND: [
-            { platform: { not: null } },
-            { platform: { notIn: ["NULL", "", "null"] } },
-            { platform: { not: { contains: "free" } } },
-            { platform: { not: { contains: "Free" } } }
+            { itemName: { not: null } },
+            { itemName: { notIn: ["NULL", "", "null"] } },
+            { itemName: { not: { contains: "free" } } },
+            { itemName: { not: { contains: "Free" } } }
           ]
         },
         orderBy: { _count: { id: "desc" } },
@@ -248,8 +248,8 @@ export async function GET(request: Request) {
     const revenueSources = [
       { name: "Complete",  value: Math.round((statusCount("2") / total) * 100), color: "#7c3aed" },
       { name: "Pending",   value: Math.round((statusCount("1") / total) * 100), color: "#f59e0b" },
-      { name: "Cancelled", value: Math.round((statusCount("5") / total) * 100), color: "#ef4444" },
-      { name: "Processing",value: Math.round((statusCount("3") / total) * 100), color: "#3b82f6" },
+      { name: "Cancelled", value: Math.round((statusCount("4") / total) * 100), color: "#ef4444" },
+      { name: "Processing",value: Math.round((statusCount("5") / total) * 100), color: "#3b82f6" },
     ].filter(s => s.value > 0);
     if (revenueSources.length === 0) {
       revenueSources.push({ name: "No Orders", value: 100, color: "#e2e8f0" });
@@ -266,7 +266,7 @@ export async function GET(request: Request) {
       return `${p} Reviews`;
     };
 
-    const platformNames = platformGroups.map(p => p.platform).filter(Boolean) as string[];
+    const platformNames = platformGroups.map(p => p.itemName).filter(Boolean) as string[];
     const searchNames = [
       ...platformNames,
       ...platformNames.map(name => name.trim()),
@@ -291,11 +291,11 @@ export async function GET(request: Request) {
     };
 
     const topProducts = platformGroups.map(p => ({
-      name: formatProductName(p.platform),
+      name: formatProductName(p.itemName),
       sales: p._count.id,
       max: maxSales,
-      icon: platformIcon(p.platform ?? ""),
-      image: getProductImage(p.platform),
+      icon: platformIcon(p.itemName ?? ""),
+      image: getProductImage(p.itemName),
     }));
 
     return NextResponse.json({

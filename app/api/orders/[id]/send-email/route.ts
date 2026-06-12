@@ -30,7 +30,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     if (type === "unpaid") {
       const items = order.orderDetails.map(d => ({
-        platform: d.platform ?? d.itemName ?? "Review",
+        platform: d.itemName ?? "Review",
         qty: d.quantity ?? 1,
         pricePerUnit: d.amount ?? 0,
       }));

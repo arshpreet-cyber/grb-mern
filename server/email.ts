@@ -539,18 +539,161 @@ export function buildUserSubmittedDetailsAdminEmail(payload: {
   };
 }
 
-// ─── EVT-0017: User – Contact Us Confirmation ────────────────────────────────
-export function buildContactConfirmationEmail(payload: { email: string }) {
-  const firstName = payload.email.split("@")[0];
+export function buildContactConfirmationEmail(payload: { email: string; phone?: string; website?: string }) {
   const content = `
-    <p style="margin:0 0 14px;font-size:15px;color:#333">Hi <strong>${firstName}</strong>,</p>
-    <p style="margin:0 0 20px;font-size:15px;color:#333">Thank you for contacting Get Reviews Buzz. We have received your message and will get back to you shortly.</p>
-    <p style="margin:0 0 16px;font-size:14px;color:#555">Our team typically responds within 24 hours. If your matter is urgent, please reach out to us directly.</p>
-    <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
-    <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
+    <h2 style="font-size:22px; color:#155aa5; margin:0 0 15px 0; border-bottom: 3px solid #ffde59; padding-bottom: 12px; font-weight: bold;">
+        Thank You for Contacting Us
+    </h2>
+
+    <p style="font-size:15px;margin:0;padding:0px 0 10px;line-height:24px;color: #333;">
+        Hi,
+    </p>
+
+    <p style="font-size:15px;margin:0;padding:0px 0 25px;line-height:24px;color: #333;">
+        We appreciate you reaching out to <strong>Get Reviews Buzz</strong>. We have successfully received your contact form submission and our team is already reviewing it.
+    </p>
+
+    <!-- Confirmation Section -->
+    <table style="width: 100%; margin-bottom: 25px;">
+        <tr>
+            <td style="background-color: #f8f9fa; padding: 12px 15px; font-weight: 600; font-size: 13px; color: #155aa5; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #ffde59;">
+                YOUR SUBMISSION
+            </td>
+        </tr>
+    </table>
+
+    <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
+        <tr>
+            <td style="width: 25%; padding: 12px 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; font-weight: 600; color: #155aa5; font-size: 13px;">Email</td>
+            <td style="width: 75%; padding: 12px 15px; border: 1px solid #e9ecef; font-size: 14px; color: #333;">${payload.email}</td>
+        </tr>
+        <tr>
+            <td style="width: 25%; padding: 12px 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; font-weight: 600; color: #155aa5; font-size: 13px;">Phone</td>
+            <td style="width: 75%; padding: 12px 15px; border: 1px solid #e9ecef; font-size: 14px; color: #333;">${payload.phone || 'N/A'}</td>
+        </tr>
+        <tr>
+            <td style="width: 25%; padding: 12px 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; font-weight: 600; color: #155aa5; font-size: 13px;">Website</td>
+            <td style="width: 75%; padding: 12px 15px; border: 1px solid #e9ecef; font-size: 14px; color: #333;">${payload.website || 'N/A'}</td>
+        </tr>
+    </table>
+
+    <!-- Next Steps Section -->
+    <table style="width: 100%; margin-bottom: 25px;">
+        <tr>
+            <td style="background-color: #f8f9fa; padding: 12px 15px; font-weight: 600; font-size: 13px; color: #155aa5; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #ffde59;">
+                What Happens Next
+            </td>
+        </tr>
+    </table>
+
+    <div style="background-color: #fffbf0; padding: 20px 15px; border: 1px solid #ffde59; border-left: 4px solid #ffde59; margin-bottom: 30px;">
+        <p style="font-size: 14px; line-height: 22px; color: #333; margin: 0 0 12px 0;">
+            <strong>Our team will review your inquiry</strong> and get back to you as soon as possible. We typically respond within 24-48 hours during business days.
+        </p>
+        <p style="font-size: 14px; line-height: 22px; color: #333; margin: 0;">
+            If you have any urgent matters or additional questions, please feel free to reply to this email or contact us directly.
+        </p>
+    </div>
+
+    <!-- Contact Options -->
+    <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
+        <tr>
+            <td style="width: 50%; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; text-align: center;">
+                <p style="font-size: 12px; color: #888; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Phone Support</p>
+                <p style="font-size: 14px; margin: 0; color: #155aa5; font-weight: 600;">
+                    <a href="tel:+1 4302335402" style="color: #155aa5; text-decoration: none;">+1 430-233-5402</a>
+                </p>
+            </td>
+            <td style="width: 50%; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; text-align: center; border-left: none;">
+                <p style="font-size: 12px; color: #888; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Email Support</p>
+                <p style="font-size: 14px; margin: 0; color: #155aa5; font-weight: 600;">
+                    <a href="mailto:support@getreviews.buzz" style="color: #155aa5; text-decoration: none;">support@getreviews.buzz</a>
+                </p>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Closing -->
+    <p style="font-size:14px;margin:0 0 8px 0;line-height:22px;color: #333;">
+        We look forward to working with you!
+    </p>
+
+    <p style="font-size:14px;color: #333; margin:0; padding-top: 12px; border-top: 1px solid #e9ecef;">
+        Best Regards,<br>
+        <strong style="font-size:15px">
+            <a style="font-family:Arial,sans-serif;color:#155aa5;text-decoration:none" href="${SITE_URL}" target="_blank">
+                Team Get Reviews Buzz
+            </a>
+        </strong>
+    </p>
   `;
   return {
     subject: "We received your message – Get Reviews Buzz",
+    html: emailWrapper(content),
+  };
+}
+
+export function buildContactAdminEmail(payload: { email: string; phone?: string; website?: string; message: string }) {
+  const submitDate = new Date().toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+  const content = `
+    <h2 style="font-size:22px; color:#333333; margin:0 0 15px 0; padding-bottom: 12px; font-weight: bold;">
+        New Contact Form Submission
+    </h2>
+
+    <p style="font-size:15px;margin:0;padding:0px 0 25px;line-height:24px;color: #333;">
+        A new contact inquiry has been received from your Get Reviews Buzz website. Here are the details:
+    </p>
+
+    <!-- Contact Information Section -->
+    <table style="width: 100%; margin-bottom: 25px;">
+        <tr>
+            <td style="background-color: #f8f9fa; padding: 12px 15px; font-weight: 600; font-size: 13px; color: #333333; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #333333;">
+                CONTACT DETAILS
+            </td>
+        </tr>
+    </table>
+
+    <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
+        <tr>
+            <td style="width: 25%; padding: 12px 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; font-weight: 600; color: #333333; font-size: 13px;">Email</td>
+            <td style="width: 75%; padding: 12px 15px; border: 1px solid #e9ecef; font-size: 14px; color: #333;">
+                <a href="mailto:${payload.email}" style="color: #333333; text-decoration: none;">${payload.email}</a>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%; padding: 12px 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; font-weight: 600; color: #333333; font-size: 13px;">Phone</td>
+            <td style="width: 75%; padding: 12px 15px; border: 1px solid #e9ecef; font-size: 14px; color: #333;">
+                <a href="tel:${payload.phone || ''}" style="color: #333333; text-decoration: none;">${payload.phone || 'N/A'}</a>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%; padding: 12px 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; font-weight: 600; color: #333333; font-size: 13px;">Website</td>
+            <td style="width: 75%; padding: 12px 15px; border: 1px solid #e9ecef; font-size: 14px; color: #333;">
+                <a href="${payload.website || '#'}" target="_blank" style="color: #333333; text-decoration: none;">${payload.website || 'N/A'}</a>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Message Section -->
+    <table style="width: 100%; margin-bottom: 25px;">
+        <tr>
+            <td style="background-color: #f8f9fa; padding: 12px 15px; font-weight: 600; font-size: 13px; color: #333333; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #333333;">
+                Message
+            </td>
+        </tr>
+    </table>
+
+    <div style="background-color: #fdfdfd; padding: 18px 15px; border: 1px solid #e9ecef; border-left: 4px solid #333333; font-size: 14px; line-height: 22px; color: #333; margin-bottom: 30px;">
+        ${payload.message.replace(/\n/g, "<br>")}
+    </div>
+
+    <!-- Footer Info -->
+    <p style="font-size:14px;color: #666; margin:0; padding-top: 15px; text-align: center; border-top: 1px solid #e9ecef;">
+        Submitted: ${submitDate}
+    </p>
+  `;
+  return {
+    subject: "New Contact Form Submission",
     html: emailWrapper(content),
   };
 }

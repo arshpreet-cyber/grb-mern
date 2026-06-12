@@ -12,11 +12,17 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = parseInt((session.user as any).id, 10);
+    const userEmail = session.user.email;
 
     // Get user's recent orders
     const recentOrders = await prisma.order.findMany({
-      where: { userId },
+      where: {
+        OR: [
+          { userId },
+          ...(userEmail ? [{ email: userEmail }] : []),
+        ],
+      },
       orderBy: { createdAt: "desc" },
       take: 5,
     });

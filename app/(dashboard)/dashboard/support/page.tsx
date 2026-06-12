@@ -2,13 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Paperclip, X, Upload, Ticket, CheckCircle2, Clock, HeadphonesIcon } from "lucide-react";
 
 export default function DashboardSupportPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [subject, setSubject] = useState("");
+
+  // Pre-fill the subject when opened from an order ("Create Ticket" button).
+  useEffect(() => {
+    const s = new URLSearchParams(window.location.search).get("subject");
+    if (s) setSubject(s);
+  }, []);
   const [query, setQuery] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);

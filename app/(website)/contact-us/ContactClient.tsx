@@ -7,6 +7,8 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import Wrapper from "@/components/ui/Wrapper";
 import { Check } from "lucide-react";
 
+const TURNSTILE_ENABLED = process.env.NEXT_PUBLIC_TURNSTILE_ENABLED === "true";
+
 export default function ContactClient() {
   const [formData, setFormData] = useState({
     email: "",
@@ -52,10 +54,10 @@ export default function ContactClient() {
       }
     }
 
-    // if (!turnstileToken) {
-    //   setError("Please complete the captcha verification.");
-    //   return;
-    // }
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setError("Please complete the captcha verification.");
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
@@ -209,12 +211,16 @@ export default function ContactClient() {
                     </div>
 
                     {/* Turnstile */}
-                    {/* <div className="mb-3">
-                      <Turnstile
-                        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAA9m-V26A66_Jm6r"}
-                        onSuccess={(token) => setTurnstileToken(token)}
-                      />
-                    </div> */}
+                    {TURNSTILE_ENABLED && (
+                      <div className="mb-3">
+                        <Turnstile
+                          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAA9m-V26A66_Jm6r"}
+                          onSuccess={(token) => setTurnstileToken(token)}
+                          onExpire={() => setTurnstileToken(null)}
+                          onError={() => setTurnstileToken(null)}
+                        />
+                      </div>
+                    )}
 
                     <button
                       type="submit"

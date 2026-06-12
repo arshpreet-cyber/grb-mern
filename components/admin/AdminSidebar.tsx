@@ -108,10 +108,18 @@ const menuSections: MenuSection[] = [
   // },
 ];
 
-// Sidebar sections hidden per role (by section title). ADMIN sees everything.
-const HIDDEN_SECTIONS_BY_ROLE: Record<string, string[]> = {
-  MANAGER: ["Pages", "Products"],
-  SEO: ["Order Management"],
+// Per-role allowlist of sidebar item labels. Roles not listed here (e.g.
+// ADMIN) see every item.
+const ALLOWED_ITEMS_BY_ROLE: Record<string, string[]> = {
+  MANAGER: [
+    "Visit Site", "User Dashboard", "Dashboard",
+    "Orders Management",
+    "Account Details", "Users", "Tickets",
+  ],
+  SEO: [
+    "Visit Site", "User Dashboard", "Dashboard",
+    "Account Details", "Blogs", "Redirections",
+  ],
 };
 
 interface AdminSidebarProps {
@@ -142,10 +150,13 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
 
   // Guard all session values behind `mounted` to prevent SSR/CSR hydration mismatch
   const role = mounted ? (session?.user?.role ?? "ADMIN") : "ADMIN";
-  const hiddenSectionTitles = HIDDEN_SECTIONS_BY_ROLE[role.toUpperCase()] ?? [];
-  const visibleSections = menuSections.filter(
-    (s) => !s.title || !hiddenSectionTitles.includes(s.title)
-  );
+  const allowedItems = ALLOWED_ITEMS_BY_ROLE[role.toUpperCase()];
+  const visibleSections = menuSections
+    .map((s) => ({
+      ...s,
+      items: allowedItems ? s.items.filter((i) => allowedItems.includes(i.label)) : s.items,
+    }))
+    .filter((s) => s.items.length > 0);
   const initials = mounted ? (session?.user?.name?.charAt(0)?.toUpperCase() ?? "A") : "A";
   const userName = mounted ? (session?.user?.name ?? "Admin") : "Admin";
   const userEmail = mounted ? (session?.user?.email ?? "") : "";

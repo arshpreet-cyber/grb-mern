@@ -3,20 +3,21 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { 
-  ChevronsRight, 
-  User, 
-  LogOut, 
-  Search, 
-  Sun, 
-  Moon, 
-  MessageSquareText, 
-  Bell 
+import {
+  ChevronsRight,
+  ChevronsLeft,
+  User,
+  LogOut,
+  Sun,
+  Moon,
+  MessageSquareText,
+  Bell
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
-export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
+export default function UserNavbar({ onToggle, isOpen }: { onToggle?: () => void; isOpen?: boolean }) {
   const { data: session } = useSession();
+  void isOpen;
 
   // State to manage dropdown open/close
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -106,20 +107,8 @@ export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
             className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-white transition shrink-0"
             aria-label="Toggle Sidebar"
           >
-            <ChevronsRight size={20} />
+            {isOpen ? <ChevronsLeft size={20} /> : <ChevronsRight size={20} />}
           </button>
-
-          <div className="relative hidden sm:block flex-1 min-w-0">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white"
-              size={18}
-            />
-            <input
-              type="search"
-              placeholder="Search dashboard.."
-              className="w-full rounded-full bg-[#f4f5f7] dark:bg-[#252b3b] py-2.5 pl-12 pr-4 text-sm text-slate-700 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 transition"
-            />
-          </div>
         </div>
 
         {/* Actions & Profile */}

@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       select: { email: true, name: true },
     });
 
-    const pmMap: Record<string, string> = { card: "2", paypal: "4", razorpay: "3", zoho: "5" };
+    const pmMap: Record<string, string> = { card: "3", paypal: "4", razorpay: "2", zoho: "5" };
 
     const order = await prisma.order.create({
       data: {
@@ -63,12 +63,11 @@ export async function POST(req: NextRequest) {
         orderDetails: {
           create: items.map((item: any) => ({
             itemName: item.platform,
+            bannerTitle: item.bannerTitle ?? item.platform,
             itemId: item.id,
             quantity: item.qty,
             amount: item.pricePerUnit,
-            platform: item.platform,
-            type: item.type,
-            image: item.image,
+            productType: item.type === "subscribe" ? "2" : "1",
           })),
         },
       },

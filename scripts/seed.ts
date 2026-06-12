@@ -52,7 +52,7 @@ async function main() {
         paymentMethod: 'Credit Card',
         status: 'Pending',
         paymentStatus: 'Pending',
-        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       },
       {
         orderNumber: '#177150847',
@@ -61,7 +61,7 @@ async function main() {
         paymentMethod: 'PayPal',
         status: 'Complete',
         paymentStatus: 'Complete',
-        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
       },
       {
         orderNumber: '#177150848',
@@ -70,7 +70,7 @@ async function main() {
         paymentMethod: 'Credit Card',
         status: 'Complete',
         paymentStatus: 'Complete',
-        date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
       },
       {
         orderNumber: '#177150849',
@@ -79,7 +79,7 @@ async function main() {
         paymentMethod: 'Stripe',
         status: 'Pending',
         paymentStatus: 'Pending',
-        date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
       },
       {
         orderNumber: '#177150850',
@@ -88,7 +88,7 @@ async function main() {
         paymentMethod: 'Credit Card',
         status: 'Complete',
         paymentStatus: 'Complete',
-        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
       },
       {
         orderNumber: '#177150851',
@@ -97,7 +97,7 @@ async function main() {
         paymentMethod: 'PayPal',
         status: 'Cancelled',
         paymentStatus: 'Failed',
-        date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
       },
       {
         orderNumber: '#177150852',
@@ -106,7 +106,7 @@ async function main() {
         paymentMethod: 'Credit Card',
         status: 'Complete',
         paymentStatus: 'Complete',
-        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       },
       {
         orderNumber: '#177150853',
@@ -115,7 +115,7 @@ async function main() {
         paymentMethod: 'Stripe',
         status: 'Pending',
         paymentStatus: 'Pending',
-        date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
       },
     ];
 

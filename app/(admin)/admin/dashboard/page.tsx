@@ -27,7 +27,7 @@ import {
   Loader2,
 } from "lucide-react";
 import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
-import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
+import { orderStatusLabel, paymentStatusLabel, paymentMethodLabel, paymentMethodColor } from "@/lib/status-labels";
 
 // Types
 interface Stats {
@@ -159,12 +159,7 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-const PM_LABELS: Record<string, string> = {
-  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Pay by Card",
-};
-const PM_COLORS: Record<string, string> = {
-  "1": "bg-gray-700", "2": "bg-indigo-600", "3": "bg-blue-500", "4": "bg-blue-700", "5": "bg-gray-700",
-};
+
 
 export default function AdminDashboard() {
   const { data: session } = useSession();
@@ -191,16 +186,18 @@ export default function AdminDashboard() {
   });
 
   const [changes, setChanges] = useState({ revenue: "—", orders: "—", users: "—", tickets: "—", todayRevenue: "—" });
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [, setApiError] = useState<string | null>(null);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
   // Role-based widget visibility. MANAGER: tables only (no stats/charts).
-  // SEO: only the Recent Ticket table. Everyone else: full dashboard.
+  // SEO: dashboard shows nothing. Everyone else: full dashboard.
   const role = (mounted ? (session?.user?.role ?? "") : "").toUpperCase();
-  const showAnalytics = role !== "MANAGER" && role !== "SEO";
-  const showRecentOrders = role !== "SEO";
+  const isSeo = role === "SEO";
+  const showAnalytics = role !== "MANAGER" && !isSeo;
+  const showRecentOrders = !isSeo;
+  const showRecentTickets = !isSeo;
 
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadingData, setLoadingData] = useState(false);
@@ -280,8 +277,8 @@ export default function AdminDashboard() {
     { key: "paymentMethod", header: "Method", render: (r) => {
       const pm = r.paymentMethod ?? "";
       return (
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded text-white ${PM_COLORS[pm] ?? "bg-gray-500"}`}>
-          {PM_LABELS[pm] ?? "—"}
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded text-white ${paymentMethodColor(pm)}`}>
+          {paymentMethodLabel(pm)}
         </span>
       );
     } },
@@ -299,6 +296,9 @@ export default function AdminDashboard() {
         "On Hold":    "border-[#fed7aa] text-[#ea580c] bg-[#fff7ed] dark:border-orange-900/50 dark:bg-orange-900/20 dark:text-orange-400",
         "Cancelled":  "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
         "Refund":     "border-[#e9d5ff] text-[#7c3aed] bg-[#f5f3ff] dark:border-purple-900/50 dark:bg-purple-900/20 dark:text-purple-400",
+        "Failed":     "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
+        "Fraud":      "border-[#fecaca] text-[#dc2626] bg-[#fef2f2] dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400",
+        "Active":     "border-[#bbf7d0] text-[#16a34a] bg-[#f0fdf4] dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
       }} />
     ) },
     { key: "paymentStatus", header: "Payment", render: (r) => (
@@ -327,11 +327,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="relative space-y-6 min-h-screen animate-fade-slide">
-      {apiError && (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 dark:bg-rose-900/20 dark:border-rose-800 px-5 py-4 text-sm text-rose-700 dark:text-rose-400 flex items-center gap-3">
-          <span className="font-bold">Dashboard error:</span> {apiError}
-        </div>
-      )}
       {/* Month-change overlay — no blur, just a small indicator */}
       {loadingData && (
         <div className="fixed top-4 right-4 z-100 bg-white dark:bg-slate-900 shadow-xl border border-gray-100 dark:border-slate-800 rounded-2xl px-4 py-2.5 flex items-center gap-2.5">
@@ -608,16 +603,18 @@ export default function AdminDashboard() {
       )}
 
       {/* Tables */}
-      <DataTable<Ticket>
-        title="Recent Ticket"
-        headerRight={<Link href="/admin/tickets" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL</Link>}
-        data={recentTickets}
-        columns={ticketColumns}
-        rowClassName={(t) => {
-          const isUnread = t.readStatus === 1;
-          return isUnread ? "bg-amber-50/50 dark:bg-amber-900/20" : "";
-        }}
-      />
+      {showRecentTickets && (
+        <DataTable<Ticket>
+          title="Recent Ticket"
+          headerRight={<Link href="/admin/tickets" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL</Link>}
+          data={recentTickets}
+          columns={ticketColumns}
+          rowClassName={(t) => {
+            const isUnread = t.readStatus === 1;
+            return isUnread ? "bg-amber-50/50 dark:bg-amber-900/20" : "";
+          }}
+        />
+      )}
 
       {showRecentOrders && (
         <DataTable<Order>

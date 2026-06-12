@@ -8,15 +8,14 @@ import {
   ClipboardList, MessageSquare, Eye
 } from "lucide-react";
 
+import { paymentMethodLabel } from "@/lib/status-labels";
+
 const STATUS_LABELS: Record<string, string> = {
   "1": "Pending", "2": "Complete", "3": "Processing",
   "4": "Hold", "5": "Cancelled", "6": "Refund",
 };
 const PAYMENT_LABELS: Record<string, string> = {
   "1": "Unpaid", "2": "Paid", "3": "Unconfirmed", "4": "Cancelled",
-};
-const PM_LABELS: Record<string, string> = {
-  "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Pay by Card",
 };
 const STATUS_COLORS: Record<string, string> = {
   "1": "bg-yellow-100 text-yellow-700 border-yellow-300",
@@ -202,7 +201,7 @@ export default function AdminUserDetailPage() {
                     {o.amount != null ? `${o.symbol ?? "$"}${o.amount.toFixed(2)}` : "—"}
                   </td>
                   <td className="px-4 py-3 text-gray-500 dark:text-slate-400">
-                    {PM_LABELS[o.paymentMethod ?? ""] ?? "—"}
+                    {paymentMethodLabel(o.paymentMethod)}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${STATUS_COLORS[o.status ?? "1"] ?? ""}`}>

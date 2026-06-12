@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 export async function GET() {
   try {
     const [ordersDelivered, activeUsers] = await Promise.all([
-      prisma.order.count({ where: { status: "3", deletedAt: null } }),
+      prisma.order.count({ where: { status: "2", deletedAt: null } }),
       prisma.user.count({ where: { role: "USER" as any } }),
     ]);
 
