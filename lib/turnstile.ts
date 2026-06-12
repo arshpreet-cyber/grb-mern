@@ -1,10 +1,15 @@
+// Master switch — Turnstile only runs when NEXT_PUBLIC_TURNSTILE_ENABLED=true.
+// Keep it off until the real keys' domain (getreviews.buzz) is live.
+export const TURNSTILE_ENABLED = process.env.NEXT_PUBLIC_TURNSTILE_ENABLED === "true";
+
 // Server-side Cloudflare Turnstile verification.
-// If TURNSTILE_SECRET_KEY is not configured we skip verification (return true)
-// so unconfigured environments don't break auth/contact submissions.
+// Skips (returns true) when disabled or when TURNSTILE_SECRET_KEY is unset, so
+// the wrong domain / unconfigured environments don't break submissions.
 export async function verifyTurnstile(
   token: string | null | undefined,
   remoteIp?: string | null
 ): Promise<boolean> {
+  if (!TURNSTILE_ENABLED) return true; // disabled — don't block
   const secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) return true; // not configured — don't block
   if (!token) return false;

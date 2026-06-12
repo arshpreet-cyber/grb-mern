@@ -8,6 +8,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import { countryCodes } from "@/lib/constants/countryCodes";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAA9m-V26A66_Jm6r";
+const TURNSTILE_ENABLED = process.env.NEXT_PUBLIC_TURNSTILE_ENABLED === "true";
 
 function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
   const [email, setEmail] = useState("");
@@ -99,7 +100,7 @@ function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!turnstileToken) { setError("Please complete the captcha verification."); return; }
+    if (TURNSTILE_ENABLED && !turnstileToken) { setError("Please complete the captcha verification."); return; }
     setIsLoading(true);
     setError("");
     const res = await signIn("credentials", { email: email.trim().toLowerCase(), password, turnstileToken, redirect: false });
@@ -135,9 +136,11 @@ function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () 
         </label>
         <button type="button" onClick={onForgot} className="text-black underline hover:text-gray-600 transition">Forgot password?</button>
       </div>
-      <div className="flex justify-center">
-        <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} onError={() => setTurnstileToken(null)} />
-      </div>
+      {TURNSTILE_ENABLED && (
+        <div className="flex justify-center">
+          <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} onError={() => setTurnstileToken(null)} />
+        </div>
+      )}
       <button type="submit" disabled={isLoading}
         className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
         {isLoading ? "Signing in..." : "Log In"}
@@ -243,7 +246,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
     setError("");
     if (form.password.length < 8) { setError("Password must be at least 8 characters."); return; }
     if (!form.phone) { setError("Phone number is required."); return; }
-    if (!turnstileToken) { setError("Please complete the captcha verification."); return; }
+    if (TURNSTILE_ENABLED && !turnstileToken) { setError("Please complete the captcha verification."); return; }
     setIsLoading(true);
     try {
       const res = await fetch("/api/twilio/send-phone-otp", {
@@ -344,9 +347,11 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
         </div>
         {error && <div className="flex items-center gap-2.5 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {error}</div>}
         <OtpInput value={phoneOtp} onChange={setPhoneOtp} />
-        <div className="flex justify-center">
-          <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} onError={() => setTurnstileToken(null)} />
-        </div>
+        {TURNSTILE_ENABLED && (
+          <div className="flex justify-center">
+            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} onError={() => setTurnstileToken(null)} />
+          </div>
+        )}
         <button type="submit" disabled={isLoading || phoneOtp.length !== 6}
           className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
           {isLoading ? "Verifying..." : "Verify Phone"}
@@ -377,9 +382,11 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
         </div>
         {error && <div className="flex items-center gap-2.5 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {error}</div>}
         <OtpInput value={emailOtp} onChange={setEmailOtp} />
-        <div className="flex justify-center">
-          <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} onError={() => setTurnstileToken(null)} />
-        </div>
+        {TURNSTILE_ENABLED && (
+          <div className="flex justify-center">
+            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} onError={() => setTurnstileToken(null)} />
+          </div>
+        )}
         <button type="submit" disabled={isLoading || emailOtp.length !== 6}
           className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
           {isLoading ? "Verifying..." : "Verify Email & Create Account"}
@@ -447,9 +454,11 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           </button>
         </div>
       </div>
-      <div className="flex justify-center">
-        <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} onError={() => setTurnstileToken(null)} />
-      </div>
+      {TURNSTILE_ENABLED && (
+        <div className="flex justify-center">
+          <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={setTurnstileToken} onExpire={() => setTurnstileToken(null)} onError={() => setTurnstileToken(null)} />
+        </div>
+      )}
       <button type="submit" disabled={isLoading}
         className="w-full rounded-md bg-[#FFCE2E] hover:bg-[#EBB81E] py-3 text-[15px] font-bold text-black transition disabled:opacity-50">
         {isLoading ? "Sending OTP..." : "Continue"}
