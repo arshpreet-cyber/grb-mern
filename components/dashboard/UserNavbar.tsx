@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
-export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
+export default function UserNavbar({ onToggle, isOpen }: { onToggle?: () => void; isOpen?: boolean }) {
   const { data: session } = useSession();
+  void isOpen;
 
   // State to manage dropdown open/close
   const [isProfileOpen, setIsProfileOpen] = useState(false);

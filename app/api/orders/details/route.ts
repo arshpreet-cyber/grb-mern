@@ -18,10 +18,14 @@ export async function POST(req: NextRequest) {
       include: { orderDetails: true },
     });
 
-    const isOwner = order.userId === parseInt(session.user.id) || 
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    const isOwner = order.userId === parseInt(session.user.id) ||
                     (order.email && session.user.email && order.email.toLowerCase() === session.user.email.toLowerCase());
 
-    if (!order || !isOwner) {
+    if (!isOwner) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, ClipboardList, FileText, Info } from "lucide-react";
+import { ArrowLeft, ClipboardList, FileText, Info, Download, Loader2 } from "lucide-react";
 
 type OrderDetail = {
   id: string;
@@ -56,6 +56,34 @@ export default function UserOrderDetailPage() {
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+
+  async function downloadInvoice() {
+    setDownloadingInvoice(true);
+    try {
+      const res = await fetch(`/api/orders/${id}/invoice`);
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        const { toast } = await import("sonner");
+        toast.error(e.error || "Invoice not available for this order yet.");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoice-${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      const { toast } = await import("sonner");
+      toast.error("Could not download the invoice. Please try again.");
+    } finally {
+      setDownloadingInvoice(false);
+    }
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -193,6 +221,14 @@ export default function UserOrderDetailPage() {
               </a>
             </div>
           )}
+          <button
+            onClick={downloadInvoice}
+            disabled={downloadingInvoice}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 text-[12px] font-bold transition disabled:opacity-60"
+          >
+            {downloadingInvoice ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+            {downloadingInvoice ? "Preparing…" : "Download Invoice"}
+          </button>
         </div>
 
         {/* Order Items */}
