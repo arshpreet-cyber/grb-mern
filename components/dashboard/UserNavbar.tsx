@@ -3,19 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { 
-  ChevronsRight, 
-  ChevronsLeft,
-  User, 
-  LogOut, 
-  Sun, 
-  Moon, 
-  MessageSquareText, 
-  Bell 
+import {
+  ChevronsRight,
+  User,
+  LogOut,
+  Sun,
+  Moon,
+  MessageSquareText,
+  Bell
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
-export default function UserNavbar({ onToggle, isOpen }: { onToggle?: () => void; isOpen?: boolean }) {
+export default function UserNavbar({ onToggle }: { onToggle?: () => void }) {
   const { data: session } = useSession();
 
   // State to manage dropdown open/close
@@ -99,14 +98,14 @@ export default function UserNavbar({ onToggle, isOpen }: { onToggle?: () => void
     <header className="sticky top-4 z-40 mx-6 bg-white dark:bg-[#1a1f2c] shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.2)] border border-slate-50 dark:border-slate-800 rounded-[15px] px-5 py-4 transition-all">
       <div className="flex items-center justify-between gap-4">
         
-        {/* Toggle only (search removed) */}
-        <div className="flex items-center gap-3">
+        {/* Toggle + Pill-shaped Search */}
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           <button
             onClick={onToggle}
             className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-white transition shrink-0"
             aria-label="Toggle Sidebar"
           >
-            {isOpen ? <ChevronsLeft size={20} /> : <ChevronsRight size={20} />}
+            <ChevronsRight size={20} />
           </button>
         </div>
 
