@@ -9,6 +9,7 @@ import {
 import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import PayNowDropdown from "@/components/dashboard/PayNowDropdown";
 
 // --- Types ---
 const PM_LABELS: Record<string, string> = {
@@ -317,28 +318,7 @@ export default function DemoDashboard() {
                     </td>
                     <td className="px-4 py-5 text-center">
                       {order.paymentStatus !== "Paid" && (
-                        <div className="relative inline-block">
-                          <button
-                            onClick={() => setPaymentDropdownOpen(v => v === order.id ? null : order.id)}
-                            className="inline-flex items-center gap-1.5 rounded-[5px] bg-[#0084FF] hover:bg-blue-700 px-3 py-1.5 text-[11px] font-medium text-white transition-colors whitespace-nowrap"
-                          >
-                            Pay Now <ChevronDown size={12} />
-                          </button>
-                          {paymentDropdownOpen === order.id && (
-                            <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-36 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
-                              {order.payUrl && (
-                                <a href={order.payUrl} className="block px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors font-medium">
-                                  <span className="font-bold text-[#003087]">Pay</span><span className="font-bold text-[#009cde]">Pal</span>
-                                </a>
-                              )}
-                              {order.payUrl && (
-                                <a href={order.payUrl} className="block px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors border-t border-gray-100 dark:border-slate-800 font-medium">
-                                  <span className="font-bold text-[#2D8CFF]">Razorpay</span>
-                                </a>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                        <PayNowDropdown orderId={order.id} fallbackUrl={order.payUrl} />
                       )}
                     </td>
                     <td className="px-4 py-5 text-center">
@@ -421,24 +401,7 @@ export default function DemoDashboard() {
                     )}
 
                     {order.paymentStatus !== "Paid" && (
-                      <div className="relative inline-block">
-                        <button
-                          onClick={() => setPaymentDropdownOpen(v => v === order.id ? null : order.id)}
-                          className="inline-flex items-center gap-1 rounded-[5px] bg-[#0084FF] px-2.5 py-1.5 text-[11px] font-medium text-white"
-                        >
-                          Pay <ChevronDown size={12} />
-                        </button>
-                        {paymentDropdownOpen === order.id && (
-                          <div className="absolute right-0 bottom-[calc(100%+4px)] z-50 w-32 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
-                            {order.payUrl && (
-                              <a href={order.payUrl} className="block px-4 py-2 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-slate-50">PayPal</a>
-                            )}
-                            {order.payUrl && (
-                              <a href={order.payUrl} className="block px-4 py-2 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-slate-50 border-t border-gray-100 dark:border-slate-800">Razorpay</a>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      <PayNowDropdown orderId={order.id} fallbackUrl={order.payUrl} openUpward />
                     )}
 
                     <Link

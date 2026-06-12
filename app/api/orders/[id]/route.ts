@@ -95,8 +95,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     // If user is NOT an Admin, enforce they can ONLY view their own profile orders.
     // (Note: Adjust 'session.user.role' depending on your next-auth setup variable)
     const isAdmin = (session.user as any).role === "ADMIN" || (session.user as any).role === "admin";
-    
-    if (!isAdmin && order.userId !== parseInt(session.user.id)) {
+
+    // Owner = order linked by userId OR matched by the account email (guest/legacy
+    // orders have a null userId but the same email).
+    const ownsOrder =
+      order.userId === parseInt(session.user.id) ||
+      (!!order.email && order.email === session.user.email);
+
+    if (!isAdmin && !ownsOrder) {
       return NextResponse.json({ error: "Unauthorized access to order" }, { status: 403 });
     }
 

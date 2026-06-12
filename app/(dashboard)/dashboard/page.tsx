@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { PlusCircle, ArrowUpRight, Eye } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
+import PayNowDropdown from "@/components/dashboard/PayNowDropdown";
 
 const PM_LABELS: Record<string, string> = {
   "1": "Card", "2": "Stripe", "3": "Razorpay", "4": "PayPal", "5": "Pay by Card",
@@ -228,13 +229,8 @@ export default function UserDashboard() {
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    {o.paymentStatus !== "Paid" && o.payUrl && (
-                      <a
-                        href={o.payUrl}
-                        className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-normal text-white transition inline-block"
-                      >
-                        Pay by Card
-                      </a>
+                    {o.paymentStatus !== "Paid" && (
+                      <PayNowDropdown orderId={o.id} fallbackUrl={o.payUrl} />
                     )}
                   </td>
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ClipboardList, FileText } from "lucide-react";
+import PayNowDropdown from "@/components/dashboard/PayNowDropdown";
 
 type OrderDetail = {
   id: string;
@@ -172,16 +173,11 @@ export default function UserOrderDetailPage() {
                 </dd>
               </div>
             )}
-            {order.paymentStatus !== "2" && order.payUrl && (
+            {order.paymentStatus !== "2" && (
               <div>
                 <dt className="text-[11px] text-gray-400 uppercase tracking-wide mb-1">Payment</dt>
                 <dd>
-                  <a
-                    href={order.payUrl}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] text-black text-[12px] font-bold transition"
-                  >
-                    Pay Now →
-                  </a>
+                  <PayNowDropdown orderId={order.id} fallbackUrl={order.payUrl} align="left" />
                 </dd>
               </div>
             )}
