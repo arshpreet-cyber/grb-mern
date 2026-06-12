@@ -8,7 +8,7 @@ import {
   ClipboardList, MessageSquare, Eye
 } from "lucide-react";
 
-import { paymentMethodLabel } from "@/lib/status-labels";
+import { paymentMethodLabel, ticketStatusLabel, ticketStatusColor } from "@/lib/status-labels";
 
 const STATUS_LABELS: Record<string, string> = {
   "1": "Pending", "2": "Complete", "3": "Processing",
@@ -102,7 +102,7 @@ export default function AdminUserDetailPage() {
   const totalSpend = user.orders.reduce((s, o) => s + (o.amount ?? 0), 0);
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 w-full">
       {/* Header */}
       <div className="rounded-2xl bg-white dark:bg-[#1a1f2c] border border-gray-100 dark:border-slate-800 p-5 shadow-sm flex items-center gap-4">
         <button
@@ -279,12 +279,9 @@ export default function AdminUserDetailPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                        t.status === "Open" ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        : t.status === "Closed" ? "bg-gray-50 text-gray-500 border-gray-200"
-                        : t.status === "Pending" ? "bg-amber-50 text-amber-700 border-amber-200"
-                        : "bg-blue-50 text-blue-700 border-blue-200"
-                      }`}>{t.status}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${ticketStatusColor(t.status)}`}>
+                        {ticketStatusLabel(t.status)}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-gray-400">
                       {timeAgo(last ? last.createdAt : t.createdAt)}
