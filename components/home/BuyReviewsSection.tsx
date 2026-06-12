@@ -111,6 +111,7 @@ export function ProductCard({
 
   const effectiveMode = selectedMode || "onetime";
   const isMonthly = effectiveMode === "monthly";
+  const isYellow = selectedMode !== null;
 
   const isGoogleReviews = Number(product.id) === 2 || product.platform?.toLowerCase() === "google reviews";
   const styleKey = Number(product.styleId ?? product.id);
@@ -132,6 +133,13 @@ export function ProductCard({
   ];
 
   const [activePkgIndex, setActivePkgIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isGoogleReviews && selectedMode !== null && activePkgIndex === null) {
+      setActivePkgIndex(0);
+    }
+  }, [selectedMode, isGoogleReviews, activePkgIndex]);
+
   const selectedPkg = activePkgIndex !== null ? packages[activePkgIndex] : null;
 
   const finalPrice = isGoogleReviews ? (selectedPkg?.price ?? product.oneTimePrice ?? 20) : (product.oneTimePrice || 20);
@@ -222,9 +230,9 @@ export function ProductCard({
                     e.stopPropagation();
                     setActivePkgIndex(index);
                   }}
-                  className={`warranty-box flex flex-col items-start p-[10px_6px_8px_6px] rounded-[8px] cursor-pointer border-[1.5px] border-transparent transition-all min-h-[70px] max-[359px]:w-full max-[359px]:flex-row max-[359px]:items-center max-[359px]:justify-between max-[359px]:p-[10px_12px] ${isActive
+                  className={`warranty-box flex flex-col items-start p-[10px_6px_8px_6px] rounded-[8px] cursor-pointer border-[1.5px] transition-all min-h-[70px] max-[359px]:w-full max-[359px]:flex-row max-[359px]:items-center max-[359px]:justify-between max-[359px]:p-[10px_12px] ${isActive
                       ? "border-[#ffd737] bg-[#FFF9E6]"
-                      : "bg-white hover:border-[#ffd737] hover:bg-[#FFF9E6]"
+                      : "border-transparent bg-white hover:border-[#ffd737] hover:bg-[#FFF9E6]"
                     }`}
                 >
                   <div className="warranty-price flex items-baseline gap-[1px] mb-[2px] max-[359px]:mb-0 max-[359px]:mr-[8px]">
@@ -279,9 +287,9 @@ export function ProductCard({
 
             <button
               onClick={handleAdd}
-              className={`group card-cart-btn flex items-center justify-center h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
+              className={`group card-cart-btn flex items-center justify-center h-[46px] w-full text-black rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isYellow ? "bg-[#fc0] text-[#1a1a1a] border-none" : "bg-white border border-black/13"
                 }`}
-              style={{ backgroundColor: isMonthly ? '#fc0' : 'white' }}
+              style={{ backgroundColor: isYellow ? '#fc0' : 'white' }}
             >
               <div className="flex items-center justify-center gap-[8px] transition-transform duration-300 group-hover:-translate-y-[2px]">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] shrink-0">
@@ -390,9 +398,9 @@ export function ProductCard({
 
           <button
             onClick={handleAdd}
-            className={`group card-cart-btn flex items-center justify-center h-[46px] w-full text-black border border-black/13 rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isMonthly ? "bg-[#fc0] text-[#1a1a1a] border-none monthly-mode" : "bg-white onetime-mode"
+            className={`group card-cart-btn flex items-center justify-center h-[46px] w-full text-black rounded-[10px] text-[15px] font-semibold cursor-pointer transition-all mt-0 font-sans ${isYellow ? "bg-[#fc0] text-[#1a1a1a] border-none" : "bg-white border border-black/13"
               }`}
-            style={{ backgroundColor: isMonthly ? '#fc0' : 'white' }}
+            style={{ backgroundColor: isYellow ? '#fc0' : 'white' }}
           >
             <div className="flex items-center justify-center gap-[8px] transition-transform duration-300 group-hover:-translate-y-[2px]">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-[18px] h-[18px] shrink-0">

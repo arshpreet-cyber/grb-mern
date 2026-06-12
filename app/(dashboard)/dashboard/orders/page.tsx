@@ -7,7 +7,7 @@ import {
   Eye, ChevronsLeft, ChevronsRight, Search
 } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel, paymentMethodLabel } from "@/lib/status-labels";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Order {
@@ -48,7 +48,7 @@ const TABS = [
   { label: "All Orders", value: "all" },
   { label: "Completed", value: "completed" },
   { label: "Pending", value: "pending" },
-  { label: "Cancelled", value: "deleted" }, 
+  { label: "Cancelled", value: "deleted" },
 ];
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -62,13 +62,13 @@ export default function DemoDashboard() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentDropdownOpen, setPaymentDropdownOpen] = useState<string | null>(null);
-  
+
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  
+
   // Counts State
   const [counts, setCounts] = useState<Record<string, number>>({});
 
@@ -88,10 +88,10 @@ export default function DemoDashboard() {
     try {
       const res = await fetch(`/api/orders?filter=${filter}&search=${encodeURIComponent(q)}&page=${pg}&pageSize=${ps}`);
       const data = await res.json();
-      
+
       if (data.orders) {
         const isNullStr = (v: any) => !v || v === "NULL" || v === "null";
-        
+
         const mappedOrders: Order[] = data.orders.map((o: ApiOrder) => ({
           id: o.id,
           orderNumber: o.orderNumber,
@@ -194,15 +194,14 @@ export default function DemoDashboard() {
       {/* Main Container */}
       <div className="bg-white dark:bg-[#1a1f2c] rounded-[20px] border border-gray-100 dark:border-slate-800 mt-1 overflow-hidden shadow-sm transition-colors">
         <div className="px-6 py-5 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 dark:border-slate-800">
-          
+
           <div className="flex items-center gap-2">
             {TABS.map((tab) => (
               <button
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
-                className={`px-4 py-1.5 text-[14px] font-medium transition-all rounded-[10px] ${
-                  activeTab === tab.value ? "bg-black dark:bg-white text-white dark:text-black" : "text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
-                }`}
+                className={`px-4 py-1.5 text-[14px] font-medium transition-all rounded-[10px] ${activeTab === tab.value ? "bg-black dark:bg-white text-white dark:text-black" : "text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
+                  }`}
               >
                 {tab.label}
               </button>
@@ -261,8 +260,8 @@ export default function DemoDashboard() {
             <thead>
               <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                 {[
-                  "# Order No", "Payment ID", "Amount", "Date", 
-                  "Payment Method", "Status", "Payment Status", 
+                  "# Order No", "Payment ID", "Amount", "Date",
+                  "Payment Method", "Status", "Payment Status",
                   "Order Details", "Payment option", "Action"
                 ].map((h) => (
                   <th key={h} className="px-5 py-4 text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500 whitespace-nowrap text-center last:text-center">
@@ -302,18 +301,16 @@ export default function DemoDashboard() {
                     </td>
 
                     <td className="px-5 py-5 text-center">
-                      <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-normal whitespace-nowrap ${
-                        ["Pending", "On Hold"].includes(order.status)
+                      <span className={`inline-flex items-center gap-1.5 rounded-[5px] border px-2.5 py-1 text-[10px] font-normal whitespace-nowrap ${["Pending", "On Hold"].includes(order.status)
                           ? "border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400"
                           : ["Cancelled", "Failed", "Fraud", "Refund"].includes(order.status)
-                          ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400"
-                          : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"
-                      }`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${
-                          ["Pending", "On Hold"].includes(order.status) ? "bg-amber-500" :
-                          ["Cancelled", "Failed", "Fraud", "Refund"].includes(order.status) ? "bg-rose-500" :
-                          "bg-emerald-500"
-                        }`} />
+                            ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-900/20 dark:text-rose-400"
+                            : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400"
+                        }`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${["Pending", "On Hold"].includes(order.status) ? "bg-amber-500" :
+                            ["Cancelled", "Failed", "Fraud", "Refund"].includes(order.status) ? "bg-rose-500" :
+                              "bg-emerald-500"
+                          }`} />
                         {order.status}
                       </span>
                     </td>
@@ -394,7 +391,7 @@ export default function DemoDashboard() {
               >
                 <ChevronsLeft size={16} />
               </button>
-              <button 
+              <button
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors text-gray-600 dark:text-slate-400"
@@ -402,7 +399,7 @@ export default function DemoDashboard() {
               >
                 <ChevronLeft size={16} />
               </button>
-              
+
               {getPageNumbers().map((p, idx) => (
                 p === "..." ? (
                   <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 text-xs select-none">…</span>
@@ -410,16 +407,15 @@ export default function DemoDashboard() {
                   <button
                     key={`page-${p}`}
                     onClick={() => goToPage(p as number)}
-                    className={`w-7 h-7 rounded-full text-[13px] font-medium transition-colors ${
-                      currentPage === p ? "bg-black dark:bg-white text-white dark:text-black shadow-sm" : "text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800"
-                    }`}
+                    className={`w-7 h-7 rounded-full text-[13px] font-medium transition-colors ${currentPage === p ? "bg-black dark:bg-white text-white dark:text-black shadow-sm" : "text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-800"
+                      }`}
                   >
                     {p}
                   </button>
                 )
               ))}
 
-              <button 
+              <button
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors text-gray-600 dark:text-slate-400"
