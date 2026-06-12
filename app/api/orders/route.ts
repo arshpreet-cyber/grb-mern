@@ -59,7 +59,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const isAdmin = (session.user as any).role?.toUpperCase() === "ADMIN";
+    // ADMIN and MANAGER can view every order in the admin Order Management view.
+    const role = (session.user as any).role?.toUpperCase();
+    const canViewAllOrders = role === "ADMIN" || role === "MANAGER";
     const userId = parseInt(session.user.id);
     const userEmail = session.user.email;
 
@@ -68,7 +70,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search") ?? "";
     const countsOnly = searchParams.get("countsOnly") === "1";
     const adminView = searchParams.get("adminView") === "1" || searchParams.get("adminView") === "true";
-    const showAll = isAdmin && adminView;
+    const showAll = canViewAllOrders && adminView;
 
     // --- Counts-only mode: return counts for every tab in one round-trip ---
     if (countsOnly) {

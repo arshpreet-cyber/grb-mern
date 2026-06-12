@@ -186,16 +186,18 @@ export default function AdminDashboard() {
   });
 
   const [changes, setChanges] = useState({ revenue: "—", orders: "—", users: "—", tickets: "—", todayRevenue: "—" });
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [, setApiError] = useState<string | null>(null);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
   // Role-based widget visibility. MANAGER: tables only (no stats/charts).
-  // SEO: only the Recent Ticket table. Everyone else: full dashboard.
+  // SEO: dashboard shows nothing. Everyone else: full dashboard.
   const role = (mounted ? (session?.user?.role ?? "") : "").toUpperCase();
-  const showAnalytics = role !== "MANAGER" && role !== "SEO";
-  const showRecentOrders = role !== "SEO";
+  const isSeo = role === "SEO";
+  const showAnalytics = role !== "MANAGER" && !isSeo;
+  const showRecentOrders = !isSeo;
+  const showRecentTickets = !isSeo;
 
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadingData, setLoadingData] = useState(false);
@@ -325,11 +327,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="relative space-y-6 min-h-screen animate-fade-slide">
-      {apiError && (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 dark:bg-rose-900/20 dark:border-rose-800 px-5 py-4 text-sm text-rose-700 dark:text-rose-400 flex items-center gap-3">
-          <span className="font-bold">Dashboard error:</span> {apiError}
-        </div>
-      )}
       {/* Month-change overlay — no blur, just a small indicator */}
       {loadingData && (
         <div className="fixed top-4 right-4 z-100 bg-white dark:bg-slate-900 shadow-xl border border-gray-100 dark:border-slate-800 rounded-2xl px-4 py-2.5 flex items-center gap-2.5">
@@ -606,16 +603,18 @@ export default function AdminDashboard() {
       )}
 
       {/* Tables */}
-      <DataTable<Ticket>
-        title="Recent Ticket"
-        headerRight={<Link href="/admin/tickets" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL</Link>}
-        data={recentTickets}
-        columns={ticketColumns}
-        rowClassName={(t) => {
-          const isUnread = t.readStatus === 1;
-          return isUnread ? "bg-amber-50/50 dark:bg-amber-900/20" : "";
-        }}
-      />
+      {showRecentTickets && (
+        <DataTable<Ticket>
+          title="Recent Ticket"
+          headerRight={<Link href="/admin/tickets" className="text-[14px] font-bold text-gray-400 dark:text-white/50 uppercase tracking-widest hover:text-gray-600 dark:hover:text-white transition-colors underline underline-offset-[3px]">VIEW ALL</Link>}
+          data={recentTickets}
+          columns={ticketColumns}
+          rowClassName={(t) => {
+            const isUnread = t.readStatus === 1;
+            return isUnread ? "bg-amber-50/50 dark:bg-amber-900/20" : "";
+          }}
+        />
+      )}
 
       {showRecentOrders && (
         <DataTable<Order>

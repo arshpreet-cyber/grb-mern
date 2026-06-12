@@ -97,11 +97,12 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    const isAdmin = (session.user as any).role?.toUpperCase() === "ADMIN";
-    const isOwner = order.userId === parseInt(session.user.id) || 
+    const role = (session.user as any).role?.toUpperCase();
+    const isStaff = role === "ADMIN" || role === "MANAGER";
+    const isOwner = order.userId === parseInt(session.user.id) ||
                     (order.email && session.user.email && order.email.toLowerCase() === session.user.email.toLowerCase());
-    
-    if (!isAdmin && !isOwner) {
+
+    if (!isStaff && !isOwner) {
       return NextResponse.json({ error: "Unauthorized access to order" }, { status: 403 });
     }
 

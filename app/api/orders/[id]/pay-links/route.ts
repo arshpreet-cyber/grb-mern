@@ -20,11 +20,12 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     });
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
-    const isAdmin = (session.user as any).role?.toUpperCase() === "ADMIN";
+    const role = (session.user as any).role?.toUpperCase();
+    const isStaff = role === "ADMIN" || role === "MANAGER";
     const ownsOrder =
       order.userId === parseInt(session.user.id) ||
       (!!order.email && order.email === session.user.email);
-    if (!isAdmin && !ownsOrder) {
+    if (!isStaff && !ownsOrder) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
