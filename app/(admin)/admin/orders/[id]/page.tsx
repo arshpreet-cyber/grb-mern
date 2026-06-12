@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ClipboardList, FileText, Info, Ticket } from "lucide-react";
+import { ArrowLeft, ClipboardList, FileText, Ticket, MailWarning, Loader2 } from "lucide-react";
 
 type OrderDetail = {
   id: string;
@@ -61,6 +61,28 @@ export default function AdminOrderDetailPage() {
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sendingIncomplete, setSendingIncomplete] = useState(false);
+
+  // Email the customer asking them to fill in the missing order details.
+  async function sendIncompleteOrderEmail() {
+    setSendingIncomplete(true);
+    try {
+      const res = await fetch(`/api/orders/${id}/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "info-required" }),
+      });
+      const data = await res.json().catch(() => ({}));
+      const { toast } = await import("sonner");
+      if (res.ok) toast.success("Incomplete-order email sent to the customer.");
+      else toast.error(data.error || "Could not send the email.");
+    } catch {
+      const { toast } = await import("sonner");
+      toast.error("Could not send the email. Please try again.");
+    } finally {
+      setSendingIncomplete(false);
+    }
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -152,12 +174,22 @@ export default function AdminOrderDetailPage() {
           </p>
         </div>
         <div className="ml-auto flex flex-col items-end gap-2">
-          <Link
-            href={`/dashboard/support?subject=${encodeURIComponent(`Order ${order.orderNumber ?? order.id} - `)}`}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 px-3.5 py-1.5 text-[12px] font-bold transition shadow-sm"
-          >
-            <Ticket size={14} /> Create Ticket
-          </Link>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              onClick={sendIncompleteOrderEmail}
+              disabled={sendingIncomplete}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50 px-3.5 py-1.5 text-[12px] font-bold transition disabled:opacity-60"
+            >
+              {sendingIncomplete ? <Loader2 size={14} className="animate-spin" /> : <MailWarning size={14} />}
+              Incomplete Order
+            </button>
+            <Link
+              href={`/dashboard/support?subject=${encodeURIComponent(`Order ${order.orderNumber ?? order.id} - `)}`}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 px-3.5 py-1.5 text-[12px] font-bold transition shadow-sm"
+            >
+              <Ticket size={14} /> Create Ticket
+            </Link>
+          </div>
           <div className="flex gap-2 flex-wrap justify-end">
             <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${
               order.status === "2" || order.status === "9" ? "bg-green-100 text-green-700 border-green-300"
@@ -386,39 +418,6 @@ export default function AdminOrderDetailPage() {
                     </div>
                   )}
 
-                  {/* Saved Review History */}
-                  <div className="pt-4 border-t border-gray-100 dark:border-slate-800 space-y-3">
-                    <h4 className="text-sm font-semibold text-blue-600 dark:text-blue-400">Saved Review History:</h4>
-                    <div className="overflow-x-auto border border-gray-100 dark:border-slate-800 rounded-lg">
-                      <table className="min-w-full text-left text-[11px] border-collapse">
-                        <thead>
-                          <tr className="bg-gray-50/50 dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider">
-                            <th className="px-4 py-2.5">Review No.</th>
-                            <th className="px-4 py-2.5">Review Rating</th>
-                            <th className="px-4 py-2.5">Review Content</th>
-                            <th className="px-4 py-2.5">Date</th>
-                            <th className="px-4 py-2.5">Profile Name</th>
-                            <th className="px-4 py-2.5">Screenshot (Day 1)</th>
-                            <th className="px-4 py-2.5">
-                              <span className="flex items-center gap-1">
-                                Review Published/Deleted/Wrong Link
-                                <span className="text-cyan-500 hover:text-cyan-600 cursor-help" title="Status of the review publication">
-                                  <Info size={14} className="inline" />
-                                </span>
-                              </span>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td colSpan={7} className="px-4 py-8 text-center text-gray-400 dark:text-slate-500 bg-white dark:bg-[#1a1f2c]">
-                              No saved review history yet.
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
                 </div>
               );
             })}
