@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { sendEmailNotification, buildContactConfirmationEmail, buildContactAdminEmail, ADMIN_EMAIL } from "@/server/email";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 export async function POST(req: Request) {
   try {
@@ -11,23 +11,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Verify Turnstile
-    /*
-    if (!turnstileToken) {
-       return NextResponse.json({ error: "Captcha verification failed" }, { status: 400 });
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+    if (!(await verifyTurnstile(turnstileToken, ip))) {
+      return NextResponse.json({ error: "Captcha verification failed. Please try again." }, { status: 400 });
     }
-
-    const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=${process.env.TURNSTILE_SECRET_KEY}&response=${turnstileToken}`,
-    });
-
-    const verifyData = await verifyRes.json();
-    if (!verifyData.success) {
-       return NextResponse.json({ error: "Captcha verification failed" }, { status: 400 });
-    }
-    */
 
     // EVT-0017: send confirmation to the person who filled contact form
     const confirmation = buildContactConfirmationEmail({ email, phone, website });

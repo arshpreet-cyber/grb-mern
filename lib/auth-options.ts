@@ -2,10 +2,12 @@ import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 type AuthCredentials = {
   email?: string;
   password?: string;
+  turnstileToken?: string;
 };
 
 export const authOptions: NextAuthOptions = {
@@ -20,6 +22,10 @@ export const authOptions: NextAuthOptions = {
         try {
           const credentials = rawCredentials as AuthCredentials | undefined;
           if (!credentials?.email || !credentials?.password) return null;
+
+          // Cloudflare Turnstile (no-op if TURNSTILE_SECRET_KEY is unset).
+          if (!(await verifyTurnstile(credentials.turnstileToken))) return null;
+
           const normalizedEmail = credentials.email.trim().toLowerCase();
 
           const user = await prisma.user.findUnique({

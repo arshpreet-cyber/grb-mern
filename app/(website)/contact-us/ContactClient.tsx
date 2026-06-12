@@ -52,10 +52,10 @@ export default function ContactClient() {
       }
     }
 
-    // if (!turnstileToken) {
-    //   setError("Please complete the captcha verification.");
-    //   return;
-    // }
+    if (!turnstileToken) {
+      setError("Please complete the captcha verification.");
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
