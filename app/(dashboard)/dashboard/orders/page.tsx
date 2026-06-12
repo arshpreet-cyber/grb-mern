@@ -227,24 +227,7 @@ export default function DemoDashboard() {
               </select>
             </div>
 
-            <div className="relative">
-              <button
-                onClick={() => setPaymentDropdownOpen(v => v === "header" ? null : "header")}
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-[13px] text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-50 dark:hover:bg-slate-800 whitespace-nowrap transition-colors"
-              >
-                Payment Option <ChevronDown size={16} className="text-gray-400" />
-              </button>
-              {paymentDropdownOpen === "header" && (
-                <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-44 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
-                  <a href="https://www.paypal.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-3 text-[13px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">
-                    <span className="font-bold text-[#003087]">Pay</span><span className="font-bold text-[#009cde]">Pal</span>
-                  </a>
-                  <a href="https://razorpay.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-3 text-[13px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors border-t border-gray-100 dark:border-slate-800">
-                    <span className="font-bold text-[#2D8CFF]">Razorpay</span>
-                  </a>
-                </div>
-              )}
-            </div>
+
           </div>
         </div>
 

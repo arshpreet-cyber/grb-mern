@@ -8,7 +8,7 @@ import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 function BlogListingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
+
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<any>({ total: 0, page: 1, limit: 10, pages: 1 });
@@ -24,7 +24,7 @@ function BlogListingContent() {
         const queryParams = new URLSearchParams({
           status: '1',
           page: page.toString(),
-          limit: '9',
+          limit: '10',
           ...(search ? { search } : {})
         });
         const res = await fetch(`/api/blog?${queryParams}`);
@@ -65,7 +65,7 @@ function BlogListingContent() {
     <section className="py-12 md:py-20 bg-[#fafafa]">
       <Wrapper>
         <div className="flex flex-col lg:flex-row gap-12 px-4">
-          
+
           {/* Main Content */}
           <div className="flex-grow lg:w-2/3">
             {loading ? (
@@ -85,7 +85,7 @@ function BlogListingContent() {
                 {/* Pagination */}
                 {pagination.pages > 1 && (
                   <div className="mt-16 flex justify-center items-center gap-2 flex-wrap">
-                    <button 
+                    <button
                       onClick={() => handlePageChange(page - 1)}
                       disabled={page === 1}
                       className={`w-10 h-10 rounded-full flex items-center justify-center border border-[#f0c000] transition-all ${page === 1 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-[#f0c000] hover:text-white text-gray-900'}`}
@@ -109,7 +109,7 @@ function BlogListingContent() {
                       return null;
                     })}
 
-                    <button 
+                    <button
                       onClick={() => handlePageChange(page + 1)}
                       disabled={page === pagination.pages}
                       className={`w-10 h-10 rounded-full flex items-center justify-center border border-[#f0c000] transition-all ${page === pagination.pages ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-[#f0c000] hover:text-white text-gray-900'}`}
@@ -123,7 +123,7 @@ function BlogListingContent() {
               <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
                 <p className="text-gray-500 text-xl">No blog posts found.</p>
                 {search && (
-                  <button 
+                  <button
                     onClick={() => { setSearchValue(''); router.push('/blog'); }}
                     className="mt-4 text-[#f0c000] font-semibold hover:underline"
                   >
@@ -136,7 +136,7 @@ function BlogListingContent() {
 
           {/* Sidebar */}
           <aside className="lg:w-1/3 flex flex-col gap-8">
-            
+
             {/* Search */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <form onSubmit={handleSearch} className="relative flex items-center gap-3">
@@ -147,8 +147,8 @@ function BlogListingContent() {
                   onChange={(e) => setSearchValue(e.target.value)}
                   className="w-full pl-5 pr-12 py-3 border border-gray-200 rounded-full focus:outline-none focus:border-[#f0c000] transition-colors"
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="absolute right-1.5 w-10 h-10 bg-[#f0c000] text-white rounded-full flex items-center justify-center hover:bg-[#d4a800] transition-colors"
                 >
                   <Search size={20} />
@@ -161,21 +161,21 @@ function BlogListingContent() {
               <h4 className="text-xl font-bold text-gray-900 mb-6 pb-4 border-b-2 border-[#f0c000] inline-block">Categories</h4>
               <ul className="flex flex-col gap-4 p-0 list-none">
                 <li className="group">
-                  <a href="/services/buy-reviews-online/" className="text-gray-600 hover:text-[#f0c000] transition-colors flex items-center gap-2">
+                  <a href="/" className="text-gray-600 hover:text-[#f0c000] transition-colors flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#f0c000] opacity-0 group-hover:opacity-100 transition-opacity" />
-                    Buy Reviews Online
+                    Get Reviews Online
                   </a>
                 </li>
                 <li className="group">
                   <a href="/products/buy-google-reviews/" className="text-gray-600 hover:text-[#f0c000] transition-colors flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#f0c000] opacity-0 group-hover:opacity-100 transition-opacity" />
-                    Buy Google Reviews
+                    Get Google Reviews
                   </a>
                 </li>
                 <li className="group">
                   <a href="/products/buy-trustpilot-reviews/" className="text-gray-600 hover:text-[#f0c000] transition-colors flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#f0c000] opacity-0 group-hover:opacity-100 transition-opacity" />
-                    Buy Trustpilot Reviews
+                    Get Trustpilot Reviews
                   </a>
                 </li>
               </ul>

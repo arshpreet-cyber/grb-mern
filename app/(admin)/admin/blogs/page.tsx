@@ -2,22 +2,44 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Edit, Trash2, Eye, Plus, PenTool } from "lucide-react";
 import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
 
+const PAGE_SIZE = 10;
+
 export default function BlogsListing() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // 1. Derive page and search directly from the URL params
+  const page = Number(searchParams.get("page")) || 1;
+  const urlSearch = searchParams.get("search") || "";
+
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [search, setSearch] = useState("");
 
-  const fetchBlogs = async () => {
+  // Local state only manages immediate keystrokes for typing
+  const [search, setSearch] = useState(urlSearch);
+  const [total, setTotal] = useState(0);
+
+  const fetchBlogs = async (pageArg = page, searchArg = urlSearch) => {
     try {
       setLoading(true);
-      const res = await fetch("/api/blog");
+      const params = new URLSearchParams({
+        page: String(pageArg),
+        limit: String(PAGE_SIZE),
+        status: "all",
+      });
+      if (searchArg.trim()) params.set("search", searchArg.trim());
+
+      const res = await fetch(`/api/blog?${params.toString()}`);
       const data = await res.json();
       if (data.success) {
         setBlogs(data.blogs);
+        setTotal(data.pagination?.total ?? data.blogs.length);
       } else {
         setError(data.error || "Failed to fetch blogs");
       }
@@ -28,9 +50,40 @@ export default function BlogsListing() {
     }
   };
 
+  // 2. Keep local input in sync if URL changes (e.g., browser back button)
   useEffect(() => {
-    fetchBlogs();
-  }, []);
+    setSearch(urlSearch);
+  }, [urlSearch]);
+
+  // 3. Debounce the search input and push it straight to the URL
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (search !== urlSearch) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("page", "1"); // Reset to page 1 on a new search query
+        if (search.trim()) {
+          params.set("search", search.trim());
+        } else {
+          params.delete("search");
+        }
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [search, urlSearch, pathname, router, searchParams]);
+
+  // 4. Fetch data whenever the URL changes
+  useEffect(() => {
+    fetchBlogs(page, urlSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, urlSearch]);
+
+  // 5. Update URL params when page changes
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(newPage));
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
@@ -140,10 +193,14 @@ export default function BlogsListing() {
           loading={loading}
           actions={actions}
           searchable
-          searchPlaceholder="Search blogs by title or author..."
+          searchPlaceholder="Search blogs by title or content..."
           searchValue={search}
           onSearchChange={setSearch}
-          pageSize={10}
+          pageSize={PAGE_SIZE}
+          serverSidePagination
+          totalRows={total}
+          currentPage={page}
+          onPageChange={handlePageChange}
         />
       </div>
     </div>

@@ -181,14 +181,14 @@ export default function HomeFooter() {
             <div>
               <ul className="space-y-3.5 text-[#bdbdbd] text-[16px] font-light lg:pt-0 pt-0">
                 {[
-                  { label: "Google-reviews", href: "/products/buy-google-reviews" },
-                  { label: "Google Local Guide", href: "/products/buy-google-local-guide" },
-                  { label: "TrustPilot", href: "/products/buy-trustpilot-reviews" },
-                  { label: "Glassdoor Reviews", href: "/products/buy-glassdoor-reviews" },
-                  { label: "Facebook Reviews", href: "/products/buy-facebook-reviews" },
-                  { label: "Thumbtack Reviews", href: "/products/buy-thumbtack-reviews" },
-                  { label: "BBB Reviews", href: "/products/buy-bbb-reviews" },
-                  { label: "Indeed Reviews", href: "/products/buy-indeed-reviews" },
+                  { label: "Google GPS Reviews", href: "/products/buy-google-gps-reviews" },
+                  { label: "Zillow Reviews", href: "/products/buy-zillow-reviews" },
+                  { label: "Google LSA Reviews", href: "/products/buy-google-lsa-reviews" },
+                  { label: "Trustpilot Verified Reviews", href: "/products/buy-trustpilot-verified-reviews" },
+                  { label: "Houzz Reviews", href: "/products/buy-houzz-reviews" },
+                  { label: "Home Advisor Reviews", href: "/products/buy-home-advisor-reviews" },
+                  { label: "Google Playstore Reviews", href: "/products/buy-google-playstore-reviews" },
+                  { label: "Product Reviews", href: "/products/buy-product-reviews" },
                   { label: "View More", href: "/" },
                 ].map((item, idx) => (
                   <li key={idx}>
@@ -204,13 +204,14 @@ export default function HomeFooter() {
             <div>
               <ul className="space-y-3.5 text-[#bdbdbd] text-[16px] font-light lg:pt-0 pt-0">
                 {[
-                  { label: "Google-reviews", href: "/products/buy-google-reviews" },
-                  { label: "Google Local Guide", href: "/products/buy-google-local-guide" },
-                  { label: "TrustPilot", href: "/products/buy-trustpilot-reviews" },
-                  { label: "Glassdoor Reviews", href: "/products/buy-glassdoor-reviews" },
-                  { label: "Facebook Reviews", href: "/products/buy-facebook-reviews" },
-                  { label: "Thumbtack Reviews", href: "/products/buy-thumbtack-reviews" },
-                  { label: "BBB Reviews", href: "/products/buy-bbb-reviews" },
+                  { label: "Booking Reviews", href: "/products/buy-booking-com-reviews" },
+                  { label: "Home Star Reviews", href: "/products/buy-home-star-reviews" },
+                  { label: "WeddingWire Reviews", href: "/products/buy-weddingwire-reviews" },
+                  { label: "Avvo Reviews", href: "/products/buy-avvo-reviews" },
+                  { label: "Chrome Extension Reviews", href: "/products/buy-chrome-extension-reviews" },
+                  { label: "Healthgrades Reviews", href: "/products/buy-healthgrades-reviews" },
+                  { label: "YellowPages Reviews", href: "/products/buy-yellowpages-reviews" },
+                  { label: "View More", href: "/" },
                 ].map((item, idx) => (
                   <li key={idx}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">
@@ -225,11 +226,12 @@ export default function HomeFooter() {
             <div>
               <ul className="space-y-3.5 text-[#bdbdbd] text-[16px] font-light lg:pt-0 pt-0">
                 {[
-                  { label: "Google-reviews", href: "/products/buy-google-reviews" },
-                  { label: "Google Local Guide", href: "/products/buy-google-local-guide" },
-                  { label: "TrustPilot", href: "/products/buy-trustpilot-reviews" },
-                  { label: "Glassdoor Reviews", href: "/products/buy-glassdoor-reviews" },
-                  { label: "Facebook Reviews", href: "/products/buy-facebook-reviews" },
+                  { label: "Designrush Reviews", href: "/products/buy-designrush-reviews" },
+                  { label: "Reviews.Io Reviews", href: "/products/buy-reviews-io-reviews" },
+                  { label: "Realtor Reviews", href: "/products/buy-realtor-reviews" },
+                  { label: "Bark Reviews", href: "/products/buy-bark-reviews" },
+                  { label: "UpCity Reviews", href: "/products/buy-upcity-reviews" },
+                  { label: "View More", href: "/" },
                 ].map((item, idx) => (
                   <li key={idx}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">
