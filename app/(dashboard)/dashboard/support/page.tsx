@@ -3,18 +3,39 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Paperclip, X, Upload, Ticket, CheckCircle2, Clock, HeadphonesIcon } from "lucide-react";
+import { Paperclip, X, Upload, Ticket, CheckCircle2, Clock, HeadphonesIcon, Link2, Copy, Check } from "lucide-react";
+
+type PayLinks = { paypal?: string; card?: string; razorpay?: string };
 
 export default function DashboardSupportPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [subject, setSubject] = useState("");
+  const [payLinks, setPayLinks] = useState<PayLinks | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  // Pre-fill the subject when opened from an order ("Create Ticket" button).
+  // Pre-fill the subject and load the order's payment links when opened from an
+  // order ("Create Ticket" button) so the agent can share them with the customer.
   useEffect(() => {
-    const s = new URLSearchParams(window.location.search).get("subject");
+    const params = new URLSearchParams(window.location.search);
+    const s = params.get("subject");
     if (s) setSubject(s);
+    const orderId = params.get("order");
+    if (orderId) {
+      fetch(`/api/orders/${orderId}/pay-links`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (d && (d.paypal || d.card || d.razorpay)) setPayLinks(d); })
+        .catch(() => {});
+    }
   }, []);
+
+  const copy = async (label: string, url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(label);
+      setTimeout(() => setCopied((c) => (c === label ? null : c)), 1500);
+    } catch { /* ignore */ }
+  };
   const [query, setQuery] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -247,6 +268,51 @@ export default function DashboardSupportPage() {
 
           {/* Right — tips */}
           <div className="space-y-4">
+            {/* Payment links for the order (shown when creating a ticket from an order) */}
+            {payLinks && (
+              <div className="rounded-2xl bg-white dark:bg-[#1a1f2c] border border-slate-200 dark:border-slate-800 shadow-sm p-5">
+                <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-2">
+                  <Link2 size={15} className="text-amber-500" /> Payment links
+                </h3>
+                <p className="text-[12px] text-slate-400 mb-3">Copy and share these with the customer.</p>
+                <div className="space-y-2.5">
+                  {([
+                    { key: "paypal", label: "PayPal" },
+                    { key: "card", label: "Pay by Card" },
+                    { key: "razorpay", label: "Razorpay" },
+                  ] as const).map(({ key, label }) => {
+                    const url = payLinks[key];
+                    if (!url) return null;
+                    return (
+                      <div key={key} className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-3">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <span className="text-[12px] font-bold text-slate-700 dark:text-slate-300">{label}</span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setQuery((q) => `${q ? q + "\n" : ""}${label}: ${url}`)}
+                              className="text-[11px] font-semibold text-amber-600 dark:text-[#fc0] hover:underline"
+                            >
+                              Insert
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => copy(label, url)}
+                              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                            >
+                              {copied === label ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+                              {copied === label ? "Copied" : "Copy"}
+                            </button>
+                          </div>
+                        </div>
+                        <a href={url} target="_blank" rel="noopener noreferrer" className="block text-[11px] text-blue-600 dark:text-blue-400 break-all hover:underline">{url}</a>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             <div className="rounded-2xl bg-white dark:bg-[#1a1f2c] border border-slate-200 dark:border-slate-800 shadow-sm p-5">
               <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4">Tips for faster support</h3>
               <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">

@@ -150,7 +150,7 @@ export default function UserOrderDetailPage() {
         </div>
         <div className="ml-auto flex flex-col items-end gap-2">
           <Link
-            href={`/dashboard/support?subject=${encodeURIComponent(`Order ${order.orderNumber ?? order.id} - `)}`}
+            href={`/dashboard/support?subject=${encodeURIComponent(`Order ${order.orderNumber ?? order.id} - `)}&order=${order.id}`}
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#fc0] hover:bg-[#e6bb00] text-slate-900 px-3.5 py-1.5 text-[12px] font-bold transition shadow-sm"
           >
             <Ticket size={14} /> Create Ticket
