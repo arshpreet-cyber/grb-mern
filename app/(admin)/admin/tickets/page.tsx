@@ -13,6 +13,7 @@ type Ticket = {
   subject?: string | null;
   status: string;
   readStatus?: number | null;
+  repliedStatus?: number | null;
   assignedTo?: string | null;
   name?: string | null;
   user?: { name?: string | null; email?: string | null };
@@ -43,17 +44,20 @@ function getLastActivityTs(t: Ticket): number {
   return last ? new Date(last.createdAt).getTime() : new Date(t.createdAt).getTime();
 }
 
+// repliedStatus is the authoritative field: 2 = admin replied, 1/null = customer
+// replied (awaiting admin). It mirrors the legacy PHP `replied_status` column.
+function isCustomerReplied(t: Ticket): boolean {
+  return t.repliedStatus !== 2;
+}
+
 function sortTickets(tickets: Ticket[]): Ticket[] {
   return [...tickets].sort((a, b) => {
-    const aLast = getLastThread(a);
-    const bLast = getLastThread(b);
+    const aCustomer = isCustomerReplied(a);
+    const bCustomer = isCustomerReplied(b);
 
-    // No-thread tickets = customer opened, treat as client reply → comes first
-    const aIsClientReply = !aLast || String(aLast.direction) === "1";
-    const bIsClientReply = !bLast || String(bLast.direction) === "1";
-
-    if (aIsClientReply && !bIsClientReply) return -1;
-    if (!aIsClientReply && bIsClientReply) return 1;
+    // Customer-replied tickets need attention → come first
+    if (aCustomer && !bCustomer) return -1;
+    if (!aCustomer && bCustomer) return 1;
 
     // Within same group, sort by latest activity (newest first)
     return getLastActivityTs(b) - getLastActivityTs(a);
@@ -180,9 +184,7 @@ export default function AdminTicketsPage() {
       key: "lastReply",
       header: "Replied Status",
       render: (t) => {
-        const last = getLastThread(t);
-        // No threads = customer just opened the ticket (query only)
-        const isCustomer = !last || String(last.direction) === "1";
+        const isCustomer = isCustomerReplied(t);
         return (
           <span className={`inline-flex items-center gap-2 text-[12px] font-semibold px-3 py-1.5 rounded-lg border ${
             isCustomer
@@ -315,12 +317,7 @@ export default function AdminTicketsPage() {
           searchable
           searchPlaceholder="Search tickets..."
           pageSize={10}
-          rowClassName={(t) => {
-            const last = getLastThread(t);
-            const isClientReply = last?.direction === "1";
-            if (isClientReply) return "bg-amber-50/40 dark:bg-amber-900/10";
-            return "";
-          }}
+          rowClassName={(t) => (isCustomerReplied(t) ? "bg-amber-50/40 dark:bg-amber-900/10" : "")}
         />
       </div>
     </div>
