@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
   // Express server (server.ts), never inside a Next API route / RSC.
   outputFileTracingExcludes: {
     "*": [
+      // 263 MB of uploaded media lived in the repo and was being traced into the
+      // /api/upload and /api/admin/media functions, blowing past the 250 MB limit.
+      // It's served as a static asset, never needed inside a function bundle.
+      "public/uploads/**",
+      "public/**",
       "node_modules/three/**",
       "node_modules/three-stdlib/**",
       "node_modules/stats-gl/**",
