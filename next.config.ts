@@ -2,6 +2,31 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Keep heavy client-only and standalone-server packages out of the serverless
+  // function bundles (they were pushing functions past Vercel's 250 MB limit and
+  // failing fresh deploys). These run only in the browser or in the custom
+  // Express server (server.ts), never inside a Next API route / RSC.
+  outputFileTracingExcludes: {
+    "*": [
+      "node_modules/three/**",
+      "node_modules/@react-three/**",
+      "node_modules/postprocessing/**",
+      "node_modules/gsap/**",
+      "node_modules/recharts/**",
+      "node_modules/swiper/**",
+      "node_modules/@tiptap/**",
+      "node_modules/prosemirror-**/**",
+      "node_modules/socket.io/**",
+      "node_modules/socket.io-client/**",
+      "node_modules/engine.io/**",
+      "node_modules/pg-boss/**",
+      "node_modules/express/**",
+      "node_modules/@swc/core*/**",
+      "node_modules/esbuild/**",
+      "node_modules/@esbuild/**",
+      "node_modules/typescript/**",
+    ],
+  },
   async redirects() {
     return [
       {
