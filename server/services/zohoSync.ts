@@ -448,9 +448,16 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
 
     const stripHtml = (h: string) =>
       h.replace(/<style[\s\S]*?<\/style>/gi, "")
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
-        .replace(/\s+\n/g, "\n").replace(/[ \t]{2,}/g, " ").trim();
+        .replace(/<script[\s\S]*?<\/script>/gi, "")
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/(p|div|tr|li|h[1-6]|table)>/gi, "\n")
+        .replace(/<[^>]+>/g, "")
+        .replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<")
+        .replace(/&gt;/gi, ">").replace(/&#39;/g, "'").replace(/&quot;/gi, '"')
+        .replace(/[ \t]+/g, " ")
+        .replace(/[ \t]*\n[ \t]*/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
 
     for (const thread of zohoThreads) {
       // Only import email threads (actual conversation) — not comments/API threads.
@@ -485,6 +492,17 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
 
       existingContents.add(normalize(rawContent));
       imported++;
+    }
+
+    // Set repliedStatus from the most recent email thread direction so the list's
+    // "Replied Status" is accurate (out = agent/admin → 2, in = customer → 1).
+    const emailThreads = zohoThreads.filter((t: any) => t.channel === "EMAIL" && t.createdTime);
+    if (emailThreads.length) {
+      emailThreads.sort((a: any, b: any) => new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime());
+      const isAgentLast = emailThreads[0].direction === "out";
+      await prisma.ticket
+        .update({ where: { ticketId }, data: { repliedStatus: isAgentLast ? 2 : 1, readStatus: isAgentLast ? 2 : 1 } })
+        .catch(() => {});
     }
 
     if (imported > 0) {

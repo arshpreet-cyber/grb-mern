@@ -19,28 +19,53 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ count });
     }
 
-    const tickets = await prisma.ticket.findMany({
-      where: userId ? { userId } : undefined,
-      include: {
-        user: { select: { name: true, email: true } },
-        threads: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: { direction: true, createdAt: true, id: true }
-        }
+    const include = {
+      user: { select: { name: true, email: true } },
+      threads: {
+        orderBy: { createdAt: "desc" as const },
+        take: 1,
+        select: { direction: true, createdAt: true, id: true },
       },
-      orderBy: { createdAt: "desc" },
-      take: 200,
+    };
+    const sortByActivity = (list: any[]) =>
+      list.sort((a, b) => {
+        const aTime = a.threads.length > 0 ? a.threads[0].createdAt.getTime() : a.createdAt.getTime();
+        const bTime = b.threads.length > 0 ? b.threads[0].createdAt.getTime() : b.createdAt.getTime();
+        return bTime - aTime;
+      });
+
+    // User dashboard view: return a plain array (unchanged contract).
+    if (userId) {
+      const tickets = await prisma.ticket.findMany({
+        where: { userId }, include, orderBy: { createdAt: "desc" }, take: 200,
+      });
+      return NextResponse.json(sortByActivity(tickets));
+    }
+
+    // Admin view: server-side filter + per-tab counts over the whole table.
+    const filter = req.nextUrl.searchParams.get("filter") ?? "all";
+    const customerReplied = { OR: [{ repliedStatus: { not: 2 } }, { repliedStatus: null }] };
+
+    const [all, open, awaiting, closed, pending] = await Promise.all([
+      prisma.ticket.count(),
+      prisma.ticket.count({ where: { status: "Open" } }),
+      prisma.ticket.count({ where: customerReplied as any }),
+      prisma.ticket.count({ where: { status: "Closed" } }),
+      prisma.ticket.count({ where: { status: "Pending" } }),
+    ]);
+    const counts = { all, open, awaiting, closed, pending };
+
+    let where: any = {};
+    if (filter === "open") where = { status: "Open" };
+    else if (filter === "closed") where = { status: "Closed" };
+    else if (filter === "pending") where = { status: "Pending" };
+    else if (filter === "awaiting") where = customerReplied;
+
+    const tickets = await prisma.ticket.findMany({
+      where, include, orderBy: { createdAt: "desc" }, take: 200,
     });
 
-    // Sort by latest activity (either latest thread or ticket creation)
-    tickets.sort((a, b) => {
-      const aTime = a.threads.length > 0 ? a.threads[0].createdAt.getTime() : a.createdAt.getTime();
-      const bTime = b.threads.length > 0 ? b.threads[0].createdAt.getTime() : b.createdAt.getTime();
-      return bTime - aTime;
-    });
-
-    return NextResponse.json(tickets);
+    return NextResponse.json({ tickets: sortByActivity(tickets), counts });
   } catch (error) {
     console.error("Failed to load tickets", error);
     return NextResponse.json({ error: "Failed to load tickets" }, { status: 500 });

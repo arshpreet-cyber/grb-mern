@@ -135,12 +135,7 @@ export default function AdminTicketsPage() {
 
   const loadTickets = (currentFilter: string = filter) => {
     setLoading(true);
-    const statusQuery = currentFilter === "all" ? "" :
-                        currentFilter === "open" ? "?status=Open" :
-                        currentFilter === "awaiting" ? "?status=Awaiting" :
-                        currentFilter === "closed" ? "?status=Closed" :
-                        currentFilter === "pending" ? "?status=Pending" : "";
-    fetch(`/api/support/tickets${statusQuery}`)
+    fetch(`/api/support/tickets?filter=${encodeURIComponent(currentFilter)}`)
       .then(async (r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => {
         if (data && typeof data === "object" && !Array.isArray(data)) {
@@ -285,11 +280,8 @@ export default function AdminTicketsPage() {
     { key: "closed", label: "Closed", color: "bg-gray-400 text-white" },
     { key: "pending", label: "Pending", color: "bg-[#fc0] text-slate-900" },
   ];
-  const filteredTickets = sortTickets(filter === "all" ? tickets
-    : filter === "open" ? tickets.filter(t => t.status === "Open")
-    : filter === "awaiting" ? tickets.filter(t => t.status === "Awaiting Reply" || t.status === "Answered")
-    : filter === "closed" ? tickets.filter(t => t.status === "Closed")
-    : tickets.filter(t => t.status === "Pending"));
+  // Tickets are already filtered server-side by the selected tab and sorted on load.
+  const filteredTickets = tickets;
 
   return (
     <div className="space-y-6">
