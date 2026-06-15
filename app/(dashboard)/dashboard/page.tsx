@@ -236,12 +236,12 @@ export default function UserDashboard() {
                         {paymentDropdownOpen === o.id && (
                           <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-36 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
                             {o.payUrl && (
-                              <a href={o.payUrl} className="block px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors font-medium">
+                              <a href={o.payUrl} className="block text-left px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors font-medium">
                                 <span className="font-bold text-[#003087]">Pay</span><span className="font-bold text-[#009cde]">Pal</span>
                               </a>
                             )}
                             {o.payUrl && (
-                              <a href={o.payUrl} className="block px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors border-t border-gray-100 dark:border-slate-800 font-medium">
+                              <a href={o.payUrl} className="block text-left px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors border-t border-gray-100 dark:border-slate-800 font-medium">
                                 <span className="font-bold text-[#2D8CFF]">Razorpay</span>
                               </a>
                             )}
