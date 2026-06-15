@@ -315,6 +315,24 @@ export async function getZohoTickets(
 }
 
 /**
+ * Fetch a single thread's full content (the threads-list endpoint only returns a
+ * short summary; plainText/content come from the per-thread endpoint).
+ */
+export async function getZohoThreadDetail(zohoTicketId: string, threadId: string): Promise<any | null> {
+  const token = await getZohoAccessToken();
+  if (!ZOHO_ORG_ID) return null;
+  try {
+    const r = await fetch(`${ZOHO_DESK_URL}/tickets/${zohoTicketId}/threads/${threadId}`, {
+      headers: { "Authorization": `Zoho-oauthtoken ${token}`, "orgId": ZOHO_ORG_ID },
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Fetch comments for a Zoho Desk ticket.
  */
 export async function getZohoTicketComments(zohoTicketId: string): Promise<any[]> {
