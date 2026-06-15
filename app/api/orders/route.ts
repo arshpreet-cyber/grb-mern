@@ -27,9 +27,7 @@ function buildWhere(
       { userId },
       ...(userEmail ? [{ email: userEmail }] : []),
     ];
-    if (filter === "all") {
-      delete where.deletedAt;
-    }
+    // Regular users must never see soft-deleted orders, so keep deletedAt: null.
   }
 
   if (search) {

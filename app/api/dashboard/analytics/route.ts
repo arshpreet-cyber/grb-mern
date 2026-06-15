@@ -168,7 +168,9 @@ export async function GET(request: Request) {
         _count: { id: true },
         where: { deletedAt: null, createdAt: { gte: startDate, lte: endDate } }
       }),
-      // 16. Platform groups (top products)
+      // 16. Platform groups (top products). Grouped by raw item name; name
+      // variants (quantity/price suffixes, "Updated" labels, etc.) are merged
+      // into their base product in JS below, so no take limit here.
       prisma.orderDetail.groupBy({
         by: ["itemName"],
         _count: { id: true },
@@ -181,7 +183,6 @@ export async function GET(request: Request) {
           ]
         },
         orderBy: { _count: { id: "desc" } },
-        take: 4,
       }),
       // 17. Recent orders
       prisma.order.findMany({
@@ -255,47 +256,57 @@ export async function GET(request: Request) {
       revenueSources.push({ name: "No Orders", value: 100, color: "#e2e8f0" });
     }
 
-    // Format top selling products
-    const maxSales = platformGroups[0]?._count.id ?? 1;
+    // Format top selling products.
+    // The same product is stored under many free-text item names (quantity /
+    // price suffixes, stray "Updated" labels, newline noise, "Reviews-" prefixes),
+    // e.g. "Google Reviews" and "Google Reviews Updated\nQuantity: 5 x ...".
+    // Normalize each name to its base product so all variants merge into one row.
     const formatProductName = (platform: string | null) => {
       if (!platform) return "Unknown";
-      const p = platform.trim();
-      if (/reviews?$/i.test(p)) {
-        return p;
-      }
-      return `${p} Reviews`;
+      const p = platform.replace(/\s+/g, " ").trim(); // drop newline noise
+      return /reviews?$/i.test(p) ? p : `${p} Reviews`;
     };
 
-    const platformNames = platformGroups.map(p => p.itemName).filter(Boolean) as string[];
-    const searchNames = [
-      ...platformNames,
-      ...platformNames.map(name => name.trim()),
-      ...platformNames.map(name => formatProductName(name))
-    ];
-    const products = await prisma.product.findMany({
-      where: {
-        title: { in: searchNames }
-      },
-      select: { title: true, media: true }
-    });
-
-    const getProductImage = (platform: string | null) => {
-      if (!platform) return null;
-      const cleanPlatform = platform.trim().toLowerCase();
-      const formatted = formatProductName(platform).toLowerCase();
-      const prod = products.find(p => {
-        const title = p.title?.toLowerCase();
-        return title === cleanPlatform || title === formatted;
-      });
-      return prod?.media ?? null;
+    const normalizeProductName = (raw: string | null) => {
+      let s = (raw ?? "").replace(/\s+/g, " ").trim(); // collapse newlines/spaces
+      s = s.replace(/^reviews-\s*/i, "");              // drop leading "Reviews-"
+      s = s.split(/quantity/i)[0];                     // cut quantity/price suffix
+      s = s.replace(/\bupdated\b/i, "");               // drop stray "Updated"
+      s = s.replace(/\s+/g, " ").trim();
+      return formatProductName(s || raw);
     };
 
-    const topProducts = platformGroups.map(p => ({
-      name: formatProductName(p.itemName),
-      sales: p._count.id,
+    // Merge groups by normalized product name, then take the top 4.
+    const mergedProducts = new Map<string, number>();
+    for (const p of platformGroups) {
+      const name = normalizeProductName(p.itemName);
+      mergedProducts.set(name, (mergedProducts.get(name) ?? 0) + p._count.id);
+    }
+    const sortedProducts = Array.from(mergedProducts.entries())
+      .map(([name, sales]) => ({ name, sales }))
+      .sort((a, b) => b.sales - a.sales)
+      .slice(0, 4);
+    const maxSales = sortedProducts[0]?.sales ?? 1;
+
+    // Resolve product images by matching normalized names to Product titles.
+    const searchNames = Array.from(new Set(sortedProducts.map(p => p.name)));
+    const products = searchNames.length
+      ? await prisma.product.findMany({
+          where: { title: { in: searchNames } },
+          select: { title: true, media: true },
+        })
+      : [];
+    const getProductImage = (name: string) => {
+      const target = name.trim().toLowerCase();
+      return products.find(p => p.title?.trim().toLowerCase() === target)?.media ?? null;
+    };
+
+    const topProducts = sortedProducts.map(p => ({
+      name: p.name,
+      sales: p.sales,
       max: maxSales,
-      icon: platformIcon(p.itemName ?? ""),
-      image: getProductImage(p.itemName),
+      icon: platformIcon(p.name),
+      image: getProductImage(p.name),
     }));
 
     return NextResponse.json({

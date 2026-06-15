@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import DataTable, { Column, StatusPill } from "@/components/ui/DataTable";
-import { Eye, Headphones, RefreshCw, User, ShieldCheck } from "lucide-react";
+import DataTable, { Column } from "@/components/ui/DataTable";
+import { Eye, Headphones, RefreshCw, Trash2 } from "lucide-react";
 
 type Ticket = {
   id: number;
@@ -13,10 +13,26 @@ type Ticket = {
   subject?: string | null;
   status: string;
   readStatus?: number | null;
+  repliedStatus?: number | null;
+  assignedTo?: string | null;
+  name?: string | null;
   user?: { name?: string | null; email?: string | null };
   createdAt: string;
+  updatedAt?: string | null;
   threads?: { direction: string; createdAt: string; id: number }[];
 };
+
+type Staff = { id: number; name?: string | null; email: string };
+
+const STATUS_OPTIONS = ["Open", "Pending", "Answered", "Hold", "Escalated", "Closed"];
+
+function fmtDateTime(s: string | null | undefined) {
+  if (!s) return "—";
+  return new Date(s).toLocaleString("en-GB", {
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: true,
+  });
+}
 
 function getLastThread(t: Ticket) {
   if (!t.threads || t.threads.length === 0) return null;
@@ -28,17 +44,20 @@ function getLastActivityTs(t: Ticket): number {
   return last ? new Date(last.createdAt).getTime() : new Date(t.createdAt).getTime();
 }
 
+// repliedStatus is the authoritative field: 2 = admin replied, 1/null = customer
+// replied (awaiting admin). It mirrors the legacy PHP `replied_status` column.
+function isCustomerReplied(t: Ticket): boolean {
+  return t.repliedStatus !== 2;
+}
+
 function sortTickets(tickets: Ticket[]): Ticket[] {
   return [...tickets].sort((a, b) => {
-    const aLast = getLastThread(a);
-    const bLast = getLastThread(b);
+    const aCustomer = isCustomerReplied(a);
+    const bCustomer = isCustomerReplied(b);
 
-    // No-thread tickets = customer opened, treat as client reply → comes first
-    const aIsClientReply = !aLast || String(aLast.direction) === "1";
-    const bIsClientReply = !bLast || String(bLast.direction) === "1";
-
-    if (aIsClientReply && !bIsClientReply) return -1;
-    if (!aIsClientReply && bIsClientReply) return 1;
+    // Customer-replied tickets need attention → come first
+    if (aCustomer && !bCustomer) return -1;
+    if (!aCustomer && bCustomer) return 1;
 
     // Within same group, sort by latest activity (newest first)
     return getLastActivityTs(b) - getLastActivityTs(a);
@@ -63,12 +82,49 @@ export default function AdminTicketsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
+  const [dbCounts, setDbCounts] = useState({ all: 0, open: 0, awaiting: 0, closed: 0, pending: 0 });
+  const [staff, setStaff] = useState<Staff[]>([]);
 
-  const loadTickets = () => {
+  useEffect(() => {
+    fetch("/api/admin/users?staff=1")
+      .then((r) => r.json())
+      .then((d) => setStaff(Array.isArray(d) ? d : []))
+      .catch(() => {});
+  }, []);
+
+  // Optimistically patch a ticket, then persist.
+  const patchTicket = (ticketId: string, patch: Partial<Ticket>) => {
+    setTickets((prev) => prev.map((t) => (t.ticketId === ticketId ? { ...t, ...patch } : t)));
+    fetch(`/api/support/tickets/${ticketId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    }).catch(() => loadTickets());
+  };
+
+  const deleteTicket = (t: Ticket) => {
+    if (!window.confirm(`Delete ticket ${t.ticketNumber ?? `#${t.id}`} permanently? This cannot be undone.`)) return;
+    setTickets((prev) => prev.filter((x) => x.ticketId !== t.ticketId));
+    fetch(`/api/support/tickets/${t.ticketId}`, { method: "DELETE" }).catch(() => loadTickets());
+  };
+
+  const loadTickets = (currentFilter: string = filter) => {
     setLoading(true);
-    fetch("/api/support/tickets")
+    const statusQuery = currentFilter === "all" ? "" :
+                        currentFilter === "open" ? "?status=Open" :
+                        currentFilter === "awaiting" ? "?status=Awaiting" :
+                        currentFilter === "closed" ? "?status=Closed" :
+                        currentFilter === "pending" ? "?status=Pending" : "";
+    fetch(`/api/support/tickets${statusQuery}`)
       .then(async (r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((data) => setTickets(sortTickets(data ?? [])))
+      .then((data) => {
+        if (data && typeof data === "object" && !Array.isArray(data)) {
+          setTickets(sortTickets(data.tickets ?? []));
+          setDbCounts(data.counts ?? { all: 0, open: 0, awaiting: 0, closed: 0, pending: 0 });
+        } else {
+          setTickets(sortTickets(data ?? []));
+        }
+      })
       .catch(() => setError("Unable to load tickets."))
       .finally(() => setLoading(false));
   };
@@ -78,23 +134,16 @@ export default function AdminTicketsPage() {
   const columns: Column<Ticket>[] = [
     {
       key: "ticketId",
-      header: "Ticket #",
+      header: "Ticket ID",
       render: (t) => (
         <div className="flex items-center gap-2">
           {t.readStatus === 1 && (
             <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" title="Unread" />
           )}
           <span className="font-mono font-semibold text-[13px]">
-            {t.id}
+            {t.ticketNumber ?? `#${t.id}`}
           </span>
         </div>
-      ),
-    },
-    {
-      key: "subject",
-      header: "Subject",
-      render: (t) => (
-        <span className="text-[13px]">{t.subject ?? "Support ticket"}</span>
       ),
     },
     {
@@ -102,80 +151,108 @@ export default function AdminTicketsPage() {
       header: "Customer",
       render: (t) => (
         <div className="text-[13px]">
-          <div className="font-medium">{t.user?.name || "Anonymous"}</div>
-          {t.user?.email && <div className="text-gray-400 text-[11px]">{t.user.email}</div>}
+          <div className="font-semibold uppercase">{t.user?.name || t.name || "Anonymous"}</div>
+          {t.user?.email && <div className="text-gray-400 text-[11px] normal-case">{t.user.email}</div>}
         </div>
       ),
     },
     {
-      key: "lastReply",
-      header: "Reply Status",
-      render: (t) => {
-        const last = getLastThread(t);
-        // No threads = customer just opened the ticket (query only)
-        const isCustomer = !last || String(last.direction) === "1";
-        const time = last ? last.createdAt : t.createdAt;
-        return (
-          <div>
-            <span className={`inline-flex items-center gap-2 text-[13px] font-semibold px-3 py-1.5 rounded-lg border ${
-              isCustomer
-                ? "bg-orange-100 text-orange-800 border-orange-300"
-                : "bg-green-100 text-green-800 border-green-300"
-            }`}>
-              <span className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? "bg-orange-500" : "bg-green-500"}`} />
-              {isCustomer ? "Customer Replied" : "Admin Replied"}
-            </span>
-            <div className="text-[11px] text-gray-400 mt-1 pl-1">{timeAgo(time)}</div>
-          </div>
-        );
-      },
+      key: "subject",
+      header: "Subject",
+      render: (t) => (
+        <Link href={`/admin/tickets/${t.ticketId}`} className="text-[13px] font-medium text-blue-600 hover:underline">
+          {t.subject ?? "Support ticket"}
+        </Link>
+      ),
     },
     {
       key: "status",
       header: "Status",
       render: (t) => (
-        <StatusPill
-          value={t.status}
-          colorMap={{
-            Open: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-900/20 dark:text-emerald-400",
-            Closed: "border-gray-200 bg-gray-50 text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white",
-            Pending: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400",
-            Answered: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400",
-          }}
-        />
+        <select
+          value={STATUS_OPTIONS.includes(t.status) ? t.status : "Open"}
+          onChange={(e) => patchTicket(t.ticketId, { status: e.target.value })}
+          className="rounded-md border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1.5 text-[12px] font-medium text-gray-700 dark:text-slate-200 outline-none focus:border-blue-400 cursor-pointer"
+        >
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
       ),
     },
     {
+      key: "lastReply",
+      header: "Replied Status",
+      render: (t) => {
+        const isCustomer = isCustomerReplied(t);
+        return (
+          <span className={`inline-flex items-center gap-2 text-[12px] font-semibold px-3 py-1.5 rounded-lg border ${
+            isCustomer
+              ? "bg-orange-100 text-orange-800 border-orange-300"
+              : "bg-green-100 text-green-800 border-green-300"
+          }`}>
+            <span className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? "bg-orange-500" : "bg-green-500"}`} />
+            {isCustomer ? "Customer Replied" : "Admin Replied"}
+          </span>
+        );
+      },
+    },
+    {
       key: "createdAt",
-      header: "Last Activity",
+      header: "Created on",
       render: (t) => (
-        <span className="text-[12px] text-gray-500">
-          {timeAgo(getLastActivityTs(t) ? new Date(getLastActivityTs(t)).toISOString() : t.createdAt)}
-        </span>
+        <span className="text-[12px] text-gray-500 whitespace-nowrap">{fmtDateTime(t.createdAt)}</span>
       ),
+    },
+    {
+      key: "updatedAt",
+      header: "Last Update By User",
+      render: (t) => {
+        const last = getLastThread(t);
+        const ts = last ? last.createdAt : (t.updatedAt ?? t.createdAt);
+        return <span className="text-[12px] text-gray-500 whitespace-nowrap">{fmtDateTime(ts)}</span>;
+      },
     },
     {
       key: "action",
       header: "Action",
       render: (t) => (
-        <Link
-          href={`/admin/tickets/${t.ticketId}`}
-          title="View Ticket"
-          className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 hover:bg-[#FFCE2E] text-gray-500 hover:text-black transition"
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/admin/tickets/${t.ticketId}`}
+            className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 hover:bg-blue-700 px-3 py-1.5 text-[11px] font-semibold text-white transition whitespace-nowrap"
+          >
+            <Eye size={13} /> View Ticket
+          </Link>
+          <button
+            onClick={() => deleteTicket(t)}
+            title="Delete ticket"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-red-500 hover:bg-red-600 text-white transition"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
+    {
+      key: "assignedTo",
+      header: "Assign To",
+      render: (t) => (
+        <select
+          value={t.assignedTo ?? ""}
+          onChange={(e) => patchTicket(t.ticketId, { assignedTo: e.target.value || null })}
+          className="rounded-md border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1.5 text-[12px] font-medium text-gray-700 dark:text-slate-200 outline-none focus:border-blue-400 cursor-pointer max-w-[150px]"
         >
-          <Eye size={15} />
-        </Link>
+          <option value="">Unassigned</option>
+          {staff.map((s) => (
+            <option key={s.id} value={String(s.id)}>{s.name || s.email}</option>
+          ))}
+        </select>
       ),
     },
   ];
 
-  const counts = {
-    all: tickets.length,
-    open: tickets.filter(t => t.status === "Open").length,
-    awaiting: tickets.filter(t => t.status === "Awaiting Reply" || t.status === "Answered").length,
-    closed: tickets.filter(t => t.status === "Closed").length,
-    pending: tickets.filter(t => t.status === "Pending").length,
-  };
+  const counts = dbCounts;
   const FILTER_TABS = [
     { key: "all", label: "All", color: "bg-gray-800 text-white" },
     { key: "open", label: "Open", color: "bg-emerald-600 text-white" },
@@ -204,7 +281,7 @@ export default function AdminTicketsPage() {
               </p>
             </div>
           </div>
-          <button onClick={loadTickets} className="p-2 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800 transition" title="Refresh">
+          <button onClick={() => loadTickets()} className="p-2 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800 transition" title="Refresh">
             <RefreshCw size={15} />
           </button>
         </div>
@@ -214,7 +291,10 @@ export default function AdminTicketsPage() {
         {FILTER_TABS.map(tab => (
           <button
             key={tab.key}
-            onClick={() => setFilter(tab.key)}
+            onClick={() => {
+              setFilter(tab.key);
+              loadTickets(tab.key);
+            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${
               filter === tab.key
                 ? `${tab.color} border-transparent shadow-md`
@@ -237,12 +317,7 @@ export default function AdminTicketsPage() {
           searchable
           searchPlaceholder="Search tickets..."
           pageSize={10}
-          rowClassName={(t) => {
-            const last = getLastThread(t);
-            const isClientReply = last?.direction === "1";
-            if (isClientReply) return "bg-amber-50/40 dark:bg-amber-900/10";
-            return "";
-          }}
+          rowClassName={(t) => (isCustomerReplied(t) ? "bg-amber-50/40 dark:bg-amber-900/10" : "")}
         />
       </div>
     </div>

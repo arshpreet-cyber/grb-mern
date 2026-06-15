@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { PlusCircle, ArrowUpRight, Eye } from "lucide-react";
+import { PlusCircle, ArrowUpRight, Eye, ChevronDown } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel, paymentMethodLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
 
@@ -45,6 +45,7 @@ export default function UserDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [openTickets, setOpenTickets] = useState<number | null>(null);
+  const [paymentDropdownOpen, setPaymentDropdownOpen] = useState<string | null>(null);
   const name = session?.user?.name ?? "User";
 
   useEffect(() => {
@@ -224,13 +225,29 @@ export default function UserDashboard() {
                   </td>
 
                   <td className="px-5 py-5 text-center">
-                    {o.paymentStatus !== "Paid" && o.payUrl && (
-                      <a
-                        href={o.payUrl}
-                        className="rounded-[5px] bg-blue-500 px-3 py-1.5 text-[10px] font-normal text-white transition inline-block"
-                      >
-                        Pay by Card
-                      </a>
+                    {o.paymentStatus !== "Paid" && (
+                      <div className="relative inline-block">
+                        <button
+                          onClick={() => setPaymentDropdownOpen(v => v === o.id ? null : o.id)}
+                          className="inline-flex items-center gap-1.5 rounded-[5px] bg-[#0084FF] hover:bg-blue-700 px-3 py-1.5 text-[11px] font-medium text-white transition-colors whitespace-nowrap"
+                        >
+                          Pay Now <ChevronDown size={12} />
+                        </button>
+                        {paymentDropdownOpen === o.id && (
+                          <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-36 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
+                            {o.payUrl && (
+                              <a href={o.payUrl} className="block text-left px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors font-medium">
+                                <span className="font-bold text-[#003087]">Pay</span><span className="font-bold text-[#009cde]">Pal</span>
+                              </a>
+                            )}
+                            {o.payUrl && (
+                              <a href={o.payUrl} className="block text-left px-4 py-2.5 text-[12px] text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors border-t border-gray-100 dark:border-slate-800 font-medium">
+                                <span className="font-bold text-[#2D8CFF]">Razorpay</span>
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </td>
 

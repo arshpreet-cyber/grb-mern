@@ -14,8 +14,72 @@ const router = express.Router();
 router.get("/tickets", async (req, res) => {
   try {
     const userId = typeof req.query.userId === "string" ? req.query.userId : undefined;
-    const tickets = await getTickets(userId);
-    return res.json(tickets);
+    const countOnly = req.query.countOnly === "true";
+    const statusParam = typeof req.query.status === "string" ? req.query.status : undefined;
+
+    if (countOnly) {
+      const count = await prisma.ticket.count({
+        where: userId ? { userId: parseInt(userId) } : undefined,
+      });
+      return res.json({ count });
+    }
+
+    const where: any = userId ? { userId: parseInt(userId) } : {};
+    if (statusParam) {
+      if (statusParam === "Awaiting") {
+        where.status = { in: ["Awaiting Reply", "Answered"] };
+      } else {
+        where.status = statusParam;
+      }
+    }
+
+    const [tickets, statusGroups, totalCount] = await Promise.all([
+      prisma.ticket.findMany({
+        where,
+        include: {
+          user: { select: { name: true, email: true } },
+          threads: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: { direction: true, createdAt: true, id: true }
+          }
+        },
+        orderBy: { createdAt: "desc" },
+        take: 200,
+      }),
+      prisma.ticket.groupBy({
+        by: ['status'],
+        _count: { id: true },
+        where: userId ? { userId: parseInt(userId) } : undefined,
+      }),
+      prisma.ticket.count({
+        where: userId ? { userId: parseInt(userId) } : undefined,
+      }),
+    ]);
+
+    const getStatusCount = (status: string) => statusGroups.find(g => g.status === status)?._count.id ?? 0;
+    const open = getStatusCount("Open");
+    const awaiting = getStatusCount("Awaiting Reply") + getStatusCount("Answered");
+    const closed = getStatusCount("Closed");
+    const pending = getStatusCount("Pending");
+
+    // Sort by latest activity (thread or ticket creation)
+    tickets.sort((a, b) => {
+      const aTime = a.threads.length > 0 ? a.threads[0].createdAt.getTime() : a.createdAt.getTime();
+      const bTime = b.threads.length > 0 ? b.threads[0].createdAt.getTime() : b.createdAt.getTime();
+      return bTime - aTime;
+    });
+
+    return res.json({
+      tickets,
+      counts: {
+        all: totalCount,
+        open,
+        awaiting,
+        closed,
+        pending
+      }
+    });
   } catch (error) {
     console.error("Failed to load tickets", error);
     return res.status(500).json({ error: "Failed to load tickets" });
