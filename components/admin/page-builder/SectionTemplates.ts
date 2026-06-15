@@ -418,19 +418,19 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
       </div>
       
       <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
-        <img src="https://getreviews.buzz/storage/app/blog/0503869001728298428_global.svg" alt="Global Reach" class="w-12 h-12 mb-4">
+        <img src="/uploads/media/1778826098531-5bdde388-99a5-4ff7-8b83-bae10893bb34-global.svg" alt="Global Reach" class="w-12 h-12 mb-4">
         <h3 class="text-xl font-semibold mb-2">Global Reach, Local Understanding</h3>
         <p class="text-gray-600 text-sm leading-relaxed">We help you connect with a wider audience while maintaining strong relevance in your local market, ensuring balanced and effective growth.</p>
       </div>
       
       <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
-        <img src="https://getreviews.buzz/storage/app/blog/0751261001728298333_privacy.svg" alt="Privacy" class="w-12 h-12 mb-4">
+        <img src="/uploads/media/1778826144412-2da15b9d-d323-4e0f-8c92-1d27e31c7223-privacy.svg" alt="Privacy" class="w-12 h-12 mb-4">
         <h3 class="text-xl font-semibold mb-2">Privacy & Security</h3>
         <p class="text-gray-600 text-sm leading-relaxed">Your data and business information are handled with the highest level of confidentiality and care at every stage, ensuring complete protection.</p>
       </div>
       
       <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
-        <img src="https://getreviews.buzz/storage/app/blog/0748952001728298333_support.svg" alt="Support" class="w-12 h-12 mb-4">
+        <img src="/uploads/media/1778826198333-e457cef4-187e-4756-b91b-66e3b1561713-support.svg" alt="Support" class="w-12 h-12 mb-4">
         <h3 class="text-xl font-semibold mb-2">Dedicated Support & Guidance</h3>
         <p class="text-gray-600 text-sm leading-relaxed">Our team is always available to support you. From strategy to execution, our experts are available to assist whenever you need it, with timely guidance.</p>
       </div>

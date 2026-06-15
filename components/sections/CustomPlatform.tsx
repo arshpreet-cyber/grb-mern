@@ -21,22 +21,22 @@ export default function CustomPlatform({ data, settings }: SectionProps) {
     <section style={styles} className="relative w-full overflow-hidden flex items-center justify-center">
       <Wrapper>
         <img
-          src="https://getreviews.buzz/storage/app/blog/0690894001777624340_star1.png"
+          src="/uploads/media/1777637321032-6760b4c1-ddd4-4463-9b26-d526f49730b2-star1.png"
           alt=""
           className="absolute z-0 pointer-events-none hidden md:block w-[220px] top-1/2 left-[3%] -translate-y-1/2 rotate-[15deg] opacity-50"
         />
         <img
-          src="https://getreviews.buzz/storage/app/blog/0690894001777624340_star1.png"
+          src="/uploads/media/1777637321032-6760b4c1-ddd4-4463-9b26-d526f49730b2-star1.png"
           alt=""
           className="absolute z-0 pointer-events-none hidden md:block w-[280px] top-1/2 right-[3%] -translate-y-1/2 -rotate-[-15deg] opacity-50"
         />
 
         <div className="relative z-10 w-full mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-[40px] leading-tight text-black mb-5 font-normal" 
-              dangerouslySetInnerHTML={{ __html: title }} />
+          <h2 className="text-3xl md:text-[40px] leading-tight text-black mb-5 font-normal"
+            dangerouslySetInnerHTML={{ __html: title }} />
 
           <p className="text-base md:text-[16px] text-[#4b5563] max-w-[800px] mx-auto mb-10 leading-relaxed"
-             dangerouslySetInnerHTML={{ __html: description }} />
+            dangerouslySetInnerHTML={{ __html: description }} />
 
           <a
             href={buttonLink}
