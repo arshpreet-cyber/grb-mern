@@ -274,7 +274,7 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
       data: {
         title: `We Focus on Building <br/> <span class='font-semibold'>a Reputation for Your Business</span>`,
         content: `<p>A well-reviewed business will appear higher in search results, making it easier for potential customers to find.</p><p>More reviews boost your company's reliability and local-global reach. People read reviews before they buy or visit a business.</p>`,
-        image: "https://getreviews.buzz/storage/app/blog/0547241001776770835_0936012001776065359_right-img.png",
+        image: "/uploads/media/1778826313456-ab2b57c2-e8a2-4c20-9e20-c0e6c0f1806e-right-img-home.webp",
         imagePosition: "left",
         buttonText: "Read More",
         buttonLink: "/",
