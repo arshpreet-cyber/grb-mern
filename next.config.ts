@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     "*": [
       "node_modules/three/**",
+      "node_modules/three-stdlib/**",
+      "node_modules/stats-gl/**",
+      "node_modules/@mediapipe/**",
+      "node_modules/hls.js/**",
       "node_modules/@react-three/**",
       "node_modules/postprocessing/**",
       "node_modules/gsap/**",
