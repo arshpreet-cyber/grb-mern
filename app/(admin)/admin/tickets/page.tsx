@@ -211,7 +211,7 @@ export default function AdminTicketsPage() {
               </p>
             </div>
           </div>
-          <button onClick={loadTickets} className="p-2 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800 transition" title="Refresh">
+          <button onClick={() => loadTickets()} className="p-2 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800 transition" title="Refresh">
             <RefreshCw size={15} />
           </button>
         </div>

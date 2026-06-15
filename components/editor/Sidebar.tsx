@@ -5,6 +5,7 @@ import { updateSectionData, updateSectionSettings, setSelectedSectionId, updateP
 import { X, Layout, Type, Image as ImageIcon, ShoppingCart, Globe } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import MediaPickerModal from './MediaPickerModal';
+import { defaultHowItWorksProcessPhases } from '@/components/sections/HowItWorksProcess';
 
 export default function Sidebar() {
   const dispatch = useAppDispatch();
@@ -1987,6 +1988,557 @@ export default function Sidebar() {
                   onChange={(e) => handleDataChange('description', e.target.value)}
                   className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
                 />
+              </div>
+            </>
+          )}
+
+          {/* ======== HOW IT WORKS – HERO ======== */}
+          {selectedSection.type === 'how-it-works-hero' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Title</label>
+                <textarea
+                  value={selectedSection.data.title || ''}
+                  onChange={(e) => handleDataChange('title', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Highlighted Text</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.highlightText || ''}
+                  onChange={(e) => handleDataChange('highlightText', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                  placeholder="Part of the title to highlight in yellow"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subtitle</label>
+                <textarea
+                  value={selectedSection.data.subtitle || ''}
+                  onChange={(e) => handleDataChange('subtitle', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedSection.data.showPrimaryButton !== false}
+                    onChange={(e) => handleDataChange('showPrimaryButton', e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-[#fc0] focus:ring-[#fc0]"
+                  />
+                  Primary Btn
+                </label>
+                <label className="flex items-center gap-2 text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedSection.data.showSecondaryButton !== false}
+                    onChange={(e) => handleDataChange('showSecondaryButton', e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-[#fc0] focus:ring-[#fc0]"
+                  />
+                  Secondary Btn
+                </label>
+              </div>
+
+              {selectedSection.data.showPrimaryButton !== false && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Primary Btn Text</label>
+                    <input type="text" value={selectedSection.data.primaryBtnText || ''} onChange={(e) => handleDataChange('primaryBtnText', e.target.value)} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Primary Btn Link</label>
+                    <input type="text" value={selectedSection.data.primaryBtnLink || ''} onChange={(e) => handleDataChange('primaryBtnLink', e.target.value)} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                </div>
+              )}
+
+              {selectedSection.data.showSecondaryButton !== false && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Secondary Btn Text</label>
+                    <input type="text" value={selectedSection.data.secondaryBtnText || ''} onChange={(e) => handleDataChange('secondaryBtnText', e.target.value)} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Secondary Btn Link</label>
+                    <input type="text" value={selectedSection.data.secondaryBtnLink || ''} onChange={(e) => handleDataChange('secondaryBtnLink', e.target.value)} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                </div>
+              )}
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Badges</label>
+                  <button
+                    onClick={() => {
+                      const newBadges = [...(selectedSection.data.badges || []), 'New Badge'];
+                      handleDataChange('badges', newBadges);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Badge
+                  </button>
+                </div>
+                {(selectedSection.data.badges || []).map((badge: string, idx: number) => (
+                  <div key={idx} className="flex items-center gap-2 relative group/item">
+                    <input
+                      type="text"
+                      value={badge}
+                      onChange={(e) => {
+                        const updated = [...(selectedSection.data.badges || [])];
+                        updated[idx] = e.target.value;
+                        handleDataChange('badges', updated);
+                      }}
+                      className="flex-1 px-3 py-2 text-xs border border-black/5 rounded-lg"
+                    />
+                    <button
+                      onClick={() => {
+                        const updated = (selectedSection.data.badges || []).filter((_: any, i: number) => i !== idx);
+                        handleDataChange('badges', updated);
+                      }}
+                      className="p-1 text-red-400 hover:text-red-600"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ======== HOW IT WORKS – PROCESS ======== */}
+          {selectedSection.type === 'how-it-works-process' && (() => {
+            const phases = (selectedSection.data.phases && selectedSection.data.phases.length > 0)
+              ? selectedSection.data.phases
+              : defaultHowItWorksProcessPhases;
+            const activePhaseIdx = selectedSection.data._activePhaseIdx ?? 0;
+            const activePhase = phases[activePhaseIdx];
+
+            const handlePhaseField = (field: string, val: any) => {
+              const updated = [...phases];
+              updated[activePhaseIdx] = { ...updated[activePhaseIdx], [field]: val };
+              handleDataChange('phases', updated);
+            };
+
+            const handleStepField = (stepIdx: number, field: string, val: any) => {
+              const updatedSteps = [...(activePhase?.steps || [])];
+              updatedSteps[stepIdx] = { ...updatedSteps[stepIdx], [field]: val };
+              handlePhaseField('steps', updatedSteps);
+            };
+
+            return (
+              <>
+                <div className="space-y-3">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Main Heading</label>
+                  <textarea
+                    value={selectedSection.data.heading || ''}
+                    onChange={(e) => handleDataChange('heading', e.target.value)}
+                    className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                  <textarea
+                    value={selectedSection.data.subheading || ''}
+                    onChange={(e) => handleDataChange('subheading', e.target.value)}
+                    className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                  />
+                </div>
+                <label className="flex items-center gap-2 text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedSection.data.showIntro === true}
+                    onChange={(e) => handleDataChange('showIntro', e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-[#fc0] focus:ring-[#fc0]"
+                  />
+                  Show Main Heading On Website
+                </label>
+
+                {/* Phase Selector */}
+                <div className="space-y-3 pt-4 border-t border-black/5">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Editing Phase</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {phases.map((_: any, idx: number) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleDataChange('_activePhaseIdx', idx)}
+                        className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all ${
+                          activePhaseIdx === idx
+                            ? "bg-[#fc0] text-[#1a1a1a] border-[#fc0] shadow-sm"
+                            : "bg-white text-gray-500 border-black/5 hover:bg-black/5"
+                        }`}
+                      >
+                        Phase {idx + 1}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {activePhase && (
+                  <div className="space-y-4 pt-4 border-t border-black/5">
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Phase Title</label>
+                      <input type="text" value={activePhase.title || ''} onChange={(e) => handlePhaseField('title', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Phase Image URL</label>
+                      <div className="flex gap-2">
+                        <input type="text" value={activePhase.image || ''} onChange={(e) => handlePhaseField('image', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+                        <button type="button" onClick={() => openMediaPicker((url) => handlePhaseField('image', url))} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap">Browse</button>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Image Position</label>
+                      <select value={activePhase.imagePosition || 'right'} onChange={(e) => handlePhaseField('imagePosition', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium">
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                      </select>
+                    </div>
+
+                    {/* Steps within the active phase */}
+                    <div className="space-y-4 pt-2">
+                      <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Steps</label>
+                      {(activePhase.steps || []).map((step: any, stepIdx: number) => (
+                        <div key={stepIdx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3">
+                          <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Step {stepIdx + 1}</span>
+                          <input placeholder="Title" value={step.title || ''} onChange={(e) => handleStepField(stepIdx, 'title', e.target.value)} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold" />
+                          <textarea placeholder="Description" value={step.desc || ''} onChange={(e) => handleStepField(stepIdx, 'desc', e.target.value)} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]" />
+                          <div className="flex gap-3 items-center">
+                            <input placeholder="Icon Name (click, cart, check...)" value={step.iconName || ''} onChange={(e) => handleStepField(stepIdx, 'iconName', e.target.value)} className="flex-1 px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                            <label className="flex items-center gap-1.5 text-xs text-slate-500 whitespace-nowrap">
+                              <input type="checkbox" checked={step.active || false} onChange={(e) => handleStepField(stepIdx, 'active', e.target.checked)} />
+                              Active
+                            </label>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Uploaded Icon</label>
+                            <div className="flex gap-2">
+                              <input placeholder="Icon image URL" value={step.iconUrl || ''} onChange={(e) => handleStepField(stepIdx, 'iconUrl', e.target.value)} className="flex-1 px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                              <button type="button" onClick={() => openMediaPicker((url) => handleStepField(stepIdx, 'iconUrl', url))} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap">Browse</button>
+                            </div>
+                            {step.iconUrl && (
+                              <img src={step.iconUrl} alt="" className="h-10 w-10 rounded-full border border-black/5 bg-white object-contain p-2" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+
+          {/* ======== HOW IT WORKS – MORE THAN SERVICE ======== */}
+          {selectedSection.type === 'how-it-works-more-than-service' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input
+                  type="text"
+                  value={selectedSection.data.heading || ''}
+                  onChange={(e) => handleDataChange('heading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium"
+                />
+              </div>
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Features</label>
+                  <button
+                    onClick={() => {
+                      const updated = [...(selectedSection.data.features || []), { title: 'New Feature', desc: 'Feature description' }];
+                      handleDataChange('features', updated);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Feature
+                  </button>
+                </div>
+                {(selectedSection.data.features || []).map((feature: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button
+                      onClick={() => {
+                        const updated = (selectedSection.data.features || []).filter((_: any, i: number) => i !== idx);
+                        handleDataChange('features', updated);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Feature {idx + 1}</span>
+                    <input placeholder="Title" value={feature.title || ''} onChange={(e) => { const u = [...(selectedSection.data.features || [])]; u[idx] = { ...u[idx], title: e.target.value }; handleDataChange('features', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold" />
+                    <textarea placeholder="Description" value={feature.desc || ''} onChange={(e) => { const u = [...(selectedSection.data.features || [])]; u[idx] = { ...u[idx], desc: e.target.value }; handleDataChange('features', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]" />
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-4 pt-4 border-t border-black/5">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Yellow CTA</label>
+                <input
+                  placeholder="CTA Title"
+                  value={selectedSection.data.ctaTitle || ''}
+                  onChange={(e) => handleDataChange('ctaTitle', e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold"
+                />
+                <textarea
+                  placeholder="CTA Description"
+                  value={selectedSection.data.ctaDescription || ''}
+                  onChange={(e) => handleDataChange('ctaDescription', e.target.value)}
+                  className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]"
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    placeholder="Button Text"
+                    value={selectedSection.data.ctaButtonText || ''}
+                    onChange={(e) => handleDataChange('ctaButtonText', e.target.value)}
+                    className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                  />
+                  <input
+                    placeholder="Button Link"
+                    value={selectedSection.data.ctaButtonLink || ''}
+                    onChange={(e) => handleDataChange('ctaButtonLink', e.target.value)}
+                    className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ======== HOW IT WORKS – BEFORE AFTER ======== */}
+          {selectedSection.type === 'how-it-works-before-after' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input type="text" value={selectedSection.data.heading || ''} onChange={(e) => handleDataChange('heading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea value={selectedSection.data.subheading || ''} onChange={(e) => handleDataChange('subheading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[100px]" />
+              </div>
+
+              {/* Before Column */}
+              <div className="space-y-4 pt-4 border-t border-black/5">
+                <label className="text-[11px] font-bold text-red-500/80 uppercase tracking-wider block">Before Section</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Rating</label>
+                    <input type="text" value={selectedSection.data.before?.rating || ''} onChange={(e) => handleDataChange('before', { ...(selectedSection.data.before || {}), rating: e.target.value })} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Reviews Count</label>
+                    <input type="text" value={selectedSection.data.before?.reviewsCount || ''} onChange={(e) => handleDataChange('before', { ...(selectedSection.data.before || {}), reviewsCount: e.target.value })} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Bullets</label>
+                  {(selectedSection.data.before?.bullets || []).map((bullet: string, idx: number) => (
+                    <input key={`b-${idx}`} type="text" value={bullet} onChange={(e) => { const u = [...(selectedSection.data.before?.bullets || [])]; u[idx] = e.target.value; handleDataChange('before', { ...(selectedSection.data.before || {}), bullets: u }); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  ))}
+                </div>
+              </div>
+
+              {/* After Column */}
+              <div className="space-y-4 pt-4 border-t border-black/5">
+                <label className="text-[11px] font-bold text-emerald-500/80 uppercase tracking-wider block">After Section</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Rating</label>
+                    <input type="text" value={selectedSection.data.after?.rating || ''} onChange={(e) => handleDataChange('after', { ...(selectedSection.data.after || {}), rating: e.target.value })} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Reviews Count</label>
+                    <input type="text" value={selectedSection.data.after?.reviewsCount || ''} onChange={(e) => handleDataChange('after', { ...(selectedSection.data.after || {}), reviewsCount: e.target.value })} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Bullets</label>
+                  {(selectedSection.data.after?.bullets || []).map((bullet: string, idx: number) => (
+                    <input key={`a-${idx}`} type="text" value={bullet} onChange={(e) => { const u = [...(selectedSection.data.after?.bullets || [])]; u[idx] = e.target.value; handleDataChange('after', { ...(selectedSection.data.after || {}), bullets: u }); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ======== HOW IT WORKS – STANDARDS ======== */}
+          {selectedSection.type === 'how-it-works-standards' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input type="text" value={selectedSection.data.heading || ''} onChange={(e) => handleDataChange('heading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Image URL</label>
+                <div className="flex gap-2">
+                  <input type="text" value={selectedSection.data.image || ''} onChange={(e) => handleDataChange('image', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+                  <button type="button" onClick={() => openMediaPicker((url) => handleDataChange('image', url))} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap">Browse</button>
+                </div>
+              </div>
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Standards</label>
+                  <button
+                    onClick={() => {
+                      const updated = [...(selectedSection.data.standards || []), { title: 'New Standard', desc: 'Standard description' }];
+                      handleDataChange('standards', updated);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Standard
+                  </button>
+                </div>
+                {(selectedSection.data.standards || []).map((item: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button
+                      onClick={() => {
+                        const updated = (selectedSection.data.standards || []).filter((_: any, i: number) => i !== idx);
+                        handleDataChange('standards', updated);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Standard {idx + 1}</span>
+                    <input placeholder="Title" value={item.title || ''} onChange={(e) => { const u = [...(selectedSection.data.standards || [])]; u[idx] = { ...u[idx], title: e.target.value }; handleDataChange('standards', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold" />
+                    <textarea placeholder="Description" value={item.desc || ''} onChange={(e) => { const u = [...(selectedSection.data.standards || [])]; u[idx] = { ...u[idx], desc: e.target.value }; handleDataChange('standards', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]" />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ======== HOW IT WORKS – WHY TRUST ======== */}
+          {selectedSection.type === 'how-it-works-why-trust' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input type="text" value={selectedSection.data.heading || ''} onChange={(e) => handleDataChange('heading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Image URL</label>
+                <div className="flex gap-2">
+                  <input type="text" value={selectedSection.data.image || ''} onChange={(e) => handleDataChange('image', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+                  <button type="button" onClick={() => openMediaPicker((url) => handleDataChange('image', url))} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap">Browse</button>
+                </div>
+              </div>
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Trust Cards</label>
+                  <button
+                    onClick={() => {
+                      const updated = [...(selectedSection.data.cards || []), { title: 'New Card', desc: 'Card description' }];
+                      handleDataChange('cards', updated);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Card
+                  </button>
+                </div>
+                {(selectedSection.data.cards || []).map((card: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button
+                      onClick={() => {
+                        const updated = (selectedSection.data.cards || []).filter((_: any, i: number) => i !== idx);
+                        handleDataChange('cards', updated);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Card {idx + 1}</span>
+                    <input placeholder="Title" value={card.title || ''} onChange={(e) => { const u = [...(selectedSection.data.cards || [])]; u[idx] = { ...u[idx], title: e.target.value }; handleDataChange('cards', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg font-bold" />
+                    <textarea placeholder="Description" value={card.desc || ''} onChange={(e) => { const u = [...(selectedSection.data.cards || [])]; u[idx] = { ...u[idx], desc: e.target.value }; handleDataChange('cards', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[60px]" />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ======== HOW IT WORKS – SOLUTIONS ======== */}
+          {selectedSection.type === 'how-it-works-solutions' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading</label>
+                <input type="text" value={selectedSection.data.heading || ''} onChange={(e) => handleDataChange('heading', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Description 1</label>
+                <textarea value={selectedSection.data.desc1 || ''} onChange={(e) => handleDataChange('desc1', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Description 2</label>
+                <textarea value={selectedSection.data.desc2 || ''} onChange={(e) => handleDataChange('desc2', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]" />
+              </div>
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider block">Solutions</label>
+                  <button
+                    onClick={() => {
+                      const updated = [...(selectedSection.data.solutions || []), { title: 'New Industry', desc: 'Industry description', iconName: 'Briefcase' }];
+                      handleDataChange('solutions', updated);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase"
+                  >
+                    + Add Solution
+                  </button>
+                </div>
+                {(selectedSection.data.solutions || []).map((item: any, idx: number) => (
+                  <div key={idx} className="p-4 border border-black/5 rounded-2xl bg-[#fafafa] space-y-3 relative group/item">
+                    <button
+                      onClick={() => {
+                        const updated = (selectedSection.data.solutions || []).filter((_: any, i: number) => i !== idx);
+                        handleDataChange('solutions', updated);
+                      }}
+                      className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    >
+                      <X size={14} />
+                    </button>
+                    <span className="text-[10px] font-bold text-[#1a1a1a]/40 uppercase">Solution {idx + 1}</span>
+                    <div className="flex gap-2">
+                      <input placeholder="Title" value={item.title || ''} onChange={(e) => { const u = [...(selectedSection.data.solutions || [])]; u[idx] = { ...u[idx], title: e.target.value }; handleDataChange('solutions', u); }} className="flex-1 px-3 py-2 text-xs border border-black/5 rounded-lg font-bold" />
+                      <input placeholder="Icon (Lucide)" value={item.iconName || ''} onChange={(e) => { const u = [...(selectedSection.data.solutions || [])]; u[idx] = { ...u[idx], iconName: e.target.value }; handleDataChange('solutions', u); }} className="w-28 px-3 py-2 text-xs border border-black/5 rounded-lg" />
+                    </div>
+                    <textarea placeholder="Description" value={item.desc || ''} onChange={(e) => { const u = [...(selectedSection.data.solutions || [])]; u[idx] = { ...u[idx], desc: e.target.value }; handleDataChange('solutions', u); }} className="w-full px-3 py-2 text-xs border border-black/5 rounded-lg min-h-[50px]" />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ======== HOW IT WORKS – CTA ======== */}
+          {selectedSection.type === 'how-it-works-cta' && (
+            <>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Heading (HTML)</label>
+                <textarea
+                  value={selectedSection.data.heading || ''}
+                  onChange={(e) => handleDataChange('heading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Subheading</label>
+                <textarea
+                  value={selectedSection.data.subheading || ''}
+                  onChange={(e) => handleDataChange('subheading', e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium min-h-[80px]"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Button Text</label>
+                <input type="text" value={selectedSection.data.btnText || ''} onChange={(e) => handleDataChange('btnText', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Button Link</label>
+                <input type="text" value={selectedSection.data.btnLink || ''} onChange={(e) => handleDataChange('btnLink', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-[#1a1a1a]/60 uppercase tracking-wider">Image URL</label>
+                <div className="flex gap-2">
+                  <input type="text" value={selectedSection.data.image || ''} onChange={(e) => handleDataChange('image', e.target.value)} className="w-full px-4 py-3 bg-white border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#fc0] text-sm font-medium" />
+                  <button type="button" onClick={() => openMediaPicker((url) => handleDataChange('image', url))} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-colors border border-slate-200 whitespace-nowrap">Browse</button>
+                </div>
               </div>
             </>
           )}

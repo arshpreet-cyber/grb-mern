@@ -25,6 +25,14 @@ import BenefitsSection from './BenefitsSection';
 import SafeReviewsCarousel from './SafeReviewsCarousel';
 import OrganicDrawbacks from './OrganicDrawbacks';
 import RefundPolicySection from './RefundPolicySection';
+import HowItWorksHero from './HowItWorksHero';
+import HowItWorksProcess from './HowItWorksProcess';
+import HowItWorksMoreThanService from './HowItWorksMoreThanService';
+import HowItWorksBeforeAfter from './HowItWorksBeforeAfter';
+import HowItWorksStandards from './HowItWorksStandards';
+import HowItWorksWhyTrust from './HowItWorksWhyTrust';
+import HowItWorksSolutions from './HowItWorksSolutions';
+import HowItWorksCTA from './HowItWorksCTA';
 import { Section } from '@/lib/redux/features/pageEditorSlice';
 
 const sectionMap: Record<string, React.FC<any>> = {
@@ -55,6 +63,14 @@ const sectionMap: Record<string, React.FC<any>> = {
   'safe-reviews-carousel': SafeReviewsCarousel,
   'organic-drawbacks': OrganicDrawbacks,
   'refund-policy-section': RefundPolicySection,
+  'how-it-works-hero': HowItWorksHero,
+  'how-it-works-process': HowItWorksProcess,
+  'how-it-works-more-than-service': HowItWorksMoreThanService,
+  'how-it-works-before-after': HowItWorksBeforeAfter,
+  'how-it-works-standards': HowItWorksStandards,
+  'how-it-works-why-trust': HowItWorksWhyTrust,
+  'how-it-works-solutions': HowItWorksSolutions,
+  'how-it-works-cta': HowItWorksCTA,
 };
 
 interface PageRendererProps {
