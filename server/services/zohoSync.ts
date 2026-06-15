@@ -13,11 +13,13 @@ import {
   sendZohoTicketEmail,
   getZohoTicketThreads,
   getZohoTicketComments,
+  getZohoTickets,
 } from "./zohoService.ts";
 import prisma from "../../lib/prisma.ts";
 
 const ZOHO_ORG_ID = process.env.ZOHO_ORG_ID;
-const ZOHO_DESK_URL = "https://desk.zoho.in/api/v1";
+const ZOHO_DC = process.env.ZOHO_DC || "com";
+const ZOHO_DESK_URL = process.env.ZOHO_DESK_URL || `https://desk.zoho.${ZOHO_DC}/api/v1`;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "mohit@adaired.org";
 const APP_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
@@ -541,4 +543,159 @@ export async function getZohoTicketsForContact(email: string): Promise<any[]> {
     console.error(`[ZOHO-SYNC] Error fetching Zoho tickets for ${email}:`, error);
     return [];
   }
+}
+
+/**
+ * One-time backfill: our local `ticketId` already holds the Zoho ticket id
+ * (e.g. 822654000003360001), but `zohoTicketId` was left null during migration.
+ * Copying it links every existing ticket to Zoho so thread/reply sync works.
+ * Idempotent and safe to call repeatedly.
+ */
+export async function backfillZohoTicketIds(): Promise<number> {
+  // Only numeric ticketIds are Zoho ids; cuid-style local ids are excluded.
+  const updated = await prisma.$executeRawUnsafe(
+    `UPDATE "Ticket" SET "zohoTicketId" = "ticket_id"
+     WHERE "zohoTicketId" IS NULL AND "ticket_id" ~ '^[0-9]+$'`
+  );
+  if (updated) console.log(`[ZOHO-SYNC] Backfilled zohoTicketId on ${updated} tickets`);
+  return updated as unknown as number;
+}
+
+// Map a Zoho Desk status to one of our local status options.
+function mapZohoStatus(status: string | undefined | null): string {
+  if (!status) return "Open";
+  const s = status.trim().toLowerCase();
+  if (s === "on hold" || s === "hold") return "Hold";
+  if (s === "closed") return "Closed";
+  if (s === "escalated") return "Escalated";
+  if (s === "open") return "Open";
+  // Pass through anything else (e.g. "Pending", "Answered") capitalized as-is.
+  return status;
+}
+
+// Resolve the userId for an imported Zoho ticket. Matches an existing user by
+// email, otherwise creates a lightweight placeholder user (per chosen policy).
+const userIdCache = new Map<string, number>();
+async function resolveUserId(email: string | null, name: string | null): Promise<number> {
+  const key = (email || "zoho-import").toLowerCase();
+  const cached = userIdCache.get(key);
+  if (cached) return cached;
+
+  if (email) {
+    const normalized = email.trim().toLowerCase();
+    const existing = await prisma.user.findUnique({ where: { email: normalized } });
+    if (existing) {
+      userIdCache.set(key, existing.id);
+      return existing.id;
+    }
+    const created = await prisma.user.create({
+      data: { email: normalized, name: name || normalized, role: "USER", status: "passive" },
+    });
+    userIdCache.set(key, created.id);
+    return created.id;
+  }
+
+  // No email at all — bucket under a single system import user.
+  const sysEmail = "zoho-import@getreviews.buzz";
+  const sys =
+    (await prisma.user.findUnique({ where: { email: sysEmail } })) ??
+    (await prisma.user.create({ data: { email: sysEmail, name: "Zoho Import", role: "USER", status: "passive" } }));
+  userIdCache.set(key, sys.id);
+  return sys.id;
+}
+
+/**
+ * Pull tickets FROM Zoho Desk into the local DB.
+ *
+ * Upserts by `ticketId` (= the Zoho ticket id), so existing tickets are updated
+ * in place (no duplicates) and genuinely-new Zoho tickets are imported. Sorted by
+ * most-recently-modified, and bounded by maxPages to stay within function limits —
+ * call repeatedly (or via cron) to walk further back.
+ */
+export async function pullTicketsFromZoho(opts?: {
+  maxPages?: number;
+  pageSize?: number;
+}): Promise<{ imported: number; updated: number; fetched: number; pages: number }> {
+  if (!isZohoConfigured()) {
+    console.log("[ZOHO-SYNC] Zoho not configured. Skipping pull.");
+    return { imported: 0, updated: 0, fetched: 0, pages: 0 };
+  }
+
+  // Make sure existing tickets are linked first.
+  await backfillZohoTicketIds().catch((e) => console.error("[ZOHO-SYNC] backfill failed:", e));
+
+  const pageSize = Math.min(100, Math.max(1, opts?.pageSize ?? 100));
+  const maxPages = Math.max(1, opts?.maxPages ?? 5);
+
+  let imported = 0;
+  let updated = 0;
+  let fetched = 0;
+  let pages = 0;
+
+  for (let page = 0; page < maxPages; page++) {
+    const from = page * pageSize + 1;
+    const tickets = await getZohoTickets(from, pageSize, "-modifiedTime");
+    if (!tickets.length) break;
+    pages++;
+    fetched += tickets.length;
+
+    for (const zt of tickets) {
+      try {
+        const zohoId = String(zt.id);
+        const email: string | null = zt.email || zt.contact?.email || null;
+        const name: string | null =
+          [zt.contact?.firstName, zt.contact?.lastName].filter(Boolean).join(" ").trim() ||
+          zt.contactName ||
+          email ||
+          "Zoho Customer";
+        const status = mapZohoStatus(zt.status);
+        const subject = zt.subject || "Support Ticket";
+
+        const existing = await prisma.ticket.findUnique({ where: { ticketId: zohoId } });
+
+        if (existing) {
+          await prisma.ticket.update({
+            where: { ticketId: zohoId },
+            data: {
+              status,
+              subject,
+              zohoTicketId: zohoId,
+              ...(zt.ticketNumber ? { ticketNumber: String(zt.ticketNumber) } : {}),
+              ...(email ? { email } : {}),
+              ...(name ? { name } : {}),
+            },
+          });
+          updated++;
+        } else {
+          const userId = await resolveUserId(email, name);
+          await prisma.ticket.create({
+            data: {
+              ticketId: zohoId,
+              zohoTicketId: zohoId,
+              userId,
+              subject,
+              title: subject,
+              query: zt.description || "",
+              status,
+              email,
+              name,
+              ticketNumber: zt.ticketNumber ? String(zt.ticketNumber) : null,
+              readStatus: 1,
+              repliedStatus: 1,
+              ...(zt.createdTime ? { createdAt: new Date(zt.createdTime) } : {}),
+            },
+          });
+          imported++;
+        }
+      } catch (err) {
+        console.error(`[ZOHO-SYNC] Failed to import Zoho ticket ${zt?.id}:`, err);
+      }
+    }
+
+    if (tickets.length < pageSize) break; // reached the last page
+    await new Promise((resolve) => setTimeout(resolve, 250)); // rate limit
+  }
+
+  console.log(`[ZOHO-SYNC] Pull complete: ${imported} imported, ${updated} updated, ${fetched} fetched across ${pages} pages`);
+  return { imported, updated, fetched, pages };
 }
