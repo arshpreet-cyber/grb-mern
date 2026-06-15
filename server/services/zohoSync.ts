@@ -639,56 +639,80 @@ export async function pullTicketsFromZoho(opts?: {
     pages++;
     fetched += tickets.length;
 
-    for (const zt of tickets) {
-      try {
-        const zohoId = String(zt.id);
-        const email: string | null = zt.email || zt.contact?.email || null;
-        const name: string | null =
-          [zt.contact?.firstName, zt.contact?.lastName].filter(Boolean).join(" ").trim() ||
-          zt.contactName ||
-          email ||
-          "Zoho Customer";
-        const status = mapZohoStatus(zt.status);
-        const subject = zt.subject || "Support Ticket";
+    // Batched to stay within serverless time limits (per-ticket queries against a
+    // remote DB are too slow): one lookup for existing, createMany for new, and
+    // updates only when a status actually changed.
+    const ids = tickets.map((z: any) => String(z.id));
+    const existingRows = await prisma.ticket.findMany({
+      where: { ticketId: { in: ids } },
+      select: { ticketId: true, status: true },
+    });
+    const existingMap = new Map(existingRows.map((t) => [t.ticketId, t.status]));
+    const news = tickets.filter((z: any) => !existingMap.has(String(z.id)));
 
-        const existing = await prisma.ticket.findUnique({ where: { ticketId: zohoId } });
-
-        if (existing) {
-          await prisma.ticket.update({
-            where: { ticketId: zohoId },
-            data: {
-              status,
-              subject,
-              zohoTicketId: zohoId,
-              ...(zt.ticketNumber ? { ticketNumber: String(zt.ticketNumber) } : {}),
-              ...(email ? { email } : {}),
-              ...(name ? { name } : {}),
-            },
-          });
-          updated++;
-        } else {
-          const userId = await resolveUserId(email, name);
-          await prisma.ticket.create({
-            data: {
-              ticketId: zohoId,
-              zohoTicketId: zohoId,
-              userId,
-              subject,
-              title: subject,
-              query: zt.description || "",
-              status,
-              email,
-              name,
-              ticketNumber: zt.ticketNumber ? String(zt.ticketNumber) : null,
-              readStatus: 1,
-              repliedStatus: 1,
-              ...(zt.createdTime ? { createdAt: new Date(zt.createdTime) } : {}),
-            },
-          });
-          imported++;
+    if (news.length) {
+      // Resolve users for new tickets in batch.
+      const emailToName = new Map<string, string>();
+      for (const z of news) {
+        const email = (z.email || z.contact?.email || "").trim().toLowerCase();
+        if (email && !emailToName.has(email)) {
+          const nm = [z.contact?.firstName, z.contact?.lastName].filter(Boolean).join(" ").trim() || z.contactName || email;
+          emailToName.set(email, nm);
         }
-      } catch (err) {
-        console.error(`[ZOHO-SYNC] Failed to import Zoho ticket ${zt?.id}:`, err);
+      }
+      const emails = [...emailToName.keys()];
+      const userMap = new Map<string, number>();
+      if (emails.length) {
+        const found = await prisma.user.findMany({ where: { email: { in: emails } }, select: { id: true, email: true } });
+        for (const u of found) userMap.set(u.email, u.id);
+        const missing = emails.filter((e) => !userMap.has(e));
+        if (missing.length) {
+          await prisma.user.createMany({
+            data: missing.map((e) => ({ email: e, name: emailToName.get(e) || e, role: "USER", status: "passive" })) as any,
+            skipDuplicates: true,
+          });
+          const created = await prisma.user.findMany({ where: { email: { in: missing } }, select: { id: true, email: true } });
+          for (const u of created) userMap.set(u.email, u.id);
+        }
+      }
+      const sysId = await resolveUserId(null, null); // bucket for null-email tickets
+
+      const rows = news.map((z: any) => {
+        const email = (z.email || z.contact?.email || "").trim().toLowerCase() || null;
+        const name = email ? (emailToName.get(email) || email) : "Zoho Customer";
+        const subject = z.subject || "Support Ticket";
+        return {
+          ticketId: String(z.id),
+          zohoTicketId: String(z.id),
+          userId: (email && userMap.get(email)) || sysId,
+          subject,
+          title: subject,
+          query: z.description || "",
+          status: mapZohoStatus(z.status),
+          email,
+          name,
+          ticketNumber: z.ticketNumber ? String(z.ticketNumber) : null,
+          readStatus: 1,
+          repliedStatus: 1,
+          ...(z.createdTime ? { createdAt: new Date(z.createdTime) } : {}),
+        };
+      });
+      const res = await prisma.ticket.createMany({ data: rows as any, skipDuplicates: true });
+      imported += res.count;
+    }
+
+    // Refresh status for existing tickets only when it changed.
+    for (const z of tickets) {
+      const zid = String(z.id);
+      if (!existingMap.has(zid)) continue;
+      const newStatus = mapZohoStatus(z.status);
+      if (existingMap.get(zid) !== newStatus) {
+        try {
+          await prisma.ticket.update({ where: { ticketId: zid }, data: { status: newStatus } });
+          updated++;
+        } catch (err) {
+          console.error(`[ZOHO-SYNC] Failed to update ticket ${zid}:`, err);
+        }
       }
     }
 
