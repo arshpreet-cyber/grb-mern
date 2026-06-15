@@ -14,6 +14,7 @@ import {
   getZohoTicketThreads,
   getZohoTicketComments,
   getZohoTickets,
+  getZohoThreadDetail,
 } from "./zohoService.ts";
 import prisma from "../../lib/prisma.ts";
 
@@ -445,13 +446,26 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
     // Comments are what WE create via addZohoTicketReply, so pulling them back would duplicate
     const zohoThreads = await getZohoTicketThreads(ticket.zohoTicketId);
 
-    for (const thread of zohoThreads) {
-      const rawContent = thread.plainText || thread.summary || "";
-      if (!rawContent.trim()) continue;
+    const stripHtml = (h: string) =>
+      h.replace(/<style[\s\S]*?<\/style>/gi, "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
+        .replace(/\s+\n/g, "\n").replace(/[ \t]{2,}/g, " ").trim();
 
-      // Skip threads that came from our API (channel = "WEB" or "API")
-      // Only import threads from EMAIL channel (actual email replies)
+    for (const thread of zohoThreads) {
+      // Only import email threads (actual conversation) — not comments/API threads.
       if (thread.channel !== "EMAIL") continue;
+
+      // The list endpoint only has a summary; fetch the thread for full content.
+      const detail = await getZohoThreadDetail(ticket.zohoTicketId, String(thread.id));
+      await new Promise((r) => setTimeout(r, 120)); // rate limit
+      const rawContent = (
+        detail?.plainText ||
+        (detail?.content ? stripHtml(detail.content) : "") ||
+        thread.summary ||
+        ""
+      ).trim();
+      if (!rawContent) continue;
 
       if (isDuplicate(rawContent)) continue;
 
@@ -462,9 +476,10 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
       await prisma.ticketThread.create({
         data: {
           ticketId,
-          content: rawContent.trim(),
+          content: rawContent,
           direction,
           agentId: isFromAgent ? "zoho-agent" : null,
+          ...(thread.createdTime ? { createdAt: new Date(thread.createdTime) } : {}),
         },
       });
 

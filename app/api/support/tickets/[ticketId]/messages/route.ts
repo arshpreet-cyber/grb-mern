@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { syncMessageToZoho } from "@/server/services/zohoSync";
+import { syncMessageToZoho, syncZohoThreadsToLocal } from "@/server/services/zohoSync";
+
+export const maxDuration = 60;
 
 // GET /api/support/tickets/[ticketId]/messages
 export async function GET(
@@ -9,6 +11,13 @@ export async function GET(
 ) {
   try {
     const { ticketId } = await params;
+
+    // Pull the latest conversation from Zoho on demand so imported tickets and
+    // new email replies show up. Best-effort — never block the message list.
+    await syncZohoThreadsToLocal(ticketId).catch((e) =>
+      console.error("[messages] Zoho thread pull failed:", e)
+    );
+
     const messages = await prisma.ticketThread.findMany({
       where: { ticketId },
       orderBy: { createdAt: "asc" },
