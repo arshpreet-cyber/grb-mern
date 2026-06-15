@@ -33,8 +33,8 @@ async function main() {
     const ticketsCsv = fs.readFileSync('c:/Users/mohit.kumar/Downloads/tickets.csv', 'utf8');
     const threadsCsv = fs.readFileSync('c:/Users/mohit.kumar/Downloads/ticket_threads.csv', 'utf8');
 
-    const ticketsRaw = parse(ticketsCsv, { columns: true, skip_empty_lines: true });
-    const threadsRaw = parse(threadsCsv, { columns: true, skip_empty_lines: true });
+    const ticketsRaw: any[] = parse(ticketsCsv, { columns: true, skip_empty_lines: true });
+    const threadsRaw: any[] = parse(threadsCsv, { columns: true, skip_empty_lines: true });
 
     const invalidTickets = ticketsRaw.filter(t => !validUserIds.has(t.user_id) && t.user_id && t.user_id !== 'NULL');
     
