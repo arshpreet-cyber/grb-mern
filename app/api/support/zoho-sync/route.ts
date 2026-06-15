@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { syncAllUnsyncedTickets, syncTicketToZoho, syncAllZohoThreadsToLocal } from "@/server/services/zohoSync";
+import { syncAllUnsyncedTickets, syncTicketToZoho, syncAllZohoThreadsToLocal, pullTicketsFromZoho } from "@/server/services/zohoSync";
 import { isZohoConfigured, isZohoEmailConfigured } from "@/server/services/zohoService";
 import prisma from "@/lib/prisma";
+
+// Allow longer execution for the paginated Zoho pull.
+export const maxDuration = 60;
 
 // GET /api/support/zoho-sync — Get sync status
 export async function GET() {
@@ -87,7 +90,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, ...result });
     }
 
-    return NextResponse.json({ error: "Invalid action. Use 'sync-all', 'sync-one', or 'pull-threads'" }, { status: 400 });
+    // Pull tickets FROM Zoho Desk → local DB (import new + refresh existing)
+    if (action === "pull-tickets") {
+      const maxPages = typeof body.maxPages === "number" ? body.maxPages : undefined;
+      const result = await pullTicketsFromZoho({ maxPages });
+      return NextResponse.json({ success: true, ...result });
+    }
+
+    return NextResponse.json({ error: "Invalid action. Use 'sync-all', 'sync-one', 'pull-threads', or 'pull-tickets'" }, { status: 400 });
   } catch (error) {
     console.error("Zoho sync endpoint error:", error);
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });

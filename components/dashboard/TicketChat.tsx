@@ -2,7 +2,6 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
 import { Send, ShieldCheck, User, AlertCircle, Loader2, Paperclip, X } from "lucide-react";
 
 export type TicketMessage = {
@@ -45,30 +44,30 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [replyOpen, setReplyOpen] = useState(false);
-  const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sessionUserId = session?.user?.id;
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-  const connectSocket = () => {
-    if (typeof window === "undefined") return;
-    if (socketRef.current) socketRef.current.disconnect();
-    const socket = io({ transports: ["websocket", "polling"], reconnectionAttempts: 5 });
-    socketRef.current = socket;
-    socket.on("connect", () => { setError(null); socket.emit("join-ticket", ticketId); });
-    socket.on("connect_error", () => { setError("Unable to connect to support server."); });
-    socket.on("ticket-history", (h: TicketMessage[]) => setMessages(h));
-    socket.on("ticket-message", (m: TicketMessage) => setMessages(prev => prev.some(p => p.id === m.id) ? prev : [...prev, m]));
-    socket.on("ticket-error", ({ message }: { message: string }) => setError(message));
-    return socket;
+  const loadMessages = async () => {
+    try {
+      const res = await fetch(`/api/support/tickets/${ticketId}/messages`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setMessages(Array.isArray(data) ? data : []);
+    } catch {
+      setError("Unable to load messages.");
+    }
   };
 
   useEffect(() => {
-    const socket = connectSocket();
     fetch(`/api/support/tickets/${ticketId}`).then(r => r.json()).then(setTicket).catch(() => {});
-    return () => { socket?.disconnect(); socketRef.current = null; };
+    loadMessages();
+    // Light polling stands in for realtime, since the app is serverless (no socket server).
+    const interval = setInterval(loadMessages, 15000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,12 +82,18 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     if (!draft.trim() || !sessionUserId) return;
     setSending(true); setError(null);
     try {
-      if (!socketRef.current?.connected) throw new Error("Connection unavailable. Please refresh the page.");
-      socketRef.current.emit("send-ticket-message", {
-        ticketId, content: draft.trim(), agentId: sessionUserId,
-        direction: isAdmin ? "2" : "1",
+      const res = await fetch(`/api/support/tickets/${ticketId}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: draft.trim(),
+          agentId: isAdmin ? sessionUserId : null,
+          direction: isAdmin ? "2" : "1",
+        }),
       });
+      if (!res.ok) throw new Error("Failed to send your reply. Please try again.");
       setDraft(""); setAttachments([]); setReplyOpen(false);
+      await loadMessages();
     } catch (err: any) {
       setError(err.message || "Failed to send.");
     } finally {

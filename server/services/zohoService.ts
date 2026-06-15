@@ -6,9 +6,12 @@ const ZOHO_ORG_ID = process.env.ZOHO_ORG_ID;
 const ZOHO_DEPARTMENT_ID = process.env.ZOHO_DEPARTMENT_ID;
 const ZOHO_FROM_EMAIL = process.env.ZOHO_FROM_EMAIL; // Zoho Desk "from" address for sendReply
 
-// Use your actual Zoho domain, default to .in or .com. Using .in here as fallback or whatever matches the env
-const ZOHO_ACCOUNTS_URL = "https://accounts.zoho.in";
-const ZOHO_DESK_URL = "https://desk.zoho.in/api/v1";
+// Zoho data center is region-specific (.com, .in, .eu, ...). Drive it from env so
+// the account's data center can be set without code changes. Defaults to .com.
+// Set ZOHO_DC=in (or eu, etc.) or override the full URLs via ZOHO_ACCOUNTS_URL / ZOHO_DESK_URL.
+const ZOHO_DC = process.env.ZOHO_DC || "com";
+const ZOHO_ACCOUNTS_URL = process.env.ZOHO_ACCOUNTS_URL || `https://accounts.zoho.${ZOHO_DC}`;
+const ZOHO_DESK_URL = process.env.ZOHO_DESK_URL || `https://desk.zoho.${ZOHO_DC}/api/v1`;
 
 let currentAccessToken: string | null = null;
 let tokenExpiresAt: number = 0;
@@ -271,6 +274,42 @@ export async function getZohoTicketThreads(zohoTicketId: string): Promise<any[]>
     return data.data || [];
   } catch (error) {
     console.error(`[ZOHO] Error fetching threads for ticket ${zohoTicketId}:`, error);
+    return [];
+  }
+}
+
+/**
+ * Fetch a page of tickets from Zoho Desk.
+ * `from` is 1-based; `limit` max is 100. Sorted by -modifiedTime by default so
+ * the most recently active tickets come first. Includes contact info.
+ */
+export async function getZohoTickets(
+  from: number = 1,
+  limit: number = 100,
+  sortBy: string = "-modifiedTime"
+): Promise<any[]> {
+  const token = await getZohoAccessToken();
+  if (!ZOHO_ORG_ID) return [];
+
+  const url = `${ZOHO_DESK_URL}/tickets?from=${from}&limit=${limit}&sortBy=${sortBy}&include=contacts`;
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "Authorization": `Zoho-oauthtoken ${token}`,
+        "orgId": ZOHO_ORG_ID,
+      },
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error(`[ZOHO] Failed to list tickets (from=${from}): ${response.status}`, text.substring(0, 200));
+      return [];
+    }
+
+    const data = (await response.json()) as any;
+    return data.data || [];
+  } catch (error) {
+    console.error(`[ZOHO] Error listing tickets (from=${from}):`, error);
     return [];
   }
 }

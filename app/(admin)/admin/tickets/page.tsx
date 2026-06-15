@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import DataTable, { Column } from "@/components/ui/DataTable";
-import { Eye, Headphones, RefreshCw, Trash2 } from "lucide-react";
+import { Eye, Headphones, RefreshCw, Trash2, DownloadCloud, Loader2 } from "lucide-react";
 
 type Ticket = {
   id: number;
@@ -84,6 +84,31 @@ export default function AdminTicketsPage() {
   const [filter, setFilter] = useState<string>("all");
   const [dbCounts, setDbCounts] = useState({ all: 0, open: 0, awaiting: 0, closed: 0, pending: 0 });
   const [staff, setStaff] = useState<Staff[]>([]);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
+
+  const syncFromZoho = async () => {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const res = await fetch("/api/support/zoho-sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "pull-tickets" }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setSyncMsg(data.error || "Sync failed.");
+      } else {
+        setSyncMsg(`Synced from Zoho — ${data.imported ?? 0} new, ${data.updated ?? 0} updated.`);
+        loadTickets();
+      }
+    } catch {
+      setSyncMsg("Sync failed. Please try again.");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   useEffect(() => {
     fetch("/api/admin/users?staff=1")
@@ -281,9 +306,21 @@ export default function AdminTicketsPage() {
               </p>
             </div>
           </div>
-          <button onClick={() => loadTickets()} className="p-2 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800 transition" title="Refresh">
-            <RefreshCw size={15} />
-          </button>
+          <div className="flex items-center gap-2">
+            {syncMsg && <span className="text-xs text-gray-500 dark:text-slate-400 max-w-[240px] truncate">{syncMsg}</span>}
+            <button
+              onClick={syncFromZoho}
+              disabled={syncing}
+              className="inline-flex items-center gap-2 rounded-lg bg-[#FFCE2E] hover:bg-[#EBB81E] px-3 py-2 text-[13px] font-bold text-black transition disabled:opacity-60"
+              title="Pull tickets from Zoho Desk"
+            >
+              {syncing ? <Loader2 size={15} className="animate-spin" /> : <DownloadCloud size={15} />}
+              {syncing ? "Syncing…" : "Sync from Zoho"}
+            </button>
+            <button onClick={() => loadTickets()} className="p-2 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-slate-800 transition" title="Refresh">
+              <RefreshCw size={15} />
+            </button>
+          </div>
         </div>
       </div>
 
