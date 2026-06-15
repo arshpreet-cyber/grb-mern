@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
       select: { email: true, name: true },
     });
 
-    const pmMap: Record<string, string> = { card: "3", paypal: "4", razorpay: "2", zoho: "5" };
+    // "card" is PayPal's debit/credit-card funding flow, so it maps to PayPal (4), not Stripe (3).
+    const pmMap: Record<string, string> = { card: "4", paypal: "4", razorpay: "2", zoho: "5" };
 
     const order = await prisma.order.create({
       data: {
