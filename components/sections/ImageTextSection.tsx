@@ -8,7 +8,7 @@ export default function ImageTextSection({ data, settings }: SectionProps) {
   const {
     title = "Turn Reviews into Brand <br/> <span class='font-semibold'>Visibility and Growth</span>",
     content = "<p>Customer reviews shape how people see your business. They often decide whether someone chooses you or looks elsewhere. Most customers rely on reviews to judge quality and trust, and they look for real experiences.</p><p>Regular feedback builds credibility over time. It shows that your business consistently delivers value.</p>",
-    image = "https://getreviews.buzz/storage/app/blog/0547241001776770835_0936012001776065359_right-img.png",
+    image = "/uploads/media/1778826313456-ab2b57c2-e8a2-4c20-9e20-c0e6c0f1806e-right-img-home.webp",
     buttonText = "Read More",
     buttonLink = "#",
     imagePosition = "right",

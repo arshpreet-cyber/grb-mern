@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Globe, LayoutDashboard, RefreshCw, FileText, PanelTopDashed, Menu, Code, FileEdit, Blocks, Handshake, Package, Upload, ShoppingBag, CircleDollarSign, Tag, ReceiptText, UserPlus, Users, Clipboard, Settings, User, BarChart, Bell, Image as ImageIcon, PenTool, HelpCircle, Headphones, MessageSquare, History, LogOut, ChevronDown, ArrowLeftRight,
+import {
+  Globe, LayoutDashboard, RefreshCw, FileText, PanelTopDashed, Menu, Code, FileEdit, Blocks, Handshake, Package, Upload, ShoppingBag, CircleDollarSign, Tag, ReceiptText, UserPlus, Users, Clipboard, Settings, User, BarChart, Bell, Image as ImageIcon, PenTool, HelpCircle, Headphones, MessageSquare, History, LogOut, ChevronDown, ArrowLeftRight,
 } from "lucide-react";
 
 type MenuChild = { label: string; href: string };
@@ -145,7 +146,7 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
         else if (typeof data?.total === "number") setTicketCount(data.total);
         else if (Array.isArray(data)) setTicketCount(data.length);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Guard all session values behind `mounted` to prevent SSR/CSR hydration mismatch
@@ -179,17 +180,16 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
   }, [currentUrl]);
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 h-screen flex flex-col shrink-0 bg-[#fafafa] dark:bg-[#0f1117] transition-all duration-300 ease-in-out overflow-hidden ${
-      isOpen 
-        ? "w-64 translate-x-0 border-r border-gray-200 dark:border-slate-800" 
+    <aside className={`fixed inset-y-0 left-0 z-50 h-screen flex flex-col shrink-0 bg-[#fafafa] dark:bg-[#0f1117] transition-all duration-300 ease-in-out overflow-hidden ${isOpen
+        ? "w-64 translate-x-0 border-r border-gray-200 dark:border-slate-800"
         : "w-0 -translate-x-full border-r-0 pointer-events-none"
-    }`}>
+      }`}>
       <div className="w-64 h-full flex flex-col shrink-0 overflow-y-auto">
         {/* Logo Container */}
         <div className="px-5 py-6">
           <Link href="/">
             <img
-              src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+              src="/uploads/media/1778825414712-b5950796-7335-4c0c-a6ed-2f5ee108976e-logo-white.png"
               alt="GetReviews.Buzz"
               className="w-[140px] h-auto dark:brightness-0 dark:invert"
             />
@@ -224,17 +224,16 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
                               [item.label]: !isOpen,
                             }))
                           }
-                          className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                            isActive
+                          className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${isActive
                               ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 font-medium"
                               : "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 dark:hover:text-white"
-                          }`}
+                            }`}
                         >
                           {/* <IconComponent /> */}
                           <span className="flex-1 text-left">{item.label}</span>
-                          <ChevronDown 
-                            size={16} 
-                            className={`transition-transform text-gray-400 dark:text-slate-500 ${isOpen ? "rotate-180" : ""}`} 
+                          <ChevronDown
+                            size={16}
+                            className={`transition-transform text-gray-400 dark:text-slate-500 ${isOpen ? "rotate-180" : ""}`}
                           />
                         </button>
 
@@ -246,11 +245,10 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
                                 <Link
                                   key={child.href}
                                   href={child.href}
-                                  className={`block rounded-md px-3 py-2 text-sm transition-colors ${
-                                    isCurrentChild
+                                  className={`block rounded-md px-3 py-2 text-sm transition-colors ${isCurrentChild
                                       ? "bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 font-medium"
                                       : "text-gray-500 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-white"
-                                  }`}
+                                    }`}
                                 >
                                   {child.label}
                                 </Link>
@@ -267,19 +265,17 @@ export default function AdminSidebar({ isOpen = true, onToggle }: AdminSidebarPr
                     <li key={item.label}>
                       <Link
                         href={item.href!}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
-                          isActive
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive
                             ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 font-medium"
                             : "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 dark:hover:text-white"
-                        }`}
+                          }`}
                       >
                         {/* <IconComponent /> */}
                         <span className="flex-1">{item.label}</span>
-                        
+
                         {(item.badge || (item.label === "Tickets" && ticketCount !== null)) && (
-                          <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold ${
-                            isActive ? "bg-yellow-200 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400" : "bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400"
-                          }`}>
+                          <span className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold ${isActive ? "bg-yellow-200 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400" : "bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400"
+                            }`}>
                             {item.label === "Tickets" && ticketCount !== null ? ticketCount : item.badge}
                           </span>
                         )}

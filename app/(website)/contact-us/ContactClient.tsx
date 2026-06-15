@@ -77,7 +77,7 @@ export default function ContactClient() {
 
       // Success! Trigger flip animation
       setIsFlipped(true);
-      
+
       // Scroll to the card so user sees the success message
       const card = document.getElementById('contact-flip-card');
       if (card) {
@@ -95,14 +95,14 @@ export default function ContactClient() {
       {/* Hero Header Area */}
       <div className="bg-[#F4F4F4] pt-20 pb-40 px-4 text-center h-[37.5rem] relative overflow-hidden">
         <Image
-          src="https://getreviews.buzz/storage/app/blog/0237619001771243730_Doodles-(1).png"
+          src="/uploads/media/1781505506594-b63da89c-ed0c-48b7-bf5b-6e89f48e2aff-0237619001771243730-Doodles-1-.png"
           alt="doodle left"
           width={510}
           height={785}
           className="absolute left-0 top-0 z-0 select-none pointer-events-none"
         />
         <Image
-          src="https://getreviews.buzz/storage/app/blog/0229991001771243825_Doodles-(2).png"
+          src="/uploads/media/1781505518590-d3202254-9719-4414-b079-7db58ffc6cd0-0229991001771243825-Doodles-2-.png"
           alt="doodle right"
           width={510}
           height={785}
@@ -114,7 +114,7 @@ export default function ContactClient() {
       <div className="px-4 relative z-10 mt-[-550px] mb-[50px]">
         <Wrapper>
           <div className="max-w-[1000px] mx-auto">
-            
+
             {/* Error Message */}
             {error && (
               <div className="bg-red-50 text-red-800 p-4 rounded-xl mb-6 text-sm border border-red-200 flex items-center gap-2">
@@ -123,24 +123,24 @@ export default function ContactClient() {
             )}
 
             {/* Flip Card Section */}
-            <div 
+            <div
               id="contact-flip-card"
               className="relative transition-all duration-700 [transform-style:preserve-3d] mb-[50px]"
-              style={{ 
+              style={{
                 perspective: "1200px",
                 transformStyle: "preserve-3d"
               }}
             >
-              <div 
+              <div
                 className={`relative transition-all duration-750 ease-[cubic-bezier(0.4,0.2,0.2,1)] [transform-style:preserve-3d] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}
-                style={{ 
-                   transformStyle: "preserve-3d",
-                   transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
-                   minHeight: "650px"
+                style={{
+                  transformStyle: "preserve-3d",
+                  transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+                  minHeight: "650px"
                 }}
               >
                 {/* FRONT: Form */}
-                <div 
+                <div
                   className={`bg-gradient-to-b from-white to-[#FFF6D0] rounded-[36px] p-8 md:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] [backface-visibility:hidden] h-full ${isFlipped ? "pointer-events-none opacity-0" : "opacity-100"}`}
                 >
                   <div className="text-center mb-10">
@@ -233,7 +233,7 @@ export default function ContactClient() {
                 </div>
 
                 {/* BACK: Success Message */}
-                <div 
+                <div
                   className={`absolute inset-0 bg-gradient-to-b from-white to-[#FFF6D0] rounded-[36px] p-8 md:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col items-center justify-center text-center ${!isFlipped ? "pointer-events-none opacity-0" : "opacity-100"}`}
                   style={{ transform: "rotateY(180deg)" }}
                 >
@@ -262,10 +262,10 @@ export default function ContactClient() {
               <a href="mailto:marketing@getreviews.buzz" className="group">
                 <div className="bg-[#FDE047] p-10 rounded-[32px] text-center flex flex-col items-center border-2 border-black h-full transition hover:-translate-y-1">
                   <div className="bg-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 border-2 border-black">
-                    <Image 
-                      src="https://getreviews.buzz/storage/app/blog/0240249001771243677_email-1.png" 
-                      alt="email icon" 
-                      width={24} height={24} 
+                    <Image
+                      src="/uploads/media/1781505675560-69e98300-2ef0-4472-8416-d797602ec698-0240249001771243677-email-1.png"
+                      alt="email icon"
+                      width={24} height={24}
                     />
                   </div>
                   <span className="font-bold text-[18px] leading-[26px]">Email</span>
@@ -276,10 +276,10 @@ export default function ContactClient() {
               <a href="tel:+14302335402" className="group">
                 <div className="bg-[#FDE047] p-10 rounded-[32px] text-center flex flex-col items-center border-2 border-black h-full transition hover:-translate-y-1">
                   <div className="bg-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 border-2 border-black">
-                    <Image 
-                      src="https://getreviews.buzz/storage/app/blog/0900747001771243694_phone.png" 
-                      alt="phone icon" 
-                      width={24} height={24} 
+                    <Image
+                      src="/uploads/media/1781505687005-6ec58453-e3e8-45f0-9176-e05cd4db5f3c-0900747001771243694-phone.webp"
+                      alt="phone icon"
+                      width={24} height={24}
                     />
                   </div>
                   <span className="font-bold text-[18px] leading-[26px]">Phone</span>
@@ -290,10 +290,10 @@ export default function ContactClient() {
               <a href="https://wa.me/13068025402" target="_blank" rel="noopener noreferrer" className="group">
                 <div className="bg-[#FDE047] p-10 rounded-[32px] text-center flex flex-col items-center border-2 border-black h-full transition hover:-translate-y-1">
                   <div className="bg-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 border-2 border-black">
-                    <Image 
-                      src="https://getreviews.buzz/storage/app/blog/0767674001771243715_whatsapp.png" 
-                      alt="whatsapp icon" 
-                      width={24} height={24} 
+                    <Image
+                      src="/uploads/media/1781505695735-4fa833a3-f14f-41d0-bcfa-2821ab12665b-0767674001771243715-whatsapp.webp"
+                      alt="whatsapp icon"
+                      width={24} height={24}
                     />
                   </div>
                   <span className="font-bold text-[18px] leading-[26px]">WhatsApp</span>

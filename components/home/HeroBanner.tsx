@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { SectionProps } from '@/types/section';
 
 export default function Hero({ data, settings }: SectionProps) {
-  const { 
-    staticTitle1 = "Turn Reputation into", 
+  const {
+    staticTitle1 = "Turn Reputation into",
     staticTitleBold = "Revenue",
     staticTitle2 = "with",
     typingServices = [
@@ -66,23 +66,23 @@ export default function Hero({ data, settings }: SectionProps) {
   };
 
   return (
-    <section 
-      style={styles} 
+    <section
+      style={styles}
       className="flex items-center justify-center text-center md:pb-[30px] min-[1470px]:px-[20px] min-[1470px]:py-[30px] bg-gradient-to-b from-transparent to-[#FDFCF2] font-[Poppins] w-full"
     >
       <div className="w-full max-w-full mx-auto">
         <h1 className="text-[40px] min-[480px]:text-[40px] md:text-[40px] min-[1470px]:text-[40px] font-[350] text-[#1a1a1a] leading-[1.3] mb-[7px] tracking-[-0.01em] min-[1470px]:tracking-[-0.02em]">
           {staticTitle1} <strong className="font-[510]">{staticTitleBold}</strong> {staticTitle2}
           <br />
-          
+
           <span className="inline-flex items-center justify-center flex-nowrap align-middle box-border gap-[6px] px-[6px] py-[2px] min-h-[36px] min-[480px]:min-h-[44px] md:gap-[10px] md:px-[8px] md:py-[4px] md:min-h-[52px] min-[1470px]:min-h-[64px] bg-[#FFE58233]">
-            
+
             <img
-              src="https://getreviews.buzz/storage/app/blog/0571820001777624061_line1.png"
+              src="/uploads/media/1777870273070-17b045d2-3669-4f40-bb5e-58e958fadd38-line1.png"
               alt="|"
               className="shrink-0 w-[5px] h-[26px] min-[480px]:h-[32px] md:w-[7px] md:h-[50px]"
             />
-            
+
             <strong className="font-[510]">
               <span className="inline-flex items-center text-left align-middle leading-[1.3] text-[26px] min-[480px]:text-[40px] md:text-inherit whitespace-nowrap">
                 {/* \u200b is a zero-width space that prevents layout collapse when text is empty */}
@@ -91,7 +91,7 @@ export default function Hero({ data, settings }: SectionProps) {
             </strong>
 
             <img
-              src="https://getreviews.buzz/storage/app/blog/0567963001777624061_line2.png"
+              src="/uploads/media/1777870288356-8e751a85-6833-4eb7-9632-192f29dba53e-line2.png"
               alt="|"
               className="shrink-0 w-[5px] h-[26px] min-[480px]:h-[32px] md:w-[7px] md:h-[50px]"
             />

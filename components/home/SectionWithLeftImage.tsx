@@ -35,7 +35,7 @@ export default function SectionWithLeftImage({
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div className="relative">
               <div>
-                <img src={image || "https://getreviews.buzz/storage/app/blog/0539654001776770835_0702272001776065346_left-img.png"} alt="illustration of floating review boxes" className="rounded-lg w-full" />
+                <img src={image || "/uploads/media/1778826313456-ab2b57c2-e8a2-4c20-9e20-c0e6c0f1806e-right-img-home.webp"} alt="illustration of floating review boxes" className="rounded-lg w-full" />
               </div>
             </div>
             <div>

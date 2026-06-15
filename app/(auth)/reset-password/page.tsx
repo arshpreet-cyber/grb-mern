@@ -127,7 +127,7 @@ export default function ResetPasswordPage() {
         <div className="flex justify-center mb-6">
           <Link href="/" className="inline-block">
             <img
-              src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png"
+              src="/uploads/media/1778825414712-b5950796-7335-4c0c-a6ed-2f5ee108976e-logo-white.png"
               alt="GetReviews.Buzz"
               className="h-14 w-auto object-contain"
             />

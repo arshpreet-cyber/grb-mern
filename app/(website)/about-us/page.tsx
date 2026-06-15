@@ -4,22 +4,22 @@ import Wrapper from "@/components/ui/Wrapper";
 
 // ─── IMAGE CONSTANTS ───────────────────────────────────────────────────────────
 const IMGS = {
-  hero: "https://beta.getreviews.buzz/storage/app/blog/0438974001779955185_Group-1000006774.webp",
-  whoWeAre: "https://beta.getreviews.buzz/storage/app/blog/0470557001779956136_Rectangle-10048.webp",
-  journey: "https://beta.getreviews.buzz/storage/app/blog/0540134001779962686_Rectangle-10202.webp",
-  checkIcon: "https://beta.getreviews.buzz/storage/app/blog/0280225001779423808_Vector.svg",
-  step1: "https://beta.getreviews.buzz/storage/app/blog/0450574001779966320_Group-1000006827.svg",
-  step2: "https://beta.getreviews.buzz/storage/app/blog/0901246001779966329_Group-1000006839.svg",
-  step3: "https://beta.getreviews.buzz/storage/app/blog/0835612001779966338_Group-1000006841.svg",
-  commitment: "https://beta.getreviews.buzz/storage/app/blog/0521250001779968416_Group-1000008309.webp",
-  strategy1: "https://beta.getreviews.buzz/storage/app/blog/0227050001779970212_Rectangle-10206.webp",
-  strategy2: "https://beta.getreviews.buzz/storage/app/blog/0662120001779970220_Rectangle-10207.webp",
-  stars: "https://beta.getreviews.buzz/storage/app/blog/0939832001780030318_Group-1000006809.svg",
-  repIcon2: "https://beta.getreviews.buzz/storage/app/blog/0469065001780030502_Awful-Review.svg",
-  repIcon3: "https://beta.getreviews.buzz/storage/app/blog/0733721001780030574_Group-1000006810.svg",
-  repIcon4: "https://beta.getreviews.buzz/storage/app/blog/0908509001780030587_Group-1000006811.svg",
-  comparison: "https://beta.getreviews.buzz/storage/app/blog/0301140001780030844_Group-1000006797.svg",
-  ctaImage: "https://beta.getreviews.buzz/storage/app/blog/0707270001780033172_Group-1000008234.webp",
+  hero: "/uploads/media/1781499734604-0d4606fe-40c3-4724-a0ba-9c2d1f08c328-Group-1000006774.svg",
+  whoWeAre: "/uploads/media/1781499793328-c0e202b9-03eb-4598-86a6-6b1f0de23a79-Rectangle-10048.svg",
+  journey: "/uploads/media/1781499865150-93e5f79c-24bf-4a32-b5bd-4e295c96f303-Rectangle-10202.webp",
+  checkIcon: "/uploads/media/1781499352200-3eade45a-0da5-4568-8f06-2cd8a856e2c9-Vector.svg",
+  step1: "/uploads/media/1781500177383-c39ffd4e-27e5-491f-9e90-fd1abfb7c8c1-Group-1000006827.svg",
+  step2: "/uploads/media/1781500188195-8369965c-4831-442d-a00c-8325a39b7f2c-Group-1000006839.svg",
+  step3: "/uploads/media/1781500197891-cfdeb13d-fbe0-4022-ab13-9e3437bd551e-Group-1000006841.svg",
+  commitment: "/uploads/media/1781502052927-e62cad6f-4456-459f-95e4-21a067ea2f41-Group-1000008309.svg",
+  strategy1: "/uploads/media/1781501971574-3cfab3c3-2bc8-4c95-aa9d-a33856a0fe3f-Rectangle-10206.svg",
+  strategy2: "/uploads/media/1781501647257-2b80f8ea-f975-4013-84c6-216dfbad89be-Rectangle-10207.svg",
+  stars: "/uploads/media/1781500364461-6aa59dea-f2de-4974-875c-cd92046f8ad9-Group-1000006809.svg",
+  repIcon2: "/uploads/media/1781500373287-282754f3-74e9-449e-8af8-3ed99970485d-Awful-Review.svg",
+  repIcon3: "/uploads/media/1781500380709-c1f87d15-f829-4a00-9faf-7be06dc19798-Group-1000006810.svg",
+  repIcon4: "/uploads/media/1781500388956-c38be2b1-6ab5-4a46-bea9-15fdf5342414-Group-1000006812.svg",
+  comparison: "/uploads/media/1781500009816-78b4e636-c995-4da0-a920-8bac76bf91ee-Group-1000006796.svg",
+  ctaImage: "/uploads/media/1781499959525-8c88ec90-a176-4a55-a04f-0acebe0f7b25-Group-1000008234.svg",
 
 };
 
@@ -28,47 +28,47 @@ const TIMELINE_YEARS = ["2017-2018", "2019", "2020", "2021", "2022", "2023", "20
 const TIMELINE_CONTENT = [
   {
     title: "The Foundation",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0540134001779962686_Rectangle-10202.webp",
+    img: "/uploads/media/1781499865150-93e5f79c-24bf-4a32-b5bd-4e295c96f303-Rectangle-10202.webp",
     description: "Before Get Reviews Buzz officially launched, we spent years working in the digital industry, gaining hands-on experience, industry knowledge, and long-term expertise in reputation management, customer trust, and business growth."
   },
   {
     title: "The Beginning",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0905781001780289444_2.webp",
+    img: "/uploads/media/1781502699354-0ad54371-4565-4003-92e0-cf4a2a40c56a-Rectangle-10202-1-.svg",
     description: "Over time, more businesses started reaching out to help with managing their online reputation. With growing demand and encouragement from clients and colleagues, we officially began our journey through Black Hat World Forum."
   },
   {
     title: "Building Momentum",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0316217001780289676_3.webp",
+    img: "/uploads/media/1781502705298-753b0481-5153-4632-b8a6-46a751cf6a03-3.svg",
     description: "As demand increased, we expanded our operations and began developing a dedicated customer portal. During this stage, we also managed orders directly through email while steadily growing within the community."
   },
   {
     title: "Expanding Our Reach",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0277675001780289761_4.webp",
+    img: "/uploads/media/1781502727498-340ad547-ce2c-4866-a026-3e445d98d7e8-4.svg",
     description: "We officially launched our platform and quickly gained momentum, processing 1,000+ orders. More businesses began trusting us for reliable service, consistent support, and long-term reputation growth."
   },
   {
     title: "Strengthening Trust",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0801983001780289780_5.svg",
+    img: "/uploads/media/1781502737578-91eee569-fdda-43f0-b98c-c88f51d0f029-5.svg",
     description: "This marked an important stage in our growth. We partnered with larger brands and businesses across multiple industries while continuing to improve our platform and customer experience."
   },
   {
     title: "Scaling Growth",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0012101001780289864_6.webp",
+    img: "/uploads/media/1781503146955-70c92b0f-0f06-4c9f-b0ba-5bb7cd3f50d3-6.svg",
     description: "Our focus shifted towards refining internal processes, strengthening our team, and introducing more advanced tools and systems to improve efficiency and service quality."
   },
   {
     title: "Growing Our Impact",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0330518001780289912_7.webp",
+    img: "/uploads/media/1781502760147-c3312b56-2c0f-4c74-864b-b9d253b6f109-7.png",
     description: "We revamped our platform, introduced a dedicated ticket support system, and focused heavily on faster processing along with more responsive 24/7 customer assistance."
   },
   {
     title: "Building Stronger Brands",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0507832001780289975_8.webp",
+    img: "/uploads/media/1781502834060-73584c82-09ba-4bbc-9f45-d121e2ad2877-8.svg",
     description: "As our platform gained stronger organic visibility online, more businesses and industries connected with us. We continued improving our systems, strategies, and overall service experience."
   },
   {
     title: "Leading With Trust",
-    img: "https://beta.getreviews.buzz/storage/app/blog/0357361001780290153_9.webp",
+    img: "/uploads/media/1781502848663-d335b8c7-485d-4e9c-8ff8-f4f266b3add8-9.png",
     description: "Our journey continues as we continue helping businesses build credibility online, strengthen customer confidence, and create a reputation that supports long-term growth."
   }
 ];

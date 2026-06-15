@@ -50,7 +50,7 @@ export function emailWrapper(content: string) {
       <tr>
         <td align="center" style="padding:24px 32px 16px;background:#ebebeb;border-bottom:1px solid #eeeeee">
           <a href="${SITE_URL}" style="display:inline-block;text-decoration:none">
-            <img src="https://getreviews.buzz/storage/app/blog/kSoP1QwwRTAIZ7Z8G8KOwstnQCGKrnP0e2ludxw7.png" alt="Get Reviews Buzz" width="180" height="67" style="display:block;max-width:180px;height:auto" />
+            <img src="/uploads/media/1778825414712-b5950796-7335-4c0c-a6ed-2f5ee108976e-logo-white.png" alt="Get Reviews Buzz" width="180" height="67" style="display:block;max-width:180px;height:auto" />
           </a>
         </td>
       </tr>
@@ -86,7 +86,7 @@ export function buildUnifiedOrderTable(payload: {
   amountPaid: number;
 }) {
   const hasItems = payload.items && payload.items.length > 0;
-  
+
   const formatVal = (val: number) => {
     return val % 1 === 0 ? val.toFixed(0) : val.toFixed(2);
   };
@@ -230,7 +230,7 @@ export function buildUnpaidReminderEmail(payload: {
       </tr>
     </table>`
     : payload.payUrl
-    ? `
+      ? `
     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e0e0e0;margin:16px 0;background:#ffffff">
       <tr><td style="padding:12px 14px"><p style="font-size:15px;margin:0;line-height:28px;padding:5px 0;color:#000">To complete the payment please click the button below.</p></td></tr>
       <tr>
@@ -241,18 +241,18 @@ export function buildUnpaidReminderEmail(payload: {
         </td>
       </tr>
     </table>`
-    : "";
+      : "";
 
   const content = `
     <p style="margin:0 0 14px;font-size:15px;color:#333">There is an order in your account that is unpaid. Have you experienced any issues while making your payment? Not to worry!</p>
     <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
     <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
     ${buildUnifiedOrderTable({
-      orderNumber: payload.orderNumber,
-      items: payload.items,
-      total: payload.total,
-      amountPaid: 0
-    })}
+    orderNumber: payload.orderNumber,
+    items: payload.items,
+    total: payload.total,
+    amountPaid: 0
+  })}
     ${payButtons}
     <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
@@ -278,11 +278,11 @@ export function buildOrderPaidEmail(payload: {
     <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
     <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
     ${buildUnifiedOrderTable({
-      orderNumber: payload.orderNumber,
-      items: payload.items,
-      total: payload.total,
-      amountPaid: payload.total
-    })}
+    orderNumber: payload.orderNumber,
+    items: payload.items,
+    total: payload.total,
+    amountPaid: payload.total
+  })}
     <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;
@@ -316,13 +316,13 @@ export function buildSubscriptionAdminEmail(payload: { email: string; orderNumbe
 
 // ─── EVT-0006 to 0011: User – Order Status Change ────────────────────────────
 const STATUS_LABELS: Record<string, { label: string; color: string; message: string }> = {
-  "1": { label: "Pending",    color: "#f59e0b", message: "Your order has been received and is pending review." },
-  "2": { label: "Completed",  color: "#10b981", message: "Your order has been completed successfully. Thank you for choosing Get Reviews Buzz!" },
+  "1": { label: "Pending", color: "#f59e0b", message: "Your order has been received and is pending review." },
+  "2": { label: "Completed", color: "#10b981", message: "Your order has been completed successfully. Thank you for choosing Get Reviews Buzz!" },
   "3": { label: "Processing", color: "#3b82f6", message: "Great news! We are currently processing your order." },
-  "4": { label: "Hold",       color: "#f97316", message: "Your order has been placed on hold. Our team will reach out to you shortly." },
-  "5": { label: "Cancelled",  color: "#ef4444", message: "Your order has been cancelled. Please contact us if you have any questions." },
-  "6": { label: "Refunded",   color: "#8b5cf6", message: "A refund has been initiated for your order. Please allow 5–7 business days for it to reflect." },
-  "7": { label: "Failed",     color: "#dc2626", message: "Unfortunately, your order has failed. Please contact our support team for assistance." },
+  "4": { label: "Hold", color: "#f97316", message: "Your order has been placed on hold. Our team will reach out to you shortly." },
+  "5": { label: "Cancelled", color: "#ef4444", message: "Your order has been cancelled. Please contact us if you have any questions." },
+  "6": { label: "Refunded", color: "#8b5cf6", message: "A refund has been initiated for your order. Please allow 5–7 business days for it to reflect." },
+  "7": { label: "Failed", color: "#dc2626", message: "Unfortunately, your order has failed. Please contact our support team for assistance." },
 };
 
 export function buildOrderStatusEmail(payload: {
@@ -339,11 +339,11 @@ export function buildOrderStatusEmail(payload: {
   const content = `
     <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.5">Status of your order Order No. - ${payload.orderNumber} has been changed to ${s.label}.</p>
     ${payload.total !== undefined ? buildUnifiedOrderTable({
-      orderNumber: payload.orderNumber,
-      items: payload.items,
-      total: payload.total,
-      amountPaid: isPaid ? (payload.amountPaid ?? payload.total) : (payload.amountPaid ?? 0)
-    }) : ""}
+    orderNumber: payload.orderNumber,
+    items: payload.items,
+    total: payload.total,
+    amountPaid: isPaid ? (payload.amountPaid ?? payload.total) : (payload.amountPaid ?? 0)
+  }) : ""}
     <p style="margin:20px 0 4px;font-size:15px;color:#333">Best regards,</p>
     <p style="margin:0;font-size:15px;font-weight:bold;color:#000">Team Get Reviews Buzz</p>
   `;
@@ -367,11 +367,11 @@ export function buildOrderCreatedEmail(payload: {
     <p style="margin:0 0 6px;font-size:14px;color:#444">Name : <strong>${payload.name}</strong></p>
     <p style="margin:0 0 18px;font-size:14px;color:#444">Email : <a href="mailto:${payload.email ?? ""}" style="color:#1a6fe0">${payload.email ?? ""}</a></p>
     ${buildUnifiedOrderTable({
-      orderNumber: payload.orderNumber,
-      items: payload.items,
-      total: payload.total,
-      amountPaid: 0
-    })}
+    orderNumber: payload.orderNumber,
+    items: payload.items,
+    total: payload.total,
+    amountPaid: 0
+  })}
     <p style="margin:20px 0 4px;font-size:14px;color:#444">Best regards,</p>
     <p style="margin:0;font-size:14px;font-weight:bold;color:#222">Team Get Reviews Buzz</p>
   `;

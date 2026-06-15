@@ -42,17 +42,17 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
         ],
         stats: [
           {
-            img: 'https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg',
+            img: '/uploads/media/1781499499702-738565c9-f87d-403e-9e60-0dbd3ee00f71-Vector-1-.svg',
             val: '10K+',
             lbl: 'Happy Clients',
           },
           {
-            img: 'https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg',
+            img: '/uploads/media/1781499507867-a4c5174e-3a63-4316-83b4-13af71e98937-diagram-2.svg',
             val: '99%',
             lbl: 'Retention',
           },
           {
-            img: 'https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg',
+            img: '/uploads/media/1781499520046-54ff665e-db79-4218-9d0f-ba3e1ef89cbf-Group-1000006419.svg',
             val: '100%',
             lbl: 'Safe & secure',
           },
@@ -64,7 +64,7 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
       },
     },
 
-      // ─── 2. Similar Products ─────────────────────────────────
+    // ─── 2. Similar Products ─────────────────────────────────
     {
       id: `section-sp-${product.id}`,
       type: 'similar-products',
@@ -104,29 +104,29 @@ export function getDefaultProductSections(product: Product): DefaultSection[] {
         heading: "How It Works in <strong>4 Simple Steps</strong>",
         subheading: "Our process is quick, simple, and designed to help you improve your online reputation effortlessly.",
         steps: [
-          { 
-            title: "Pick A Review", 
-            desc: `Choose The Type And Number Of ${product.platform} Reviews You Want To Improve Your Company's Profile.`, 
-            color: "bg-yellow-100", 
-            icon: { href: "/uploads/media/1777977982660-8109977b-4427-4a5e-955a-11ba0bb2ac91-rating-1.svg" } 
+          {
+            title: "Pick A Review",
+            desc: `Choose The Type And Number Of ${product.platform} Reviews You Want To Improve Your Company's Profile.`,
+            color: "bg-yellow-100",
+            icon: { href: "/uploads/media/1777977982660-8109977b-4427-4a5e-955a-11ba0bb2ac91-rating-1.svg" }
           },
-          { 
-            title: "Select Your Package", 
-            desc: "Pick The Number Of Reviews Or The Service Package That Fits Your Needs.", 
-            color: "bg-blue-100", 
-            icon: { href: "/uploads/media/1777978008677-ecbb379c-db78-4858-84fe-1d5559314feb-XMLID-991-.svg" } 
+          {
+            title: "Select Your Package",
+            desc: "Pick The Number Of Reviews Or The Service Package That Fits Your Needs.",
+            color: "bg-blue-100",
+            icon: { href: "/uploads/media/1777978008677-ecbb379c-db78-4858-84fe-1d5559314feb-XMLID-991-.svg" }
           },
-          { 
-            title: "Configure & Order", 
-            desc: `Buy ${product.platform} Reviews With A Secure, One-Step Checkout And Your Preferred Payment Method.`, 
-            color: "bg-green-100", 
-            icon: { href: "/uploads/media/1777978022187-e61c5a1a-4fe8-41d4-9e55-a6c5f33f2cb5-Group-844.svg" } 
+          {
+            title: "Configure & Order",
+            desc: `Buy ${product.platform} Reviews With A Secure, One-Step Checkout And Your Preferred Payment Method.`,
+            color: "bg-green-100",
+            icon: { href: "/uploads/media/1777978022187-e61c5a1a-4fe8-41d4-9e55-a6c5f33f2cb5-Group-844.svg" }
           },
-          { 
-            title: "Fill Business Details", 
-            desc: `Include Your ${product.platform} Link And Any Customization Instructions.`, 
-            color: "bg-indigo-100", 
-            icon: { href: "/uploads/media/1777978039825-2a6a3096-e833-42c5-8286-e4b1a7a10566-Group-846.svg" } 
+          {
+            title: "Fill Business Details",
+            desc: `Include Your ${product.platform} Link And Any Customization Instructions.`,
+            color: "bg-indigo-100",
+            icon: { href: "/uploads/media/1777978039825-2a6a3096-e833-42c5-8286-e4b1a7a10566-Group-846.svg" }
           },
         ]
       },

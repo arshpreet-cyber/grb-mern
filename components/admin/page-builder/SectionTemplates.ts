@@ -7,12 +7,12 @@ export type SectionTemplate = {
 };
 
 export const SECTION_TEMPLATES: SectionTemplate[] = [
-{
-  "type": "hero-typing",
-  "icon": "Γî¿∩╕ÅΓ£¿",
-  "label": "Hero ΓÇö Typing Animation",
-  "description": "Centered hero section with animated typing text and highlight line",
-  "defaultContent": `<style>
+  {
+    "type": "hero-typing",
+    "icon": "Γî¿∩╕ÅΓ£¿",
+    "label": "Hero ΓÇö Typing Animation",
+    "description": "Centered hero section with animated typing text and highlight line",
+    "defaultContent": `<style>
   .hero-section { background: linear-gradient(to bottom, #FDFCF200 0%, #FDFCF2FF 100%); text-align: center; padding: 45px 20px 45px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; }
   .hero-content { max-width: 350px; margin: 0 auto; }
   .hero-heading { font-size: 40px; font-weight: 350; color: #1a1a1a; line-height: 1.3; margin: 0 0 7px; letter-spacing: -0.02em; }
@@ -36,11 +36,11 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     <h1 class="hero-heading">
       Turn Reputation into <strong>Revenue</strong> with<br>
       <span class="highlight-line">
-        <img src="https://beta.getreviews.buzz/storage/app/blog/0635691001775712992_Line-18.png" alt="|" class="bar">
+        <img src="/uploads/media/1777870273070-17b045d2-3669-4f40-bb5e-58e958fadd38-line1.png" alt="|" class="bar">
         <strong>
           <span id="hero-typing-text">Hotel Reviews</span><span class="hero-cursor"></span>
         </strong>
-        <img src="https://beta.getreviews.buzz/storage/app/blog/0227099001775713012_Line-16.png" alt="|" class="bar">
+        <img src="/uploads/media/1777870288356-8e751a85-6833-4eb7-9632-192f29dba53e-line2.png" alt="|" class="bar">
       </span>
     </h1>
     <p class="hero-subtext">
@@ -92,8 +92,8 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     setTimeout(loop, PAUSE);
   })();
 </script>`
-},
-{
+  },
+  {
     type: "image-right",
     icon: "≡ƒû╝∩╕ÅΓ₧í∩╕Å",
     label: "Section ΓÇö Image Right",
@@ -122,12 +122,12 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   </div>
 </section>`,
   },
-{
-  type: "image-left",
-  icon: "Γ¼à∩╕Å≡ƒû╝∩╕Å",
-  label: "Section ΓÇö Image Left",
-  description: "Image on left, text on right with features list",
-  defaultContent: `<section class="py-16 lg:py-24">
+  {
+    type: "image-left",
+    icon: "Γ¼à∩╕Å≡ƒû╝∩╕Å",
+    label: "Section ΓÇö Image Left",
+    description: "Image on left, text on right with features list",
+    defaultContent: `<section class="py-16 lg:py-24">
   <div class="max-w-350 mx-auto px-6">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
       <div class="relative">
@@ -152,7 +152,7 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     </div>
   </div>
 </section>`,
-},
+  },
   {
     type: "product-banner",
     icon: "≡ƒ¢ì∩╕Å",
@@ -224,7 +224,7 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   </div>
 </section>`,
   },
-{
+  {
     type: "cta_banner",
     icon: "≡ƒôó",
     label: "CTA Banner",
@@ -279,7 +279,7 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   </div>
 </section>`,
   },
-{
+  {
     type: "faq",
     icon: "Γ¥ô",
     label: "FAQ",
@@ -356,19 +356,19 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
   <p style="font-size:16px;color:#555;line-height:1.8;">Add more paragraphs as needed. You can also add <strong>bold text</strong>, <em>italic text</em>, or <a href="#">links</a>.</p>
 </section>`,
   },
-{
-  "type": "custom-platform-cta",
-  "icon": "Γ¡É",
-  "label": "CTA ΓÇö Custom Platform",
-  "description": "Call to action section with floating stars and custom platform messaging using Tailwind",
-  "defaultContent": `<section id="custom-platform" class="relative w-full py-24 md:py-32 overflow-hidden flex items-center justify-center" style="background-color: #FFFEF9;">
+  {
+    "type": "custom-platform-cta",
+    "icon": "Γ¡É",
+    "label": "CTA ΓÇö Custom Platform",
+    "description": "Call to action section with floating stars and custom platform messaging using Tailwind",
+    "defaultContent": `<section id="custom-platform" class="relative w-full py-24 md:py-32 overflow-hidden flex items-center justify-center" style="background-color: #FFFEF9;">
   
-  <img src="https://beta.getreviews.buzz/storage/app/blog/0339272001776325180_golden-star-icon-transparent-background-2.png" 
+  <img src="/uploads/media/1777637321032-6760b4c1-ddd4-4463-9b26-d526f49730b2-star1.png" 
        alt="" 
        class="absolute z-0 pointer-events-none hidden md:block" 
        style="width: 280px; top: 50%; left: 5%; transform: translateY(-50%) rotate(15deg); opacity: 0.35;">
   
-  <img src="https://beta.getreviews.buzz/storage/app/blog/0339272001776325180_golden-star-icon-transparent-background-2.png" 
+  <img src="/uploads/media/1777637480498-260de892-4757-4855-9381-d933d25485b5-star2.png" 
        alt="" 
        class="absolute z-0 pointer-events-none hidden md:block" 
        style="width: 280px; top: 50%; right: 5%; transform: translateY(-50%) rotate(-15deg); opacity: 0.35;">
@@ -387,32 +387,32 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     </a>
   </div>
 </section>`
-},
-{
-  "type": "why-trust-us",
-  "icon": "≡ƒ¢í∩╕Å",
-  "label": "Why Trust Us Grid",
-  "description": "A 6-card grid layout using custom SVG icons for trust factors",
-  "defaultContent": `<section class="py-16 bg-gray-50">
+  },
+  {
+    "type": "why-trust-us",
+    "icon": "≡ƒ¢í∩╕Å",
+    "label": "Why Trust Us Grid",
+    "description": "A 6-card grid layout using custom SVG icons for trust factors",
+    "defaultContent": `<section class="py-16 bg-gray-50">
   <div class="container mx-auto px-4 text-center">
     <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Why Do Businesses Trust Get Reviews Buzz?</h2>
     <p class="text-gray-600 max-w-2xl mx-auto mb-12">As your reliable partner, we help your business strengthen their online reputation, build lasting customer trust, and drive consistent growth through effective review strategies.</p>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
-        <img src="https://getreviews.buzz/storage/app/blog/0809068001728298556_experience.svg" alt="Experience" class="w-12 h-12 mb-4">
+        <img src="/uploads/media/1778825935130-48c8352e-e042-4cd7-a93a-1edf9b56925e-experience.svg" alt="Experience" class="w-12 h-12 mb-4">
         <h3 class="text-xl font-semibold mb-2">Experience and Expertise</h3>
         <p class="text-gray-600 text-sm leading-relaxed">Our team brings hands-on experience in digital reputation management, helping businesses enhance visibility and build stronger customer trust.</p>
       </div>
       
       <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
-        <img src="https://getreviews.buzz/storage/app/blog/0744774001728298333_Idea.svg" alt="Solutions" class="w-12 h-12 mb-4">
+        <img src="/uploads/media/1778825988863-d9a9e6f2-89e7-4dd2-8e7d-ef6e7de1e9f1-Idea.svg" alt="Solutions" class="w-12 h-12 mb-4">
         <h3 class="text-xl font-semibold mb-2">Tailored Solutions</h3>
         <p class="text-gray-600 text-sm leading-relaxed">Every business is different. That's why we create customized strategies designed to match your specific goals, audience, and market needs.</p>
       </div>
       
       <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-left transition-all hover:shadow-md">
-        <img src="https://getreviews.buzz/storage/app/blog/0746809001728298333_customer.svg" alt="Satisfaction" class="w-12 h-12 mb-4">
+        <img src="/uploads/media/1778826045227-4ae4cea7-3257-4de4-9a69-4448de9fed37-customer.svg" alt="Satisfaction" class="w-12 h-12 mb-4">
         <h3 class="text-xl font-semibold mb-2">Customer Satisfaction Focused</h3>
         <p class="text-gray-600 text-sm leading-relaxed">We're committed to a seamless experience, ensuring every client sees real value and measurable improvement in their online presence.</p>
       </div>
@@ -437,13 +437,13 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     </div>
   </div>
 </section>`
-},
-{
-  "type": "faq-section",
-  "icon": "Γ¥ô",
-  "label": "FAQ Accordion Section",
-  "description": "A 2-column layout with heading and accordion-style FAQ list",
-  "defaultContent": `<section class="bg-white py-16 lg:py-24 font-sans">
+  },
+  {
+    "type": "faq-section",
+    "icon": "Γ¥ô",
+    "label": "FAQ Accordion Section",
+    "description": "A 2-column layout with heading and accordion-style FAQ list",
+    "defaultContent": `<section class="bg-white py-16 lg:py-24 font-sans">
   <div class="max-w-[1500px] mx-auto px-4">
     <div class="grid grid-cols-1 lg:grid-cols-[490px_1fr] gap-12 lg:gap-24 items-start">
       
@@ -481,5 +481,5 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     </div>
   </div>
 </section>`
-},
+  },
 ];

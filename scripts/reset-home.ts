@@ -73,12 +73,12 @@ async function resetHome() {
           title: "Why Do Businesses Trust <strong class='font-semibold text-black'>Get Reviews Buzz?</strong>",
           subtitle: "As your reliable partner, we help your business strengthen their online reputation,<br /> build lasting customer trust, and drive consistent growth through effective review strategies.",
           features: [
-            { icon: "https://getreviews.buzz/storage/app/blog/0809068001728298556_experience.svg", title: "Experience and Expertise", description: "Our team brings hands-on experience in digital reputation management, helping businesses enhance visibility and build stronger customer trust." },
-            { icon: "https://getreviews.buzz/storage/app/blog/0744774001728298333_Idea.svg", title: "Tailored Solutions", description: "Every business is different. That's why we create customized strategies designed to match your specific goals, audience, and market needs." },
-            { icon: "https://getreviews.buzz/storage/app/blog/0746809001728298333_customer.svg", title: "Customer Satisfaction Focused", description: "We're committed to a seamless experience, ensuring every client sees real value and measurable improvement in their online presence." },
-            { icon: "https://getreviews.buzz/storage/app/blog/0503869001728298428_global.svg", title: "Global Reach, Local Understanding", description: "We help you connect with a wider audience while maintaining strong relevance in your local market, ensuring balanced and effective growth." },
-            { icon: "https://getreviews.buzz/storage/app/blog/0751261001728298333_privacy.svg", title: "Privacy & Security", description: "Your data and business information are handled with the highest level of confidentiality and care at every stage, ensuring complete protection." },
-            { icon: "https://getreviews.buzz/storage/app/blog/0748952001728298333_support.svg", title: "Dedicated Support & Guidance", description: "Our team is always available to support you. From strategy to execution, our experts are available to assist whenever you need it, with timely guidance." }
+            { icon: "/uploads/media/1778825935130-48c8352e-e042-4cd7-a93a-1edf9b56925e-experience.svg", title: "Experience and Expertise", description: "Our team brings hands-on experience in digital reputation management, helping businesses enhance visibility and build stronger customer trust." },
+            { icon: "/uploads/media/1778825988863-d9a9e6f2-89e7-4dd2-8e7d-ef6e7de1e9f1-Idea.svg", title: "Tailored Solutions", description: "Every business is different. That's why we create customized strategies designed to match your specific goals, audience, and market needs." },
+            { icon: "/uploads/media/1778826045227-4ae4cea7-3257-4de4-9a69-4448de9fed37-customer.svg", title: "Customer Satisfaction Focused", description: "We're committed to a seamless experience, ensuring every client sees real value and measurable improvement in their online presence." },
+            { icon: "/uploads/media/1778826098531-5bdde388-99a5-4ff7-8b83-bae10893bb34-global.svg", title: "Global Reach, Local Understanding", description: "We help you connect with a wider audience while maintaining strong relevance in your local market, ensuring balanced and effective growth." },
+            { icon: "/uploads/media/1778826144412-2da15b9d-d323-4e0f-8c92-1d27e31c7223-privacy.svg", title: "Privacy & Security", description: "Your data and business information are handled with the highest level of confidentiality and care at every stage, ensuring complete protection." },
+            { icon: "/uploads/media/1778826198333-e457cef4-187e-4756-b91b-66e3b1561713-support.svg", title: "Dedicated Support & Guidance", description: "Our team is always available to support you. From strategy to execution, our experts are available to assist whenever you need it, with timely guidance." }
           ]
         },
         settings: { visibility: true, backgroundColor: '#f9fafb', padding: '64px 0' }
@@ -89,7 +89,7 @@ async function resetHome() {
         data: {
           title: "Turn Reviews into Brand<br/><span class='font-semibold'>Visibility and Growth</span>",
           content: "<p>Customer reviews shape how people see your business. They often decide whether someone chooses you or looks elsewhere. Most customers rely on reviews to judge quality and trust, and they look for real experiences.</p><p>Regular feedback builds credibility over time. It shows that your business consistently delivers value. Recent reviews matter just as much, since they reflect how your business performs today.</p>",
-          image: "https://getreviews.buzz/storage/app/blog/0547241001776770835_0936012001776065359_right-img.png",
+          image: "/uploads/media/1778826313456-ab2b57c2-e8a2-4c20-9e20-c0e6c0f1806e-right-img-home.webp",
           buttonText: "Read More",
           imagePosition: "right"
         },
@@ -101,7 +101,7 @@ async function resetHome() {
         data: {
           title: "Where Reputation Meets <span class='font-semibold text-[#000]'>Real Business Growth</span>",
           content: "<p>A strong online presence boosts visibility. But to turn that visibility into growth, you need the right approach. This is where a solid review strategy matters.</p><p>At Get Reviews Buzz, we help businesses build and enhance their reputation. Our structured and goal-focused approach improves how your brand is perceived. We ensure it connects with your target audience and stands out in the market.</p><p>Our process supports long-term results. We help you encourage repeat customers and build a lasting reputation that benefits your business over time.</p>",
-          image: "https://getreviews.buzz/storage/app/blog/0539654001776770835_0702272001776065346_left-img.png",
+          image: "/uploads/media/1778826400702-ec789a7f-39cf-46ed-9147-9a31828ad03f-left-img-home.webp",
           buttonText: "Explore More",
           imagePosition: "left"
         },

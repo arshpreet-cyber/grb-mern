@@ -11,12 +11,12 @@ export default function CustomPlatform() {
     >
       <Wrapper>
         <img
-          src="https://getreviews.buzz/storage/app/blog/0690894001777624340_star1.png"
+          src="/uploads/media/1777637321032-6760b4c1-ddd4-4463-9b26-d526f49730b2-star1.png"
           alt=""
           className="absolute z-0 pointer-events-none hidden md:block w-[220px] top-1/2 left-[3%] -translate-y-1/2 rotate-[15deg] opacity-50"
         />
         <img
-          src="https://getreviews.buzz/storage/app/blog/0690894001777624340_star1.png"
+          src="/uploads/media/1777637321032-6760b4c1-ddd4-4463-9b26-d526f49730b2-star1.png"
           alt=""
           className="absolute z-0 pointer-events-none hidden md:block w-[280px] top-1/2 right-[3%] -translate-y-1/2 -rotate-[-15deg] opacity-50"
         />

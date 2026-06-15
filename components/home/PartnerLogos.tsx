@@ -4,12 +4,12 @@ import Image from "next/image";
 import Wrapper from "@/components/ui/Wrapper";
 
 const partners = [
-  { name: "AzureAutoDetailing", src: "https://getreviews.buzz/storage/app/blog/0764040001728298998_azure-auto.webp" },
-  { name: "PierPoint Mortgage", src: "https://getreviews.buzz/storage/app/blog/0768624001728298998_pearpoint.webp" },
-  { name: "Interstate Air Conditioning & Heating", src: "https://getreviews.buzz/storage/app/blog/0766920001728298998_interstate.webp" },
-  { name: "Ronald's Garage Doors", src: "https://getreviews.buzz/storage/app/blog/0770292001728298998_ronalds.webp" },
-  { name: "North Valley Garage Doors", src: "https://getreviews.buzz/storage/app/blog/0772122001728298998_north-valley.webp" },
-  { name: "Water Mold Fire Restoration", src: "https://getreviews.buzz/storage/app/blog/0578091001728541929_Water-Mold-Fire-Restoration-01.jpg" },
+  { name: "AzureAutoDetailing", src: "/uploads/media/1781506667564-86dcb207-c350-414a-b118-1423261a62f3-0764040001728298998-azure-auto.webp" },
+  { name: "PierPoint Mortgage", src: "/uploads/media/1781506683843-4e455cd6-b5bc-49ce-a0b4-5d1588de4919-0768624001728298998-pearpoint.webp" },
+  { name: "Interstate Air Conditioning & Heating", src: "/uploads/media/1781506696509-07fca59c-5276-487c-aea5-476e4d4ef837-0766920001728298998-interstate.webp" },
+  { name: "Ronald's Garage Doors", src: "/uploads/media/1781506708894-6fa2480b-958f-49af-863d-ad01854f6b7c-0770292001728298998-ronalds.webp" },
+  { name: "North Valley Garage Doors", src: "/uploads/media/1781506719362-edeb8bb3-7075-494a-87cf-70e98579dc4c-0772122001728298998-north-valley.webp" },
+  { name: "Water Mold Fire Restoration", src: "/uploads/media/1781506758226-92c02cac-185f-4227-9fae-34b5757b2cfb-0578091001728541929-Water-Mold-Fire-Restoration-01.jpg" },
 ];
 
 export default function PartnerLogos() {

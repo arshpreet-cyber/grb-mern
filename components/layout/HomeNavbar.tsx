@@ -115,18 +115,18 @@ export default function HomeNavbar() {
                 {/* Mega dropdown */}
                 <div
                   className="fixed right-0 left-0 z-[1000] invisible border-t border-[rgba(0,0,0,0.1)] bg-white opacity-0 shadow-[0_8px_30px_rgba(0,0,0,0.10)] rounded-b-xl transition-all duration-200 delay-150 group-hover:visible group-hover:opacity-100 group-hover:delay-0 top-[140px]"
-                  
+
                 ><Wrapper>
                     <div className="mx-auto w-full px-[20px] pt-[25px] pb-[10px]">
 
-                     <div className="grid grid-cols-5 gap-y-6 gap-x-6">
+                      <div className="grid grid-cols-5 gap-y-6 gap-x-6">
                         {buyReviewsLinks.map((item) => (
                           <Link
                             key={item.href}
                             href={item.href}
                             className="flex items-center w-full rounded-[9px]"
                           >
-                            <span 
+                            <span
                               className="text-base text-[#212121] w-full px-[22px] py-4 rounded-md transition-colors duration-300"
                               style={{ backgroundColor: item.bg }}
                               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#fff6a8"; }}
@@ -166,64 +166,64 @@ export default function HomeNavbar() {
               href="mailto:marketing@getreviews.buzz"
               className="inline-flex h-12 w-12 items-center justify-center rounded-[10px] border border-[#dddddd62] bg-white transition-colors hover:border-[#ffcc00]"
             >
-              <img src=" https://getreviews.buzz/storage/app/blog/0031902001777623735_email.svg" alt="Email Us" width={22} height={22} />
+              <img src="/uploads/media/1777870205391-99cce059-929e-481a-8f04-4a4e61a1756b-email.svg" alt="Email Us" width={22} height={22} />
             </a>
 
             <div className="relative group">
               <button
                 className="inline-flex h-12 w-12 items-center justify-center rounded-[10px] border border-[#dddddd62] bg-white transition-colors group-hover:border-[#ffcc00]"
               >
-                <img src="https://getreviews.buzz/storage/app/blog/0028106001777623735_phone.svg" alt="Call Us" width={22} height={22} />
+                <img src="/uploads/media/1777870219505-7138fb27-1142-4c79-ac43-57219c45e4fc-phone.svg" alt="Call Us" width={22} height={22} />
               </button>
 
-                <div className="absolute top-[calc(100%+8px)] right-[-150px] z-[9999] w-[350px] overflow-hidden rounded-lg bg-white shadow-[0_5px_20px_rgba(0,0,0,0.2)] invisible opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
-                  <h5 className="m-0 rounded-t-lg bg-[#FFE57F] px-4 py-3 text-[15px] font-medium text-black">Contacts</h5>
-                  <div className="flex items-stretch">
-                    <div className="w-16 flex items-center justify-center py-4">
-                      <a href="tel:+14302335402">
-                        <span className="inline-flex items-center justify-center bg-[#1A73E8] rounded-full w-11 h-11">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white">
-                            <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.4 21 3 12.6 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" />
-                          </svg>
-                        </span>
-                      </a>
-                    </div>
-                    <div className="w-px bg-[#e0e0e0]" />
-                    <div className="flex-1 p-3">
-                      <p className="text-sm text-black mb-1">Phone</p>
-                      <div className="flex items-center gap-1 mb-1">
-                        <img src="https://flagcdn.com/us.svg" width={20} alt="US" />
-                        <a href="tel:+14302335402" className="text-sm font-medium text-black hover:text-[#e0b000] transition-colors no-underline">
-                          +1 430-233-5402
-                        </a>
-                      </div>
-                      <p className="text-[13px] text-black m-0">
-                        (If we don&apos;t pick up,{" "}
-                        <Link href="/contact-us" className="text-black underline">drop enquiry</Link>.)
-                      </p>
-                    </div>
+              <div className="absolute top-[calc(100%+8px)] right-[-150px] z-[9999] w-[350px] overflow-hidden rounded-lg bg-white shadow-[0_5px_20px_rgba(0,0,0,0.2)] invisible opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
+                <h5 className="m-0 rounded-t-lg bg-[#FFE57F] px-4 py-3 text-[15px] font-medium text-black">Contacts</h5>
+                <div className="flex items-stretch">
+                  <div className="w-16 flex items-center justify-center py-4">
+                    <a href="tel:+14302335402">
+                      <span className="inline-flex items-center justify-center bg-[#1A73E8] rounded-full w-11 h-11">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white">
+                          <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.4 21 3 12.6 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" />
+                        </svg>
+                      </span>
+                    </a>
                   </div>
-                  <hr className="border-[#eee] m-0" />
-                  <div className="flex items-stretch">
-                    <div className="w-16 flex items-center justify-center py-4">
-                      <a href="https://api.whatsapp.com/send?phone=13068025402" target="_blank" rel="noreferrer">
-                        <span className="inline-flex items-center justify-center bg-[#25D366] rounded-full w-11 h-11">
-                          <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" alt="WhatsApp" width={30} height={30} />
-                        </span>
+                  <div className="w-px bg-[#e0e0e0]" />
+                  <div className="flex-1 p-3">
+                    <p className="text-sm text-black mb-1">Phone</p>
+                    <div className="flex items-center gap-1 mb-1">
+                      <img src="https://flagcdn.com/us.svg" width={20} alt="US" />
+                      <a href="tel:+14302335402" className="text-sm font-medium text-black hover:text-[#e0b000] transition-colors no-underline">
+                        +1 430-233-5402
                       </a>
                     </div>
-                    <div className="w-px bg-[#e0e0e0]" />
-                    <div className="flex-1 p-3">
-                      <p className="text-sm text-black mb-1">WhatsApp</p>
-                      <div className="flex items-center gap-1">
-                        <img src="https://flagcdn.com/us.svg" width={20} alt="US" />
-                        <a href="https://api.whatsapp.com/send?phone=13068025402" target="_blank" rel="noreferrer" className="text-sm font-medium text-black hover:text-[#e0b000] transition-colors no-underline">
-                          +1 306 802 5402
-                        </a>
-                      </div>
+                    <p className="text-[13px] text-black m-0">
+                      (If we don&apos;t pick up,{" "}
+                      <Link href="/contact-us" className="text-black underline">drop enquiry</Link>.)
+                    </p>
+                  </div>
+                </div>
+                <hr className="border-[#eee] m-0" />
+                <div className="flex items-stretch">
+                  <div className="w-16 flex items-center justify-center py-4">
+                    <a href="https://api.whatsapp.com/send?phone=13068025402" target="_blank" rel="noreferrer">
+                      <span className="inline-flex items-center justify-center bg-[#25D366] rounded-full w-11 h-11">
+                        <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" alt="WhatsApp" width={30} height={30} />
+                      </span>
+                    </a>
+                  </div>
+                  <div className="w-px bg-[#e0e0e0]" />
+                  <div className="flex-1 p-3">
+                    <p className="text-sm text-black mb-1">WhatsApp</p>
+                    <div className="flex items-center gap-1">
+                      <img src="https://flagcdn.com/us.svg" width={20} alt="US" />
+                      <a href="https://api.whatsapp.com/send?phone=13068025402" target="_blank" rel="noreferrer" className="text-sm font-medium text-black hover:text-[#e0b000] transition-colors no-underline">
+                        +1 306 802 5402
+                      </a>
                     </div>
                   </div>
                 </div>
+              </div>
             </div>
 
             {status === "loading" ? (
@@ -231,7 +231,7 @@ export default function HomeNavbar() {
             ) : session ? (
               <div className="relative group">
                 <button className="inline-flex h-12 w-[120px] items-center justify-center gap-2 rounded-[10px] border border-[#dddddd62] bg-white text-[16px] font-normal text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
-                  <img src="https://getreviews.buzz/storage/app/blog/0020717001777623735_login-1.svg" alt="login icon" width={22} height={22} />
+                  <img src="/uploads/media/1777870235572-65c0dbc3-913b-4c08-b381-e6ac6f665331-login-1.svg" alt="login icon" width={22} height={22} />
                   <span>{userInitials}</span>
                 </button>
                 <div className="absolute top-[calc(100%+4px)] right-0 z-[1000] invisible w-48 rounded-xl border border-[#eee] bg-white py-1 opacity-0 shadow-lg transition-all duration-150 group-hover:visible group-hover:opacity-100">
@@ -242,7 +242,7 @@ export default function HomeNavbar() {
               </div>
             ) : (
               <Link href="/login" className="inline-flex h-12 w-[120px] items-center justify-center gap-2 rounded-[10px] border border-[#dddddd62] bg-white text-[16px] font-normal text-black transition-colors hover:border-[#ffcc00] font-[Poppins]">
-                <img src="https://getreviews.buzz/storage/app/blog/0020717001777623735_login-1.svg" alt="login icon" width={20} height={20} />
+                <img src="/uploads/media/1777870235572-65c0dbc3-913b-4c08-b381-e6ac6f665331-login-1.svg" alt="login icon" width={20} height={20} />
                 <span>Login</span>
               </Link>
             )}

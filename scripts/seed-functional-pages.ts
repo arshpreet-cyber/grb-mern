@@ -22,7 +22,7 @@ async function seedFunctionalPages() {
           title: "Climb The Ladder Of Business <br /><span class='text-[#fcd535]'>Growth With Every Positive Step</span>",
           content: "<p>Understanding how reviews impact your business is the first step toward long-term success. Our platform helps you bridge the gap between customer feedback and brand reputation.</p>",
           buttonText: "Get Started",
-          image: "https://getreviews.buzz/storage/app/blog/0539654001776770835_0702272001776065346_left-img.png",
+          image: "/uploads/media/1778826400702-ec789a7f-39cf-46ed-9147-9a31828ad03f-left-img-home.webp",
           imagePosition: "right"
         },
         settings: { visibility: true, padding: '80px 0' }

@@ -58,10 +58,10 @@ export default function SectionWithRightImage({
                   </>
                 )}
               </div>
-              
+
               {buttonText && (
-                <a 
-                  href={buttonLink} 
+                <a
+                  href={buttonLink}
                   className="inline-block bg-[#fcd535] text-gray-900 px-8 py-4 rounded-md font-bold text-sm tracking-wider hover:bg-black hover:text-white transition-all uppercase"
                 >
                   {buttonText}
@@ -71,7 +71,7 @@ export default function SectionWithRightImage({
 
             <div className="relative flex justify-center lg:justify-end">
               <img
-                src={image || "https://getreviews.buzz/storage/app/blog/0547241001776770835_0936012001776065359_right-img.png"}
+                src={image || "/uploads/media/1778826313456-ab2b57c2-e8a2-4c20-9e20-c0e6c0f1806e-right-img-home.webp"}
                 alt="Illustration"
                 className="w-full h-auto max-w-[743px] object-contain"
               />

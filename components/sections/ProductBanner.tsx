@@ -20,7 +20,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
   } = data;
 
   const product = productId ? products.find((p) => p.id === productId) : null;
-  const resolvedImage = image || "https://beta.getreviews.buzz/storage/app/blog/0539654001776770835_0702272001776065346_left-img.png";
+  const resolvedImage = image || " ";
   const resolvedPlatform = product?.platform || (typeof title === "string" ? title : "Product");
 
   const { addItem, updateQty } = useCart();
@@ -142,7 +142,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             {/* Google Verified Badge */}
             <div className="inline-flex items-center gap-1.5 bg-[#FFE26E3D] px-2.5 py-1.5 rounded-[20px] w-fit mx-auto lg:mx-0 mb-4">
               <img
-                src="https://beta.getreviews.buzz/storage/app/blog/0280225001779423808_Vector.svg"
+                src="/uploads/media/1781499352200-3eade45a-0da5-4568-8f06-2cd8a856e2c9-Vector.svg"
                 alt="Icon"
                 width="18"
                 height="18"
@@ -372,7 +372,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
               ]).map((text: string, i: number) => (
                 <div key={i} className="flex items-start gap-3 text-[16px] leading-[1.45] text-[#333331] font-400 text-left">
                   <img
-                    src="https://beta.getreviews.buzz/storage/app/blog/0280225001779423808_Vector.svg"
+                    src="/uploads/media/1781499352200-3eade45a-0da5-4568-8f06-2cd8a856e2c9-Vector.svg"
                     alt="Icon"
                     width="20"
                     height="20"
@@ -386,9 +386,9 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             {/* Bottom Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
               {(stats && Array.isArray(stats) ? stats : [
-                { img: "https://beta.getreviews.buzz/storage/app/blog/0000064001779424671_costumer-1.svg", val: "10K+", lbl: "Happy Clients" },
-                { img: "https://beta.getreviews.buzz/storage/app/blog/0768381001779424865_Group-1000006417.svg", val: "99%", lbl: "Retention" },
-                { img: "https://beta.getreviews.buzz/storage/app/blog/0686695001779424894_Group-1000006418.svg", val: "100%", lbl: "Safe & secure" }
+                { img: "/uploads/media/1781499499702-738565c9-f87d-403e-9e60-0dbd3ee00f71-Vector-1-.svg", val: "10K+", lbl: "Happy Clients" },
+                { img: "/uploads/media/1781499507867-a4c5174e-3a63-4316-83b4-13af71e98937-diagram-2.svg", val: "99%", lbl: "Retention" },
+                { img: "/uploads/media/1781499520046-54ff665e-db79-4218-9d0f-ba3e1ef89cbf-Group-1000006419.svg", val: "100%", lbl: "Safe & secure" }
               ]).map((stat: { img?: string; val: string; lbl: string }, idx: number) => (
                 <div key={idx} className="w-full bg-white border border-[#EBE9E1] rounded-[16px] p-4 sm:p-5 lg:p-4 xl:p-[24px_28px] flex flex-col items-baseline justify-center text-center">
                   <div className="mb-3.5 flex items-center justify-start w-full">
