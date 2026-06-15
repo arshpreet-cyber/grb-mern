@@ -70,3 +70,19 @@ export async function PATCH(
     return NextResponse.json({ error: "Failed to update ticket" }, { status: 500 });
   }
 }
+
+// DELETE /api/support/tickets/[ticketId] — permanently removes the ticket.
+// Threads cascade-delete via the TicketThread → Ticket relation.
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ ticketId: string }> }
+) {
+  try {
+    const { ticketId } = await params;
+    await prisma.ticket.delete({ where: { ticketId } });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to delete ticket", error);
+    return NextResponse.json({ error: "Failed to delete ticket" }, { status: 500 });
+  }
+}

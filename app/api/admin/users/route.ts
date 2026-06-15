@@ -5,15 +5,23 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl;
     const search = searchParams.get("search") ?? "";
+    // staff=1 → only assignable staff (admins + managers), for the ticket "Assign To" dropdown.
+    const staffOnly = searchParams.get("staff") === "1";
+
+    const where: any = {};
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+      ];
+    }
+    if (staffOnly) {
+      where.role = { in: ["ADMIN", "MANAGER"] };
+    }
 
     const users = await prisma.user.findMany({
-      where: search ? {
-        OR: [
-          { name: { contains: search, mode: "insensitive" } },
-          { email: { contains: search, mode: "insensitive" } },
-        ],
-      } : {},
-      orderBy: { createdAt: "desc" },
+      where,
+      orderBy: staffOnly ? { name: "asc" } : { createdAt: "desc" },
       select: { id: true, name: true, email: true, phone: true, role: true, status: true, createdAt: true },
     });
 
