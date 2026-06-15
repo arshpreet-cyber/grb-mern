@@ -28,7 +28,7 @@ export default function BlogCard({ data }: BlogCardProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-        
+
         <div className="p-6 md:p-8">
           <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
             <div className="flex items-center gap-1.5">
@@ -40,17 +40,17 @@ export default function BlogCard({ data }: BlogCardProps) {
               <span>{data.author || "Admin"}</span>
             </div>
           </div>
-          
+
           <h3 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight mb-4 group-hover:text-[#f0c000] transition-colors line-clamp-2">
             {data.title}
           </h3>
-          
+
           {data.excerpt && (
             <p className="text-gray-600 leading-relaxed mb-6 line-clamp-3 text-sm md:text-base">
               {data.excerpt}
             </p>
           )}
-          
+
           <div className="flex items-center gap-2 text-[#f0c000] font-semibold text-sm group-hover:gap-3 transition-all">
             Read More <ArrowRight size={18} />
           </div>

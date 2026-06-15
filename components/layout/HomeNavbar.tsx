@@ -119,7 +119,7 @@ export default function HomeNavbar() {
                 ><Wrapper>
                     <div className="mx-auto w-full px-[20px] pt-[25px] pb-[10px]">
 
-                      <div className="grid grid-cols-5 gap-y-6 gap-x-6">
+                      <div className="grid grid-cols-5 gap-y-4 gap-x-10">
                         {buyReviewsLinks.map((item) => (
                           <Link
                             key={item.href}

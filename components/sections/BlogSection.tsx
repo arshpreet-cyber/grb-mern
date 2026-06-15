@@ -84,17 +84,20 @@ export default function BlogSection({ data, settings }: SectionProps) {
                   </div>
                   <div className="p-6 flex flex-col flex-1">
                     <div className="flex items-center gap-2 text-gray-500 text-sm mb-4">
-                      <Calendar size={16} />
-                      <span>
-                        {new Date(blog.created_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                        
-                      </span>
+
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-xl">
+                        <Calendar className="w-4 h-4 text-gray-600" />
+
+                        <span className="text-sm text-gray-700">
+                          {new Date(blog.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      </div>
                     </div>
-                    <h3 className="text-[18px] md:text-[20px] font-semibold text-gray-900 leading-snug group-hover:text-blue-600 transition-colors line-clamp-3">
+                    <h3 className="text-[18px] md:text-[20px] font-semibold text-gray-900 leading-snug group-hover:text-yellow-500 transition-colors line-clamp-3">
                       {blog.title}
                     </h3>
                   </div>
