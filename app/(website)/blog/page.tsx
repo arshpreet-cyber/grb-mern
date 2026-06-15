@@ -64,6 +64,7 @@ function BlogListingContent() {
   return (
     <section className="py-12 md:py-20 bg-[#fafafa]">
       <Wrapper>
+        <h1 className="text-3xl font-bold text-center mt-6 mb-16">Blog</h1>
         <div className="flex flex-col lg:flex-row gap-12 px-4">
 
           {/* Main Content */}
