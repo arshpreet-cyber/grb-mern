@@ -275,7 +275,7 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
                             placeholder="Slide subheading..."
                           />
                         ) : (
-                          <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                          <p className="text-[#000000] text-sm leading-relaxed mb-4">
                             {slide.subheading}
                           </p>
                         )
@@ -291,7 +291,7 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
                             placeholder="List Title"
                           />
                         ) : (
-                          <p className="text-gray-800 text-sm font-bold tracking-tight mb-6">
+                          <p className="text-[#000000] text-sm font-bold tracking-tight mb-6">
                             {slide.listTitle}
                           </p>
                         )
@@ -301,10 +301,10 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
                       <div className="space-y-6">
                         {slide.layout === "paragraphs" ? (
                           (slide.features || []).map((feature: CarouselFeature, featIdx: number) => (
-                            <div key={featIdx} className="text-gray-600 text-sm leading-relaxed">
+                            <div key={featIdx} className="text-[#000000] text-sm leading-relaxed">
                               {isEditing ? (
                                 <textarea
-                                  className="text-gray-600 text-sm leading-relaxed w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
+                                  className="text-[#000000] text-sm leading-relaxed w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
                                   rows={3}
                                   value={feature.desc || ""}
                                   onChange={(e) => handleFeatureChange(originalSlideIdx, featIdx, "desc", e.target.value)}
@@ -329,13 +329,13 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
                                 {isEditing ? (
                                   <>
                                     <input
-                                      className="font-semibold text-sm text-gray-800 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-0.5 mb-1"
+                                      className="font-semibold text-sm text-[#000000] w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-0.5 mb-1"
                                       value={feature.title || ""}
                                       onChange={(e) => handleFeatureChange(originalSlideIdx, featIdx, "title", e.target.value)}
                                       placeholder="Feature Title"
                                     />
                                     <textarea
-                                      className="text-[13px] leading-relaxed text-gray-600 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
+                                      className="text-[13px] leading-relaxed text-[#000000] w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
                                       rows={2}
                                       value={feature.desc || ""}
                                       onChange={(e) => handleFeatureChange(originalSlideIdx, featIdx, "desc", e.target.value)}
@@ -344,8 +344,8 @@ export default function SafeReviewsCarousel({ id, data = {}, settings, isEditing
                                   </>
                                 ) : (
                                   <>
-                                    <h4 className="font-bold text-sm text-gray-800 mb-1">{feature.title}</h4>
-                                    <p className="text-[13px] leading-relaxed text-gray-600">{feature.desc}</p>
+                                    <h4 className="font-bold text-sm text-[#000000] mb-1">{feature.title}</h4>
+                                    <p className="text-[13px] leading-relaxed text-[#000000]">{feature.desc}</p>
                                   </>
                                 )}
                               </div>

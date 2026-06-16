@@ -154,10 +154,12 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
 
             <h1 className="text-center lg:text-left text-[#000000] text-[28px] md:text-[40px] font-[300] leading-[1.25] tracking-[-0.5px] mb-4">
               Buy{" "}
-              <span className="font-[500]">
+              <span className={isGoogleProduct ? "font-[300]" : "font-[500]"}>
                 {title || "Google Reviews"}
               </span>{" "}
-              That Build Trust
+              <span className={isGoogleProduct ? "font-[500]" : "font-[300]"}>
+                That Build Trust
+              </span>
             </h1>
 
             <div
@@ -288,7 +290,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
             )}
 
             {/* Mode Switches */}
-            <div className="inline-flex bg-white border border-[#0000000F] rounded-[9px] p-1 w-fit mx-auto lg:mx-0 mb-8 gap-0.5">
+            <div className="inline-flex bg-white border border-[#FFC1071F] rounded-[9px] p-1 w-fit mx-auto lg:mx-0 mb-8 gap-0.5">
               <button
                 type="button"
                 onClick={() => setPlan("one-time")}
@@ -390,7 +392,7 @@ export default function BuySection({ data = {}, settings }: SectionProps) {
                 { img: "/uploads/media/1781499507867-a4c5174e-3a63-4316-83b4-13af71e98937-diagram-2.svg", val: "99%", lbl: "Retention" },
                 { img: "/uploads/media/1781499520046-54ff665e-db79-4218-9d0f-ba3e1ef89cbf-Group-1000006419.svg", val: "100%", lbl: "Safe & secure" }
               ]).map((stat: { img?: string; val: string; lbl: string }, idx: number) => (
-                <div key={idx} className="w-full bg-white border border-[#EBE9E1] rounded-[16px] p-4 sm:p-5 lg:p-4 xl:p-[24px_28px] flex flex-col items-baseline justify-center text-center">
+                <div key={idx} className="w-full bg-white border-[1px] border-[#FFC1071A] rounded-[16px] p-4 sm:p-5 lg:p-4 xl:p-[24px_28px] flex flex-col items-baseline justify-center text-center">
                   <div className="mb-3.5 flex items-center justify-start w-full">
                     {stat.img && <img src={stat.img} alt="Stat Asset Wrapper" />}
                   </div>

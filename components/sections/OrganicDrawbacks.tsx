@@ -44,7 +44,7 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
     paragraphs: string[];
   }
 
-  const heading = data.heading || `The Drawbacks Of Relying Solely On Organic ${platform} Reviews`;
+  const heading = data.heading || `The Drawbacks Of Relying Solely On Organic ${platform}`;
   const subheading = data.subheading || `While organic ${platform} reviews are useful for establishing credibility, relying solely on them can present several challenges that may slow your company's growth. Here are some major drawbacks:`;
   const cards = (data.cards || defaultCards) as DrawbackCard[];
 
@@ -190,9 +190,9 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
       case "warning":
         return (
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M24 4L6 12V24C6 34.5 13.5 41.5 24 44C34.5 41.5 42 34.5 42 24V12L24 4Z" fill="#FFF2F2" stroke="#EF4444" strokeWidth="3" strokeLinejoin="round"/>
-            <path d="M24 16V28" stroke="#EF4444" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx="24" cy="34" r="2.5" fill="#EF4444"/>
+            <path d="M24 4L6 12V24C6 34.5 13.5 41.5 24 44C34.5 41.5 42 34.5 42 24V12L24 4Z" fill="#FFF2F2" stroke="#EF4444" strokeWidth="3" strokeLinejoin="round" />
+            <path d="M24 16V28" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" />
+            <circle cx="24" cy="34" r="2.5" fill="#EF4444" />
           </svg>
         );
       case "competition":
@@ -201,7 +201,7 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
             <rect x="26" y="8" width="10" height="32" rx="2" fill="#2563eb" />
             <rect x="12" y="24" width="10" height="16" rx="2" fill="#FCD535" />
             <path d="M38 12L42 16L38 20" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-            <line x1="26" y1="20" x2="38" y2="20" stroke="#2563eb" strokeWidth="2.5" strokeDasharray="4 4" strokeLinecap="round"/>
+            <line x1="26" y1="20" x2="38" y2="20" stroke="#2563eb" strokeWidth="2.5" strokeDasharray="4 4" strokeLinecap="round" />
           </svg>
         );
       default:
@@ -219,7 +219,8 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
       }}
     >
       {/* Scope dynamic CSS custom variables for layout sizing */}
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .slider-track-${id} {
           --slide-width: 82vw;
           --slide-gap: 16px;
@@ -261,7 +262,7 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
                   </React.Fragment>
                 ))}
               </h2>
-              <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-3xl mx-auto">
+              <p className="text-[#323232] text-sm md:text-base leading-relaxed max-w-3xl mx-auto">
                 {subheading}
               </p>
             </>
@@ -273,9 +274,8 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
       <div className={`slider-track-${id} relative w-full overflow-visible flex flex-col items-center`}>
         {/* Track wrapper */}
         <div
-          className={`flex items-stretch w-full ${
-            transitionEnabled ? "transition-transform duration-500 ease-in-out" : ""
-          }`}
+          className={`flex items-stretch w-full ${transitionEnabled ? "transition-transform duration-500 ease-in-out" : ""
+            }`}
           style={{
             transform: clonedCards.length > 0
               ? `translateX(calc(50% - (var(--slide-width) / 2) - ${currentIdx} * (var(--slide-width) + var(--slide-gap))))`
@@ -295,80 +295,78 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
             clonedCards.map((card: DrawbackCard, cardIdx: number) => {
               const isActive = cardIdx === currentIdx;
               const originalIdx = cards.length > 0 ? (cardIdx - cloneCount + cards.length) % cards.length : 0;
-            return (
-              <div
-                key={cardIdx}
-                onClick={() => {
-                  if (!isActive) setCurrentIdx(cardIdx);
-                }}
-                style={{ width: "var(--slide-width)" }}
-                className={`shrink-0 border-[#FFE799] border rounded-[28px] p-8 md:p-12 flex flex-col text-left transition-all duration-500 shadow-sm hover:shadow-md ${
-                  isActive
+              return (
+                <div
+                  key={cardIdx}
+                  onClick={() => {
+                    if (!isActive) setCurrentIdx(cardIdx);
+                  }}
+                  style={{ width: "var(--slide-width)" }}
+                  className={`shrink-0 border-[#FFE799] border rounded-[28px] p-8 md:p-12 flex flex-col text-left transition-all duration-500 shadow-sm hover:shadow-md ${isActive
                     ? "cursor-default"
                     : "cursor-pointer hover:bg-[#fff9e6]"
-                }`}
-              >
-                {/* Icon Container */}
-                <div
-                  className={`mb-6 flex justify-start items-center h-12 relative group/icon ${
-                    isEditing ? "cursor-pointer hover:opacity-80" : ""
-                  }`}
-                  onClick={(e) => {
-                    if (isEditing) {
-                      e.stopPropagation();
-                      openMediaPicker((url) => {
-                        handleCardChange(originalIdx, "iconType", "custom");
-                        handleCardChange(originalIdx, "iconImage", url);
-                      });
-                    }
-                  }}
+                    }`}
                 >
-                  {renderIcon(card.iconType, card.iconImage)}
-                  {isEditing && (
-                    <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover/icon:opacity-100 transition-opacity">
-                      <span className="text-[10px] text-white font-bold px-1.5 py-0.5 bg-black/60 rounded">
-                        Edit Icon
-                      </span>
-                    </div>
+                  {/* Icon Container */}
+                  <div
+                    className={`mb-6 flex justify-start items-center h-12 relative group/icon ${isEditing ? "cursor-pointer hover:opacity-80" : ""
+                      }`}
+                    onClick={(e) => {
+                      if (isEditing) {
+                        e.stopPropagation();
+                        openMediaPicker((url) => {
+                          handleCardChange(originalIdx, "iconType", "custom");
+                          handleCardChange(originalIdx, "iconImage", url);
+                        });
+                      }
+                    }}
+                  >
+                    {renderIcon(card.iconType, card.iconImage)}
+                    {isEditing && (
+                      <div className="absolute inset-0 bg-black/40 rounded flex items-center justify-center opacity-0 group-hover/icon:opacity-100 transition-opacity">
+                        <span className="text-[10px] text-white font-bold px-1.5 py-0.5 bg-black/60 rounded">
+                          Edit Icon
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Card Title */}
+                  {isEditing ? (
+                    <input
+                      className="text-xl md:text-2xl font-bold text-gray-800 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-1 mb-4"
+                      value={card.title || ""}
+                      onChange={(e) => handleCardChange(originalIdx, "title", e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      placeholder="Card Title"
+                    />
+                  ) : (
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">{card.title}</h3>
                   )}
-                </div>
 
-                {/* Card Title */}
-                {isEditing ? (
-                  <input
-                    className="text-xl md:text-2xl font-bold text-gray-800 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent pb-1 mb-4"
-                    value={card.title || ""}
-                    onChange={(e) => handleCardChange(originalIdx, "title", e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    placeholder="Card Title"
-                  />
-                ) : (
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">{card.title}</h3>
-                )}
-
-                {/* Card Paragraphs */}
-                <div className="space-y-4 flex-1">
-                  {(card.paragraphs || []).map((p: string, pIdx: number) => (
-                    <div key={pIdx}>
-                      {isEditing ? (
-                        <textarea
-                          className="text-xs md:text-sm leading-relaxed text-gray-600 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
-                          rows={3}
-                          value={p || ""}
-                          onChange={(e) => handleParagraphChange(originalIdx, pIdx, e.target.value)}
-                          onClick={(e) => e.stopPropagation()}
-                          placeholder="Card Paragraph..."
-                        />
-                      ) : (
-                        <p className="text-xs md:text-sm leading-relaxed text-gray-600">{p}</p>
-                      )}
-                    </div>
-                  ))}
+                  {/* Card Paragraphs */}
+                  <div className="space-y-4 flex-1">
+                    {(card.paragraphs || []).map((p: string, pIdx: number) => (
+                      <div key={pIdx}>
+                        {isEditing ? (
+                          <textarea
+                            className="text-xs md:text-sm leading-relaxed text-gray-600 w-full outline-none border-b border-dashed border-[#fc0] bg-transparent resize-none min-h-[60px]"
+                            rows={3}
+                            value={p || ""}
+                            onChange={(e) => handleParagraphChange(originalIdx, pIdx, e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            placeholder="Card Paragraph..."
+                          />
+                        ) : (
+                          <p className="text-xs md:text-sm leading-relaxed text-gray-600">{p}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
         </div>
 
         {/* Indicator dots */}
@@ -383,11 +381,10 @@ export default function OrganicDrawbacks({ id, data = {}, settings, isEditing }:
                   setCurrentIdx(idx + cloneCount);
                 }}
                 aria-label={`Go to slide ${idx + 1}`}
-                className={`transition-all duration-300 focus:outline-none ${
-                  isActive
-                    ? "w-8 h-2 bg-[#FCD535] rounded-full shadow-sm"
-                    : "w-2.5 h-2.5 bg-gray-200 hover:bg-[#FCD535]/50 rounded-full cursor-pointer"
-                }`}
+                className={`transition-all duration-300 focus:outline-none ${isActive
+                  ? "w-8 h-2 bg-[#FCD535] rounded-full shadow-sm"
+                  : "w-2.5 h-2.5 bg-gray-200 hover:bg-[#FCD535]/50 rounded-full cursor-pointer"
+                  }`}
               />
             );
           })}
