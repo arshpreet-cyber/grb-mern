@@ -37,6 +37,9 @@ export async function sendEmailNotification(options: {
 }
 const SITE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://getreviews.buzz";
 const ASSET_BASE_URL = !SITE_URL.includes("localhost") ? SITE_URL : "https://getreviews.buzz";
+// Media lives on the Vercel Blob CDN. Emails need absolute image URLs, so build
+// them from this base (overridable via env if the Blob host ever changes).
+const MEDIA_BASE_URL = process.env.MEDIA_BASE_URL?.replace(/\/$/, "") ?? "https://qdeipxjkeqncplsk.public.blob.vercel-storage.com";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? process.env.EMAIL_FROM ?? "";
 
 export function emailWrapper(content: string) {
@@ -50,7 +53,7 @@ export function emailWrapper(content: string) {
       <tr>
         <td align="center" style="padding:24px 32px 16px;background:#ebebeb;border-bottom:1px solid #eeeeee">
           <a href="${SITE_URL}" style="display:inline-block;text-decoration:none">
-            <img src="/uploads/media/1778825414712-b5950796-7335-4c0c-a6ed-2f5ee108976e-logo-white.png" alt="Get Reviews Buzz" width="180" height="67" style="display:block;max-width:180px;height:auto" />
+            <img src="${MEDIA_BASE_URL}/uploads/media/1778825414712-b5950796-7335-4c0c-a6ed-2f5ee108976e-logo-white.png" alt="Get Reviews Buzz" width="180" height="67" style="display:block;max-width:180px;height:auto" />
           </a>
         </td>
       </tr>
