@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Layout, Type, Image as ImageIcon, ShoppingCart, X, BarChart3, MessageSquare, Megaphone, Globe } from 'lucide-react';
+import { Layout, Type, Image as ImageIcon, ShoppingCart, X, BarChart3, MessageSquare, Megaphone, Globe, ShieldCheck } from 'lucide-react';
 
 interface SectionSelectorProps {
   onSelect: (type: string, data?: any) => void;
@@ -40,6 +40,14 @@ export default function SectionSelector({ onSelect, onClose }: SectionSelectorPr
     { type: 'rating-calculator', label: 'Rating Calculator', icon: <BarChart3 />, description: 'A review rating calculator hero section' },
     { type: 'rating-stats-bar', label: 'Rating Stats Bar', icon: <BarChart3 />, description: 'Industry statistics for reviews' },
     { type: 'rating-cta', label: 'Rating CTA', icon: <Megaphone />, description: 'A specialized CTA section for ratings' },
+    { type: 'how-it-works-hero', label: 'HIW Hero Banner', icon: <Megaphone />, description: 'Hero banner for the how it works page' },
+    { type: 'how-it-works-process', label: 'HIW Process Steps', icon: <Layout />, description: 'Step-by-step process flow with alternating images' },
+    { type: 'how-it-works-more-than-service', label: 'HIW Features Grid', icon: <Layout />, description: 'Grid layout displaying 10 core features' },
+    { type: 'how-it-works-before-after', label: 'HIW Before vs After', icon: <Layout />, description: 'Before vs after reputation growth storefront graphic' },
+    { type: 'how-it-works-standards', label: 'HIW Service Standards', icon: <ShieldCheck />, description: 'Service standards list beside side photograph' },
+    { type: 'how-it-works-why-trust', label: 'HIW Why Trust Us', icon: <Layout />, description: 'Why trust cards grid beside workspace photo' },
+    { type: 'how-it-works-solutions', label: 'HIW Business Solutions', icon: <Layout />, description: 'Solutions list filtered by target industry sectors' },
+    { type: 'how-it-works-cta', label: 'HIW CTA Banner', icon: <Megaphone />, description: 'CTA banner showing review cards with click indicators' },
   ];
 
   return (

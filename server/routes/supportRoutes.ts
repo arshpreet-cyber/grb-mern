@@ -1,4 +1,5 @@
 import express from "express";
+import prisma from "../../lib/prisma.ts";
 import { boss } from "../queue.ts";
 import {
   createTicket,
