@@ -166,7 +166,7 @@ export default function HomeFooter() {
                   { label: "Thumbtack Reviews", href: "/products/buy-thumbtack-reviews" },
                   { label: "BBB Reviews", href: "/products/buy-bbb-reviews" },
                   { label: "Indeed Reviews", href: "/products/buy-indeed-reviews" },
-                  { label: "View More", href: "/" },
+
                 ].map((item, idx) => (
                   <li key={idx}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">
@@ -189,7 +189,7 @@ export default function HomeFooter() {
                   { label: "Home Advisor Reviews", href: "/products/buy-home-advisor-reviews" },
                   { label: "Google Playstore Reviews", href: "/products/buy-google-playstore-reviews" },
                   { label: "Product Reviews", href: "/products/buy-product-reviews" },
-                  { label: "View More", href: "/" },
+
                 ].map((item, idx) => (
                   <li key={idx}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">
@@ -211,7 +211,7 @@ export default function HomeFooter() {
                   { label: "Chrome Extension Reviews", href: "/products/buy-chrome-extension-reviews" },
                   { label: "Healthgrades Reviews", href: "/products/buy-healthgrades-reviews" },
                   { label: "YellowPages Reviews", href: "/products/buy-yellowpages-reviews" },
-                  { label: "View More", href: "/" },
+
                 ].map((item, idx) => (
                   <li key={idx}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">
@@ -231,7 +231,7 @@ export default function HomeFooter() {
                   { label: "Realtor Reviews", href: "/products/buy-realtor-reviews" },
                   { label: "Bark Reviews", href: "/products/buy-bark-reviews" },
                   { label: "UpCity Reviews", href: "/products/buy-upcity-reviews" },
-                  { label: "View More", href: "/" },
+
                 ].map((item, idx) => (
                   <li key={idx}>
                     <Link href={item.href} className="hover:text-[#f5c518] transition">
