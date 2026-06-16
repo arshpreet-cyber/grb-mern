@@ -47,7 +47,7 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [openTickets, setOpenTickets] = useState<number | null>(null);
   const [paymentDropdownOpen, setPaymentDropdownOpen] = useState<string | null>(null);
-  const [detailsModalOrderId, setDetailsModalOrderId] = useState<string | null>(null);
+  const [pendingOrdersForModal, setPendingOrdersForModal] = useState<{id: string, orderNumber: string, date: string}[]>([]);
   const name = session?.user?.name ?? "User";
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function UserDashboard() {
         const ordersList = data?.orders && Array.isArray(data.orders) ? data.orders : (Array.isArray(data) ? data : []);
         if (ordersList.length > 0) {
           setAllOrders(ordersList);
-          setOrders(ordersList.map((o: ApiOrder) => ({
+          const mappedOrders: Order[] = ordersList.map((o: ApiOrder) => ({
             id: o.id,
             orderNumber: o.orderNumber,
             paymentId: o.paymentId ?? "—",
@@ -69,7 +69,17 @@ export default function UserDashboard() {
             payUrl: o.payUrl,
             detailsFilled: o.detailsFilled,
             isRecurring: o.isRecurring,
-          })));
+          }));
+          setOrders(mappedOrders);
+
+          const needsInput = mappedOrders.filter((o) => o.paymentStatus === "Paid" && !o.detailsFilled);
+          if (needsInput.length > 0) {
+            setPendingOrdersForModal(needsInput.map(o => ({
+              id: o.id,
+              orderNumber: o.orderNumber,
+              date: o.date
+            })));
+          }
         } else {
           setAllOrders([]);
           setOrders([]);
@@ -218,7 +228,7 @@ export default function UserDashboard() {
                   <td className="px-5 py-5 text-center">
                     {o.paymentStatus === "Paid" && !o.detailsFilled && (
                       <button
-                        onClick={() => setDetailsModalOrderId(o.id)}
+                        onClick={() => router.push(`/order/${o.id}/details`)}
                         className="rounded-[5px] bg-blue-600 px-3 py-1 text-[10px] font-normal text-white shadow-sm hover:bg-blue-700 transition"
                       >
                         Input Details
@@ -268,13 +278,12 @@ export default function UserDashboard() {
           </table>
         </div>
       </div>
-      
+
       {/* Input Details Modal */}
       <InputDetailsModal 
-        orderId={detailsModalOrderId || ""} 
-        orderNumber={orders.find(o => o.id === detailsModalOrderId)?.orderNumber || ""}
-        isOpen={!!detailsModalOrderId} 
-        onClose={() => setDetailsModalOrderId(null)} 
+        orders={pendingOrdersForModal} 
+        isOpen={pendingOrdersForModal.length > 0} 
+        onClose={() => setPendingOrdersForModal([])} 
       />
     </div>
   );

@@ -142,6 +142,17 @@ function AdminMediaPageInner() {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this media asset?")) return;
+    try {
+      const res = await fetch(`/api/admin/media/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete media.");
+      await fetchMedia();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete media.");
+    }
+  };
+
   const filteredMedia = media.filter((item) => {
     const haystack = [
       item.alt,
@@ -257,6 +268,13 @@ function AdminMediaPageInner() {
                             Copy URL
                           </>
                         )}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="flex items-center justify-center px-4 rounded-xl bg-gray-50 dark:bg-slate-800 text-gray-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition"
+                        title="Delete Media"
+                      >
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>

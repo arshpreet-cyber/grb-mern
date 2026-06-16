@@ -9,7 +9,6 @@ import {
 import { orderStatusLabel, paymentStatusLabel, paymentMethodLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import InputDetailsModal from "@/components/dashboard/InputDetailsModal";
 
 interface Order {
   id: string;
@@ -63,7 +62,6 @@ export default function DemoDashboard() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentDropdownOpen, setPaymentDropdownOpen] = useState<string | null>(null);
-  const [detailsModalOrderId, setDetailsModalOrderId] = useState<string | null>(null);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -321,7 +319,7 @@ export default function DemoDashboard() {
                     <td className="px-5 py-5 text-center">
                       {order.paymentStatus === "Paid" && !order.detailsFilled && (
                         <button
-                          onClick={() => setDetailsModalOrderId(order.id)}
+                          onClick={() => router.push(`/order/${order.id}/details`)}
                           className="rounded-[5px] bg-[#1E3A8A] dark:bg-blue-600 px-3 py-1.5 text-[10px] font-medium text-white shadow-sm hover:bg-blue-900 dark:hover:bg-blue-500 transition-colors whitespace-nowrap inline-block"
                         >
                           Input Details
@@ -432,14 +430,6 @@ export default function DemoDashboard() {
           </div>
         )}
       </div>
-
-      {/* Input Details Modal */}
-      <InputDetailsModal 
-        orderId={detailsModalOrderId || ""} 
-        orderNumber={orders.find(o => o.id === detailsModalOrderId)?.orderNumber || ""}
-        isOpen={!!detailsModalOrderId} 
-        onClose={() => setDetailsModalOrderId(null)} 
-      />
     </div>
   );
 }
