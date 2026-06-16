@@ -530,7 +530,8 @@ export async function syncAllZohoThreadsToLocal(): Promise<{ ticketsChecked: num
     },
     select: { ticketId: true },
     orderBy: { updatedAt: "desc" },
-    take: 5, // Check the 5 most recently active tickets to conserve API call limits
+    take: 30, // Most recently active tickets (the cron refreshes their records first,
+              // so a fresh customer reply lands here and its threads get pulled).
   });
 
   let totalImported = 0;
