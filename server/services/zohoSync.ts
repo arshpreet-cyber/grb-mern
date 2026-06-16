@@ -382,6 +382,24 @@ export async function syncAllUnsyncedTickets(): Promise<{ synced: number; failed
   return result;
 }
 
+// Decide whether a Zoho thread is from a support operator (vs the customer).
+// Operators: Zoho agents (e.g. "Sahil Khanna", author.type AGENT), outbound
+// replies, and anything sent from a getreviews.buzz / Zoho Desk address
+// (e.g. support@getreviews.buzz). END_USER is always the customer.
+function zohoThreadIsOperator(thread: any): boolean {
+  const authorType = thread?.author?.type;
+  if (authorType === "AGENT") return true;
+  if (authorType === "END_USER") return false;
+  const from = (thread?.fromEmailAddress || "").toLowerCase();
+  const name = (thread?.author?.name || "").toLowerCase();
+  return (
+    thread?.direction === "out" ||
+    from.includes("@getreviews.buzz") ||
+    from.includes("zohodesk.com") ||
+    name === "get reviews buzz"
+  );
+}
+
 /**
  * Sync threads/comments FROM Zoho Desk back to local DB.
  * This pulls any new replies (e.g. from email) that were added in Zoho
@@ -394,10 +412,11 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
     const ticket = await prisma.ticket.findUnique({ where: { ticketId } });
     if (!ticket?.zohoTicketId) return 0;
 
-    // Get existing local threads to avoid duplicates
+    // Get existing local threads to avoid duplicates (and to fix the direction
+    // of already-imported threads when re-pulled).
     const localThreads = await prisma.ticketThread.findMany({
       where: { ticketId },
-      select: { content: true, createdAt: true },
+      select: { id: true, content: true, direction: true, createdAt: true },
     });
 
     // Normalize content for dedup comparison:
@@ -413,11 +432,16 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
         .trim()
         .toLowerCase();
 
-    // Build set of existing normalized content
+    // Build set of existing normalized content + a map to the local row so we can
+    // correct the direction of threads imported before the operator rules existed.
     const existingContents = new Set<string>();
+    const byContent = new Map<string, { id: number; direction: string }>();
     for (const t of localThreads) {
       const n = normalize(t.content || "");
-      if (n) existingContents.add(n);
+      if (n) {
+        existingContents.add(n);
+        if (!byContent.has(n)) byContent.set(n, { id: t.id, direction: t.direction });
+      }
     }
 
     // Also add the ticket's original query/description to avoid importing it back
@@ -460,8 +484,9 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
         .trim();
 
     for (const thread of zohoThreads) {
-      // Only import email threads (actual conversation) — not comments/API threads.
-      if (thread.channel !== "EMAIL") continue;
+      // Import real conversation threads — email replies and web-form submissions
+      // (the original message on web-origin tickets is a WEB thread).
+      if (thread.channel !== "EMAIL" && thread.channel !== "WEB") continue;
 
       // The list endpoint only has a summary; fetch the thread for full content.
       const detail = await getZohoThreadDetail(ticket.zohoTicketId, String(thread.id));
@@ -474,32 +499,43 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
       ).trim();
       if (!rawContent) continue;
 
+      const isOperator = zohoThreadIsOperator(thread);
+      const direction = isOperator ? "2" : "1";
+      const agentId = isOperator ? (thread.author?.name || "zoho-agent") : null;
+      const norm = normalize(rawContent);
+
+      // Already imported? Fix its direction if our classification now differs
+      // (e.g. support@getreviews.buzz replies that were tagged as customer before).
+      const existingRow = byContent.get(norm);
+      if (existingRow) {
+        if (existingRow.direction !== direction) {
+          await prisma.ticketThread.update({ where: { id: existingRow.id }, data: { direction, agentId } }).catch(() => {});
+        }
+        continue;
+      }
       if (isDuplicate(rawContent)) continue;
 
-      // direction: "in" = from customer, "out" = from agent
-      const isFromAgent = thread.direction === "out";
-      const direction = isFromAgent ? "2" : "1";
-
-      await prisma.ticketThread.create({
+      const created = await prisma.ticketThread.create({
         data: {
           ticketId,
           content: rawContent,
           direction,
-          agentId: isFromAgent ? "zoho-agent" : null,
+          agentId,
           ...(thread.createdTime ? { createdAt: new Date(thread.createdTime) } : {}),
         },
       });
 
-      existingContents.add(normalize(rawContent));
+      existingContents.add(norm);
+      byContent.set(norm, { id: created.id, direction });
       imported++;
     }
 
     // Set repliedStatus from the most recent email thread direction so the list's
     // "Replied Status" is accurate (out = agent/admin → 2, in = customer → 1).
-    const emailThreads = zohoThreads.filter((t: any) => t.channel === "EMAIL" && t.createdTime);
+    const emailThreads = zohoThreads.filter((t: any) => (t.channel === "EMAIL" || t.channel === "WEB") && t.createdTime);
     if (emailThreads.length) {
       emailThreads.sort((a: any, b: any) => new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime());
-      const isAgentLast = emailThreads[0].direction === "out";
+      const isAgentLast = zohoThreadIsOperator(emailThreads[0]);
       await prisma.ticket
         .update({ where: { ticketId }, data: { repliedStatus: isAgentLast ? 2 : 1, readStatus: isAgentLast ? 2 : 1 } })
         .catch(() => {});

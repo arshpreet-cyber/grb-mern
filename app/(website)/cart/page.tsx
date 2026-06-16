@@ -33,14 +33,14 @@ function OtpBoxes({ value, onChange }: { value: string; onChange: (v: string) =>
     e.preventDefault();
   };
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex gap-1.5 sm:gap-2 justify-center">
       {refs.map((ref, i) => (
         <input key={i} ref={ref} type="text" inputMode="numeric" maxLength={1}
           value={value[i] ?? ""}
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
-          className="w-10 h-11 text-center text-lg font-bold rounded-md border border-gray-200 bg-[#F4F7FF] outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
+          className="w-8 sm:w-10 h-10 sm:h-11 text-center text-base sm:text-lg font-bold rounded-md border border-gray-200 bg-[#F4F7FF] outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition shrink" />
       ))}
     </div>
   );
@@ -157,7 +157,7 @@ function AuthGate() {
   const errBox = (msg: string) => msg ? <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600"><span>⚠</span> {msg}</div> : null;
 
   return (
-    <div className="w-full max-w-[420px] rounded-2xl bg-white shadow-2xl px-8 py-8 overflow-y-auto" style={{ minHeight: '520px', maxHeight: '90vh' }}>
+    <div className="w-full rounded-2xl bg-white shadow-2xl px-5 sm:px-8 py-6 sm:py-8 overflow-y-auto" style={{ minHeight: '520px', maxHeight: '90vh' }}>
       {logo}
 
       {/* OTP steps don't show main tabs */}
@@ -191,11 +191,11 @@ function AuthGate() {
             className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
           <input type="email" required value={regForm.email} onChange={e => setRegForm(p => ({ ...p, email: e.target.value }))} placeholder="Email Address"
             className="w-full rounded-md border border-gray-200 bg-[#F4F7FF] py-3 px-4 text-sm outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition" />
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 sm:gap-2">
             <div className="relative" ref={ccRef}>
               <button type="button" onClick={() => { setCcOpen(!ccOpen); setCcSearch(""); }}
-                className="flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-3 text-sm hover:border-yellow-400 transition whitespace-nowrap">
-                <img src={`https://flagcdn.com/w20/${selectedCC.iso}.png`} alt={selectedCC.name} width={20} height={15} className="rounded-sm" />
+                className="flex items-center gap-1 sm:gap-1.5 rounded-md border border-gray-200 bg-white px-2 sm:px-3 py-3 text-xs sm:text-sm hover:border-yellow-400 transition whitespace-nowrap">
+                <img src={`https://flagcdn.com/w20/${selectedCC.iso}.png`} alt={selectedCC.name} width={20} height={15} className="rounded-sm shrink-0" />
                 <span className="font-medium text-gray-700">{selectedCC.code}</span>
                 <svg className={`w-3 h-3 text-gray-400 transition-transform ${ccOpen ? "rotate-180" : ""}`} viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
               </button>
@@ -375,8 +375,8 @@ export default function CartPage() {
   return (
     <div className="relative min-h-screen bg-white font-['Poppins']">
       {isGuest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm" onClick={() => router.push("/")}>
-          <div onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm p-4 sm:p-6" onClick={() => router.push("/")}>
+          <div className="w-full max-w-[420px]" onClick={e => e.stopPropagation()}>
             <AuthGate />
           </div>
         </div>
