@@ -229,7 +229,7 @@ export default function HomeFooter() {
                   { label: "Designrush Reviews", href: "/products/buy-designrush-reviews" },
                   { label: "Reviews.Io Reviews", href: "/products/buy-reviews-io-reviews" },
                   { label: "Realtor Reviews", href: "/products/buy-realtor-reviews" },
-                  { label: "Bark Reviews", href: "/products/buy-bark-reviews" },
+                  { label: "Bark Reviews 444", href: "/products/buy-bark-reviews" },
                   { label: "UpCity Reviews 44", href: "/products/buy-upcity-reviews" },
 
                 ].map((item, idx) => (
@@ -292,3 +292,4 @@ export default function HomeFooter() {
     </footer>
   );
 }
+//test
