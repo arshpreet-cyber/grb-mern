@@ -144,7 +144,7 @@ function AuthGate() {
     setRegLoading(false);
   };
 
-  const logo = <div className="flex justify-center mb-5"><Link href="/"><img src="https://grb-mern-gilt.vercel.app/icons/logo.png" alt="Get Reviews Buzz" className="h-14 w-auto object-contain" /></Link></div>;
+  const logo = <div className="flex justify-center mb-5"><Link href="/"><img src="https://beta.getreviews.buzz/icons/logo.png" alt="Get Reviews Buzz" className="h-14 w-auto object-contain" /></Link></div>;
   const tabs = (
     <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
       {(["login", "register"] as const).map(t => (

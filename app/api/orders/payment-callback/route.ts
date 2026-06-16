@@ -8,7 +8,7 @@ const SITE_URL = (
   process.env.NEXT_PUBLIC_APP_URL ??
   process.env.NEXTAUTH_URL ??
   ""
-).replace(/\/$/, "").replace("http://localhost:3000", "https://grb-mern-gilt.vercel.app");
+).replace(/\/$/, "").replace("http://localhost:3000", "https://beta.getreviews.buzz");
 
 async function markOrderPaid(orderId: string, tokenCode: string, paymentId: string | null) {
   const order = await prisma.order.findUnique({

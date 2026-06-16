@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
       process.env.NEXT_PUBLIC_APP_URL ??
       process.env.NEXTAUTH_URL ??
       ""
-    ).replace(/\/$/, "").replace("http://localhost:3000", "https://grb-mern-gilt.vercel.app");
+    ).replace(/\/$/, "").replace("http://localhost:3000", "https://beta.getreviews.buzz");
 
     const callbackUrl = `${appUrl}/api/orders/payment-callback?orderId=${order.id}&tokenCode=${tokenCode}`;
 
