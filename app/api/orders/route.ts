@@ -4,13 +4,19 @@ import { authOptions } from "@/lib/auth-options";
 import prisma from "@/lib/prisma";
 
 const STATUS_MAP: Record<string, object> = {
-  all:        { deletedAt: null },
-  paid:       { deletedAt: null, paymentStatus: "2" },
-  pending:    { deletedAt: null, status: { in: ["1", "3"] } },
-  processing: { deletedAt: null, status: "5" },
-  unpaid:     { deletedAt: null, paymentStatus: "1" },
-  completed:  { deletedAt: null, status: "2" },
-  deleted:    { deletedAt: { not: null } },
+  all:          {},
+  paid:         { deletedAt: null, paymentStatus: "2" },
+  pending:      { deletedAt: null, status: "1" },
+  processing:   { deletedAt: null, status: "5" },
+  unpaid:       { deletedAt: null, paymentStatus: "1" },
+  completed:    { deletedAt: null, status: "2" },
+  hold:         { deletedAt: null, status: "3" },
+  subscription: { deletedAt: null, OR: [
+    { isRecurring: 1 },
+    { subscriptionId: { not: null } },
+    { rzpaySubscriptionId: { not: null } },
+  ]},
+  deleted:      { deletedAt: { not: null } },
 };
 
 function buildWhere(
