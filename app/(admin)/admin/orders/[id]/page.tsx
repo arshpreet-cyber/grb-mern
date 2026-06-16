@@ -254,17 +254,6 @@ export default function AdminOrderDetailPage() {
                 </dd>
               </div>
             )}
-            {order.payUrl && (
-              <div>
-                <dt className="text-[11px] text-gray-400 uppercase tracking-wide">Payment Link</dt>
-                <dd>
-                  <a href={order.payUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-amber-600 dark:text-[#fc0] hover:text-amber-700 dark:hover:text-amber-400 text-xs underline break-all">
-                    Open payment page
-                  </a>
-                </dd>
-              </div>
-            )}
           </dl>
           {order.notes && !itemNotes && (
             <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
