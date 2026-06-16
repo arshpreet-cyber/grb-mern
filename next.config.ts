@@ -37,20 +37,37 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return [
+    const list = [
       {
         source: '/products/:slug/reviews',
         destination: '/products/:slug/',
         permanent: true,
       },
-      {
-        // Media moved out of the repo to Vercel Blob. Existing relative
-        // /uploads/... URLs (in the DB and content) are served from Blob's CDN.
+    ];
+
+    // Only redirect to Blob CDN in production, or if Blob token is present in dev
+    if (process.env.NODE_ENV === "production" || process.env.BLOB_READ_WRITE_TOKEN) {
+      list.push({
         source: '/uploads/:path*',
         destination: 'https://qdeipxjkeqncplsk.public.blob.vercel-storage.com/uploads/:path*',
         permanent: false,
-      },
-    ];
+      });
+    }
+
+    return list;
+  },
+  async rewrites() {
+    const list = [];
+
+    // In dev without a blob token, rewrite non-existent local uploads to the Blob CDN
+    if (process.env.NODE_ENV === "development" && !process.env.BLOB_READ_WRITE_TOKEN) {
+      list.push({
+        source: '/uploads/:path*',
+        destination: 'https://qdeipxjkeqncplsk.public.blob.vercel-storage.com/uploads/:path*',
+      });
+    }
+
+    return list;
   },
   images: {
     remotePatterns: [

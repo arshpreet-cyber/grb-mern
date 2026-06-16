@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import path from "path";
+import { promises as fs } from "fs";
 import { put } from "@vercel/blob";
 import { AttachmentType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -101,7 +102,15 @@ export async function POST(req: NextRequest) {
     const mediaUrl = `/uploads/media/${storedFileName}`;
 
     // Store in Vercel Blob; keep the relative URL (served from Blob via redirect).
-    await put(`uploads/media/${storedFileName}`, file, { access: "public", addRandomSuffix: false });
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      await put(`uploads/media/${storedFileName}`, file, { access: "public", addRandomSuffix: false });
+    } else {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const dirPath = path.join(process.cwd(), "public", "uploads", "media");
+      await fs.mkdir(dirPath, { recursive: true });
+      await fs.writeFile(path.join(dirPath, storedFileName), buffer);
+    }
 
     const attachment = await prisma.attachment.create({
       data: {
