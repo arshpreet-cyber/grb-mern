@@ -43,6 +43,13 @@ const nextConfig: NextConfig = {
         destination: '/products/:slug/',
         permanent: true,
       },
+      {
+        // Media moved out of the repo to Vercel Blob. Existing relative
+        // /uploads/... URLs (in the DB and content) are served from Blob's CDN.
+        source: '/uploads/:path*',
+        destination: 'https://qdeipxjkeqncplsk.public.blob.vercel-storage.com/uploads/:path*',
+        permanent: false,
+      },
     ];
   },
   images: {

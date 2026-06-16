@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
 import path from "path";
+import { put } from "@vercel/blob";
 import { AttachmentType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
@@ -12,7 +12,6 @@ import {
 
 export const runtime = "nodejs";
 
-const uploadDirectory = path.join(process.cwd(), "public", "uploads", "media");
 const maxFileSizeInBytes = 10 * 1024 * 1024;
 
 function sanitizeFileName(fileName: string) {
@@ -95,17 +94,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid media type selected." }, { status: 400 });
     }
 
-    await mkdir(uploadDirectory, { recursive: true });
-
     const originalExtension = path.extname(file.name);
     const extension = originalExtension || fileExtensionFromMimeType(file.type);
     const baseName = sanitizeFileName(path.basename(file.name, originalExtension || extension || ""));
     const storedFileName = `${Date.now()}-${randomUUID()}-${baseName || "media"}${extension}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const filePath = path.join(uploadDirectory, storedFileName);
     const mediaUrl = `/uploads/media/${storedFileName}`;
 
-    await writeFile(filePath, buffer);
+    // Store in Vercel Blob; keep the relative URL (served from Blob via redirect).
+    await put(`uploads/media/${storedFileName}`, file, { access: "public", addRandomSuffix: false });
 
     const attachment = await prisma.attachment.create({
       data: {
