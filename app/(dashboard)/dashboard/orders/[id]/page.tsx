@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ClipboardList, FileText, Info, Download, Loader2, Ticket } from "lucide-react";
+import InputDetailsModal from "@/components/dashboard/InputDetailsModal";
 
 type OrderDetail = {
   id: string;
@@ -58,6 +59,7 @@ export default function UserOrderDetailPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
   async function downloadInvoice() {
     setDownloadingInvoice(true);
@@ -222,12 +224,12 @@ export default function UserOrderDetailPage() {
           )}
           {order.paymentStatus === "2" && !order.detailsFilled && (
             <div className="mt-4">
-              <a
-                href={`/order/${order.id}/details`}
+              <button
+                onClick={() => setDetailsModalOpen(true)}
                 className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#1E3A8A] hover:bg-blue-900 text-white text-[12px] font-bold transition"
               >
                 Input Details →
-              </a>
+              </button>
             </div>
           )}
           <button
@@ -424,6 +426,18 @@ export default function UserOrderDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Input Details Modal */}
+      <InputDetailsModal 
+        orderId={id} 
+        orderNumber={order?.orderNumber || order?.id || ""}
+        isOpen={detailsModalOpen} 
+        onClose={() => setDetailsModalOpen(false)} 
+        onSuccess={() => {
+          setDetailsModalOpen(false);
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }
