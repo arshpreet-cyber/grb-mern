@@ -98,9 +98,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ error: "Invalid action. Use 'sync-all', 'sync-one', 'pull-threads', or 'pull-tickets'" }, { status: 400 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Zoho sync endpoint error:", error);
-    return NextResponse.json({ error: "Sync failed" }, { status: 500 });
+    const message = error?.message || "Sync failed";
+    return NextResponse.json({ error: message, detail: String(error) }, { status: 500 });
   }
 }
 

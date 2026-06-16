@@ -484,9 +484,8 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
         .trim();
 
     for (const thread of zohoThreads) {
-      // Import real conversation threads — email replies and web-form submissions
-      // (the original message on web-origin tickets is a WEB thread).
-      if (thread.channel !== "EMAIL" && thread.channel !== "WEB") continue;
+      // Import all conversation threads — skip only internal system logs (FORUMS).
+      if (thread.channel === "FORUMS") continue;
 
       // The list endpoint only has a summary; fetch the thread for full content.
       const detail = await getZohoThreadDetail(ticket.zohoTicketId, String(thread.id));
@@ -522,6 +521,45 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
           direction,
           agentId,
           ...(thread.createdTime ? { createdAt: new Date(thread.createdTime) } : {}),
+        },
+      });
+
+      existingContents.add(norm);
+      byContent.set(norm, { id: created.id, direction });
+      imported++;
+    }
+
+    // ── Pull Zoho comments (agent replies & internal notes made via Zoho UI) ──
+    const zohoComments = await getZohoTicketComments(ticket.zohoTicketId);
+
+    for (const comment of zohoComments) {
+      const rawContent = (comment.content ? stripHtml(comment.content) : "").trim();
+      if (!rawContent) continue;
+
+      // isPublic === false → private internal note (direction "3")
+      // isPublic === true  → public agent comment  (direction "2")
+      const isPublic = comment.isPublic !== false;
+      const direction = isPublic ? "2" : "3";
+      const agentId = comment.commentedBy || comment.author?.name || "zoho-agent";
+      const norm = normalize(rawContent);
+
+      const existingRow = byContent.get(norm);
+      if (existingRow) {
+        // Update direction if it changed (e.g. was imported as "2" but is actually internal)
+        if (existingRow.direction !== direction) {
+          await prisma.ticketThread.update({ where: { id: existingRow.id }, data: { direction, agentId } }).catch(() => {});
+        }
+        continue;
+      }
+      if (isDuplicate(rawContent)) continue;
+
+      const created = await prisma.ticketThread.create({
+        data: {
+          ticketId,
+          content: rawContent,
+          direction,
+          agentId,
+          ...(comment.commentedTime ? { createdAt: new Date(comment.commentedTime) } : {}),
         },
       });
 

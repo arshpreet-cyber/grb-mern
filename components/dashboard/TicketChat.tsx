@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
-import { Send, ShieldCheck, User, AlertCircle, Loader2, Paperclip, X } from "lucide-react";
+import { Send, ShieldCheck, User, AlertCircle, Loader2, Paperclip, X, Lock } from "lucide-react";
 
 export type TicketMessage = {
   id: number;
@@ -101,9 +101,13 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
     }
   };
 
-  const filteredMessages = messages.filter(m =>
-    !(ticket?.query && m.content?.trim().toLowerCase() === ticket.query.trim().toLowerCase())
-  );
+  const filteredMessages = messages.filter(m => {
+    // Hide internal notes (direction "3") from non-admin users
+    if (!isAdmin && String(m.direction) === "3") return false;
+    // Deduplicate original query
+    if (ticket?.query && m.content?.trim().toLowerCase() === ticket.query.trim().toLowerCase()) return false;
+    return true;
+  });
 
   const customerName = ticket?.user?.name || ticket?.userName || "Customer";
   const status = ticket?.status ?? "Open";
@@ -254,12 +258,14 @@ export default function TicketChat({ ticketId, ticketSubject, isAdmin = false }:
         {/* Messages */}
         {filteredMessages.map((msg) => {
           const isAgent = String(msg.direction) === "2";
+          const isInternal = String(msg.direction) === "3";
           return (
             <MessageCard
               key={msg.id}
-              name={isAgent ? "Support Team" : customerName}
-              role={isAgent ? "Operator" : "Owner"}
-              isStaff={isAgent}
+              name={isInternal ? (msg.agentId || "Support Team") : isAgent ? "Support Team" : customerName}
+              role={isInternal ? "Internal Note" : isAgent ? "Operator" : "Owner"}
+              isStaff={isAgent || isInternal}
+              isInternal={isInternal}
               time={msg.createdAt}
               content={msg.content ?? ""}
               media={msg.media}
@@ -290,20 +296,39 @@ function InfoRow({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
-function MessageCard({ name, role, isStaff, time, content, media }: {
-  name: string; role: string; isStaff: boolean; time: string; content: string; media?: string | null;
+function MessageCard({ name, role, isStaff, isInternal, time, content, media }: {
+  name: string; role: string; isStaff: boolean; isInternal?: boolean; time: string; content: string; media?: string | null;
 }) {
+  // Determine border style: internal notes get red, staff get amber, otherwise gray
+  const borderClass = isInternal
+    ? "border-red-300 border-l-4 border-l-red-500 bg-red-50/30"
+    : isStaff
+      ? "border-amber-200 border-l-4 border-l-[#fc0]"
+      : "border-gray-200";
+
+  const avatarClass = isInternal
+    ? "bg-red-100 text-red-600"
+    : isStaff
+      ? "bg-[#fffdeb] text-amber-600"
+      : "bg-gray-100 text-gray-500";
+
+  const badgeClass = isInternal
+    ? "bg-red-100 text-red-700 border-red-300"
+    : isStaff
+      ? "bg-[#fffdeb] text-amber-700 border-[#ffe57f]"
+      : "bg-gray-100 text-gray-500 border-gray-200";
+
   return (
-    <div className={`bg-white rounded-xl border overflow-hidden shadow-sm ${isStaff ? "border-amber-200 border-l-4 border-l-[#fc0]" : "border-gray-200"}`}>
+    <div className={`bg-white rounded-xl border overflow-hidden shadow-sm ${borderClass}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
         <div className="flex items-center gap-2.5">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isStaff ? "bg-[#fffdeb] text-amber-600" : "bg-gray-100 text-gray-500"}`}>
-            {isStaff ? <ShieldCheck size={14} /> : <User size={14} />}
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${avatarClass}`}>
+            {isInternal ? <Lock size={14} /> : isStaff ? <ShieldCheck size={14} /> : <User size={14} />}
           </div>
           <div>
             <span className="text-[13px] font-bold text-gray-900">{name}</span>
-            <span className={`ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border ${isStaff ? "bg-[#fffdeb] text-amber-700 border-[#ffe57f]" : "bg-gray-100 text-gray-500 border-gray-200"}`}>
+            <span className={`ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border ${badgeClass}`}>
               {role}
             </span>
           </div>
@@ -313,6 +338,11 @@ function MessageCard({ name, role, isStaff, time, content, media }: {
 
       {/* Body */}
       <div className="px-5 py-4">
+        {isInternal && (
+          <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold text-red-500 uppercase tracking-wide">
+            <Lock size={11} /> Private — not visible to customer
+          </div>
+        )}
         <p className="text-[14px] text-gray-700 leading-relaxed whitespace-pre-wrap">{content}</p>
 
         {/* Media attachments */}
