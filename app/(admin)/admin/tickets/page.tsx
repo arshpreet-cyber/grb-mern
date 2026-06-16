@@ -344,6 +344,7 @@ export default function AdminTicketsPage() {
           columns={columns}
           loading={loading}
           searchable
+          searchFields={["ticketNumber", "subject", "name", "ticketId"]}
           searchPlaceholder="Search tickets..."
           pageSize={10}
           rowClassName={(t) => (isCustomerReplied(t) ? "bg-amber-50/40 dark:bg-amber-900/10" : "")}

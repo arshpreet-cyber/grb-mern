@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ClipboardList, FileText, Info, Download, Loader2, Ticket } from "lucide-react";
-import InputDetailsModal from "@/components/dashboard/InputDetailsModal";
 
 type OrderDetail = {
   id: string;
@@ -59,7 +58,6 @@ export default function UserOrderDetailPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
-  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
   async function downloadInvoice() {
     setDownloadingInvoice(true);
@@ -223,14 +221,12 @@ export default function UserOrderDetailPage() {
             </div>
           )}
           {order.paymentStatus === "2" && !order.detailsFilled && (
-            <div className="mt-4">
-              <button
-                onClick={() => setDetailsModalOpen(true)}
-                className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#1E3A8A] hover:bg-blue-900 text-white text-[12px] font-bold transition"
-              >
-                Input Details →
-              </button>
-            </div>
+            <Link
+              href={`/order/${order.id}/details`}
+              className="mt-4 inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#1E3A8A] hover:bg-blue-900 text-white text-[12px] font-bold transition"
+            >
+              Input Details →
+            </Link>
           )}
           <button
             onClick={downloadInvoice}
@@ -260,11 +256,6 @@ export default function UserOrderDetailPage() {
                 {itemsList.length === 0 ? (
                   <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400">No items found.</td></tr>
                 ) : itemsList.map(d => {
-                  // Parse profileUrl from reviewData JSON
-                  let profileUrl: string | null = null;
-                  if (d.reviewData) {
-                    try { profileUrl = JSON.parse(d.reviewData)?.profileUrl ?? null; } catch {}
-                  }
                   return (
                   <tr key={d.id} className="border-b border-gray-50 dark:border-slate-800">
                     <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white whitespace-pre-wrap">
@@ -426,18 +417,6 @@ export default function UserOrderDetailPage() {
           </div>
         </div>
       )}
-
-      {/* Input Details Modal */}
-      <InputDetailsModal 
-        orderId={id} 
-        orderNumber={order?.orderNumber || order?.id || ""}
-        isOpen={detailsModalOpen} 
-        onClose={() => setDetailsModalOpen(false)} 
-        onSuccess={() => {
-          setDetailsModalOpen(false);
-          window.location.reload();
-        }}
-      />
     </div>
   );
 }
