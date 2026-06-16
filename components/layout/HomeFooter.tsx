@@ -230,7 +230,7 @@ export default function HomeFooter() {
                   { label: "Reviews.Io Reviews", href: "/products/buy-reviews-io-reviews" },
                   { label: "Realtor Reviews", href: "/products/buy-realtor-reviews" },
                   { label: "Bark Reviews", href: "/products/buy-bark-reviews" },
-                  { label: "UpCity Reviews", href: "/products/buy-upcity-reviews" },
+                  { label: "UpCity Reviews 44", href: "/products/buy-upcity-reviews" },
 
                 ].map((item, idx) => (
                   <li key={idx}>
