@@ -107,12 +107,21 @@ export async function createZohoInvoice(params: {
     quantity: item.qty,
   }));
 
+  const today = new Date();
+  const due = new Date(today);
+  due.setDate(due.getDate() + 5);
+  const ymd = (d: Date) => d.toISOString().slice(0, 10);
+
   const res = await fetch(orgUrl("/invoices"), {
     method: "POST",
     headers: authHeader(token),
     body: JSON.stringify({
       customer_id: contactId,
       reference_number: params.orderNumber,
+      date: ymd(today),
+      due_date: ymd(due),
+      payment_terms: 5,
+      payment_terms_label: "Due in 5 days",
       line_items: lineItems,
       payment_options: {
         payment_gateways: [
@@ -126,21 +135,24 @@ export async function createZohoInvoice(params: {
     }),
   });
   const data = await parseJson(res, "Zoho create invoice");
-  if (!data.invoice?.invoice_id) {
+  const invoiceId = data.invoice?.invoice_id;
+  if (!invoiceId) {
     throw new Error(`Zoho create invoice failed: ${JSON.stringify(data)}`);
   }
 
-  if (params.returnPaymentUrl) {
-    const invoiceId = data.invoice?.invoice_id;
-    if (!invoiceId) throw new Error("Zoho did not return an invoice ID.");
-
-    // Mark invoice as Sent so the payment link becomes active
+  // Always move the invoice out of Draft so it shows as "Due" (and the payment
+  // link is active). Best-effort — don't fail invoice creation if this hiccups.
+  try {
     const sentRes = await fetch(orgUrl(`/invoices/${invoiceId}/status/sent`), {
       method: "POST",
       headers: authHeader(token),
     });
     await parseJson(sentRes, "Zoho mark invoice sent");
+  } catch (e) {
+    console.error("[Zoho Invoice] mark sent failed:", (e as Error).message);
+  }
 
+  if (params.returnPaymentUrl) {
     // Fetch full invoice to get all payment URL fields
     const fullRes = await fetch(orgUrl(`/invoices/${invoiceId}`), {
       headers: authHeader(token),
@@ -157,5 +169,46 @@ export async function createZohoInvoice(params: {
 
     if (!payUrl) throw new Error("Zoho did not return a payment URL for this invoice.");
     return payUrl as string;
+  }
+}
+
+// Record a payment against the order's invoice so Zoho Books shows it as Paid.
+// Matched on reference_number = orderNumber. No-op if not found or already paid.
+export async function markZohoInvoicePaid(params: {
+  orderNumber: string;
+  amount?: number;
+  paymentId?: string;
+}): Promise<void> {
+  if (!process.env.ZOHO_REFRESH_TOKEN || !ZOHO_ORG_ID()) return;
+
+  const token = await getAccessToken();
+  const listUrl = `${ZOHO_API_BASE}/invoices?organization_id=${ZOHO_ORG_ID()}&reference_number=${encodeURIComponent(params.orderNumber)}`;
+  const listData = await parseJson(await fetch(listUrl, { headers: authHeader(token) }), "Zoho list invoices");
+
+  const inv = listData.invoices?.[0];
+  if (!inv) {
+    console.error(`[Zoho Invoice] No invoice found for order ${params.orderNumber} to mark paid.`);
+    return;
+  }
+  if (inv.status === "paid") return;
+
+  const amount = params.amount ?? inv.balance ?? inv.total;
+  if (!amount || amount <= 0) return;
+
+  const payRes = await fetch(orgUrl("/customerpayments"), {
+    method: "POST",
+    headers: authHeader(token),
+    body: JSON.stringify({
+      customer_id: inv.customer_id,
+      payment_mode: "banktransfer",
+      amount,
+      date: new Date().toISOString().slice(0, 10),
+      reference_number: params.paymentId ?? params.orderNumber,
+      invoices: [{ invoice_id: inv.invoice_id, amount_applied: amount }],
+    }),
+  });
+  const payData = await parseJson(payRes, "Zoho record payment");
+  if (payData.code !== 0 && !payData.payment) {
+    throw new Error(`Zoho record payment failed: ${JSON.stringify(payData).slice(0, 200)}`);
   }
 }

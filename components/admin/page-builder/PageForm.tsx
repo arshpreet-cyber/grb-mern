@@ -129,7 +129,7 @@ export default function PageForm({
 
         <FormField label="Slug" hint="Auto-generated from title. Edit manually if needed.">
           <Input
-            prefix="https://grb-mern-gilt.vercel.app/"
+            prefix="https://beta.getreviews.buzz/"
             placeholder="page-slug"
             value={data.slug}
             onChange={(e) => set("slug")(toSlug(e.target.value))}

@@ -318,14 +318,19 @@ export function buildSubscriptionAdminEmail(payload: { email: string; orderNumbe
 }
 
 // ─── EVT-0006 to 0011: User – Order Status Change ────────────────────────────
+// Codes must match ORDER_STATUS in lib/status-labels.ts (the values the admin
+// status dropdown sends): 1 Pending, 2 Complete, 3 On Hold, 4 Cancelled,
+// 5 Processing, 6 Refund, 7 Failed, 8 Fraud, 9 Active.
 const STATUS_LABELS: Record<string, { label: string; color: string; message: string }> = {
   "1": { label: "Pending", color: "#f59e0b", message: "Your order has been received and is pending review." },
   "2": { label: "Completed", color: "#10b981", message: "Your order has been completed successfully. Thank you for choosing Get Reviews Buzz!" },
-  "3": { label: "Processing", color: "#3b82f6", message: "Great news! We are currently processing your order." },
-  "4": { label: "Hold", color: "#f97316", message: "Your order has been placed on hold. Our team will reach out to you shortly." },
-  "5": { label: "Cancelled", color: "#ef4444", message: "Your order has been cancelled. Please contact us if you have any questions." },
+  "3": { label: "On Hold", color: "#f97316", message: "Your order has been placed on hold. Our team will reach out to you shortly." },
+  "4": { label: "Cancelled", color: "#ef4444", message: "Your order has been cancelled. Please contact us if you have any questions." },
+  "5": { label: "Processing", color: "#3b82f6", message: "Great news! We are currently processing your order." },
   "6": { label: "Refunded", color: "#8b5cf6", message: "A refund has been initiated for your order. Please allow 5–7 business days for it to reflect." },
   "7": { label: "Failed", color: "#dc2626", message: "Unfortunately, your order has failed. Please contact our support team for assistance." },
+  "8": { label: "Fraud", color: "#dc2626", message: "Your order has been flagged for review. Please contact our support team." },
+  "9": { label: "Active", color: "#10b981", message: "Your subscription is now active. Thank you for choosing Get Reviews Buzz!" },
 };
 
 export function buildOrderStatusEmail(payload: {

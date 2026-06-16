@@ -235,6 +235,7 @@ export default function AdminProductsPage() {
           loading={loading}
           actions={actions}
           searchable
+          searchFields={["platform", "catType", "status"]}
           searchPlaceholder="Search products by title..."
           searchValue={search}
           onSearchChange={setSearch}
