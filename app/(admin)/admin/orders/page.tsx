@@ -2,10 +2,10 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ClipboardList, Eye, Trash2, Mail, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { ClipboardList, Eye, Trash2, Mail, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronDown, ChevronUp } from "lucide-react";
 
 type Order = {
   id: string;
@@ -28,6 +28,7 @@ type Order = {
   rzpaySubscriptionId: string | null;
   isRecurring: number | null;
   user?: { name: string | null; email: string } | null;
+  siblingCount?: number;
 };
 
 const TABS = [
@@ -124,6 +125,11 @@ export default function AdminOrdersPage() {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Subscription expand state
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [siblingMap, setSiblingMap] = useState<Record<string, Order[]>>({});
+  const [loadingExpand, setLoadingExpand] = useState<string | null>(null);
+
   const fetchOrders = useCallback(async (filter: string, q = "", pg = 1, ps = 25) => {
     setLoading(true);
     try {
@@ -207,6 +213,27 @@ export default function AdminOrdersPage() {
       else toast.error("Failed to send email.");
     } finally {
       setSendingEmail(null);
+    }
+  };
+
+  const toggleSubscriptionExpand = async (o: Order) => {
+    const id = o.id;
+    if (expandedRows.has(id)) {
+      setExpandedRows(prev => { const s = new Set(prev); s.delete(id); return s; });
+      return;
+    }
+    if (!o.orderNumber) return;
+    setLoadingExpand(id);
+    try {
+      const res = await fetch(`/api/orders?exactOrderNumber=${encodeURIComponent(o.orderNumber)}&adminView=true`);
+      const data = await res.json();
+      const all: Order[] = Array.isArray(data.orders) ? data.orders : [];
+      // Exclude the parent row itself
+      const siblings = all.filter(s => s.id !== id);
+      setSiblingMap(prev => ({ ...prev, [id]: siblings }));
+      setExpandedRows(prev => new Set(prev).add(id));
+    } finally {
+      setLoadingExpand(null);
     }
   };
 
@@ -306,123 +333,144 @@ export default function AdminOrdersPage() {
               ) : orders.length === 0 ? (
                 <tr><td colSpan={10} className="px-4 py-12 text-center text-gray-400">No orders found</td></tr>
               ) : orders.map(o => {
-                const isNull = (val: string | null | undefined) => !val || val === "NULL" || val === "null";
-                const fName = isNull(o.firstName) ? "" : o.firstName;
-                const lName = isNull(o.lastName) ? "" : o.lastName;
-                let customerName = `${fName} ${lName}`.trim();
-                if (!customerName) {
-                  customerName = isNull(o.user?.name) ? "—" : (o.user?.name || "—");
-                }
-                
-                const displayPaymentId = isNull(o.paymentId) ? "—" : o.paymentId;
+                const isSubscription = !!(o.isRecurring === 1 || o.subscriptionId || o.rzpaySubscriptionId);
+                const isExpanded = expandedRows.has(o.id);
+                const siblings = siblingMap[o.id] ?? [];
+
+                const renderRow = (row: Order, isChild = false) => {
+                  const isNull = (val: string | null | undefined) => !val || val === "NULL" || val === "null";
+                  const fName = isNull(row.firstName) ? "" : row.firstName;
+                  const lName = isNull(row.lastName) ? "" : row.lastName;
+                  let customerName = `${fName} ${lName}`.trim();
+                  if (!customerName) customerName = isNull(row.user?.name) ? "—" : (row.user?.name || "—");
+                  const displayPaymentId = isNull(row.paymentId) ? "—" : row.paymentId;
+
+                  return (
+                    <tr
+                      key={`${row.id}-${isChild ? "child" : "parent"}`}
+                      className={`border-b border-gray-50 dark:border-slate-800 transition-colors ${
+                        isChild
+                          ? "bg-violet-50/40 dark:bg-violet-950/10 hover:bg-violet-50 dark:hover:bg-violet-950/20"
+                          : "hover:bg-gray-50 dark:hover:bg-slate-800/50"
+                      }`}
+                    >
+                      {/* Order No */}
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className={`flex flex-col gap-1 ${isChild ? "pl-5" : ""}`}>
+                          {isChild && (
+                            <span className="text-violet-400 dark:text-violet-500 text-[10px] font-bold flex items-center gap-1">
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                              Previous
+                            </span>
+                          )}
+                          <div className="flex items-center gap-1.5">
+                            {/* Expand toggle for subscription parent rows */}
+                            {isSubscription && !isChild && (row.siblingCount ?? 0) > 0 && (
+                              <button
+                                onClick={() => toggleSubscriptionExpand(o)}
+                                disabled={loadingExpand === o.id}
+                                title={isExpanded ? "Collapse" : "Show previous payments"}
+                                className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black border transition-all ${
+                                  isExpanded
+                                    ? "bg-violet-600 border-violet-600 text-white"
+                                    : "bg-violet-100 border-violet-300 text-violet-700 hover:bg-violet-200"
+                                } disabled:opacity-50`}
+                              >
+                                {loadingExpand === o.id ? (
+                                  <svg className="animate-spin" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                                ) : isExpanded ? (
+                                  <ChevronUp size={10} />
+                                ) : (
+                                  <ChevronDown size={10} />
+                                )}
+                              </button>
+                            )}
+                            <Link href={`/admin/orders/${row.id}`} className="font-bold text-amber-600 dark:text-amber-400 hover:underline font-mono text-[12px]">
+                              {row.orderNumber || `#${row.id}`}
+                            </Link>
+                          </div>
+                          {(row.isRecurring === 1 || row.subscriptionId || row.rzpaySubscriptionId) && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-violet-100 text-violet-700 border border-violet-200 w-fit">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                              Subscription
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      {/* User */}
+                      <td className="px-4 py-3">
+                        {row.userId && row.userId !== "NULL" ? (
+                          <Link href={`/admin/users/${row.userId}`} className="font-semibold text-gray-900 dark:text-white hover:text-[#D8A720] dark:hover:text-yellow-400 hover:underline transition-colors">
+                            {customerName}
+                          </Link>
+                        ) : (
+                          <div className="font-semibold text-gray-900 dark:text-white">{customerName}</div>
+                        )}
+                        <div className="text-gray-400 text-[11px]">{isNull(row.email) ? (isNull(row.user?.email) ? "—" : row.user?.email) : row.email}</div>
+                      </td>
+                      {/* Payment ID */}
+                      <td className="px-4 py-3 font-mono text-gray-500 dark:text-slate-400">
+                        <span className="block whitespace-nowrap">{displayPaymentId}</span>
+                      </td>
+                      {/* Amount */}
+                      <td className="px-4 py-3 font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                        {row.amount != null ? `$${row.amount}` : "—"}
+                      </td>
+                      {/* Payment Method */}
+                      <td className="px-4 py-3">
+                        {row.paymentMethod ? (
+                          <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md ${paymentMethodColor(row.paymentMethod)}`}>
+                            {paymentMethodLabel(row.paymentMethod)}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 text-[11px]">—</span>
+                        )}
+                      </td>
+                      {/* Order Date */}
+                      <td className="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-slate-400">
+                        {new Date(row.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                        <div className="text-[10px] text-gray-400">{new Date(row.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}</div>
+                      </td>
+                      {/* Admin Status */}
+                      <td className="px-4 py-3">
+                        <StatusDropdown value={row.status} options={STATUS_OPTIONS} colors={STATUS_COLORS} orderId={row.id} field="status" onChange={updateField} />
+                      </td>
+                      {/* Payment Status */}
+                      <td className="px-4 py-3">
+                        <StatusDropdown value={row.paymentStatus} options={PAYMENT_OPTIONS} colors={PAYMENT_COLORS} orderId={row.id} field="paymentStatus" onChange={updateField} />
+                      </td>
+                      {/* Completed On */}
+                      <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-[11px]">
+                        {row.completedOn ? new Date(row.completedOn).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
+                      </td>
+                      {/* Action */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1">
+                          <Link href={`/admin/orders/${row.id}`} title="View" className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors inline-block">
+                            <Eye size={15} />
+                          </Link>
+                          <button title="Delete" onClick={() => handleDelete(row.id)} className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                            <Trash2 size={15} />
+                          </button>
+                          <button title="Send unpaid reminder" onClick={() => handleSendUnpaidEmail(row.id)} disabled={sendingEmail === row.id} className="p-1.5 rounded-lg text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-40">
+                            <Mail size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                };
 
                 return (
-                  <tr key={o.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                    {/* Order No */}
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="flex flex-col gap-1">
-                        <Link href={`/admin/orders/${o.id}`} className="font-bold text-amber-600 dark:text-amber-400 hover:underline font-mono text-[12px]">
-                          {o.orderNumber || `#${o.id}`}
-                        </Link>
-                        {(o.isRecurring === 1 || o.subscriptionId || o.rzpaySubscriptionId) && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-violet-100 text-violet-700 border border-violet-200 w-fit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-                            Subscription
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    {/* User */}
-                    <td className="px-4 py-3">
-                      {o.userId && o.userId !== "NULL" ? (
-                        <Link href={`/admin/users/${o.userId}`} className="font-semibold text-gray-900 dark:text-white hover:text-[#D8A720] dark:hover:text-yellow-400 hover:underline transition-colors">
-                          {customerName}
-                        </Link>
-                      ) : (
-                        <div className="font-semibold text-gray-900 dark:text-white">{customerName}</div>
-                      )}
-                      <div className="text-gray-400 text-[11px]">{isNull(o.email) ? (isNull(o.user?.email) ? "—" : o.user?.email) : o.email}</div>
-                    </td>
-                    {/* Payment ID */}
-                    <td className="px-4 py-3 font-mono text-gray-500 dark:text-slate-400">
-                      <span className="block whitespace-nowrap">{displayPaymentId}</span>
-                    </td>
-                    {/* Amount */}
-                    <td className="px-4 py-3 font-bold text-gray-900 dark:text-white whitespace-nowrap">
-                      {o.amount != null ? `$${o.amount}` : "—"}
-                    </td>
-                    {/* Payment Method */}
-                    <td className="px-4 py-3">
-                      {o.paymentMethod ? (
-                        <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md ${paymentMethodColor(o.paymentMethod)}`}>
-                          {paymentMethodLabel(o.paymentMethod)}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400 text-[11px]">—</span>
-                      )}
-                    </td>
-                    {/* Order Date */}
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-slate-400">
-                      {new Date(o.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-                      <div className="text-[10px] text-gray-400">{new Date(o.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}</div>
-                    </td>
-                    {/* Admin Status */}
-                    <td className="px-4 py-3">
-                      <StatusDropdown
-                        value={o.status}
-                        options={STATUS_OPTIONS}
-                        colors={STATUS_COLORS}
-                        orderId={o.id}
-                        field="status"
-                        onChange={updateField}
-                      />
-                    </td>
-                    {/* Payment Status */}
-                    <td className="px-4 py-3">
-                      <StatusDropdown
-                        value={o.paymentStatus}
-                        options={PAYMENT_OPTIONS}
-                        colors={PAYMENT_COLORS}
-                        orderId={o.id}
-                        field="paymentStatus"
-                        onChange={updateField}
-                      />
-                    </td>
-                    {/* Completed On */}
-                    <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-[11px]">
-                      {o.completedOn ? new Date(o.completedOn).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
-                    </td>
-                    {/* Action */}
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        {/* Converted button to Link for seamless, reliable client-side navigation */}
-                        <Link 
-                          href={`/admin/orders/${o.id}`}
-                          title="View" 
-                          className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors inline-block"
-                        >
-                          <Eye size={15} />
-                        </Link>
-
-                        <button 
-                          title="Delete" 
-                          onClick={() => handleDelete(o.id)} 
-                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                        
-                        <button
-                          title="Send unpaid reminder"
-                          onClick={() => handleSendUnpaidEmail(o.id)}
-                          disabled={sendingEmail === o.id}
-                          className="p-1.5 rounded-lg text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-40"
-                        >
-                          <Mail size={15} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  <Fragment key={o.id}>
+                    {renderRow(o, false)}
+                    {isExpanded && siblings.map(sibling => renderRow(sibling, true))}
+                    {isExpanded && siblings.length === 0 && (
+                      <tr key={`${o.id}-empty`} className="bg-violet-50/40 dark:bg-violet-950/10">
+                        <td colSpan={10} className="px-8 py-2 text-[11px] text-violet-400 italic">No previous subscription payments found.</td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
             </tbody>

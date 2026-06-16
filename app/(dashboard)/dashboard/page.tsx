@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { PlusCircle, ArrowUpRight, Eye, ChevronDown } from "lucide-react";
 import { orderStatusLabel, paymentStatusLabel, paymentMethodLabel } from "@/lib/status-labels";
 import { useRouter } from "next/navigation";
+import InputDetailsModal from "@/components/dashboard/InputDetailsModal";
 
 type Order = {
   id: string;
@@ -46,6 +47,7 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [openTickets, setOpenTickets] = useState<number | null>(null);
   const [paymentDropdownOpen, setPaymentDropdownOpen] = useState<string | null>(null);
+  const [detailsModalOrderId, setDetailsModalOrderId] = useState<string | null>(null);
   const name = session?.user?.name ?? "User";
 
   useEffect(() => {
@@ -216,7 +218,7 @@ export default function UserDashboard() {
                   <td className="px-5 py-5 text-center">
                     {o.paymentStatus === "Paid" && !o.detailsFilled && (
                       <button
-                        onClick={() => router.push(`/order/${o.id}/details`)}
+                        onClick={() => setDetailsModalOrderId(o.id)}
                         className="rounded-[5px] bg-blue-600 px-3 py-1 text-[10px] font-normal text-white shadow-sm hover:bg-blue-700 transition"
                       >
                         Input Details
@@ -266,6 +268,14 @@ export default function UserDashboard() {
           </table>
         </div>
       </div>
+      
+      {/* Input Details Modal */}
+      <InputDetailsModal 
+        orderId={detailsModalOrderId || ""} 
+        orderNumber={orders.find(o => o.id === detailsModalOrderId)?.orderNumber || ""}
+        isOpen={!!detailsModalOrderId} 
+        onClose={() => setDetailsModalOrderId(null)} 
+      />
     </div>
   );
 }

@@ -95,6 +95,17 @@ export async function GET(req: NextRequest) {
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
     const pageSize = Math.min(100, Math.max(1, parseInt(searchParams.get("pageSize") ?? "25", 10) || 25));
 
+    // --- Subscription siblings mode: fetch all orders sharing the same orderNumber ---
+    const exactOrderNumber = searchParams.get("exactOrderNumber");
+    if (exactOrderNumber && showAll) {
+      const siblings = await prisma.order.findMany({
+        where: { orderNumber: exactOrderNumber },
+        orderBy: { createdAt: "desc" },
+        include: { user: { select: { name: true, email: true } } },
+      });
+      return NextResponse.json({ orders: siblings, total: siblings.length });
+    }
+
     const where = buildWhere(filter, search, showAll, userId, userEmail);
 
     const [orders, total] = await Promise.all([
@@ -108,8 +119,34 @@ export async function GET(req: NextRequest) {
       prisma.order.count({ where }),
     ]);
 
+    // Batch fetch sibling counts for the returned orders
+    const orderNumbers = Array.from(new Set(
+      orders.filter(o => o.orderNumber && (o.isRecurring === 1 || o.subscriptionId || o.rzpaySubscriptionId))
+            .map(o => o.orderNumber as string)
+    ));
+
+    const siblingCounts: Record<string, number> = {};
+    if (orderNumbers.length > 0) {
+      const counts = await prisma.order.groupBy({
+        by: ['orderNumber'],
+        where: { orderNumber: { in: orderNumbers } },
+        _count: { id: true }
+      });
+      for (const c of counts) {
+        if (c.orderNumber) siblingCounts[c.orderNumber] = c._count.id;
+      }
+    }
+
+    const ordersWithCounts = orders.map(o => {
+      let count = 0;
+      if (o.orderNumber && siblingCounts[o.orderNumber]) {
+        count = siblingCounts[o.orderNumber] - 1; // Exclude self
+      }
+      return { ...o, siblingCount: Math.max(0, count) };
+    });
+
     return NextResponse.json({
-      orders,
+      orders: ordersWithCounts,
       total,
       page,
       pageSize,
