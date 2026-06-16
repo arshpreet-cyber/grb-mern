@@ -1,6 +1,9 @@
-const ZOHO_ACCOUNTS_URL = process.env.ZOHO_ACCOUNTS_URL ?? "https://accounts.zoho.in";
-const ZOHO_API_BASE = process.env.ZOHO_API_BASE_URL ?? "https://books.zoho.in/api/v3";
-const ZOHO_ORG_ID = () => process.env.ZOHO_ORG_ID ?? "";
+// Zoho data center (.com / .in / .eu ...). Defaults to .com to match the account.
+const ZOHO_DC = process.env.ZOHO_DC || "com";
+const ZOHO_ACCOUNTS_URL = process.env.ZOHO_ACCOUNTS_URL ?? `https://accounts.zoho.${ZOHO_DC}`;
+const ZOHO_API_BASE = process.env.ZOHO_API_BASE_URL ?? `https://books.zoho.${ZOHO_DC}/api/v3`;
+// Zoho Books has its own organization id, separate from Zoho Desk's org id.
+const ZOHO_ORG_ID = () => process.env.ZOHO_BOOKS_ORG_ID ?? process.env.ZOHO_ORG_ID ?? "";
 
 async function parseJson(res: Response, label: string): Promise<any> {
   const text = await res.text();
