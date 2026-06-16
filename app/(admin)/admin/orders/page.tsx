@@ -32,15 +32,15 @@ type Order = {
 };
 
 const TABS = [
-  { key: "all",          label: "All Orders" },
-  { key: "paid",         label: "Paid Orders" },
-  { key: "pending",      label: "Pending Orders" },
-  { key: "processing",   label: "Processing Orders" },
-  { key: "unpaid",       label: "Unpaid Orders" },
-  { key: "completed",    label: "Completed Orders" },
-  { key: "hold",         label: "Hold Orders" },
+  { key: "all", label: "All Orders" },
+  { key: "paid", label: "Paid Orders" },
+  { key: "pending", label: "Pending Orders" },
+  { key: "processing", label: "Processing Orders" },
+  { key: "unpaid", label: "Unpaid Orders" },
+  { key: "completed", label: "Completed Orders" },
+  { key: "hold", label: "Hold Orders" },
   { key: "subscription", label: "Subscription Orders" },
-  { key: "deleted",      label: "Deleted Orders" },
+  { key: "deleted", label: "Deleted Orders" },
 ];
 
 const STATUS_OPTIONS = [
@@ -285,11 +285,10 @@ export default function AdminOrdersPage() {
       <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
         {TABS.map(tab => (
           <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSearch(""); setPage(1); }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${
-              activeTab === tab.key
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${activeTab === tab.key
                 ? "bg-[#fc0] text-slate-900 border-[#fc0] shadow-lg shadow-amber-500/10"
                 : "bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-400 border-gray-100 dark:border-slate-800 hover:border-amber-300 hover:text-amber-600"
-            }`}>
+              }`}>
             {tab.label}
             <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${activeTab === tab.key ? "bg-black/10 text-slate-900" : "bg-gray-100 dark:bg-slate-800 text-gray-500"}`}>
               {counts[tab.key] ?? 0}
@@ -357,18 +356,17 @@ export default function AdminOrdersPage() {
                   return (
                     <tr
                       key={`${row.id}-${isChild ? "child" : "parent"}`}
-                      className={`border-b border-gray-50 dark:border-slate-800 transition-colors ${
-                        isChild
+                      className={`border-b border-gray-50 dark:border-slate-800 transition-colors ${isChild
                           ? "bg-violet-50/40 dark:bg-violet-950/10 hover:bg-violet-50 dark:hover:bg-violet-950/20"
                           : "hover:bg-gray-50 dark:hover:bg-slate-800/50"
-                      }`}
+                        }`}
                     >
                       {/* Order No */}
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className={`flex flex-col gap-1 ${isChild ? "pl-5" : ""}`}>
                           {isChild && (
                             <span className="text-violet-400 dark:text-violet-500 text-[10px] font-bold flex items-center gap-1">
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
                               Previous
                             </span>
                           )}
@@ -379,14 +377,13 @@ export default function AdminOrdersPage() {
                                 onClick={() => toggleSubscriptionExpand(o)}
                                 disabled={loadingExpand === o.id}
                                 title={isExpanded ? "Collapse" : "Show previous payments"}
-                                className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black border transition-all ${
-                                  isExpanded
+                                className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black border transition-all ${isExpanded
                                     ? "bg-violet-600 border-violet-600 text-white"
                                     : "bg-violet-100 border-violet-300 text-violet-700 hover:bg-violet-200"
-                                } disabled:opacity-50`}
+                                  } disabled:opacity-50`}
                               >
                                 {loadingExpand === o.id ? (
-                                  <svg className="animate-spin" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                                  <svg className="animate-spin" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
                                 ) : isExpanded ? (
                                   <ChevronUp size={10} />
                                 ) : (
@@ -400,7 +397,7 @@ export default function AdminOrdersPage() {
                           </div>
                           {(row.isRecurring === 1 || row.subscriptionId || row.rzpaySubscriptionId) && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-violet-100 text-violet-700 border border-violet-200 w-fit">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>
                               Subscription
                             </span>
                           )}
@@ -528,11 +525,10 @@ export default function AdminOrdersPage() {
                   <button
                     key={p}
                     onClick={() => goToPage(p as number)}
-                    className={`min-w-[32px] h-8 rounded-lg text-xs font-semibold transition-all ${
-                      page === p
+                    className={`min-w-[32px] h-8 rounded-lg text-xs font-semibold transition-all ${page === p
                         ? "bg-[#fc0] text-slate-900 shadow-md shadow-amber-500/20"
                         : "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800"
-                    }`}
+                      }`}
                   >
                     {p}
                   </button>

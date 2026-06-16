@@ -70,8 +70,8 @@ export default function HomeNavbar() {
 
   const activeUnderline = (active: boolean) =>
     active
-      ? "after:absolute after:bottom-[-22px] after:left-0 after:w-full after:h-[3px] after:bg-[#ffcc00] after:content-['']"
-      : "hover:after:absolute hover:after:bottom-[-22px] hover:after:left-0 hover:after:w-full hover:after:h-[3px] hover:after:bg-[#ffcc00] hover:after:content-['']";
+      ? "after:absolute after:bottom-[-12px] after:left-0 after:w-full after:h-[3px] after:bg-[#ffcc00] after:content-['']"
+      : "hover:after:absolute hover:after:bottom-[-12px] hover:after:left-0 hover:after:w-full hover:after:h-[3px] hover:after:bg-[#ffcc00] hover:after:content-['']";
 
   const userInitials = session?.user?.name
     ? session.user.name
@@ -114,7 +114,7 @@ export default function HomeNavbar() {
 
                 {/* Mega dropdown */}
                 <div
-                  className="fixed right-0 left-0 z-[1000] invisible border-t border-[rgba(0,0,0,0.1)] bg-white opacity-0 shadow-[0_8px_30px_rgba(0,0,0,0.10)] rounded-b-xl transition-all duration-200 delay-150 group-hover:visible group-hover:opacity-100 group-hover:delay-0 top-[140px]"
+                  className="fixed right-0 left-0 z-[1000] invisible border-t border-[rgba(0,0,0,0.1)] bg-white opacity-0 shadow-[0_8px_30px_rgba(0,0,0,0.10)] rounded-b-xl transition-all duration-200 delay-150 group-hover:visible group-hover:opacity-100 group-hover:delay-0 top-[90px]"
 
                 ><Wrapper>
                     <div className="mx-auto w-full px-[20px] pt-[25px] pb-[10px]">
