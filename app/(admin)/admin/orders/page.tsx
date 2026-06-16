@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import React, { useEffect, useState, useCallback, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ClipboardList, Eye, Trash2, Mail, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronDown, ChevronUp } from "lucide-react";
+import { ClipboardList, Eye, Trash2, Mail, RotateCcw, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronDown, ChevronUp } from "lucide-react";
 
 type Order = {
   id: string;
@@ -198,6 +198,15 @@ export default function AdminOrdersPage() {
     await fetch(`/api/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ deletedAt: new Date().toISOString() }) });
     setOrders(prev => prev.filter(o => o.id !== id));
     setTotal(prev => prev - 1);
+    fetchCounts();
+  };
+
+  const handleRestore = async (id: string) => {
+    if (!confirm("Restore this order?")) return;
+    await fetch(`/api/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ deletedAt: null }) });
+    setOrders(prev => prev.filter(o => o.id !== id));
+    setTotal(prev => prev - 1);
+    fetchCounts();
   };
 
   const handleSendUnpaidEmail = async (id: string) => {
@@ -449,12 +458,20 @@ export default function AdminOrdersPage() {
                           <Link href={`/admin/orders/${row.id}`} title="View" className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors inline-block">
                             <Eye size={15} />
                           </Link>
-                          <button title="Delete" onClick={() => handleDelete(row.id)} className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                            <Trash2 size={15} />
-                          </button>
-                          <button title="Send unpaid reminder" onClick={() => handleSendUnpaidEmail(row.id)} disabled={sendingEmail === row.id} className="p-1.5 rounded-lg text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-40">
-                            <Mail size={15} />
-                          </button>
+                          {activeTab === "deleted" ? (
+                            <button title="Restore order" onClick={() => handleRestore(row.id)} className="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors">
+                              <RotateCcw size={15} />
+                            </button>
+                          ) : (
+                            <>
+                              <button title="Delete" onClick={() => handleDelete(row.id)} className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                <Trash2 size={15} />
+                              </button>
+                              <button title="Send unpaid reminder" onClick={() => handleSendUnpaidEmail(row.id)} disabled={sendingEmail === row.id} className="p-1.5 rounded-lg text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-40">
+                                <Mail size={15} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
