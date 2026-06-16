@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sendEmailNotification, buildOrderPaidEmail } from "@/server/email";
+import { markZohoInvoicePaid } from "@/lib/zoho-billing";
 
 /**
  * Called by payments.localseobuzz.com (PHP PayPal grbSuccess) after payment capture.
@@ -47,6 +48,15 @@ export async function POST(req: NextRequest) {
         subscriptionId: subscription_id ? String(subscription_id) : order.subscriptionId,
       },
     });
+
+    // Mark the Zoho Books invoice as paid (best-effort, non-blocking).
+    if (newStatus === "2" && !wasAlreadyPaid) {
+      markZohoInvoicePaid({
+        orderNumber: order.orderNumber ?? String(id),
+        amount: order.amount ?? undefined,
+        paymentId: payment_id ? String(payment_id) : undefined,
+      }).catch((err) => console.error("[Zoho Invoice] mark paid:", err.message));
+    }
 
     if (newStatus === "2" && !wasAlreadyPaid && order.email) {
       const emailContent = buildOrderPaidEmail({
