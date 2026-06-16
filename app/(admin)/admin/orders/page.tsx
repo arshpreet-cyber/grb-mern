@@ -24,17 +24,22 @@ type Order = {
   completedOn: string | null;
   createdAt: string;
   deletedAt: string | null;
+  subscriptionId: string | null;
+  rzpaySubscriptionId: string | null;
+  isRecurring: number | null;
   user?: { name: string | null; email: string } | null;
 };
 
 const TABS = [
-  { key: "all",        label: "All Orders" },
-  { key: "paid",       label: "Paid Orders" },
-  { key: "pending",    label: "Pending Orders" },
-  { key: "processing", label: "Processing Orders" },
-  { key: "unpaid",     label: "Unpaid Orders" },
-  { key: "completed",  label: "Completed Orders" },
-  { key: "deleted",    label: "Deleted Orders" },
+  { key: "all",          label: "All Orders" },
+  { key: "paid",         label: "Paid Orders" },
+  { key: "pending",      label: "Pending Orders" },
+  { key: "processing",   label: "Processing Orders" },
+  { key: "unpaid",       label: "Unpaid Orders" },
+  { key: "completed",    label: "Completed Orders" },
+  { key: "hold",         label: "Hold Orders" },
+  { key: "subscription", label: "Subscription Orders" },
+  { key: "deleted",      label: "Deleted Orders" },
 ];
 
 const STATUS_OPTIONS = [
@@ -56,7 +61,7 @@ const PAYMENT_OPTIONS = [
   { value: "4", label: "Unconfirmed" },
 ];
 
-import { paymentMethodLabel, paymentMethodColor } from "@/lib/status-labels";
+import { paymentMethodLabel, paymentMethodColor, PAYMENT_METHODS } from "@/lib/status-labels";
 
 const STATUS_COLORS: Record<string, string> = {
   "1": "bg-yellow-100 text-yellow-700 border-yellow-300",
@@ -290,16 +295,16 @@ export default function AdminOrdersPage() {
           <table className="w-full text-left text-[12px]">
             <thead>
               <tr className="border-b border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900">
-                {["#Order No.", "User", "Payment ID", "Amount", "Order Date", "Admin Status", "Payment Status", "Completed On", "Action"].map(h => (
+                {["#Order No.", "User", "Payment ID", "Amount", "Payment Method", "Order Date", "Admin Status", "Payment Status", "Completed On", "Action"].map(h => (
                   <th key={h} className="px-4 py-3 font-semibold text-gray-500 dark:text-slate-400 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={9} className="px-4 py-12 text-center text-gray-400">Loading orders...</td></tr>
+                <tr><td colSpan={10} className="px-4 py-12 text-center text-gray-400">Loading orders...</td></tr>
               ) : orders.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-12 text-center text-gray-400">No orders found</td></tr>
+                <tr><td colSpan={10} className="px-4 py-12 text-center text-gray-400">No orders found</td></tr>
               ) : orders.map(o => {
                 const isNull = (val: string | null | undefined) => !val || val === "NULL" || val === "null";
                 const fName = isNull(o.firstName) ? "" : o.firstName;
@@ -315,9 +320,17 @@ export default function AdminOrdersPage() {
                   <tr key={o.id} className="border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                     {/* Order No */}
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <Link href={`/admin/orders/${o.id}`} className="font-bold text-amber-600 dark:text-amber-400 hover:underline font-mono text-[12px]">
-                        {o.orderNumber || `#${o.id}`}
-                      </Link>
+                      <div className="flex flex-col gap-1">
+                        <Link href={`/admin/orders/${o.id}`} className="font-bold text-amber-600 dark:text-amber-400 hover:underline font-mono text-[12px]">
+                          {o.orderNumber || `#${o.id}`}
+                        </Link>
+                        {(o.isRecurring === 1 || o.subscriptionId || o.rzpaySubscriptionId) && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-violet-100 text-violet-700 border border-violet-200 w-fit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                            Subscription
+                          </span>
+                        )}
+                      </div>
                     </td>
                     {/* User */}
                     <td className="px-4 py-3">
@@ -337,6 +350,16 @@ export default function AdminOrdersPage() {
                     {/* Amount */}
                     <td className="px-4 py-3 font-bold text-gray-900 dark:text-white whitespace-nowrap">
                       {o.amount != null ? `$${o.amount}` : "—"}
+                    </td>
+                    {/* Payment Method */}
+                    <td className="px-4 py-3">
+                      {o.paymentMethod ? (
+                        <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md ${paymentMethodColor(o.paymentMethod)}`}>
+                          {paymentMethodLabel(o.paymentMethod)}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 text-[11px]">—</span>
+                      )}
                     </td>
                     {/* Order Date */}
                     <td className="px-4 py-3 whitespace-nowrap text-gray-500 dark:text-slate-400">
