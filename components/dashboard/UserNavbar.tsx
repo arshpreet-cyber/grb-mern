@@ -299,7 +299,7 @@ export default function UserNavbar({ onToggle, isOpen }: { onToggle?: () => void
                 <div className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1"></div>
                 
                 <button
-                  onClick={() => signOut({ callbackUrl: "/login" })}
+                  onClick={() => signOut({ callbackUrl: "/" })}
                   className="flex w-full items-center gap-2 rounded-lg px-3.5 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-left font-medium"
                 >
                   <LogOut size={16} className="text-red-500 dark:text-red-400" />

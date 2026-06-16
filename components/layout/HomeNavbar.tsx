@@ -237,7 +237,7 @@ export default function HomeNavbar() {
                 <div className="absolute top-[calc(100%+4px)] right-0 z-[1000] invisible w-48 rounded-xl border border-[#eee] bg-white py-1 opacity-0 shadow-lg transition-all duration-150 group-hover:visible group-hover:opacity-100">
                   <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#212121] hover:bg-[#fff6a8] transition-colors">Dashboard</Link>
                   <Link href="/dashboard/account" className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#212121] hover:bg-[#fff6a8] transition-colors">Account Details</Link>
-                  <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full text-left flex items-center gap-2 px-4 py-2.5 text-sm text-[#212121] hover:bg-[#fff6a8] transition-colors">Logout</button>
+                  <button onClick={() => signOut({ callbackUrl: "/" })} className="w-full text-left flex items-center gap-2 px-4 py-2.5 text-sm text-[#212121] hover:bg-[#fff6a8] transition-colors">Logout</button>
                 </div>
               </div>
             ) : (
@@ -319,7 +319,7 @@ export default function HomeNavbar() {
                   <Link href="/dashboard" className="text-[#212121] text-base font-medium" onClick={() => setMobileOpen(false)}>Dashboard</Link>
                 </li>
                 <li className="px-5 py-3">
-                  <button onClick={() => { signOut({ callbackUrl: "/login" }); setMobileOpen(false); }} className="text-[#212121] text-base font-medium">Logout</button>
+                  <button onClick={() => { signOut({ callbackUrl: "/" }); setMobileOpen(false); }} className="text-[#212121] text-base font-medium">Logout</button>
                 </li>
               </>
             ) : (

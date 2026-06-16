@@ -484,8 +484,9 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
         .trim();
 
     for (const thread of zohoThreads) {
-      // Only import email threads (actual conversation) — not comments/API threads.
-      if (thread.channel !== "EMAIL") continue;
+      // Import real conversation threads — email replies and web-form submissions
+      // (the original message on web-origin tickets is a WEB thread).
+      if (thread.channel !== "EMAIL" && thread.channel !== "WEB") continue;
 
       // The list endpoint only has a summary; fetch the thread for full content.
       const detail = await getZohoThreadDetail(ticket.zohoTicketId, String(thread.id));
@@ -531,7 +532,7 @@ export async function syncZohoThreadsToLocal(ticketId: string): Promise<number> 
 
     // Set repliedStatus from the most recent email thread direction so the list's
     // "Replied Status" is accurate (out = agent/admin → 2, in = customer → 1).
-    const emailThreads = zohoThreads.filter((t: any) => t.channel === "EMAIL" && t.createdTime);
+    const emailThreads = zohoThreads.filter((t: any) => (t.channel === "EMAIL" || t.channel === "WEB") && t.createdTime);
     if (emailThreads.length) {
       emailThreads.sort((a: any, b: any) => new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime());
       const isAgentLast = zohoThreadIsOperator(emailThreads[0]);
